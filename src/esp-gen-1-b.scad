@@ -201,14 +201,58 @@ module zBox(z0,z1){
     cube([3*A,3*B,d],center=true);
 }
 
-module snap0(){
-    translate([0,2*WALL_TH,0]) {
+STRAP_H0=WALL_TH*3;
+STRAP_H1=WALL_TH*2;
+STRAP_D=WALL_TH;
+STRAP_W=WALL_TH*3;
+
+module snap0(cut_offset=0){
+    translate([0,WALL_TH,0]) {
         // center of strap
+        STRAP_LEN=STRAP_H0+STRAP_H1+cut_offset;
+        points = [  [ 0,0 ], [ -WALL_TH,-2*WALL_TH],
+                    [ 0,-2*WALL_TH],
+                    [ 2*WALL_TH,0 ],
+                    [ 2*WALL_TH, STRAP_H0],
+                    [ 0, STRAP_LEN],
+                    [ -STRAP_D, STRAP_LEN],
+                    [ -STRAP_D, STRAP_H0],
+                    [ 0, STRAP_H0]
+                ];
+        rotate(90,[0,0,1])
+        rotate(90,[1,0,0])
+        linear_extrude(height=STRAP_W+cut_offset,center=true){
+        polygon(points);
+        }
         
-        cube([2*WALL_TH,2*WALL_TH*2,2*WALL_TH],center=true);
+        if(cut_offset>0){
+            translate([0,0,STRAP_H0+STRAP_H1/2])
+            rotate(90,[1,0,0])
+                    cylinder(h=WALL_TH*10,d=cut_offset);
+        }
+//        cube([2*WALL_TH,WALL_TH*2,2*WALL_TH],center=true);
     }
 }
 
+module product1(partIdx){
+    
+    difference(){
+        product(false);
+        cut_y=[ -2*WALL_TH, D0-WALL_TH, D-WALL_TH, D+2*WALL_TH ];
+        zBox( cut_y[0], cut_y[partIdx]);
+        zBox( cut_y[partIdx+1], cut_y[3]);
+    }
+    
+    strap_cut=partIdx == 1 ? 1 : 0;
+    
+    
+    translate([A/2,0,D-WALL_TH])
+    rotate(180,[0,1,0])
+    snap0(strap_cut);
+    translate([A0-WALL_TH-STRAP_W,0,D-WALL_TH])
+    rotate(180,[0,1,0])
+    snap0(strap_cut);
+}
 
 if(doProjs){
     projection(cut=true) {
@@ -236,12 +280,6 @@ if(doProjs){
         product(true);
     }
 }else{
-    difference(){
-    product(false);
-    //zBox(-2*WALL_TH,D0-WALL_TH);
-    //zBox(D-WALL_TH,D+2*WALL_TH);
-    }
-  //      translate([A/2,0,D-WALL_TH])
-//        snap0();
+    product1(2);
     
 }
