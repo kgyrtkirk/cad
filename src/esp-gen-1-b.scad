@@ -23,6 +23,8 @@ PCB_HA_Y=500 * MIL;
 
 PIR_X=2200*MIL;
 PIR_Y= 700*MIL;
+IR_TX_X= PIR_X;
+IR_TX_Y=1700*MIL;
 
 PCB_OVER=16;       // space needed above pcb
 
@@ -61,7 +63,7 @@ module pcb() {
 }
 
 module wall_comp(){
-        sphere(r=WALL_TH,$fn=12);
+        sphere(r=WALL_TH,$fn=24);
 }
 module wall( a,b ){
     if($children == 0){
@@ -152,6 +154,9 @@ module jackPlug(){
     cylinder(d=5,h=10);
 }
 
+
+module windowCut(w,h){
+}
 /*
 projection(cut=true)
 translate([0,0,-PCB_Z-PCB_T])
@@ -174,6 +179,13 @@ module product(with_pcb)
     difference(){
     mainBox();
     dhtHoles();
+        
+        translate([ WALL_TH+PCB_S+IR_TX_X,
+                    WALL_TH+PCB_S+IR_TX_Y,
+                    WALL_TH+PCB_Z+PCB_T+PCB_OVER+WALL_TH])
+        windowCut(30,30);
+        
+        
         translate([ WALL_TH+PCB_S+PIR_X,
                     WALL_TH+PCB_S+PIR_Y,
                     WALL_TH+PCB_Z+PCB_T+PCB_OVER+WALL_TH])
@@ -190,7 +202,7 @@ module product(with_pcb)
                     WALL_TH+PCB_S+1700*MIL,
                     WALL_TH+PCB_Z+PCB_T])
         jackPlug();
-
+        
     }
 }
 
@@ -203,17 +215,18 @@ module zBox(z0,z1){
 
 STRAP_H0=WALL_TH*3;
 STRAP_H1=WALL_TH*2;
-STRAP_D=WALL_TH;
+STRAP_D=.2;
 STRAP_W=WALL_TH*3;
+STRAP_R=1.5*WALL_TH;
 
 module snap0(cut_offset=0){
     translate([0,WALL_TH,0]) {
         // center of strap
         STRAP_LEN=STRAP_H0+STRAP_H1+cut_offset;
-        points = [  [ 0,0 ], [ -WALL_TH,-2*WALL_TH],
-                    [ 0,-2*WALL_TH],
-                    [ 2*WALL_TH,0 ],
-                    [ 2*WALL_TH, STRAP_H0],
+        points = [  [ 0,0 ], [ -WALL_TH,-STRAP_R],
+                    [ 0,-STRAP_R],
+                    [ STRAP_R,0 ],
+                    [ STRAP_R, STRAP_H0],
                     [ 0, STRAP_LEN],
                     [ -STRAP_D, STRAP_LEN],
                     [ -STRAP_D, STRAP_H0],
@@ -234,24 +247,73 @@ module snap0(cut_offset=0){
     }
 }
 
-module product1(partIdx){
-    
-    difference(){
-        product(false);
-        cut_y=[ -2*WALL_TH, D0-WALL_TH, D-WALL_TH, D+2*WALL_TH ];
-        zBox( cut_y[0], cut_y[partIdx]);
-        zBox( cut_y[partIdx+1], cut_y[3]);
+module unionDiffOperator(diff){
+    if(diff){
+        difference(){
+            children(0);
+            children([1:1:$children-1]);
+        }
+    }else{
+        union(){
+            children();
+        }
     }
     
-    strap_cut=partIdx == 1 ? 1 : 0;
+}
+module straps( idx, mask, rotation, loc_xy, yValues){
     
+        strap_cut=idx == 1 ? 1 : 0;
+
+        if(idx == 1 || (idx==2 && mask>=2))
+        translate(concat(loc_xy,[yValues[1]]))
+        rotate(rotation,[0,0,1])
+        rotate(180,[0,1,0])
+        snap0(strap_cut);
     
-    translate([A/2,0,D-WALL_TH])
-    rotate(180,[0,1,0])
-    snap0(strap_cut);
-    translate([A0-WALL_TH-STRAP_W,0,D-WALL_TH])
-    rotate(180,[0,1,0])
-    snap0(strap_cut);
+        if((mask%2)==1 && idx != 2)
+        translate(concat(loc_xy,[yValues[0]]))
+        rotate(rotation,[0,0,1])
+        rotate(0,[0,1,0])
+        snap0(strap_cut);
+    
+}
+
+module product1(partIdx){
+    
+    unionDiffOperator(diff=(partIdx==1)){
+        yValues=[D0-WALL_TH, D-WALL_TH];
+        difference(){
+            product(false);
+            cut_y=[ -2*WALL_TH, yValues[0], yValues[1], D+2*WALL_TH ];
+            zBox( cut_y[0], cut_y[partIdx]);
+            zBox( cut_y[partIdx+1], cut_y[3]);
+        }
+    
+        
+        straps( partIdx, 3, 0, [A/2,0], yValues );
+        straps( partIdx, 3, 0, [A/4,0], yValues );
+        straps( partIdx, 3, 0, [WALL_TH+STRAP_W,0], yValues );
+        straps( partIdx, 3, 0, [A0-WALL_TH-STRAP_W,0], yValues );
+        straps( partIdx, 3, 270, [0,B*2/3], yValues );
+
+        
+        straps( partIdx, 3, 180, [A/4,B], yValues );
+        straps( partIdx, 3, 180, [A/2,B], yValues );
+        straps( partIdx, 3, 180, [A*3/4,B], yValues );
+        straps( partIdx, 3, 180, [WALL_TH+STRAP_W,B], yValues );
+        straps( partIdx, 3, 180, [A-(WALL_TH+STRAP_W),B], yValues );
+        straps( partIdx, 2, 0, [(A+A0)/2,B0], yValues );
+        straps( partIdx, 3, 90, [A,(B0+B)/2], yValues );
+        
+//        strap
+        
+/*        translate([A/2,0,D-WALL_TH])
+        rotate(180,[0,1,0])
+        snap0(strap_cut);
+        translate([A0-WALL_TH-STRAP_W,0,D-WALL_TH])
+        rotate(180,[0,1,0])
+        snap0(strap_cut);*/
+    }
 }
 
 if(doProjs){
@@ -280,6 +342,10 @@ if(doProjs){
         product(true);
     }
 }else{
+    product1(0);
+    translate([0,0,10])
+    product1(1);
+    translate([0,0,20])
     product1(2);
     
 }
