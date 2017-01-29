@@ -25,6 +25,9 @@ PIR_X=2200*MIL;
 PIR_Y= 700*MIL;
 IR_TX_X= PIR_X;
 IR_TX_Y=1700*MIL;
+IR_RX_X=3650*MIL;
+IR_RX_Y=1000*MIL;
+LR_X=3950*MIL;
 
 PCB_OVER=16;       // space needed above pcb
 
@@ -155,7 +158,22 @@ module jackPlug(){
 }
 
 
-module windowCut(w,h){
+module windowCut(w,s){
+    hull(){
+        cylinder(d=w,h=3*WALL_TH,center=true);
+        translate([s,0,0])
+        cylinder(d=w,h=3*WALL_TH,center=true);
+    }
+    cube([w,w,WALL_TH],center=true);
+    translate([0,0,-WALL_TH])
+    cylinder(d=w*1.1,h=3*WALL_TH,center=true);
+    
+    translate([s,0,0]){
+    cube([w,w,WALL_TH],center=true);
+    translate([0,0,-WALL_TH])
+    cylinder(d=w*1.1,h=3*WALL_TH,center=true);
+    }
+
 }
 /*
 projection(cut=true)
@@ -183,7 +201,12 @@ module product(with_pcb)
         translate([ WALL_TH+PCB_S+IR_TX_X,
                     WALL_TH+PCB_S+IR_TX_Y,
                     WALL_TH+PCB_Z+PCB_T+PCB_OVER+WALL_TH])
-        windowCut(30,30);
+        windowCut(12,0);
+
+        translate([ WALL_TH+PCB_S+IR_RX_X,
+                    WALL_TH+PCB_S+IR_RX_Y,
+                    WALL_TH+PCB_Z+PCB_T+PCB_OVER+WALL_TH])
+        windowCut(8,LR_X-IR_RX_X);
         
         
         translate([ WALL_TH+PCB_S+PIR_X,
@@ -302,7 +325,7 @@ module product1(partIdx){
         straps( partIdx, 3, 180, [A*3/4,B], yValues );
         straps( partIdx, 3, 180, [WALL_TH+STRAP_W,B], yValues );
         straps( partIdx, 3, 180, [A-(WALL_TH+STRAP_W),B], yValues );
-        straps( partIdx, 2, 0, [(A+A0)/2,B0], yValues );
+     //   straps( partIdx, 2, 0, [(A+A0)/2,B0], yValues );
         straps( partIdx, 3, 90, [A,(B0+B)/2], yValues );
         
 //        strap
