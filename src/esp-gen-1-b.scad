@@ -10,7 +10,7 @@ WALL_TH=.8;     // 1/2 of wall thickness
 MIL=25.4/1000;
 PCB_W=4400 * MIL;
 PCB_W0=3300 * MIL;  //  start of dht section
-PCB_DHT_Z0=300*MIL;     // dht section hight
+PCB_DHT_Z0=250*MIL-WALL_TH;     // dht section hight
 PCB_DHT_Z1=350*MIL;     // leave some space?!
 PCB_DHT_YC=450*MIL;     // center of dht pin section
 PCB_DHT_SPACE=350*MIL;  // 600 dia => 350
@@ -61,7 +61,7 @@ module pcb() {
 }
 
 module wall_comp(){
-        sphere(r=WALL_TH,$fn=8);
+        sphere(r=WALL_TH,$fn=12);
 }
 module wall( a,b ){
     if($children == 0){
@@ -97,6 +97,7 @@ D=WALL_TH+PCB_Z+PCB_T+PCB_OVER+WALL_TH;
 D0=WALL_TH+PCB_Z+PCB_T+PCB_DHT_Z0;
 
 module mainBox(){
+    union(){
     // RIGHT
     wall( [0,0,0], [A0,0,D] );
     wall( [0,0,0], [A,0,D0] );
@@ -116,7 +117,7 @@ module mainBox(){
     wall( [0,B0,D], [A,B,D] );
     
     wall( [0,0,0], [A,B,0] ) cylinder(d=2*WALL_TH,h=2*WALL_TH,center=true);
-    
+    }
 }
 module dhtHoles(){
     
@@ -129,9 +130,9 @@ module dhtHoles(){
         {
             for( i = [-1.5:1:1.5] )
                 translate([0,i*2.54,0])
-                #cylinder(d=1,h=10,center=true);
+                cylinder(d=1,h=10,center=true);
         }
-        translate([(50+850)*MIL,0,0])
+        translate([(50+850)*MIL+2*WALL_TH,0,0])
         cylinder(d=3,h=10,center=true);
     }
 }
@@ -193,22 +194,54 @@ module product(with_pcb)
     }
 }
 
+module zBox(z0,z1){
+    c=(z0+z1)/2;
+    d=abs(z1-z0);
+    translate([0,0,c])
+    cube([3*A,3*B,d],center=true);
+}
+
+module snap0(){
+    translate([0,2*WALL_TH,0]) {
+        // center of strap
+        
+        cube([2*WALL_TH,2*WALL_TH*2,2*WALL_TH],center=true);
+    }
+}
+
 
 if(doProjs){
     projection(cut=true) {
+        // dht plane
         translate([3*WALL_TH,0,-WALL_TH-PCB_Z-PCB_T-PCB_DHT_Z0])
         product();
+        // pcb plane
         translate([3*WALL_TH,B+3*WALL_TH,-WALL_TH-PCB_Z-PCB_T/2])
         product(true);
+        // top plane
         translate([3*WALL_TH,-B-3*WALL_TH,-WALL_TH-PCB_Z-PCB_T-PCB_OVER-WALL_TH])
         product(true);
+        // connectors
         rotate(-90,[0,1,0])
         product(true);
+        // dht side
         translate([0,B+3*WALL_TH,0])
         rotate(-90,[0,1,0])
         translate([-A0,0,0])
         product(true);
+        // dht side2
+        translate([0,-B-3*WALL_TH,0])
+        rotate(-90,[0,1,0])
+        translate([-A0-2*WALL_TH,0,0])
+        product(true);
     }
 }else{
-    product(true);
+    difference(){
+    product(false);
+    //zBox(-2*WALL_TH,D0-WALL_TH);
+    //zBox(D-WALL_TH,D+2*WALL_TH);
+    }
+  //      translate([A/2,0,D-WALL_TH])
+//        snap0();
+    
 }
