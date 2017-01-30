@@ -67,7 +67,7 @@ module pcb() {
 
 module wall_comp(){
         sphere(r=WALL_TH,$fn=16);
-//        cube([WALL_TH,WALL_TH,WALL_TH],center=true);
+//      cube([2*WALL_TH,2*WALL_TH,2*WALL_TH],center=true);
 }
 module wall( a,b ){
     if($children == 0){
@@ -205,6 +205,7 @@ module product(with_pcb)
                     cylinder(d=8+1.5,h=PCB_Z+WALL_TH);
             }
         }
+  /*      
         
         translate([WALL_TH+PCB_S,WALL_TH+PCB_S,WALL_TH]) {
             atPcbMountHolePositions()
@@ -215,7 +216,6 @@ module product(with_pcb)
             }
         }
 
-        
         dhtHoles();
         
         translate([ WALL_TH+PCB_S+IR_TX_X,
@@ -245,7 +245,7 @@ module product(with_pcb)
                     WALL_TH+PCB_S+1700*MIL,
                     WALL_TH+PCB_Z+PCB_T])
         jackPlug();
-        
+    */    
     }
 }
 
@@ -385,10 +385,18 @@ if(doProjs){
         product(true);
     }
 }else{
+    if(false){
     product1(0);
     translate([0,0,10])
     product1(1);
     translate([0,0,20])
     product1(2);
-    
+    }
+    else{
+        cube();
+        translate([10,0,0])
+        cube();
+//        wall           ([0,0,0],[10,11,50]);
+  //      wall           ([50,0,0],[60,11,50]);
+    }
 }
