@@ -66,7 +66,7 @@ module pcb() {
 }
 
 module wall_comp(){
-        sphere(r=WALL_TH,$fn=16);
+        sphere(r=WALL_TH,$fn=32);
 //      cube([2*WALL_TH,2*WALL_TH,2*WALL_TH],center=true);
 }
 module wall( a,b ){
@@ -101,6 +101,7 @@ B=WALL_TH+PCB_S+PCB_H+PCB_S+WALL_TH;
 B0=WALL_TH+PCB_S+PCB_DHT_YC+PCB_DHT_SPACE+WALL_TH;
 D=WALL_TH+PCB_Z+PCB_T+PCB_OVER+WALL_TH;
 D0=WALL_TH+PCB_Z+PCB_T+PCB_DHT_Z0;
+
 
 module mainBox(){
     union(){
@@ -205,11 +206,10 @@ module product(with_pcb)
                     cylinder(d=8+1.5,h=PCB_Z+WALL_TH);
             }
         }
-  /*      
         
         translate([WALL_TH+PCB_S,WALL_TH+PCB_S,WALL_TH]) {
             atPcbMountHolePositions()
-                cylinder(d=2,h=2*(PCB_Z+WALL_TH),center=true);
+                cylinder(d=1.9,h=2*(PCB_Z+WALL_TH),center=true);
             atBoxMountHolePositions() {
                 cylinder(d=8,h=PCB_Z+1);
                 cylinder(d=4,h=2*(PCB_Z+WALL_TH),center=true);
@@ -245,7 +245,6 @@ module product(with_pcb)
                     WALL_TH+PCB_S+1700*MIL,
                     WALL_TH+PCB_Z+PCB_T])
         jackPlug();
-    */    
     }
 }
 
@@ -385,18 +384,9 @@ if(doProjs){
         product(true);
     }
 }else{
-    if(false){
     product1(0);
     translate([0,0,10])
     product1(1);
     translate([0,0,20])
     product1(2);
-    }
-    else{
-        cube();
-        translate([10,0,0])
-        cube();
-//        wall           ([0,0,0],[10,11,50]);
-  //      wall           ([50,0,0],[60,11,50]);
-    }
 }

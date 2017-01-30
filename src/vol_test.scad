@@ -1,3 +1,1 @@
-        cube();
-        translate([10,0,0])
-        cube();
+cube();translate([1,0,0]) cube();
