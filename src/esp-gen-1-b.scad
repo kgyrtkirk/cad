@@ -66,7 +66,8 @@ module pcb() {
 }
 
 module wall_comp(){
-        sphere(r=WALL_TH,$fn=24);
+        sphere(r=WALL_TH,$fn=16);
+//        cube([WALL_TH,WALL_TH,WALL_TH],center=true);
 }
 module wall( a,b ){
     if($children == 0){
@@ -195,8 +196,27 @@ module product(with_pcb)
         pcb();
     }
     difference(){
-    mainBox();
-    dhtHoles();
+        union(){
+            mainBox();
+            translate([WALL_TH+PCB_S,WALL_TH+PCB_S,0]) {
+                atPcbMountHolePositions()
+                    cylinder(d=4,h=PCB_Z+WALL_TH);
+                atBoxMountHolePositions()
+                    cylinder(d=8+1.5,h=PCB_Z+WALL_TH);
+            }
+        }
+        
+        translate([WALL_TH+PCB_S,WALL_TH+PCB_S,WALL_TH]) {
+            atPcbMountHolePositions()
+                cylinder(d=2,h=2*(PCB_Z+WALL_TH),center=true);
+            atBoxMountHolePositions() {
+                cylinder(d=8,h=PCB_Z+1);
+                cylinder(d=4,h=2*(PCB_Z+WALL_TH),center=true);
+            }
+        }
+
+        
+        dhtHoles();
         
         translate([ WALL_TH+PCB_S+IR_TX_X,
                     WALL_TH+PCB_S+IR_TX_Y,
