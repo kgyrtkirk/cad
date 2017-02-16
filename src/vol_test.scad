@@ -1,1 +1,4 @@
-cube();translate([1,0,0]) cube();
+difference(){
+    cube(4,center=true);
+    translate([1,1,1]) cylinder(1);
+}

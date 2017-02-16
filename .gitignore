@@ -1,0 +1,7 @@
+.project
+.classpath
+.settings
+src/*stl
+src/*svg
+src/*pdf
+bin
