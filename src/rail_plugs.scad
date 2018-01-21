@@ -13,9 +13,13 @@ R0=4.5;
 //R0=4.5;
 O=.5;
 
-module m1() {
-translate([0,0,-H/2]) {
+include <threads.scad> 
 
+module m1() {
+
+translate([0,0,H/2]) 
+difference() {
+translate([0,0,-H/2]) {
     linear_extrude(H) {
 
         translate([-W/2,0,0])
@@ -24,32 +28,26 @@ translate([0,0,-H/2]) {
             circle(R);
     }
 }
+rotate(90,[1,0,0]) {
+translate([0,0,-5]) {
+   metric_thread (R0,1,D,internal=true);
+%   sphere(d=R0-1);
+}
 }
 
-module m2() {
-    rotate(-90,[1,0,0])
-    cylinder(h=L,d1=W,d2=W);
-    translate([0,L,0])
-    sphere(R);
+}
+}
+
+module m2() { 
+        rotate(-90,[1,0,0])
+    metric_thread (R0,1,D+5);
 }
 
 
-module plug() {
-rotate(90,[1,0,0])
-for (i=[0:1:D])
-    translate([0,0,-0.5+i])
-cylinder(h=1.1, d1=R0, d2=R0-O);
 
 
-}
 
-if(true){
-m1();
-plug();
-
-}else{
-translate([20,0,0]){
+#m1();
+translate([10,0,H/2])
 m2();
-plug();
 
-}}
