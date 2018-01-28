@@ -15,18 +15,18 @@ z_layer_height_mm_min = 0.05
 z_layer_height_mm_max = nozzle_diameter_mm * 0.75
 
 print_speed_mm_per_sec_min = 5
-print_speed_mm_per_sec_max = 80
+print_speed_mm_per_sec_max = 60
 
 bed_temp_degree_c = 75
 bed_temp_degree_c_min = 0
 bed_temp_degree_c_max = 120
 
 perimeter_print_speed_mm_per_sec_min = 30
-perimeter_print_speed_mm_per_sec_max = 80
+perimeter_print_speed_mm_per_sec_max = 60
 
 first_layer_print_speed_mm_per_sec = 15
 first_layer_print_speed_mm_per_sec_min = 1
-first_layer_print_speed_mm_per_sec_max = 80
+first_layer_print_speed_mm_per_sec_max = 60
 
 for i=0,63,1 do
   _G['filament_diameter_mm_'..i] = 1.75
