@@ -40,11 +40,15 @@ module xx(i){
 
 
 for(i=[0:1:len(sPath)-2]) {
+    hull(){
         xx(i)
+    linear_extrude(.1)
         polygon(shape_U);
         xx(i+1)
+    linear_extrude(.1)
         polygon(shape_U);
-}
+   }
+   }
 
 
 pi=3.14159;
