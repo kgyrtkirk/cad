@@ -1,0 +1,4 @@
+[submodule "libraries/MCAD"]
+	path = libraries/MCAD
+	url = https://github.com/openscad/MCAD
+	branch = dev
