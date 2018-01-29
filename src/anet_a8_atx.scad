@@ -8,7 +8,7 @@ ATX_SPACING=7;
 
 RPI_P=[ ATX_SPACING+30,
         30,
-        ATX_H+ATX_outlines[1]+40
+        ATX_H+ATX_outlines[1]+10
         ];
 
 s=200;
@@ -39,5 +39,6 @@ translate(RPI_P){
 //    translate([
     rotate(90,[0,0,1])
     translate([85/2,-56/2,0])
-    pi3();
+%pi3();
 }
+
