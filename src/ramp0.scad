@@ -22,7 +22,7 @@ SP_H=70;
 
 
 sPathMain=[ 
-for(t = [0:.02:1]) 
+for(t = [0:.005:1]) 
     [  SP_R*sin(t*SP_A),
         SP_R*cos(t*SP_A),
         SP_H*t  ,
@@ -47,6 +47,7 @@ myPoints = [ for(t = [0:90:222]) [cos(t+45),sin(t+45)] ];
 myPath = [ for(t = [0:3.6:360])
     [5*cos(2*t),5*sin(2*t), (t<0)?0:((t*t*90)/500/100 * 4*pi/180)] ];
 
+O_W=.7;
 
 module connector(){
 
@@ -58,6 +59,15 @@ module connector(){
         polygon(shape_U);
   */  
     translate([-2.5,0,-0.001]) {
+        
+        difference() {
+        translate([-2,0,2.5])
+            cube([6,40,5],center=true);
+        
+        translate([-2,0,2.5])
+            cube([6-2*O_W,40-2*O_W,8],center=true);
+    }
+        /*
         translate([0,-20,0])
         cube([1,40,5]);
         translate([-5,-20,0])
@@ -67,9 +77,10 @@ module connector(){
         cube([6,1,5]);
         translate([-5,20-1,0])
         cube([6,1,5]);
+        */
         
-        translate([-10,-10,0])
-        cube([5,20,1]);
+        translate([-7,-10,0])
+        cube([2,20,1]);
         
     }
 }
@@ -77,6 +88,7 @@ module connector(){
 {
 //translate([00,SP_R,0])
 //cube([30,50,50],center=true);
+    rotate(180,[1,0,0])
     union(){
 path_extrude(points=shape_U, path=sPath);
 
