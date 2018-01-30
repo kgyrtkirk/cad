@@ -3,6 +3,7 @@ use <../libraries/path_extrude.scad>
 U_W=44.5;
 U_H=10;
 D=1;
+U_OV=8;
 
 shape_U= [
             [ 0,          0   ],
@@ -20,42 +21,73 @@ SP_R=(83+38.5)/2;
 SP_H=70;
 
 
-sPath=[ for(t = [0:.05:1]) 
-       [    [   SP_R*sin(t*SP_A),
-                SP_R*cos(t*SP_A),
-                SP_H*t  ],
-            [   SP_A*t  ]
-       ]
+sPathMain=[ 
+for(t = [0:.02:1]) 
+    [  SP_R*sin(t*SP_A),
+        SP_R*cos(t*SP_A),
+        SP_H*t  ,
+    ]
 ];
 
+echo(sPathMain[len(sPathMain)-1]);
+sPath=concat(
+[
+    [-U_OV,SP_R,0],
+    [-U_OV/2,SP_R,0]
+],sPathMain,[
+sPathMain[len(sPathMain)-1]+[U_OV/2*cos(SP_A),-U_OV/2*sin(SP_A),0],
+sPathMain[len(sPathMain)-1]+[U_OV*cos(SP_A),-U_OV*sin(SP_A),0]
+]);
+//,sPathMain
 
-module xx(i){
-    translate(sPath[i][0]) {
-            rotate(-sPath[i][1][0],[0,0,1])
-        rotate(90,[0,0,1])
-        rotate(90,[1,0,0])
-            children();
-    }
-}
-
-
-for(i=[0:1:len(sPath)-2]) {
-    hull(){
-        xx(i)
-    linear_extrude(.1)
-        polygon(shape_U);
-        xx(i+1)
-    linear_extrude(.1)
-        polygon(shape_U);
-   }
-   }
-
+//sPath=concat(sPathMain);
 
 pi=3.14159;
 myPoints = [ for(t = [0:90:222]) [cos(t+45),sin(t+45)] ];
 myPath = [ for(t = [0:3.6:360])
     [5*cos(2*t),5*sin(2*t), (t<0)?0:((t*t*90)/500/100 * 4*pi/180)] ];
-//path_extrude(points=shape_U, path=sPath);
+
+
+module connector(){
+
+/*    
+    rotate(90,[0,0,1])
+    rotate(-90,[1,0,0])
+    color([1,0,0]) 
+#    linear_extrude(height=U_OV)
+        polygon(shape_U);
+  */  
+    translate([-2.5,0,-0.001]) {
+        translate([0,-20,0])
+        cube([1,40,5]);
+        translate([-5,-20,0])
+        cube([1,40,5]);
+
+        translate([-5,-20,0])
+        cube([6,1,5]);
+        translate([-5,20-1,0])
+        cube([6,1,5]);
+        
+        translate([-10,-10,0])
+        cube([5,20,1]);
+        
+    }
+}
+
+{
+//translate([00,SP_R,0])
+//cube([30,50,50],center=true);
+    union(){
+path_extrude(points=shape_U, path=sPath);
+
+translate(sPathMain[0])
+connector();
+
+translate(sPathMain[len(sPathMain)-1])
+rotate(180-SP_A,[0,0,1])
+connector();
+}
+}
 //path_extrude(points=myPoints, path=sPath);
 
 
