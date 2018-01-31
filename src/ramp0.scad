@@ -87,6 +87,7 @@ module connector(){
     }
 }
 
+module ramp()
 {
 //translate([00,SP_R,0])
 //cube([30,50,50],center=true);
@@ -102,6 +103,22 @@ rotate(180-SP_A,[0,0,1])
 connector();
 }
 }
+
+render() ramp();
+
+
+//render() 
+for(s_off = [ -U_W/2:U_W/4:U_W/2 ] ) {
+
+    shape_S= [ [s_off,0],
+               [s_off,-SP_H],
+               [s_off+1,-SP_H],
+               [s_off+1,0] ];
+    
+    rotate(180,[1,0,0])
+path_extrude(points=shape_S, path=sPath);
+}
+
 //path_extrude(points=myPoints, path=sPath);
 
 
