@@ -16,3 +16,7 @@ but...because sometimes I forget things like this...its good to have these noted
 * openscad / export svg
 * inkscape --without-gui --export-pdf=foo.pdf esp-gen-1-b.svg
 * acroread foo.pdf
+
+## openscad libraries
+
+~/.local/share/OpenSCAD/libraries

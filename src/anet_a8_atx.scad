@@ -1,13 +1,14 @@
 include <MCAD/electronics/ATXpowerSupply.scad>
 include <../libraries/raspberrypi.scad>
 
+ATX_wireHarnesPos=[70,115];
 A8_HOLES=[ [100,20,0],[100,70,0] ];
 ATX_H=50;
 ATX_SPACING=7;
 //RPI_Z=;
 
-RPI_P=[ ATX_SPACING+30,
-        30,
+RPI_P=[ ATX_SPACING+20,
+        50,
         ATX_H+ATX_outlines[1]+10
         ];
 
