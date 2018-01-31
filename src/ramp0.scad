@@ -2,15 +2,17 @@ use <../libraries/path_extrude.scad>
 
 U_W=44.5;
 U_H=10;
-D=1;
+D=1.4;
 U_OV=8;
 
 shape_U= [
             [ 0,          0   ],
             [ U_W/2,      0   ],
             [ U_W/2,      U_H ],
+            [ U_W/2-D/2,      U_H ],
             [ (U_W/2-D),  D   ],
             [-(U_W/2-D),  D   ],
+            [-U_W/2+D/2,      U_H ],
             [-U_W/2,      U_H ],
             [-U_W/2,      0     ]
         ];
