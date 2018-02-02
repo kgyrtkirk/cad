@@ -104,20 +104,37 @@ connector();
 }
 }
 
-render() ramp();
 
+module support() {
+s_off=-.5;
+SW=.8;
+S=U_W/2-1;
+shape_S= [
+            [ -S,            0   ],
+            [ S,            0   ],
+            [ S,            -SP_H*2 ],
+            [ S-SW,         -SP_H*2 ],
+            [ S-SW,         -SW ],
+            [ -S+SW,         -SW ],
+            [ -S+SW,         -SP_H*2 ],
+            [ -S,            -SP_H*2 ],
+];
 
-//render() 
-for(s_off = [ -U_W/2:U_W/4:U_W/2 ] ) {
-
-    shape_S= [ [s_off,0],
-               [s_off,-SP_H],
-               [s_off+1,-SP_H],
-               [s_off+1,0] ];
-    
     rotate(180,[1,0,0])
 path_extrude(points=shape_S, path=sPath);
 }
+
+
+        render() ramp();
+difference() {
+    
+    union() {
+//        render() support();
+    }
+//    translate([-500,-500,-1000-SP_H-4.65])
+  //  cube(1000);
+}
+
 
 //path_extrude(points=myPoints, path=sPath);
 
