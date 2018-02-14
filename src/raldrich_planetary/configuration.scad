@@ -21,7 +21,7 @@ hybrid = 3;	// Mix of metric and SAE - use M3 and 6/32 bolts.
 
 variant = m3only;
 
-layer_height = .3;
+layer_height = .2;
 
 nut_slop = .4;		// I aim for a "interference fit" for nuts - a bit of force required to place the nut.
 

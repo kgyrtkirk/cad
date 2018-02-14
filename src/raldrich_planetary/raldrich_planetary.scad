@@ -59,11 +59,11 @@ output_bolt_head_height = (output_bolt == m5_bolt_output) ? m5_bolt_head_height+
 
 output_bolt_double_nut = (output_bolt == hyena_output) ? 1 : 0;
 
-output_bearing = (output_bolt == m5_bolt_output) ? undefined_m5_bearing :
+output_bearing = (output_bolt == m5_bolt_output) ? 625_bearing :
                  (output_bolt == m6_bolt_output) ? 106_bearing :
                  608_bearing;
 
-output_bearing_clearance = (output_bolt == m5_bolt_output) ? undefined_m5_bearing_clearance :
+output_bearing_clearance = (output_bolt == m5_bolt_output) ? 625_bearing_clearance :
                            (output_bolt == m6_bolt_output) ? 106_bearing_clearance :
                            608_bearing_clearance;
 
