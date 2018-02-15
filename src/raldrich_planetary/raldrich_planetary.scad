@@ -23,7 +23,7 @@ m6_bolt_output = 1;
 m8_bolt_output = 2;
 hyena_output = 3;
 
-output_bolt = m8_bolt_output;
+output_bolt = m5_bolt_output;
 
 // What gear ratio shall I aim for?
 
@@ -42,7 +42,7 @@ print_output = true;
 
 // You probably shouldn't modify things below here, unless you really know what you're doing.
 
-short_bolts = false;	// print for short bolts.
+short_bolts = true;	// print for short bolts.
 open_frame = false;
 
 output_bolt_diameter = (output_bolt == m5_bolt_output) ? m5_diameter :
@@ -480,7 +480,7 @@ module planetary_plate()
 		lower_planet_carrier();
 	}
 
-	if (print_output == true)
+!	if (print_output == true)
 	{
 		translate([-50, 40, 0])
 		upper_planet_carrier();
