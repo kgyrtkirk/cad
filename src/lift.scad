@@ -8,7 +8,7 @@ module attachment(type="plug",extraL=0) {
     plug_z=dim_z+2;
     W=1.2;
     plug_w=2;
-    plug_a=.8;
+    plug_a=.4;
     plug_mid=dim_z+2*e;
     
     module pole(){
@@ -65,9 +65,10 @@ attachment(2);
 FLOOR=75;
 e=.1;
 STAGE_H=2;
+K=57;
 L=90;
 W=2;
-SA=L*.8/2;
+SA=L*.6/2;
 
 module wallElement(){ 
     EH=FLOOR-e-STAGE_H;
@@ -101,12 +102,12 @@ module wallElement(){
     rotate(90,[1,0,0])
     intersection() {
         translate([-L/2,0,-10])
-        cube([L,EH,20]);
+        cube([L,EH+eps*5,20]);
         union(){
             
     rx(p,0,1,4);
             hull(){
-            translate([0,0,-W*1.5])
+            translate([1,1,-W*1.5])
     rx(p,1,2,4);
     rx(p,1,2,4);}
     rx(p,2,3,4);
@@ -123,9 +124,29 @@ module wallElement(){
     
 //    translate([
 }
+eps=1e-5;
+module floorElement(){
+    translate([SA,-eps,0])
+    attachment("socket");
+    translate([-SA,-eps,0])
+    attachment("socket");
+        
+    translate([0,-K,0])
+    rotate(180,[0,0,1]){
+    translate([SA,-eps,0])
+    attachment("socket");
+    translate([-SA,-eps,0])
+    attachment("socket");
+    }
+    
+    translate([-L/2,-K,0])
+    cube([L,K,W]);
+    
+}
 
 //testAttach();
-//wallElement();
-floorElement();
+rotate(90,[1,0,0])
+wallElement();
+//floorElement();
 
 
