@@ -7,7 +7,8 @@ module attachment(type="plug",extraL=0) {
     e=.1;
     plug_z=dim_z+2;
     W=1.2;
-    plug_w=1.2;
+    plug_w=2;
+    plug_a=.8;
     plug_mid=dim_z+2*e;
     
     module pole(){
@@ -15,14 +16,15 @@ module attachment(type="plug",extraL=0) {
         rotate(90,[1,0,0])
         color([0,1,0]){
             linear_extrude(height=dim_y-2*W-e,  slices=20, twist=0,center=true)
-          polygon(points=[[0,-extraL],[0,plug_mid],[plug_w,plug_mid],
-                    [plug_w,plug_z+e],
+          polygon(points=[[0,-extraL],[0,plug_mid],[plug_a,plug_mid],
+                    [plug_a,plug_z+e],
                     [-plug_w,plug_z+e],
                     [-plug_w,-extraL]
                 ]);
             }
     }
 
+translate([0,dim_y/2,0])
     if(type == "plug"){
         k=dim_x/2-W-e-plug_w;
         translate([k,0,0])
@@ -45,15 +47,85 @@ module attachment(type="plug",extraL=0) {
 //a=2;
 
 module testAttach() {
-translate([0,0,1])
+translate([0,2.5,1])
 cube([10,4,2],center=true);
 translate([0,0,2])
-attachment("plug",0);
+attachment("plug",2);
 
-translate([0,5,0])
+if(false) 
+    {
+translate([0,7,0])
 attachment(2);
-translate([0,-5,0])
+translate([0,-7,0])
 attachment(2);
 }
+}
 
-testAttach();
+
+FLOOR=75;
+e=.1;
+STAGE_H=2;
+L=90;
+W=2;
+SA=L*.8/2;
+
+module wallElement(){ 
+    EH=FLOOR-e-STAGE_H;
+    
+    translate([SA,0,0])
+    attachment("socket");
+    translate([-SA,0,0])
+    attachment("socket");
+  
+    
+    translate([SA,0,EH])
+    attachment("plug",STAGE_H);
+    translate([-SA,0,EH])
+    attachment("plug",STAGE_H);
+    
+    
+    p=  [
+            [L/2,0,0],
+            [L/2,EH,0],
+            [-L/2,EH,0],
+            [-L/2,0,0]];
+    module rx(p,i,j,d) {
+        
+        $fn=32;
+        hull() {
+            translate(p[i]) cylinder(d=d,h=W);
+            translate(p[j])cylinder(d=d,h=W);
+        }
+    }
+    translate([0,1,0])
+    rotate(90,[1,0,0])
+    intersection() {
+        translate([-L/2,0,-10])
+        cube([L,EH,20]);
+        union(){
+            
+    rx(p,0,1,4);
+            hull(){
+            translate([0,0,-W*1.5])
+    rx(p,1,2,4);
+    rx(p,1,2,4);}
+    rx(p,2,3,4);
+    rx(p,3,0,4);
+    rx(p,0,2,2);
+    rx(p,1,3,2);
+        }
+    }
+//    difference() {
+//    linear_extrude(height=2) polygon(p);
+  //  linear_extrude(center=true) offset(r=-1) polygon([p[0],p[1],p[2]]);
+    //}
+    
+    
+//    translate([
+}
+
+//testAttach();
+//wallElement();
+floorElement();
+
+
