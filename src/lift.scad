@@ -37,7 +37,7 @@ translate([0,dim_y/2,0])
         rotate(180,[0,0,1])
         pole();
         translate([0,0,-dim_z/2])
-        cube([dim_x,dim_y,dim_z],center=true);
+        cube([1.5*dim_x,dim_y,dim_z],center=true);
     }else{
         color([1.0,0,0])
         translate([0,0,dim_z/2])
@@ -263,9 +263,11 @@ module car(){
     translate([0,K/2,W/2]) {
     color([0,0,1])
     difference(){
-        cube([L-3*W,K-3*W,W],center=true);
+        U=W+RAIL_O+W;
+        cube([L-3*W,K-4*W,W],center=true);
         atRailPositions()
-        cube(W+RAIL_O,center=true);
+        translate([0,3*U,0])
+        cube([U,7*U,U],center=true);
     }
             atRailPositions()
     {
@@ -327,9 +329,9 @@ module preview() {
 }
 
 
-rotate(-90,[1,0,0]) wallElement();
+//rotate(-90,[1,0,0]) wallElement();
 //floorElement();
-//preview();
+preview();
 
 
 
