@@ -144,13 +144,29 @@ module floorElement(){
     cube([L,K,W],center=true);
     cube([L-5,K-5,W*5],center=true);
     }
+    CONN_L=25;
+
+    CONN_H=2.5;
+    CONN_T=34;
+    
     translate([L/2,-K,0]) {
+    color([1,0,1])
+        difference() {
+            pp=[[0,0],[CONN_L,0],[CONN_L+CONN_T,CONN_H],[0,CONN_H]];
+            translate([0,0,CONN_H])
+            rotate(-90,[1,0,0])
+            linear_extrude(K)
+                polygon(pp);
+//            cube([CONN_L+CONN_T,K,CONN_H]);
+        }
+    }
+    translate([L/2,-K,CONN_H]) {
     color([1,0,0])
-        cube([15,K,.7]);
-        translate([15/2,K/2,0.7+1.5/2])
+        cube([CONN_L,K,.7]);
+        translate([CONN_L/2,K/2,0.7+1.5/2])
         difference() {
     color([0,1,0])
-        cube([15,32,2.2],center=true);
+        cube([CONN_L,32,3.0],center=true);
         cube([32,29,1.5],center=true);
             translate([0,0,1])
         cube([32,20,1.5],center=true);
