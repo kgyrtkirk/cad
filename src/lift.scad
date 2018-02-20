@@ -259,15 +259,39 @@ module car(){
             atRailPositions()
     {
             translate([-W/2,-R0+W/2,0]) {
-            rotate(-90,[0,1,0])
+//            rotate(-90,[0,1,0])
+//                translate([W,-R0,W])
+  //                  cylinder($fn=16,d=RAIL_O,h=3*W,center=true);
+//                cube([RAIL_O,RAIL_O,3*W],center=true);
                 
-            cylinder($fn=16,r=R0,h=RAIL_O*2/3,center=true);
+                hull(){
+                    
+                translate([0,0,1])
+            cylinder($fn=16,r=R0,h=W,center=true);
+            cylinder($fn=16,r=R0/2,h=W,center=true);
+                translate([0,0,21])
+            cylinder($fn=16,r=R0,h=W,center=true);
+                translate([0,0,22])
+            cylinder($fn=16,r=R0/2,h=W,center=true);
+                }
+                translate([0,0,22+R0])
+                rotate(90,[1,0,0])
+                difference() {
+            cylinder($fn=16,r=R0,h=W,center=true);
+            cylinder($fn=16,r=R0/2,h=2*W,center=true);
+                }
+                
+                hull() {
+                    translate([0,0,20])
+                        cube();
+                    translate([0,-20,0])
+                        cube();
+                    translate([0,0,0])
+                        cube();
+                    
+                }
                 
             }
-            translate([0,-0,0])
-            cube(.2);
-            translate([0,-4*W,0])
-            cube();
     }
     
 }
