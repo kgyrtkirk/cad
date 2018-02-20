@@ -332,10 +332,21 @@ module preview() {
 
 }
 
-
+mode="preview";
+if ( mode == "car"){
+    car();
+}
+if ( mode == "floor") {
+    floorElement();
+}
+if( mode == "wall") {
+    rotate(-90,[1,0,0]) wallElement();
+}
+if(mode == "preview"){
+    preview();
+}
 //rotate(-90,[1,0,0]) wallElement();
-floorElement();
-//preview();
+//floorElement();
 
 
 
