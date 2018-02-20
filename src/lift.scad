@@ -24,6 +24,7 @@ module attachment(type="plug",extraL=0) {
             }
     }
 
+if(false)
 translate([0,dim_y/2,0])
     if(type == "plug"){
         k=dim_x/2-W-e-plug_w;
@@ -40,6 +41,18 @@ translate([0,dim_y/2,0])
             cube([dim_x-2*W,dim_y-2*W,dim_z*2],center=true);
         }
     }
+    H=dim_z;
+    D=5;
+    SCREW_D=3;
+    translate([0,D/3,H/2])
+    difference() {
+        hull() {
+            cylinder($fn=6,d=D,h=H,center=true);
+            translate([0,-D/3,0])
+            cube([2*D,e,H],center=true);
+        }
+        cylinder($fn=32,d=SCREW_D,h=2*H,center=true);
+    }
     
 }
 
@@ -52,7 +65,7 @@ cube([10,4,2],center=true);
 translate([0,0,2])
 attachment("plug",2);
 
-if(false) 
+if(true) 
     {
 translate([0,7,0])
 attachment(2);
