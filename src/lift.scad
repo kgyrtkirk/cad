@@ -139,14 +139,29 @@ module floorElement(){
     attachment("socket");
     }
     
-    translate([-L/2,-K,0])
-    cube([L,K,W]);
+    translate([0,-K/2,W/2])
+    difference(){
+    cube([L,K,W],center=true);
+    cube([L-5,K-5,W*5],center=true);
+    }
+    translate([L/2,-K,0]) {
+    color([1,0,0])
+        cube([15,K,.7]);
+        translate([15/2,K/2,0.7+1.5/2])
+        difference() {
+    color([0,1,0])
+        cube([15,32,2.2],center=true);
+        cube([32,29,1.5],center=true);
+            translate([0,0,1])
+        cube([32,20,1.5],center=true);
+        }
+        
+    }
     
 }
 
 //testAttach();
-rotate(90,[1,0,0])
-wallElement();
-//floorElement();
+//rotate(90,[1,0,0]) wallElement();
+floorElement();
 
 
