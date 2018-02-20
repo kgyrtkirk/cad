@@ -86,7 +86,7 @@ e=.1;
 STAGE_H=2;
 K=57;
 L=90;
-W=2;
+W=1.2;
 SA=L*.6/2;
 
 RAIL_O=4;
@@ -106,21 +106,27 @@ module wallElement(){
     attachment("plug",STAGE_H);
     
     
-        // rails
-    translate([-SA-RAIL_O,-2*W-RAIL_O,0])
-    difference() {
-        cube([2*(SA+RAIL_O+W),RAIL_O+W,FLOOR]);
+    module rail(){
+        translate([-RAIL_O/2,-RAIL_O-W,0])
+//    rotate(180,[0,0,1])
+        difference() {
+        cube([RAIL_O+W,RAIL_O+W,FLOOR]);
         translate([W,W/2,-1])
-        cube([2*(SA+RAIL_O),RAIL_O,FLOOR+2]);
+        cube([2*SA,RAIL_O,FLOOR+2]);
+        translate([W+1,-1,-1])
+        cube([2*SA,RAIL_O,FLOOR+2]);
     }
 
-    // rails
-    translate([-SA-RAIL_O,-2*W-RAIL_O,0])
-    difference() {
-        cube([2*(SA+RAIL_O+W),RAIL_O+W,FLOOR]);
-        translate([W,W/2,-1])
-        cube([2*(SA+RAIL_O),RAIL_O,FLOOR+2]);
     }
+    
+    translate([-SA,-W,0])
+    rail();
+
+    translate([SA,-W,0])
+    //rotate(180,[0,0,1])
+    mirror([1,0,0])
+    rail();
+
 /*    
     translate([0,-W,0])
     rotate(180,[0,0,1])
