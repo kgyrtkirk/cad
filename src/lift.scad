@@ -107,14 +107,16 @@ module wallElement(){
     
     
     module rail(){
-        translate([-RAIL_O/2,-RAIL_O-W,0])
+        translate([-RAIL_O/2,-RAIL_O-W/2,0])
 //    rotate(180,[0,0,1])
         difference() {
         cube([RAIL_O+W,RAIL_O+W,FLOOR]);
         translate([W,W/2,-1])
-        cube([2*SA,RAIL_O,FLOOR+2]);
+        cube([2*SA,RAIL_O,FLOOR+STAGE_H]);
         translate([W+1,-1,-1])
-        cube([2*SA,RAIL_O,FLOOR+2]);
+        cube([2*SA,RAIL_O,FLOOR+STAGE_H]);
+            translate([-.1,RAIL_O+W/2-.1,EH])
+        cube([RAIL_O*2,RAIL_O,RAIL_O]);
     }
 
     }
@@ -228,6 +230,16 @@ module floorElement(){
     
 }
 
+
+module car(){
+    translate([0,-K/2,W/2])
+    difference(){
+    cube([L,K,W],center=true);
+    cube([L-2*W,K-2*W,W*5],center=true);
+    }
+    
+}
+
 //testAttach();
 //rotate(90,[1,0,0]) 
 
@@ -241,10 +253,14 @@ module preview() {
     translate([0,0,2+e])
     rotate(180,[0,0,2])
     wallElement();
+    
+    car();
 
 }
 
 
+//wallElement();
 preview();
+
 
 
