@@ -42,7 +42,10 @@ translate([0,dim_y/2,0])
         color([1.0,0,0])
         translate([0,0,dim_z/2])
         difference() {
+            union(){
             cube([dim_x,dim_y,dim_z],center=true);
+        cube([1.4*dim_x,dim_y,dim_z],center=true);
+            }
             cube([dim_x-2*W,dim_y-2*W,dim_z*2],center=true);
         }
     }
@@ -225,14 +228,15 @@ module floorElement(){
         }
     }
     translate([L/2+CONN_L-CONN_L0,-K,CONN_H]) {
+        S=1.7;
     color([1,0,0])
-        translate([0,0,-1])
+       translate([0,0,-1])
         cube([CONN_L0,K,1.7]);
-        translate([CONN_L0/2,K/2,0.7+1.5/2])
+        translate([CONN_L0/2,K/2,0.7+S/2])
         difference() {
     color([0,1,0])
-        cube([CONN_L0,32,3.0],center=true);
-        cube([32,29,1.5],center=true);
+        cube([CONN_L0,32,2*S],center=true);
+        cube([32,29,S],center=true);
             translate([0,0,1])
         cube([32,20,1.5],center=true);
         }
@@ -330,8 +334,8 @@ module preview() {
 
 
 //rotate(-90,[1,0,0]) wallElement();
-//floorElement();
-preview();
+floorElement();
+//preview();
 
 
 
