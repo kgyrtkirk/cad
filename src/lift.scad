@@ -4,28 +4,31 @@ module attachment(type="plug",extraL=0) {
     dim_x=10;
     dim_y=5;
     dim_z=2;
-    e=.1;
+    e=.1/2;
     plug_z=dim_z+2;
     W=1.2;
     plug_w=2;
-    plug_a=.4;
-    plug_mid=dim_z+2*e;
+    plug_a=.6;
+    plug_mid=dim_z+4*e+.2;
     
     module pole(){
         translate([plug_w,0,extraL])
         rotate(90,[1,0,0])
         color([0,1,0]){
-            linear_extrude(height=dim_y-2*W-e,  slices=20, twist=0,center=true)
+            linear_extrude(height=dim_y-2*W,  slices=20, twist=0,center=true)
           polygon(points=[[0,-extraL],[0,plug_mid],[plug_a,plug_mid],
                     [plug_a,plug_z+e],
+                    [plug_a,plug_z-1],
+                    [plug_a-1,plug_z+e],
                     [-plug_w,plug_z+e],
                     [-plug_w,-extraL]
                 ]);
             }
     }
 
-if(false)
+if(true){
 translate([0,dim_y/2,0])
+    translate([0,-1,0])
     if(type == "plug"){
         k=dim_x/2-W-e-plug_w;
         translate([k,0,0])
@@ -33,6 +36,8 @@ translate([0,dim_y/2,0])
         translate([-k,0,0])
         rotate(180,[0,0,1])
         pole();
+        translate([0,0,-dim_z/2])
+        cube([dim_x,dim_y,dim_z],center=true);
     }else{
         color([1.0,0,0])
         translate([0,0,dim_z/2])
@@ -41,6 +46,7 @@ translate([0,dim_y/2,0])
             cube([dim_x-2*W,dim_y-2*W,dim_z*2],center=true);
         }
     }
+}   else{
     H=dim_z;
     D=5;
     SCREW_D=3;
@@ -53,7 +59,7 @@ translate([0,dim_y/2,0])
         }
         cylinder($fn=32,d=SCREW_D,h=2*H,center=true);
     }
-    
+}    
 }
 
 //attach_O();
@@ -103,15 +109,15 @@ module wallElement(){
             [L/2,EH,0],
             [-L/2,EH,0],
             [-L/2,0,0]];
+    
     module rx(p,i,j,d) {
-        
         $fn=32;
         hull() {
             translate(p[i]) cylinder(d=d,h=W);
             translate(p[j])cylinder(d=d,h=W);
         }
     }
-    translate([0,1,0])
+
     rotate(90,[1,0,0])
     intersection() {
         translate([-L/2,0,-10])
@@ -120,7 +126,7 @@ module wallElement(){
             
     rx(p,0,1,4);
             hull(){
-            translate([1,1,-W*1.5])
+//            translate([0,W,-W*1.5])
     rx(p,1,2,4);
     rx(p,1,2,4);}
     rx(p,2,3,4);
@@ -155,8 +161,9 @@ module floorElement(){
     translate([0,-K/2,W/2])
     difference(){
     cube([L,K,W],center=true);
-    cube([L-5,K-5,W*5],center=true);
+    cube([L-2*W,K-2*W,W*5],center=true);
     }
+    CONN_L0=10;
     CONN_L=25;
 
     CONN_H=2.5;
@@ -165,7 +172,7 @@ module floorElement(){
     translate([L/2,-K,0]) {
     color([1,0,1])
         difference() {
-            pp=[[0,0],[CONN_L,0],[CONN_L+CONN_T,CONN_H],[0,CONN_H]];
+            pp=[[0,CONN_H-W],[CONN_L,0],[CONN_L+CONN_T,CONN_H],[0,CONN_H]];
             translate([0,0,CONN_H])
             rotate(-90,[1,0,0])
             linear_extrude(K)
@@ -173,13 +180,14 @@ module floorElement(){
 //            cube([CONN_L+CONN_T,K,CONN_H]);
         }
     }
-    translate([L/2,-K,CONN_H]) {
+    translate([L/2+CONN_L-CONN_L0,-K,CONN_H]) {
     color([1,0,0])
-        cube([CONN_L,K,.7]);
-        translate([CONN_L/2,K/2,0.7+1.5/2])
+        translate([0,0,-1])
+        cube([CONN_L0,K,1.7]);
+        translate([CONN_L0/2,K/2,0.7+1.5/2])
         difference() {
     color([0,1,0])
-        cube([CONN_L,32,3.0],center=true);
+        cube([CONN_L0,32,3.0],center=true);
         cube([32,29,1.5],center=true);
             translate([0,0,1])
         cube([32,20,1.5],center=true);
@@ -189,8 +197,23 @@ module floorElement(){
     
 }
 
-//testAttach();
-//rotate(90,[1,0,0]) wallElement();
-floorElement();
+testAttach();
+//rotate(90,[1,0,0]) 
+
+module preview() {
+    translate([0,0,2])
+    rotate(180,[1,0,0])
+    floorElement();
+    
+    translate([0,K+e,2])
+    wallElement();
+    translate([0,0,2+e])
+    rotate(180,[0,0,2])
+    wallElement();
+
+}
+
+
+//preview();
 
 
