@@ -235,7 +235,7 @@ module floorElement(){
         translate([CONN_L0/2,K/2,0.7+S/2])
         difference() {
     color([0,1,0])
-        cube([CONN_L0,32,2*S],center=true);
+        cube([CONN_L0,37,2*S],center=true);
         cube([32,29,S],center=true);
             translate([0,0,1])
         cube([32,20,1.5],center=true);
