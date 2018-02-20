@@ -232,6 +232,7 @@ module floorElement(){
 
 
 module car(){
+    R0=2;
     
     module atRailPositions() {
         translate([SA,K/2-RAIL_O,0])
@@ -256,7 +257,13 @@ module car(){
         cube(W+RAIL_O,center=true);
     }
             atRailPositions()
-    hull(){
+    {
+            translate([-W/2,-R0+W/2,0]) {
+            rotate(-90,[0,1,0])
+                
+            cylinder($fn=16,r=R0,h=RAIL_O*2/3,center=true);
+                
+            }
             translate([0,-0,0])
             cube(.2);
             translate([0,-4*W,0])
