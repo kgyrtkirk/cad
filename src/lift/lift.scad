@@ -255,9 +255,11 @@ module car(){
             children();
         translate([-SB,K/2-RAIL_O,0])
             rotate(90,[0,0,1])
+        mirror()
             children();
         translate([SB,-K/2+RAIL_O,0])
             rotate(-90,[0,0,1])
+        mirror()
             children();
         translate([-SB,-K/2+RAIL_O,0])
             rotate(90,[0,0,1])
