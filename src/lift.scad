@@ -86,14 +86,17 @@ e=.1;
 STAGE_H=2;
 K=57;
 L=90;
-W=1.2;
-SA=L*.6/2;
+W=2;
+SA=L*.8/2;
+SB=L*.6/2;
 
 RAIL_O=4;
 
 module wallElement(){ 
     EH=FLOOR-e-STAGE_H;
     
+    translate([0,-W,0])
+    rotate(180,[0,0,1]){
     translate([SA,0,0])
     attachment("socket");
     translate([-SA,0,0])
@@ -104,7 +107,7 @@ module wallElement(){
     attachment("plug",STAGE_H);
     translate([-SA,0,EH])
     attachment("plug",STAGE_H);
-    
+    }
     
     module rail(){
         translate([-RAIL_O/2,-RAIL_O-W/2,0])
@@ -121,10 +124,10 @@ module wallElement(){
 
     }
     
-    translate([-SA,-W,0])
+    translate([-SB,-W,0])
     rail();
 
-    translate([SA,-W,0])
+    translate([SB,-W,0])
     //rotate(180,[0,0,1])
     mirror([1,0,0])
     rail();
@@ -178,17 +181,25 @@ module wallElement(){
 }
 eps=1e-5;
 module floorElement(){
+    translate([0,-W,0])
+    rotate(180,[0,0,1]){
+    
     translate([SA,-eps,0])
     attachment("socket");
     translate([-SA,-eps,0])
     attachment("socket");
+    }
         
     translate([0,-K,0])
     rotate(180,[0,0,1]){
+            translate([0,-W,0])
+    rotate(180,[0,0,1]){
+
     translate([SA,-eps,0])
     attachment("socket");
     translate([-SA,-eps,0])
     attachment("socket");
+    }
     }
     
     translate([0,-K/2,W/2])
@@ -232,19 +243,19 @@ module floorElement(){
 
 
 module car(){
-    R0=2;
+    R0=1.6;
     
     module atRailPositions() {
-        translate([SA,K/2-RAIL_O,0])
+        translate([SB,K/2-RAIL_O,0])
             rotate(-90,[0,0,1])
             children();
-        translate([-SA,K/2-RAIL_O,0])
+        translate([-SB,K/2-RAIL_O,0])
             rotate(90,[0,0,1])
             children();
-        translate([SA,-K/2+RAIL_O,0])
+        translate([SB,-K/2+RAIL_O,0])
             rotate(-90,[0,0,1])
             children();
-        translate([-SA,-K/2+RAIL_O,0])
+        translate([-SB,-K/2+RAIL_O,0])
             rotate(90,[0,0,1])
             children();
     }
@@ -258,7 +269,7 @@ module car(){
     }
             atRailPositions()
     {
-            translate([-W/2,-R0+W/2,0]) {
+            translate([0,-R0-W/8,0]) {
 //            rotate(-90,[0,1,0])
 //                translate([W,-R0,W])
   //                  cylinder($fn=16,d=RAIL_O,h=3*W,center=true);
@@ -277,7 +288,7 @@ module car(){
                 translate([0,0,22+R0])
                 rotate(90,[1,0,0])
                 difference() {
-            cylinder($fn=16,r=R0,h=W,center=true);
+            cylinder($fn=16,r=R0,h=W/2,center=true);
             cylinder($fn=16,r=R0/2,h=2*W,center=true);
                 }
                 
@@ -298,7 +309,6 @@ module car(){
 }
 
 //testAttach();
-//rotate(90,[1,0,0]) 
 
 module preview() {
     translate([0,0,2])
@@ -317,8 +327,9 @@ module preview() {
 }
 
 
-//wallElement();
-preview();
+rotate(-90,[1,0,0]) wallElement();
+//floorElement();
+//preview();
 
 
 
