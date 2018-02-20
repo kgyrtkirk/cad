@@ -232,12 +232,38 @@ module floorElement(){
 
 
 module car(){
-    translate([0,-K/2,W/2])
-    difference(){
-    cube([L,K,W],center=true);
-    cube([L-2*W,K-2*W,W*5],center=true);
+    
+    module atRailPositions() {
+        translate([SA,K/2-RAIL_O,0])
+            rotate(-90,[0,0,1])
+            children();
+        translate([-SA,K/2-RAIL_O,0])
+            rotate(90,[0,0,1])
+            children();
+        translate([SA,-K/2+RAIL_O,0])
+            rotate(-90,[0,0,1])
+            children();
+        translate([-SA,-K/2+RAIL_O,0])
+            rotate(90,[0,0,1])
+            children();
     }
     
+    translate([0,K/2,W/2]) {
+    color([0,0,1])
+    difference(){
+        cube([L-3*W,K-3*W,W],center=true);
+        atRailPositions()
+        cube(W+RAIL_O,center=true);
+    }
+            atRailPositions()
+    hull(){
+            translate([0,-0,0])
+            cube(.2);
+            translate([0,-4*W,0])
+            cube();
+    }
+    
+}
 }
 
 //testAttach();
@@ -254,6 +280,7 @@ module preview() {
     rotate(180,[0,0,2])
     wallElement();
     
+    translate([0,0,30])
     car();
 
 }
