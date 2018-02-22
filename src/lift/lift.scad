@@ -26,7 +26,7 @@ module attachment(type="plug",extraL=0) {
             }
     }
 
-if(true){
+if(false){
 translate([0,dim_y/2,0])
     translate([0,-1,0])
     if(type == "plug"){
@@ -51,10 +51,14 @@ translate([0,dim_y/2,0])
     }
 }   else{
     H=dim_z;
-    D=5;
+    D=9;
     SCREW_D=3;
+        
+
+    
     translate([0,D/3,H/2])
-    difference() {
+    translate( (type == "plug") ? [0,0,-dim_z] : [0,0,0] ) // hackish
+#    difference() {
         hull() {
             cylinder($fn=6,d=D,h=H,center=true);
             translate([0,-D/3,0])
@@ -76,15 +80,15 @@ attachment("plug",2);
 
 if(true) 
     {
-translate([0,7,0])
+translate([0,10,0])
 attachment(2);
-translate([0,-7,0])
+translate([0,-10,0])
 attachment(2);
 }
 }
 
 
-FLOOR=75;
+FLOOR=70;
 e=.1;
 STAGE_H=2;
 K=57;
@@ -228,7 +232,7 @@ module floorElement(){
         }
     }
     translate([L/2+CONN_L-CONN_L0,-K,CONN_H]) {
-        S=1.7;
+        S=2;
     color([1,0,0])
        translate([0,0,-1])
         cube([CONN_L0,K,1.7]);
@@ -238,7 +242,7 @@ module floorElement(){
         cube([CONN_L0,37,2*S],center=true);
         cube([32,29,S],center=true);
             translate([0,0,1])
-        cube([32,20,1.5],center=true);
+        cube([32,20,2*S],center=true);
         }
         
     }
@@ -316,7 +320,6 @@ module car(){
 }
 }
 
-//testAttach();
 
 module preview() {
     translate([0,0,2])
@@ -335,6 +338,9 @@ module preview() {
 }
 
 mode="preview";
+if ( mode == "attach"){
+    testAttach();
+}
 if ( mode == "car"){
     car();
 }
