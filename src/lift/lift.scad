@@ -311,7 +311,14 @@ module car(){
                         cube();
                     translate([0,0,0])
                         cube();
-                    
+                }
+                hull() {
+                    translate([0,-15,3])
+                        cube([1,13,1]);
+                    translate([0,-15,0])
+                        cube([1,13,1]);
+                    translate([3,-15,0])
+                        cube([1,10,1]);
                 }
                 
             }
