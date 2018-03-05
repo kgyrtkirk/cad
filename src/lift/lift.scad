@@ -297,13 +297,9 @@ module car(){
                 translate([0,0,22])
             cylinder($fn=16,r=R0/2,h=W,center=true);
                 }
-                translate([0,0,22+R0])
-                rotate(90,[1,0,0])
-                difference() {
-            cylinder($fn=16,r=R0,h=W/2,center=true);
-            cylinder($fn=16,r=R0/2,h=2*W,center=true);
-                }
                 
+        difference() {
+            union() {
                 hull() {
                     translate([0,0,20])
                         cube();
@@ -320,6 +316,16 @@ module car(){
                     translate([3,-15,0])
                         cube([1,10,1]);
                 }
+            }
+            translate([0,-2,15])
+            rotate(90,[0,1,0])
+            cylinder($fn=16,d=1,h=2*W,center=true);
+            translate([0,-2,5])
+            rotate(90,[0,1,0])
+            cylinder($fn=16,d=1,h=2*W,center=true);
+
+                
+        }
                 
             }
     }
