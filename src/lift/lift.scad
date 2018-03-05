@@ -269,6 +269,8 @@ module car(){
             rotate(90,[0,0,1])
             children();
     }
+
+
     
     translate([0,K/2,W/2]) {
     color([0,0,1])
@@ -278,6 +280,22 @@ module car(){
         atRailPositions()
         translate([0,3*U,0])
         cube([U,7*U,U],center=true);
+        
+        // car cutout  |A|B|
+        A=3*W;  B=W;
+        for( i = [0:A:L] )
+        translate([-L/2 + (L%A)/2 + i,0,0])
+        cube([B,K-10*W,10],center=true);
+
+VEHICLE_WIDTH0=18;
+VEHICLE_WIDTH1=35;
+TIRE_WIDTH=(VEHICLE_WIDTH1-VEHICLE_WIDTH0)/2;
+TIRE_OFF=(VEHICLE_WIDTH1+VEHICLE_WIDTH0)/4;
+        
+        for(off = [-TIRE_OFF,TIRE_OFF]){
+            translate([0,off,W/2])
+            cube([L-A*2,TIRE_WIDTH,W],center=true);
+        }
     }
             atRailPositions()
     {
