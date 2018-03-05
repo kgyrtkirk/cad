@@ -232,7 +232,7 @@ module floorElement(){
         }
     }
     translate([L/2+CONN_L-CONN_L0,-K,CONN_H]) {
-        S=2;
+        S=2.2;
     color([1,0,0])
        translate([0,0,-1])
         cube([CONN_L0,K,1.7]);
