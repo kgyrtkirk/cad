@@ -56,7 +56,7 @@ translate([0,dim_y/2,0])
         
 
 if(type=="out") {
-    translate([0,D/3,H/2])
+    translate([0,D/5,H/2])
         cylinder($fn=32,d=6,h=10*H,center=true);
     
 }else{
@@ -196,13 +196,14 @@ module wallElement(){
 eps=1e-5;
 
 module floorBase(H=W) {
+    module atAttachPositions() {
     translate([0,-W,0])
     rotate(180,[0,0,1]){
     
         translate([SA,-eps,0])
-        attachment("socket");
+    children();
         translate([-SA,-eps,0])
-        attachment("socket");
+    children();
     }
         
     translate([0,-K,0])
@@ -211,11 +212,16 @@ module floorBase(H=W) {
     rotate(180,[0,0,1]){
 
     translate([SA,-eps,0])
-    attachment("socket");
+    children();
     translate([-SA,-eps,0])
+    children();
+        }
+    }
+    }
+    
+    atAttachPositions()
     attachment("socket");
-    }
-    }
+        
     
     translate([0,-K/2,H/2])
     difference(){
