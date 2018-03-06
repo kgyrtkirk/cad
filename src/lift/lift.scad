@@ -107,8 +107,25 @@ SB=L*.6/2;
 
 RAIL_O=4;
 
-module wallElement(){ 
     EH=FLOOR-e-STAGE_H;
+
+    module rail(FLOOR=FLOOR){
+        translate([-RAIL_O/2,-RAIL_O-W/2,0])
+//    rotate(180,[0,0,1])
+        difference() {
+        cube([RAIL_O+W,RAIL_O+W,FLOOR]);
+        translate([W,W/2,-1])
+        cube([2*SA,RAIL_O,FLOOR+STAGE_H]);
+        translate([W+3,-1,-1])
+        cube([2*SA,RAIL_O,FLOOR+STAGE_H]);
+            translate([-.1,RAIL_O+W/2-.1,EH])
+        cube([RAIL_O*2,RAIL_O,RAIL_O]);
+    }
+
+    }
+
+
+module wallElement(){ 
     
     translate([0,-W,0])
     rotate(180,[0,0,1]){
@@ -124,20 +141,6 @@ module wallElement(){
     attachment("plug",STAGE_H);
     }
     
-    module rail(){
-        translate([-RAIL_O/2,-RAIL_O-W/2,0])
-//    rotate(180,[0,0,1])
-        difference() {
-        cube([RAIL_O+W,RAIL_O+W,FLOOR]);
-        translate([W,W/2,-1])
-        cube([2*SA,RAIL_O,FLOOR+STAGE_H]);
-        translate([W+3,-1,-1])
-        cube([2*SA,RAIL_O,FLOOR+STAGE_H]);
-            translate([-.1,RAIL_O+W/2-.1,EH])
-        cube([RAIL_O*2,RAIL_O,RAIL_O]);
-    }
-
-    }
     
     translate([-SB,-W,0])
     rail();
@@ -240,6 +243,25 @@ module floorBase(H=W,cutout=false) {
 
 module groundFloorElement() {
     GROUND_H=4;
+    module atRailPositions(){
+        translate([-SB,K-W,0])
+        children();
+
+        translate([SB,K-W,0])
+        mirror([1,0,0])
+        children();
+        
+        translate([-SB,W,0])
+        mirror([1,0,0])
+        rotate(180,[0,0,1])
+        children();
+
+        translate([SB,W,0])
+        rotate(180,[0,0,1])
+        children();
+        
+    }
+
 !    union() {
            rotate(180,[1,0,0])
         color([1,0,.5])
@@ -276,6 +298,10 @@ module groundFloorElement() {
             rotate(-90,[1,0,0])
             linear_extrude(K)
                 polygon([[0,W],[RAMP_L,-GROUND_H],[0,-GROUND_H]]);
+    
+    
+    atRailPositions()
+    rail(W);
 
 }
 }
