@@ -262,7 +262,7 @@ module groundFloorElement() {
         
     }
 
-!    union() {
+    union() {
            rotate(180,[1,0,0])
         color([1,0,.5])
             floorBase(GROUND_H,cutout=true);
