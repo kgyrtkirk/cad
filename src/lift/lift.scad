@@ -325,8 +325,14 @@ TIRE_WIDTH=(VEHICLE_WIDTH1-VEHICLE_WIDTH0)/2;
 TIRE_OFF=(VEHICLE_WIDTH1+VEHICLE_WIDTH0)/4;
         
         for(off = [-TIRE_OFF,TIRE_OFF]){
-            translate([0,off,W/2])
-            cube([L-A*2,TIRE_WIDTH,W],center=true);
+            translate([0,off,W/2]) {
+            cube([L-A*2,TIRE_WIDTH,W/2],center=true);
+
+        for(u = [-A*4,A*4])
+            translate([u,0,0])
+            cube([A,TIRE_WIDTH,W],center=true);
+            }
+            
         }
     }
             atRailPositions()
