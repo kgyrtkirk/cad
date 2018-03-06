@@ -1,11 +1,12 @@
 
 
-module attachment(type="plug") {
+module attachment(type="plug",railSupport=false) {
     dim_z=2;
     H=dim_z;
-    D=9;
+    D=5;
     SCREW_D=3;
-    SS=D*.21;
+    SS=D/2;
+    
     
 if(type=="out") {
     translate([0,SS,H/2])
@@ -17,12 +18,17 @@ if(type=="out") {
     translate( (type == "plug") ? [0,0,-dim_z] : [0,0,0] ) // hackish
 
 #    difference() {
-        hull() {
-            
-            cylinder($fn=6,d=D,h=H,center=true);
-            translate([0,-D/3,0])
-            cube([2*D,e,H],center=true);
+    union() {
+        cube([2*D,D,H],center=true);
+        translate([6.5,0,0]){
+        cube([D,D,H],center=true);
         }
+        if(railSupport)
+        translate([-5,0,0]){
+        cube([D,D,H],center=true);
+        }
+    }
+    
         cylinder($fn=32,d=SCREW_D,h=2*H,center=true);
     }
 }    
@@ -81,15 +87,15 @@ module wallElement(){
     translate([0,-W,0])
     rotate(180,[0,0,1]){
     translate([SA,0,0])
-    attachment("socket");
+    attachment("socket",railSupport=true);
     translate([-SA,0,0])
-    attachment("socket");
+    attachment("socket",railSupport=true);
   
     
     translate([SA,0,EH])
-    attachment("plug",STAGE_H);
+    attachment("plug",railSupport=true);
     translate([-SA,0,EH])
-    attachment("plug",STAGE_H);
+    attachment("plug",railSupport=true);
     }
     
     
