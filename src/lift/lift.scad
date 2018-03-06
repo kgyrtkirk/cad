@@ -405,6 +405,10 @@ TIRE_OFF=(VEHICLE_WIDTH1+VEHICLE_WIDTH0)/4;
 }
 }
 
+module topElement(){
+    floorBase(2*W);
+}
+
 
 
 module preview() {
@@ -426,6 +430,9 @@ module preview() {
     translate([0,0,30])
     car();
 
+    translate([0,K,FLOOR+W])
+    rotate(180,[0,1,0])
+    topElement();
 }
 
 mode="preview";
