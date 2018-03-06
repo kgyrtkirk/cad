@@ -269,7 +269,7 @@ module groundFloorElement() {
     }
     }
     for(y=[2*W-eps,K-W+eps]){
-        translate([0,y,-W])
+        translate([0,y,-GROUND_H/2])
         color([0,1,1])
         cube([2*SB,2*W,GROUND_H],center=true);
     }
@@ -278,7 +278,7 @@ module groundFloorElement() {
     translate([-L/2-W/2,0,0])
             rotate(180,[0,1,0])
             rotate(-90,[1,0,0])
-            linear_extrude(K)
+            linear_extrude(K+W)
                 polygon([[0,W],[RAMP_L,-GROUND_H],[0,-GROUND_H]]);
     
     
