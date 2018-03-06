@@ -243,24 +243,6 @@ module floorBase(H=W,cutout=false) {
 
 module groundFloorElement() {
     GROUND_H=4;
-    module atRailPositions(){
-        translate([-SB,K-W,0])
-        children();
-
-        translate([SB,K-W,0])
-        mirror([1,0,0])
-        children();
-        
-        translate([-SB,W,0])
-        mirror([1,0,0])
-        rotate(180,[0,0,1])
-        children();
-
-        translate([SB,W,0])
-        rotate(180,[0,0,1])
-        children();
-        
-    }
 
     union() {
            rotate(180,[1,0,0])
@@ -300,8 +282,6 @@ module groundFloorElement() {
                 polygon([[0,W],[RAMP_L,-GROUND_H],[0,-GROUND_H]]);
     
     
-    atRailPositions()
-    rail(W);
 
 }
 }
