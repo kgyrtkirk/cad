@@ -10,46 +10,7 @@ module attachment(type="plug",extraL=0) {
     plug_w=2;
     plug_a=.6;
     plug_mid=dim_z+4*e+.2;
-    
-    module pole(){
-        translate([plug_w,0,extraL])
-        rotate(90,[1,0,0])
-        color([0,1,0]){
-            linear_extrude(height=dim_y-2*W,  slices=20, twist=0,center=true)
-          polygon(points=[[0,-extraL],[0,plug_mid],[plug_a,plug_mid],
-                    [plug_a,plug_z+e],
-                    [plug_a,plug_z-1],
-                    [plug_a-1,plug_z+e],
-                    [-plug_w,plug_z+e],
-                    [-plug_w,-extraL]
-                ]);
-            }
-    }
 
-if(false){
-translate([0,dim_y/2,0])
-    translate([0,-1,0])
-    if(type == "plug"){
-        k=dim_x/2-W-e-plug_w;
-        translate([k,0,0])
-        pole();
-        translate([-k,0,0])
-        rotate(180,[0,0,1])
-        pole();
-        translate([0,0,-dim_z/2])
-        cube([1.5*dim_x,dim_y,dim_z],center=true);
-    }else{
-        color([1.0,0,0])
-        translate([0,0,dim_z/2])
-        difference() {
-            union(){
-            cube([dim_x,dim_y,dim_z],center=true);
-        cube([1.4*dim_x,dim_y,dim_z],center=true);
-            }
-            cube([dim_x-2*W,dim_y-2*W,dim_z*2],center=true);
-        }
-    }
-}   else{
     H=dim_z;
     D=9;
     SCREW_D=3;
@@ -67,13 +28,13 @@ if(type=="out") {
 
 #    difference() {
         hull() {
+            
             cylinder($fn=6,d=D,h=H,center=true);
             translate([0,-D/3,0])
             cube([2*D,e,H],center=true);
         }
         cylinder($fn=32,d=SCREW_D,h=2*H,center=true);
     }
-}
 }    
 }
 
