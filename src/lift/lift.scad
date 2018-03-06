@@ -239,9 +239,9 @@ module groundFloorElement() {
         translate([0,y,-GROUND_H/2])
         difference() {
         color([0,1,1])
-        cube([2*SB,2*W,GROUND_H],center=true);
+        cube([2*SA-8,2*W,GROUND_H],center=true);
             mirror((y<K/2)?[0,1,0]:[1,0,0])
-            translate([0,-2*W,0])
+            translate([0,-3*W,0])
             rotate(45,[1,0,0])
         cube([3*SB,4*W,GROUND_H*3],center=true);
         }
