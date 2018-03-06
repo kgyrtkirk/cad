@@ -20,6 +20,8 @@ if(type=="out") {
 #    difference() {
     union() {
         cube([2*D,D,H],center=true);
+        translate([0,-W,0])
+        cube([2*D,D,H],center=true);
         translate([6.5,0,0]){
         cube([D,D,H],center=true);
         }
@@ -89,12 +91,15 @@ module wallElement(){
     translate([SA,0,0])
     attachment("socket",railSupport=true);
     translate([-SA,0,0])
+    mirror()
     attachment("socket",railSupport=true);
   
     
     translate([SA,0,EH])
     attachment("plug",railSupport=true);
     translate([-SA,0,EH])
+    mirror()
+        
     attachment("plug",railSupport=true);
     }
     
@@ -162,8 +167,10 @@ module floorBase(H=W,cutout=false) {
     rotate(180,[0,0,1]){
     
         translate([SA,-eps,0])
+
     children();
         translate([-SA,-eps,0])
+                mirror()
     children();
     }
         
@@ -175,6 +182,7 @@ module floorBase(H=W,cutout=false) {
     translate([SA,-eps,0])
     children();
     translate([-SA,-eps,0])
+                mirror()
     children();
         }
     }
