@@ -187,7 +187,8 @@ module wallElement(){
 //    translate([
 }
 eps=1e-5;
-module floorElement(){
+
+module floorBase(H=W) {
     translate([0,-W,0])
     rotate(180,[0,0,1]){
     
@@ -209,11 +210,49 @@ module floorElement(){
     }
     }
     
-    translate([0,-K/2,W/2])
+    translate([0,-K/2,H/2])
     difference(){
-    cube([L,K,W],center=true);
-    cube([L-2*W,K-2*W,W*5],center=true);
+    cube([L,K,H],center=true);
+    cube([L-2*W,K-2*W,H*5],center=true);
     }
+}
+
+
+module groundFloorElement() {
+    GROUND_H=4;
+  !  union() {
+           rotate(180,[1,0,0])
+        color([1,0,.5])
+            floorBase(GROUND_H);
+    
+        {
+        L=L-W;
+        K=K-W;
+    translate([-L/2,W/2,0]){
+        for( i=[0:5] ) 
+        for( j=[0:5] ) {
+            if( floor(i/3) != floor(j/3))
+            if( (i%3) != (j%3))
+            if( (i%3) + (j%3) != 2)
+            hull() {
+                translate([(i%3)*L/2,floor(i/3)*K,-GROUND_H/2])
+                cube([W,W,GROUND_H],center=true);
+                translate([(j%3)*L/2,floor(j/3)*K,-GROUND_H/2])
+                cube([W,W,GROUND_H],center=true);
+            }
+        }
+    }
+    }
+    for(y=[2*W-eps,K-W+eps]){
+        translate([0,y,-W])
+        cube([2*SB,2*W,GROUND_H],center=true);
+    }
+}
+}
+
+
+module floorElement(){
+    floorBase();
     CONN_L0=10;
     CONN_L=25;
 
@@ -352,15 +391,19 @@ TIRE_OFF=(VEHICLE_WIDTH1+VEHICLE_WIDTH0)/4;
 }
 
 
+
 module preview() {
-    translate([0,0,2])
+    translate([0,0,0])
+    groundFloorElement();
+    
+    translate([0,0,W])
     rotate(180,[1,0,0])
     floorElement();
     
-    translate([0,K+e,2])
+    translate([0,K+e,W])
     wallElement();
     translate([0,0,2+e])
-    rotate(180,[0,0,2])
+    rotate(180,[0,0,1])
     wallElement();
     
     translate([0,0,30])
