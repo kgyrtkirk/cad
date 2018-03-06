@@ -55,9 +55,15 @@ translate([0,dim_y/2,0])
     SCREW_D=3;
         
 
-    
+if(type=="out") {
     translate([0,D/3,H/2])
+        cylinder($fn=32,d=6,h=10*H,center=true);
+    
+}else{
+    
+    translate([0,D/5,H/2])
     translate( (type == "plug") ? [0,0,-dim_z] : [0,0,0] ) // hackish
+
 #    difference() {
         hull() {
             cylinder($fn=6,d=D,h=H,center=true);
@@ -66,6 +72,7 @@ translate([0,dim_y/2,0])
         }
         cylinder($fn=32,d=SCREW_D,h=2*H,center=true);
     }
+}
 }    
 }
 
@@ -123,7 +130,7 @@ module wallElement(){
         cube([RAIL_O+W,RAIL_O+W,FLOOR]);
         translate([W,W/2,-1])
         cube([2*SA,RAIL_O,FLOOR+STAGE_H]);
-        translate([W+1,-1,-1])
+        translate([W+2,-1,-1])
         cube([2*SA,RAIL_O,FLOOR+STAGE_H]);
             translate([-.1,RAIL_O+W/2-.1,EH])
         cube([RAIL_O*2,RAIL_O,RAIL_O]);
@@ -192,10 +199,10 @@ module floorBase(H=W) {
     translate([0,-W,0])
     rotate(180,[0,0,1]){
     
-    translate([SA,-eps,0])
-    attachment("socket");
-    translate([-SA,-eps,0])
-    attachment("socket");
+        translate([SA,-eps,0])
+        attachment("socket");
+        translate([-SA,-eps,0])
+        attachment("socket");
     }
         
     translate([0,-K,0])
@@ -220,7 +227,7 @@ module floorBase(H=W) {
 
 module groundFloorElement() {
     GROUND_H=4;
-  !  union() {
+    union() {
            rotate(180,[1,0,0])
         color([1,0,.5])
             floorBase(GROUND_H);
