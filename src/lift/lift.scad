@@ -1,22 +1,12 @@
 
 
 module attachment(type="plug") {
-//    dim_x=10;
-//    dim_y=5;
     dim_z=2;
-//    e=.1/2;
-//    plug_z=dim_z+2;
-    W=1.2;
-//    plug_w=2;
-//    plug_a=.6;
-//    plug_mid=dim_z+4*e+.2;
-
     H=dim_z;
     D=9;
     SCREW_D=3;
-        
-
-SS=D*.21;
+    SS=D*.21;
+    
 if(type=="out") {
     translate([0,SS,H/2])
         cylinder($fn=32,d=6,h=10*H,center=true);
