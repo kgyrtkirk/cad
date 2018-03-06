@@ -477,6 +477,9 @@ if ( mode == "car"){
 if ( mode == "floor") {
     floorElement();
 }
+if ( mode == "ground") {
+    groundFloorElement();
+}
 if( mode == "wall") {
     rotate(-90,[1,0,0]) wallElement();
 }
