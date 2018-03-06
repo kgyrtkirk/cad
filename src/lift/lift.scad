@@ -242,7 +242,7 @@ module floorBase(H=W,cutout=false) {
 
 
 module groundFloorElement() {
-    GROUND_H=4;
+    GROUND_H=8-W;
 
     union() {
            rotate(180,[1,0,0])
@@ -436,9 +436,11 @@ module preview() {
     rotate(180,[1,0,0])
     floorElement();
     
-    translate([0,K+e,W])
+    translate([0,K+e,FLOOR])
+    rotate(180,[0,1,0])
     wallElement();
-    translate([0,0,2+e])
+    translate([0,0,FLOOR+e])
+    rotate(180,[0,1,0])
     rotate(180,[0,0,1])
     wallElement();
     
