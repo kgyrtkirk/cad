@@ -55,13 +55,14 @@ translate([0,dim_y/2,0])
     SCREW_D=3;
         
 
+SS=D*.21;
 if(type=="out") {
-    translate([0,D/5,H/2])
+    translate([0,SS,H/2])
         cylinder($fn=32,d=6,h=10*H,center=true);
     
 }else{
     
-    translate([0,D/5,H/2])
+    translate([0,SS,H/2])
     translate( (type == "plug") ? [0,0,-dim_z] : [0,0,0] ) // hackish
 
 #    difference() {
@@ -130,7 +131,7 @@ module wallElement(){
         cube([RAIL_O+W,RAIL_O+W,FLOOR]);
         translate([W,W/2,-1])
         cube([2*SA,RAIL_O,FLOOR+STAGE_H]);
-        translate([W+2,-1,-1])
+        translate([W+3,-1,-1])
         cube([2*SA,RAIL_O,FLOOR+STAGE_H]);
             translate([-.1,RAIL_O+W/2-.1,EH])
         cube([RAIL_O*2,RAIL_O,RAIL_O]);
@@ -195,7 +196,7 @@ module wallElement(){
 }
 eps=1e-5;
 
-module floorBase(H=W) {
+module floorBase(H=W,cutout=false) {
     module atAttachPositions() {
     translate([0,-W,0])
     rotate(180,[0,0,1]){
@@ -223,10 +224,16 @@ module floorBase(H=W) {
     attachment("socket");
         
     
-    translate([0,-K/2,H/2])
+    
     difference(){
+    translate([0,-K/2,H/2])
     cube([L,K,H],center=true);
+    translate([0,-K/2,H/2])
     cube([L-2*W,K-2*W,H*5],center=true);
+    
+        if(cutout)
+        atAttachPositions()
+        attachment("out");
     }
 }
 
@@ -236,11 +243,12 @@ module groundFloorElement() {
     union() {
            rotate(180,[1,0,0])
         color([1,0,.5])
-            floorBase(GROUND_H);
+            floorBase(GROUND_H,cutout=true);
     
         {
         L=L-W;
         K=K-W;
+        color([1,0,0])
     translate([-L/2,W/2,0]){
         for( i=[0:5] ) 
         for( j=[0:5] ) {
