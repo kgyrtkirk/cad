@@ -240,7 +240,7 @@ module floorBase(H=W,cutout=false) {
 
 module groundFloorElement() {
     GROUND_H=4;
-    union() {
+!    union() {
            rotate(180,[1,0,0])
         color([1,0,.5])
             floorBase(GROUND_H,cutout=true);
@@ -269,6 +269,14 @@ module groundFloorElement() {
         color([0,1,1])
         cube([2*SB,2*W,GROUND_H],center=true);
     }
+    
+    RAMP_L=40;
+    translate([-L/2-W/2,0,0])
+            rotate(180,[0,1,0])
+            rotate(-90,[1,0,0])
+            linear_extrude(K)
+                polygon([[0,W],[RAMP_L,-GROUND_H],[0,-GROUND_H]]);
+
 }
 }
 
