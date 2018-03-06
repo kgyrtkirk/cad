@@ -1,15 +1,15 @@
 
 
-module attachment(type="plug",extraL=0) {
-    dim_x=10;
-    dim_y=5;
+module attachment(type="plug") {
+//    dim_x=10;
+//    dim_y=5;
     dim_z=2;
-    e=.1/2;
-    plug_z=dim_z+2;
+//    e=.1/2;
+//    plug_z=dim_z+2;
     W=1.2;
-    plug_w=2;
-    plug_a=.6;
-    plug_mid=dim_z+4*e+.2;
+//    plug_w=2;
+//    plug_a=.6;
+//    plug_mid=dim_z+4*e+.2;
 
     H=dim_z;
     D=9;
@@ -45,7 +45,7 @@ module testAttach() {
 translate([0,2.5,1])
 cube([10,4,2],center=true);
 translate([0,0,2])
-attachment("plug",2);
+attachment("plug");
 
 if(true) 
     {
