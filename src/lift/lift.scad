@@ -248,7 +248,7 @@ module groundFloorElement() {
         {
         L=L-W;
         K=K-W;
-        color([1,0,0])
+        color([1,0,.5])
     translate([-L/2,W/2,0]){
         for( i=[0:5] ) 
         for( j=[0:5] ) {
@@ -266,6 +266,7 @@ module groundFloorElement() {
     }
     for(y=[2*W-eps,K-W+eps]){
         translate([0,y,-W])
+        color([0,1,1])
         cube([2*SB,2*W,GROUND_H],center=true);
     }
 }
@@ -414,7 +415,7 @@ TIRE_OFF=(VEHICLE_WIDTH1+VEHICLE_WIDTH0)/4;
 
 
 module preview() {
-    translate([0,0,0])
+    translate([0,0,-eps*100])
     groundFloorElement();
     
     translate([0,0,W])
