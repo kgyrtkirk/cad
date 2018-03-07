@@ -427,6 +427,10 @@ function    tpoint(e,c,r) =
 
 module topElement(){
     R=FLOOR/PI;
+    R1=R+W;
+    R2=R+W+W/2;
+    
+    $fn=16;
     
     H=4;
     echo(R);
@@ -434,6 +438,7 @@ module topElement(){
     
 !    translate([0,0,-10]) 
     {
+            $fn=32;
         translate([0,-K,0])
         rotate(180,[1,0,0])
         floorBase(2*W);
@@ -441,9 +446,9 @@ module topElement(){
         translate([0,-K/2,0]) {
         cylinder(h=H,r=R,center=true);
             translate([0,0,H/2])
-        cylinder(h=W/2,r=R+W,center=true);
+        cylinder(h=W/2,r=R1,center=true);
             translate([0,0,-H/2])
-        cylinder(h=W/2,r=R+W,center=true);
+        cylinder(h=W/2,r=R1,center=true);
         }
         
  
@@ -459,20 +464,41 @@ module topElement(){
         cylinder(h=25,r=1,center=true);
 
 // color([0,1,0])       
-    for(E = SHAFT_POINTS)
-        {
-//        E=[SB-W,-2*W,0];
-        C=[0,-K/2,0];
-        P=tpoint(E,C,R);
-        echo("P",P);
+        difference() {
+            union() {
+                for(E = SHAFT_POINTS) {
+                    C=[0,-K/2,0];
+                    P=tpoint(E,C,R);
 
-        translate(E)
-        cylinder(h=20,r=2,center=true);
-        translate(C)
-        cylinder(h=20,r=2,center=true);
-        translate(P)
-        cylinder(h=20,r=2,center=true);
+                    M=(P+2*E)/3;
+                    G=E-[0,0,W];
+
+                    hull() {
+                        translate(G) sphere(d=1);
+                        translate(M) sphere(d=1);
+                    }
+                    hull() {
+                        translate(P) sphere(d=1);
+                        translate(M) sphere(d=1);
+                    }
+                    
+                    if(false){
+                    translate(E)
+                    cylinder(h=20,r=2,center=true);
+                    translate(C)
+                    cylinder(h=20,r=2,center=true);
+                    translate(P)
+                    cylinder(h=20,r=2,center=true);
+                    }
+                
+                }
+            }
+            translate([0,-K/2,0])
+            cylinder(h=H,r=R2,center=true);
+
+            
         }
+        
 
 
     }
