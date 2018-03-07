@@ -458,10 +458,6 @@ module topElement(){
             [ SB-W,-K+2*W,0],
             [-SB+W,-K+2*W,0]   ];
         
-%       for(x = SHAFT_POINTS)
-        translate(x)
-        color([0,1,0])
-        cylinder(h=25,r=1,center=true);
 
 // color([0,1,0])       
         difference() {
@@ -470,16 +466,15 @@ module topElement(){
                     C=[0,-K/2,0];
                     P=tpoint(E,C,R);
 
-                    M=(P+2*E)/3;
-                    G=E-[0,0,W];
-
-                    hull() {
-                        translate(G) sphere(d=1);
-                        translate(M) sphere(d=1);
-                    }
-                    hull() {
-                        translate(P) sphere(d=1);
-                        translate(M) sphere(d=1);
+                    difference(){
+                        hull() {
+                            translate(P) sphere(d=2);
+                            translate(E) sphere(d=2);
+                        }
+                        hull() {
+                            translate(P) sphere(d=1);
+                            translate(E) sphere(d=1);
+                        }
                     }
                     
                     if(false){
