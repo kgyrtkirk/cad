@@ -280,7 +280,7 @@ module floorElement(){
         }
     }
     translate([L/2+CONN_L-CONN_L0,-K,CONN_H]) {
-        S=2.2;
+        S=2.1;
     color([1,0,0])
        translate([0,0,-1])
         cube([CONN_L0,K,1.7]);
@@ -405,8 +405,64 @@ TIRE_OFF=(VEHICLE_WIDTH1+VEHICLE_WIDTH0)/4;
 }
 }
 
+use <scad-utils/transformations.scad>
+
+function    to_vec3(x) = [x[0]/x[3],x[1]/x[3],x[2]/x[3] ];
+
+echo("a",[1,2,3,4]);
+
+// computes the tangential point
+function    tpoint(e,c,r) =
+    let(
+            l=norm(e-c),
+            s=sqrt(l*l - r*r),
+            a=asin(r/l)
+        )
+    e+
+    to_vec3( 
+        rotation([0,0,a])*
+        concat(c-e,1)
+    )
+;
+
 module topElement(){
-    floorBase(2*W);
+    R=FLOOR/PI;
+    
+    H=4;
+    echo(R);
+    
+    
+    translate([0,0,-10]) 
+    {
+        translate([0,-K,0])
+        rotate(180,[1,0,0])
+        floorBase(2*W);
+        
+        translate([0,-K/2,0]) {
+        cylinder(h=H,r=R,center=true);
+            translate([0,0,H/2])
+        cylinder(h=W/2,r=R+W,center=true);
+            translate([0,0,-H/2])
+        cylinder(h=W/2,r=R+W,center=true);
+        }
+        
+        
+        E=[SA,0,0];
+        C=[0,-K/2,0];
+        P=tpoint(E,C,R);
+        echo("P",P);
+        translate(E)
+        cylinder(h=20,r=5,center=true);
+        translate(C)
+        cylinder(h=20,r=5,center=true);
+        translate(P)
+        cylinder(h=20,r=5,center=true);
+
+
+
+    }
+    
+    
 }
 
 
