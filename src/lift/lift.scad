@@ -414,12 +414,12 @@ echo("a",[1,2,3,4]);
 // computes the tangential point
 function    tpoint(e,c,r) =
     let(
-            l=norm(e-c),
+            l=norm(c-e),
             s=sqrt(l*l - r*r),
             a=asin(r/l)
         )
     e+
-    to_vec3( 
+    (s/l)*to_vec3( 
         rotation([0,0,a])*
         concat(c-e,1)
     )
@@ -432,7 +432,7 @@ module topElement(){
     echo(R);
     
     
-    translate([0,0,-10]) 
+!    translate([0,0,-10]) 
     {
         translate([0,-K,0])
         rotate(180,[1,0,0])
@@ -446,18 +446,33 @@ module topElement(){
         cylinder(h=W/2,r=R+W,center=true);
         }
         
+ 
+        SHAFT_POINTS=[
+            [ SB-W,  -2*W,0],
+            [-SB+W,  -2*W,0],
+            [ SB-W,-K+2*W,0],
+            [-SB+W,-K+2*W,0]   ];
         
-        E=[SA,0,0];
+%       for(x = SHAFT_POINTS)
+        translate(x)
+        color([0,1,0])
+        cylinder(h=25,r=1,center=true);
+
+// color([0,1,0])       
+    for(E = SHAFT_POINTS)
+        {
+//        E=[SB-W,-2*W,0];
         C=[0,-K/2,0];
         P=tpoint(E,C,R);
         echo("P",P);
-        translate(E)
-        cylinder(h=20,r=5,center=true);
-        translate(C)
-        cylinder(h=20,r=5,center=true);
-        translate(P)
-        cylinder(h=20,r=5,center=true);
 
+        translate(E)
+        cylinder(h=20,r=2,center=true);
+        translate(C)
+        cylinder(h=20,r=2,center=true);
+        translate(P)
+        cylinder(h=20,r=2,center=true);
+        }
 
 
     }
