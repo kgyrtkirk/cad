@@ -434,7 +434,7 @@ module topElement(){
     
     $fn=16;
     
-    H=4;
+    H=3;
     echo(R);
     
     
@@ -445,7 +445,8 @@ module topElement(){
         rotate(180,[1,0,0])
         floorBase(2*W,cutout=true);
         
-        translate([0,-K/2,0]) {
+        
+        translate([0,-K/2,W/2]) {
         cylinder(h=H,r=R,center=true);
             translate([0,0,H/2])
         cylinder(h=W/2,r=R1,center=true);
@@ -466,36 +467,40 @@ module topElement(){
                 cylinder(r=.1,h=5);
 
 // color([0,1,0])       
-        difference() {
-            union() {
-                for(E = SHAFT_POINTS) {
-                    C=[0,-K/2,0];
-                    P=tpoint(E,C,R);
+        union(){
+            translate([-L/2,-K,-2*W]) {
+                cube([L,K,W]);
+            }
+            difference() {
+                union() {
+                    for(E = SHAFT_POINTS) {
+                        C=[0,-K/2,0];
+                        P=tpoint(E,C,R);
 
-                    difference(){
-                        hull() {
-                            translate(E) 
-                            translate([0,0,-1.5*W])sphere(W/2);
-                            translate(P) 
-                            translate([0,0,-1.5*W])sphere(W/2);
-                            translate(P) sphere(d=2);
-                            translate(E) sphere(d=2);
+                        difference(){
+                            hull() {
+                                translate(E) 
+                                translate([0,0,-1.5*W])sphere(W/2);
+                                translate(P) 
+                                translate([0,0,-1.5*W])sphere(W/2);
+                                translate(P) sphere(d=2);
+                                translate(E) sphere(d=2);
+                            }
+                            hull() {
+                                translate(P) sphere(d=1);
+                                translate(E) sphere(d=1);
+                            }
+                            V=unit(E-P);
+                            translate(E+V*W/2)
+                            translate([0,0,W/2])
+                                sphere(W,center=true);
                         }
-                        hull() {
-                            translate(P) sphere(d=1);
-                            translate(E) sphere(d=1);
-                        }
-                        V=unit(E-P);
-                        translate(E+V*W/2)
-                        translate([0,0,W/2])
-                            sphere(W,center=true);
                     }
                 }
+                translate([0,-K/2,0])
+                cylinder(h=100,r=R2,center=true);
             }
-            translate([0,-K/2,0])
-            cylinder(h=100,r=R2,center=true);
 
-            
         }
         
 
