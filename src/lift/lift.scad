@@ -425,6 +425,8 @@ function    tpoint(e,c,r) =
     )
 ;
 
+function unit(v) = v/norm(v);
+
 module topElement(){
     R=FLOOR/PI;
     R1=R+W;
@@ -441,7 +443,7 @@ module topElement(){
             $fn=32;
         translate([0,-K,0])
         rotate(180,[1,0,0])
-        floorBase(2*W);
+        floorBase(2*W,cutout=true);
         
         translate([0,-K/2,0]) {
         cylinder(h=H,r=R,center=true);
@@ -458,6 +460,10 @@ module topElement(){
             [ SB-W,-K+2*W,0],
             [-SB+W,-K+2*W,0]   ];
         
+        if(false)
+            %for(x=SHAFT_POINTS)
+                translate(x)
+                cylinder(r=.1,h=5);
 
 // color([0,1,0])       
         difference() {
@@ -468,6 +474,10 @@ module topElement(){
 
                     difference(){
                         hull() {
+                            translate(E) 
+                            translate([0,0,-1.5*W])sphere(W/2);
+                            translate(P) 
+                            translate([0,0,-1.5*W])sphere(W/2);
                             translate(P) sphere(d=2);
                             translate(E) sphere(d=2);
                         }
@@ -475,21 +485,15 @@ module topElement(){
                             translate(P) sphere(d=1);
                             translate(E) sphere(d=1);
                         }
+                        V=unit(E-P);
+                        translate(E+V*W/2)
+                        translate([0,0,W/2])
+                            sphere(W,center=true);
                     }
-                    
-                    if(false){
-                    translate(E)
-                    cylinder(h=20,r=2,center=true);
-                    translate(C)
-                    cylinder(h=20,r=2,center=true);
-                    translate(P)
-                    cylinder(h=20,r=2,center=true);
-                    }
-                
                 }
             }
             translate([0,-K/2,0])
-            cylinder(h=H,r=R2,center=true);
+            cylinder(h=100,r=R2,center=true);
 
             
         }
