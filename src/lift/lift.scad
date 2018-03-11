@@ -26,7 +26,7 @@ if(type=="out") {
         cube([D,D,H],center=true);
         }
         if(railSupport)
-        translate([-5,0,0]){
+        translate([-6,0,0]){
         cube([D,D,H],center=true);
         }
     }
@@ -119,29 +119,25 @@ module wallElement(){
     
 
 
+    CLEAR=0.4;
     atRailPositions() {
-//        cylinder(1);
-        translate([-W/8-R0,-(W-RAIL_O),0])
+        $fn=16;
         
-        rail();
-    }
-/*    translate([-SB,-W,0])
-    rail();
+        difference() {
+            cylinder(r=R0+W,h=FLOOR);
+            cylinder(r=R0+CLEAR,h=200,center=true);
+            SW=(R0+CLEAR+W);
+            translate([SW,0,0])
+            cube([2*SW,2*(R0+CLEAR),100*R0],center=true);
 
-    translate([SB,-W,0])
-    //rotate(180,[0,0,1])
-    mirror([1,0,0])
-    rail();*/
-    
-
-/*    
-    translate([0,-W,0])
-    rotate(180,[0,0,1])
-    difference(){
-    cube([RAIL_O+W,RAIL_O+W,FLOOR]);
-    cube([RAIL_O,RAIL_O,2*FLOOR]);
+            translate([sqrt(2)*2.5,-sqrt(2)*2.5,0])
+            rotate(45,[0,0,1])
+            cube([10,10,100*R0],center=true);
+        }
+//        translate([-W/8-R0,-(W-RAIL_O),0])
+  //      rail();
     }
-  */  
+
     p=  [
             [L/2,0,0],
             [L/2,EH,0],
@@ -555,7 +551,7 @@ module preview() {
     rotate(180,[1,0,0])
     floorElement();
     
-    translate([0,K+e,FLOOR])
+!    translate([0,K+e,FLOOR])
     rotate(180,[0,1,0])
     wallElement();
     translate([0,0,FLOOR+e])
