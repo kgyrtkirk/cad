@@ -161,7 +161,6 @@ module wallElement(){
 }
 eps=1e-5;
 
-module floorBase(H=W,cutout=false) {
     module atAttachPositions() {
     translate([0,-W,0])
     rotate(180,[0,0,1]){
@@ -173,7 +172,6 @@ module floorBase(H=W,cutout=false) {
                 mirror()
     children();
     }
-        
     translate([0,-K,0])
     rotate(180,[0,0,1]){
             translate([0,-W,0])
@@ -187,6 +185,11 @@ module floorBase(H=W,cutout=false) {
         }
     }
     }
+    
+
+
+module floorBase(H=W,cutout=false) {
+        
     
     atAttachPositions()
     attachment("socket");
@@ -427,31 +430,36 @@ function    tpoint(e,c,r) =
 
 function unit(v) = v/norm(v);
 
-module topElement(){
     R=FLOOR/PI;
+
+module wheel(){
+    H=4;
     R1=R+W;
+    cylinder(h=H,r=R,center=true);
+        translate([0,0,H/2])
+    cylinder(h=W/2,r=R1,center=true);
+        translate([0,0,-H/2])
+    cylinder(h=W/2,r=R1,center=true);
+}
+
+module topElement(){
     R2=R+W+W/2;
     
     $fn=16;
     
-    H=3;
     echo(R);
     
     
-!    translate([0,0,-10]) 
+    translate([0,0,-10]) 
     {
             $fn=32;
         translate([0,-K,0])
         rotate(180,[1,0,0])
-        floorBase(2*W,cutout=true);
+        floorBase(3*W,cutout=true);
         
         
-        translate([0,-K/2,W/2]) {
-        cylinder(h=H,r=R,center=true);
-            translate([0,0,H/2])
-        cylinder(h=W/2,r=R1,center=true);
-            translate([0,0,-H/2])
-        cylinder(h=W/2,r=R1,center=true);
+        translate([0,-K/2,0]) {
+            wheel();
         }
         
  
@@ -467,40 +475,46 @@ module topElement(){
                 cylinder(r=.1,h=5);
 
 // color([0,1,0])       
-        union(){
-            translate([-L/2,-K,-2*W]) {
-                cube([L,K,W]);
-            }
-            difference() {
-                union() {
-                    for(E = SHAFT_POINTS) {
-                        C=[0,-K/2,0];
-                        P=tpoint(E,C,R);
+        difference(){
+            union(){
+                translate([-L/2,-K,-3*W]) {
+                    cube([L,K,W]);
+                }
+                difference() {
+                    union() {
+                        for(E = SHAFT_POINTS) {
+                            C=[0,-K/2,0];
+                            P=tpoint(E,C,R);
 
-                        difference(){
-                            hull() {
-                                translate(E) 
-                                translate([0,0,-1.5*W])sphere(W/2);
-                                translate(P) 
-                                translate([0,0,-1.5*W])sphere(W/2);
-                                translate(P) sphere(d=2);
-                                translate(E) sphere(d=2);
+                            difference(){
+                                hull() {
+                                    translate(E) 
+                                    translate([0,0,-2.5*W])sphere(W/2);
+                                    translate(P) 
+                                    translate([0,0,-2.5*W])sphere(W/2);
+                                    translate(P) sphere(d=2);
+                                    translate(E) sphere(d=2);
+                                }
+                                hull() {
+                                    translate(P) sphere(d=1);
+                                    translate(E) sphere(d=1);
+                                }
+                                V=unit(E-P);
+                                translate(E+V*W/2)
+                                translate([0,0,W/2])
+                                    sphere(W,center=true);
                             }
-                            hull() {
-                                translate(P) sphere(d=1);
-                                translate(E) sphere(d=1);
-                            }
-                            V=unit(E-P);
-                            translate(E+V*W/2)
-                            translate([0,0,W/2])
-                                sphere(W,center=true);
                         }
                     }
+                    translate([0,-K/2,0])
+                    cylinder(h=100,r=R2,center=true);
                 }
-                translate([0,-K/2,0])
-                cylinder(h=100,r=R2,center=true);
-            }
 
+            }
+            atAttachPositions()
+                attachment(type="out");
+            translate([0,-K/2,0])
+                cylinder(h=100,r=R/2,center=true);
         }
         
 
