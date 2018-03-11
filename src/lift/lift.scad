@@ -104,13 +104,29 @@ module wallElement(){
     }
     
     
-    translate([-SB,-W,0])
+    
+    module atRailPositions() {
+        translate([-SB,-W,0])
+//        rotate(-90,[0,0,1])
+        children();
+        translate([SB,-W,0])
+        rotate(-90,[0,0,1])
+        mirror([1,0,0])
+        children();
+    }
+
+
+    atRailPositions() {
+        rail();
+    }
+/*    translate([-SB,-W,0])
     rail();
 
     translate([SB,-W,0])
     //rotate(180,[0,0,1])
     mirror([1,0,0])
-    rail();
+    rail();*/
+    
 
 /*    
     translate([0,-W,0])
@@ -354,7 +370,7 @@ TIRE_OFF=(VEHICLE_WIDTH1+VEHICLE_WIDTH0)/4;
             
         }
     }
-            atRailPositions()
+    atRailPositions()
     {
             translate([0,-R0-W/8,0]) {
 //            rotate(-90,[0,1,0])
@@ -545,9 +561,10 @@ module preview() {
     translate([0,0,30])
     car();
 
-    translate([0,K,FLOOR+W])
+/*    translate([0,K,FLOOR+W])
     rotate(180,[0,1,0])
     topElement();
+    */
 }
 
 mode="preview";
