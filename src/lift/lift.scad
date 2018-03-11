@@ -62,7 +62,8 @@ K=57;
 L=90;
 W=2;
 SA=L*.8/2;
-SB=L*.6/2;
+R0=1.6;
+SB=L*.6/2 -R0-W/8;
 
 RAIL_O=4;
 
@@ -106,17 +107,22 @@ module wallElement(){
     
     
     module atRailPositions() {
-        translate([-SB,-W,0])
+        translate([-SB,-RAIL_O,0])
 //        rotate(-90,[0,0,1])
         children();
-        translate([SB,-W,0])
+        translate([SB,-RAIL_O,0])
         rotate(-90,[0,0,1])
         mirror([1,0,0])
         children();
     }
+    
+    
 
 
     atRailPositions() {
+//        cylinder(1);
+        translate([-W/8-R0,-(W-RAIL_O),0])
+        
         rail();
     }
 /*    translate([-SB,-W,0])
@@ -318,7 +324,6 @@ module floorElement(){
 
 
 module car(){
-    R0=1.6;
     
     module atRailPositions() {
         translate([SB,K/2-RAIL_O,0])
@@ -372,7 +377,7 @@ TIRE_OFF=(VEHICLE_WIDTH1+VEHICLE_WIDTH0)/4;
     }
     atRailPositions()
     {
-            translate([0,-R0-W/8,0]) {
+            translate([0,0,0]) {
 //            rotate(-90,[0,1,0])
 //                translate([W,-R0,W])
   //                  cylinder($fn=16,d=RAIL_O,h=3*W,center=true);
