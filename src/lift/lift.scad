@@ -26,7 +26,7 @@ if(type=="out") {
         cube([D,D,H],center=true);
         }
         if(railSupport)
-        translate([-6,0,0]){
+        translate([-6.35,0,0]){
         cube([D,D,H],center=true);
         }
     }
@@ -130,9 +130,17 @@ module wallElement(){
             translate([SW,0,0])
             cube([2*SW,2*(R0+CLEAR),100*R0],center=true);
 
-            translate([sqrt(2)*2.5,-sqrt(2)*2.5,0])
+/*%            translate([sqrt(2)*2.5,-sqrt(2)*2.5,0])
             rotate(45,[0,0,1])
-            cube([10,10,100*R0],center=true);
+            cube([10,10,100*R0],center=true);*/
+            rotate(180+60,[0,0,1]) {
+                cube([.1,.1,100*R0],center=true); 
+                translate([0,5,0])
+                cube([10,10,100*R0],center=true); 
+            }
+            translate([0,RAIL_O,FLOOR])
+            
+                cube([20,RAIL_O,STAGE_H*2+W/2],center=true);
         }
 //        translate([-W/8-R0,-(W-RAIL_O),0])
   //      rail();
