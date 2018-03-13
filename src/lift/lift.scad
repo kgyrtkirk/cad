@@ -140,7 +140,7 @@ module wallElement(){
             }
             translate([0,RAIL_O,FLOOR])
             
-                cube([20,RAIL_O,STAGE_H*2+W/2],center=true);
+                cube([20,RAIL_O+CLEAR,STAGE_H*2+W/2],center=true);
         }
 //        translate([-W/8-R0,-(W-RAIL_O),0])
   //      rail();
