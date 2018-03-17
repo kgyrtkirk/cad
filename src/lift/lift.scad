@@ -559,7 +559,7 @@ module preview() {
     rotate(180,[1,0,0])
     floorElement();
     
-!    translate([0,K+e,FLOOR])
+    translate([0,K+e,FLOOR])
     rotate(180,[0,1,0])
     wallElement();
     translate([0,0,FLOOR+e])
@@ -570,13 +570,26 @@ module preview() {
     translate([0,0,30])
     car();
 
-/*    translate([0,K,FLOOR+W])
+    translate([0,K,FLOOR+W])
     rotate(180,[0,1,0])
     topElement();
-    */
+    
 }
 
 mode="preview";
+if ( mode == "sphere"){
+    $fn=64;
+/*    difference(){
+        sphere(d=30,center=true);
+//        translate([-100,-100,-200])
+  //      cube(200);
+    }
+
+*/    
+    cylinder(h=11,d=5.8);
+    
+    
+}
 if ( mode == "attach"){
     testAttach();
 }
