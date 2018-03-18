@@ -1,0 +1,57 @@
+
+
+
+RZ=13;  //  base cyl dist (12 ; but there are some glue)
+ATT_DIST=10;  //  attach dist from base
+ATT_V=4;      // attach vertical thickness
+ATT_H=2;      // attach horizontal thickness
+HOLE_DIST=3.5;
+HOLE_Y=1;
+HOLE_D=.8;
+
+W=2;
+
+AS_U=12;        //  attachment hole size
+AS_V=3;
+
+HOLDER_THICKNESS=4; // remaining holder thickness
+HOLDER_Y=3;         // remaining holder
+
+difference() {
+
+    //holder base
+    rotate(90,[0,1,0])
+    scale([1,1,HOLDER_THICKNESS+2*ATT_H])
+    difference(){
+        hull(){
+            translate([0,ATT_DIST-1/2,0])
+            cube([ATT_V,1,1],center=true);
+            translate([0,-RZ/2,0])
+            cylinder(d=RZ,h=1,center=true);
+        }
+        translate([0,-RZ/2,0])
+        cylinder(d=RZ+.1,h=100,center=true);
+        
+        translate([HOLE_DIST/2,HOLE_Y,0])
+        cylinder(d=HOLE_D,h=100,center=true);
+        translate([-HOLE_DIST/2,HOLE_Y,0])
+        cylinder(d=HOLE_D,h=100,center=true);
+    }
+
+    translate([0,-50+HOLDER_Y,0])
+    cube([HOLDER_THICKNESS,100,100],center=true);
+    
+    translate([ATT_H/2+50,HOLDER_Y+W+50,0])
+    cube([100,100,100],center=true);
+    translate([-(ATT_H/2+50),HOLDER_Y+W+50,0])
+    cube([100,100,100],center=true);
+}
+
+
+translate([0,ATT_DIST+AS_V/2+W,0]){
+        difference() {
+            cube([AS_U+2*W,AS_V+2*W,ATT_V],center=true);
+            cube([AS_U,AS_V,ATT_V*3],center=true);
+        }
+    
+}

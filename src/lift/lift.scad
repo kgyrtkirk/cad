@@ -472,12 +472,9 @@ module topElement(){
     
     $fn=16;
     
-    echo(R);
-    
-    
     translate([0,0,-10]) 
     {
-            $fn=32;
+        $fn=32;
         translate([0,-K,0])
         rotate(180,[1,0,0])
         floorBase(3*W,cutout=true);
@@ -570,13 +567,26 @@ module preview() {
     translate([0,0,30])
     car();
 
-    translate([0,K,FLOOR+W])
-    rotate(180,[0,1,0])
-    topElement();
+    translate([0,K,FLOOR+W]) {
+        rotate(180,[0,1,0])
+        topElement();
+    }
     
 }
 
-mode="preview";
+module wheelDev() {
+    
+    difference() {
+        rotate(180,[0,1,0])
+        topElement();
+        
+        translate([50,0,0])
+        cube([100,200,50],center=true);
+    }
+
+}
+
+mode="wheelDev";
 if ( mode == "sphere"){
     $fn=64;
 /*    difference(){
@@ -607,6 +617,9 @@ if( mode == "wall") {
 }
 if(mode == "preview"){
     preview();
+}
+if(mode == "wheelDev"){
+    wheelDev();
 }
 //rotate(-90,[1,0,0]) wallElement();
 //floorElement();
