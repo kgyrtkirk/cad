@@ -5,9 +5,9 @@ RZ=13;  //  base cyl dist (12 ; but there are some glue)
 ATT_DIST=10;  //  attach dist from base
 ATT_V=4;      // attach vertical thickness
 ATT_H=2;      // attach horizontal thickness
-HOLE_DIST=3.5;
+HOLE_DIST=4;
 HOLE_Y=1;
-HOLE_D=.8;
+HOLE_D=1;
 
 W=2;
 
