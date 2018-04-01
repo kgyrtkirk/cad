@@ -1,5 +1,5 @@
 OD=$(HOME)/3d/gtruck
-MODES= attach
+MODES= attach	hook1
 
 TARGETS=	$(addsuffix .stl,$(addprefix $(OD)/,$(MODES)))
 
