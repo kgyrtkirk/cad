@@ -4,9 +4,9 @@ H=15;
 
 D0=26;
 D1=32;
-O=2;
+O=3;
 $fn=64;
-
+HOLE=1;
 
 module half() {
 
@@ -30,7 +30,7 @@ module half() {
                         translate([0,-O/2,0])
                         cube([DI/2,0.1,H/2],center=true);
                     }
-                    cylinder(d=.7,h=H,center=true);
+                    cylinder(d=HOLE,h=H,center=true);
                 }
             }
         }
