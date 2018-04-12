@@ -474,7 +474,7 @@ module wheelScrew(internal) {
     metric_thread (diameter=8, pitch=1, length=20,internal=true);
 }
 
-module wheel(){
+module wheelBottom(){
     H=4;
     R1=R+W;
     difference() {
@@ -523,7 +523,6 @@ module topElement(){
         floorBase(3*W,cutout=true);
         
         
-        wheel();
         
  
         
@@ -605,8 +604,12 @@ module preview() {
     car();
 
     translate([0,K,FLOOR+W]) {
-        rotate(180,[0,1,0])
+        rotate(180,[0,1,0]) {
         topElement();
+        translate([0,0,-10]) 
+        wheelBottom();
+
+        }
     }
     
 }
@@ -614,8 +617,13 @@ module preview() {
 module wheelDev() {
     
     difference() {
-        rotate(180,[0,1,0])
-        topElement();
+        union() {
+            rotate(180,[0,1,0]) {
+                topElement();
+                translate([0,0,-10]) 
+                wheelBottom();
+            }
+        }
         
         translate([50,0,0])
         cube([100,200,50],center=true);
