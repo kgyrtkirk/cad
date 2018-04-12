@@ -457,14 +457,40 @@ function unit(v) = v/norm(v);
 
     R=FLOOR/PI;
 
+SHAFT_POINTS=[
+    [ SB-W,  -2*W,0],
+    [-SB+W,  -2*W,0],
+    [ SB-W,-K+2*W,0],
+    [-SB+W,-K+2*W,0]   ];
+
+
+
 module wheel(){
     H=4;
     R1=R+W;
-    cylinder(h=H,r=R,center=true);
-        translate([0,0,H/2])
-    cylinder(h=W/2,r=R1,center=true);
-        translate([0,0,-H/2])
-    cylinder(h=W/2,r=R1,center=true);
+    difference() {
+        // barrel
+        translate([0,-K/2,0]) {
+
+            cylinder(h=H,r=R,center=true);
+                translate([0,0,H/2])
+            cylinder(h=W/2,r=R1,center=true);
+                translate([0,0,-H/2])
+            cylinder(h=W/2,r=R1,center=true);
+            
+        }
+        // inner holes
+        for(E = SHAFT_POINTS) {
+            C=[0,-K/2,0];
+            P=tpoint(E,C,R);
+            hull() {
+                translate(P) sphere(d=1);
+                translate(C) sphere(d=3);
+            }
+            
+        }
+    }
+
 }
 
 module topElement(){
@@ -480,16 +506,9 @@ module topElement(){
         floorBase(3*W,cutout=true);
         
         
-        translate([0,-K/2,0]) {
-            wheel();
-        }
+        wheel();
         
  
-        SHAFT_POINTS=[
-            [ SB-W,  -2*W,0],
-            [-SB+W,  -2*W,0],
-            [ SB-W,-K+2*W,0],
-            [-SB+W,-K+2*W,0]   ];
         
         if(false)
             %for(x=SHAFT_POINTS)
@@ -502,6 +521,7 @@ module topElement(){
                 translate([-L/2,-K,-3*W]) {
                     cube([L,K,W]);
                 }
+
                 difference() {
                     union() {
                         for(E = SHAFT_POINTS) {
