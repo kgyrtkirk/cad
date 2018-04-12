@@ -463,7 +463,16 @@ SHAFT_POINTS=[
     [ SB-W,-K+2*W,0],
     [-SB+W,-K+2*W,0]   ];
 
+use <threads.scad>
 
+
+//metric_thread (diameter=20, pitch=2, length=16, square=true, ///thread_size=2,
+    //           groove=true, rectangle=3);
+
+
+module wheelScrew(internal) {
+    metric_thread (diameter=8, pitch=1, length=20,internal=true);
+}
 
 module wheel(){
     H=4;
@@ -483,12 +492,20 @@ module wheel(){
         for(E = SHAFT_POINTS) {
             C=[0,-K/2,0];
             P=tpoint(E,C,R);
+            $fn=8;
             hull() {
-                translate(P) sphere(d=1);
-                translate(C) sphere(d=3);
+                translate(P) sphere(d=2);
+                translate(C) sphere(d=2);
+            }
+            hull() {
+                translate((P+3*C)/4) cylinder(d=1,h=H);
+                translate(C) cylinder(d=1,h=H);
             }
             
         }
+        translate([0,-K/2,-H/2-1])
+            wheelScrew(true);
+
     }
 
 }
