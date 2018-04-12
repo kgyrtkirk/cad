@@ -471,12 +471,60 @@ use <threads.scad>
 
 
 module wheelScrew(internal) {
-    metric_thread (diameter=8, pitch=1, length=20,internal=true);
+    metric_thread (diameter=8, pitch=1, length=6,internal=internal);
 }
 
+
+module turnHandle(r=5,R=20,N=5,h=10,cd=1){
+    translate([0,0,-h/2]){
+        cylinder(r=R,h=h,center=true);
+        for(i=[1:N]){
+            a=i*360/N;
+            translate([R*sin(a),R*cos(a),0]) {
+                
+                for(mZ=[0,1]) {
+                    mirror([0,0,mZ])
+                    translate([0,0,h/2-cd/2])
+                    cylinder(r1=r,r2=r-cd,h=cd,center=true);
+                }
+                cylinder(r=r,h=h-2*cd,center=true);
+            }
+        }
+    }
+}
+
+module wheelTop(){
+    H=4; //duplicate in wheelTop/Bottom
+    TD=4;
+    SP_TOP=1;
+    DIAL_H=4;
+
+    color([0,1,0])
+    translate([0,-K/2,-H/2]) {
+        
+        translate([0,0,-1])
+        wheelScrew(false);
+        
+        MID_CYL_H=TD+SP_TOP;
+        translate([0,0,-MID_CYL_H/2])
+            cylinder(d=10,h=MID_CYL_H,center=true);
+        
+        // dial-gear
+        translate([0,0,-TD]) {
+            translate([0,0,-SP_TOP])
+            turnHandle(r=5,R=15,N=13,h=5);
+        
+        }
+//        translate([0,0,-MID_CYL_H/2])
+        
+        
+    }
+    
+}   
 module wheelBottom(){
-    H=4;
+    H=4; //duplicate in wheelTop/Bottom
     R1=R+W;
+color([1,0,0])
     difference() {
         // barrel
         translate([0,-K/2,0]) {
@@ -620,13 +668,15 @@ module wheelDev() {
         union() {
             rotate(180,[0,1,0]) {
                 topElement();
-                translate([0,0,-10]) 
-                wheelBottom();
+                translate([0,0,-10])  {
+                    wheelBottom();
+                    wheelTop();
+                }
             }
         }
         
         translate([50,0,0])
-        cube([100,200,50],center=true);
+        cube([100,200,100],center=true);
     }
 
 }
