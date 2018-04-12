@@ -496,27 +496,38 @@ module turnHandle(r=5,R=20,N=5,h=10,cd=1){
 module wheelTop(){
     H=4; //duplicate in wheelTop/Bottom
     TD=4;
-    SP_TOP=1;
+    SP_TOP=.1;
     DIAL_H=4;
 
     color([0,1,0])
     translate([0,-K/2,-H/2]) {
         
-        translate([0,0,-1])
-        wheelScrew(false);
-        
-        MID_CYL_H=TD+SP_TOP;
-        translate([0,0,-MID_CYL_H/2])
-            cylinder(d=10,h=MID_CYL_H,center=true);
-        
-        // dial-gear
-        translate([0,0,-TD]) {
-            translate([0,0,-SP_TOP])
-            turnHandle(r=5,R=15,N=13,h=5);
-        
+        difference() {
+            union() {
+                translate([0,0,-1])
+                wheelScrew(false);
+                
+                MID_CYL_H=TD+SP_TOP;
+                translate([0,0,-MID_CYL_H/2])
+                    cylinder(d=DRUM_R-.5,h=MID_CYL_H,center=true);
+                
+                // dial-gear
+                translate([0,0,-TD]) {
+                    translate([0,0,-SP_TOP])
+                    turnHandle(r=4,R=16,N=16,h=DIAL_H);
+                
+                }
+            }
+            HANDLE_TOP_Z=-(TD+SP_TOP+DIAL_H);
+            SCREW_HEAD_HOLE=7;
+            cylinder($fn=16 ,h=100,d=3,center=true);
+            translate([0,0,HANDLE_TOP_Z]){
+                cylinder($fn=16 ,h=8,d=SCREW_HEAD_HOLE,center=true);
+            }
+            translate([0,0,HANDLE_TOP_Z]){
+                cylinder($fn=16 ,h=2,d2=SCREW_HEAD_HOLE,d1=SCREW_HEAD_HOLE+4,center=true);
+            }
         }
-//        translate([0,0,-MID_CYL_H/2])
-        
         
     }
     
@@ -682,6 +693,7 @@ module wheelDev() {
 }
 
 mode="wheelDev";
+mode="wheelTop";
 if ( mode == "sphere"){
     $fn=64;
 /*    difference(){
@@ -716,6 +728,16 @@ if(mode == "preview"){
 if(mode == "wheelDev"){
     wheelDev();
 }
+if(mode == "topElement"){
+    topElement();
+}
+if(mode == "wheelBottom"){
+    wheelBottom();
+}
+if(mode == "wheelTop"){
+    wheelTop();
+}
+
 //rotate(-90,[1,0,0]) wallElement();
 //floorElement();
 
