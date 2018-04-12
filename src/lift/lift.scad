@@ -17,7 +17,7 @@ if(type=="out") {
     translate([0,SS,H/2])
     translate( (type == "plug") ? [0,0,-dim_z] : [0,0,0] ) // hackish
 
-#    difference() {
+    difference() {
     union() {
         cube([2*D,D,H],center=true);
         translate([0,-W,0])
@@ -455,7 +455,7 @@ function    tpoint(e,c,r) =
 
 function unit(v) = v/norm(v);
 
-    R=FLOOR/PI;
+DRUM_R=FLOOR/PI;
 
 SHAFT_POINTS=[
     [ SB-W,  -2*W,0],
@@ -523,13 +523,13 @@ module wheelTop(){
 }   
 module wheelBottom(){
     H=4; //duplicate in wheelTop/Bottom
-    R1=R+W;
+    R1=DRUM_R+W;
 color([1,0,0])
     difference() {
         // barrel
         translate([0,-K/2,0]) {
 
-            cylinder(h=H,r=R,center=true);
+            cylinder(h=H,r=DRUM_R,center=true);
                 translate([0,0,H/2])
             cylinder(h=W/2,r=R1,center=true);
                 translate([0,0,-H/2])
@@ -539,7 +539,7 @@ color([1,0,0])
         // inner holes
         for(E = SHAFT_POINTS) {
             C=[0,-K/2,0];
-            P=tpoint(E,C,R);
+            P=tpoint(E,C,DRUM_R);
             $fn=8;
             hull() {
                 translate(P) sphere(d=2);
@@ -559,7 +559,7 @@ color([1,0,0])
 }
 
 module topElement(){
-    R2=R+W+W/2;
+    R2=DRUM_R+W+W/2;
     
     $fn=16;
     
@@ -590,7 +590,7 @@ module topElement(){
                     union() {
                         for(E = SHAFT_POINTS) {
                             C=[0,-K/2,0];
-                            P=tpoint(E,C,R);
+                            P=tpoint(E,C,DRUM_R);
 
                             difference(){
                                 hull() {
@@ -620,7 +620,7 @@ module topElement(){
             atAttachPositions()
                 attachment(type="out");
             translate([0,-K/2,0])
-                cylinder(h=100,r=R/2,center=true);
+                cylinder(h=100,r=DRUM_R/2,center=true);
         }
         
 
