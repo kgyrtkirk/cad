@@ -2,12 +2,7 @@
 /*
     notes after assembling v1
         * need better car / fishing line connection - the line should directed up
-        * too sophisticated to go thru all these holes with 4 lines at once - it's doable...
-        * the main_drum_circumfence=2 desired_circumfence...possibly a typo somewhere
-        * bigger edges for the drum...
-        * probably a closed loop system would work better
-        * please note that at shaft center 2 drum channels the material doesn't turn 90 deg right away :D 
-        * main handle is too close to top - there should be some spacing
+!!!     * probably a closed loop system would work better
         * rewise top screw hole things..
         * hard to remove support inside the drum... in the topE channels
         
@@ -642,8 +637,12 @@ module topElement(){
                                 }
                                 V=unit(E-P);
                                 translate(E+V*W/2)
-                                translate([0,0,W/2])
-                                    sphere(W,center=true);
+                                hull() {
+                                    translate([0,0,W/2]) 
+                                        sphere(W,center=true);
+                                    translate([0,0,2*W]) 
+                                        sphere(2*W,center=true);
+                                }
                             }
                         }
                     }
