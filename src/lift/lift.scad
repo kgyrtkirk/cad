@@ -458,7 +458,7 @@ function    tpoint(e,c,r) =
     let(
             l=norm(c-e),
             s=sqrt(l*l - r*r),
-            a=asin(r/l)
+            a=-asin(r/l)
         )
     e+
     (s/l)*to_vec3( 
@@ -679,8 +679,10 @@ module preview() {
     translate([0,K,FLOOR+W]) {
         rotate(180,[0,1,0]) {
         topElement();
-        translate([0,0,-10]) 
+        translate([0,0,-10]) {
         wheelBottom();
+        wheelTop();
+        }
 
         }
     }
@@ -706,7 +708,8 @@ module wheelDev() {
 
 }
 
-mode="wheelDev";
+//mode="wheelDev";
+mode="preview";
 //mode="topElement";
 if ( mode == "sphere"){
     $fn=64;
