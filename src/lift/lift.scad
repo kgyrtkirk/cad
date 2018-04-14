@@ -1,4 +1,16 @@
 
+/*
+    notes after assembling v1
+        * need better car / fishing line connection - the line should directed up
+        * too sophisticated to go thru all these holes with 4 lines at once - it's doable...
+        * the main_drum_circumfence=2 desired_circumfence...possibly a typo somewhere
+        * bigger edges for the drum...
+        * probably a closed loop system would work better
+        * please note that at shaft center 2 drum channels the material doesn't turn 90 deg right away :D 
+        * main handle is too close to top - there should be some spacing
+        
+*/
+
 
 module attachment(type="plug",railSupport=false) {
     dim_z=2;
@@ -455,7 +467,7 @@ function    tpoint(e,c,r) =
 
 function unit(v) = v/norm(v);
 
-DRUM_R=FLOOR/PI;
+DRUM_R=FLOOR/PI/2;
 
 SHAFT_POINTS=[
     [ SB-W,  -2*W,0],
@@ -609,8 +621,8 @@ module topElement(){
                                     translate([0,0,-2.5*W])sphere(W/2);
                                     translate(P) 
                                     translate([0,0,-2.5*W])sphere(W/2);
-                                    translate(P) sphere(d=2);
-                                    translate(E) sphere(d=2);
+                                    translate(P) sphere(d=3);
+                                    translate(E) sphere(d=3);
                                 }
                                 hull() {
                                     translate(P) sphere(d=1);
@@ -693,7 +705,7 @@ module wheelDev() {
 }
 
 mode="wheelDev";
-mode="wheelTop";
+//mode="topElement";
 if ( mode == "sphere"){
     $fn=64;
 /*    difference(){
