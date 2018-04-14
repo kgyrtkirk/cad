@@ -8,6 +8,8 @@
         * probably a closed loop system would work better
         * please note that at shaft center 2 drum channels the material doesn't turn 90 deg right away :D 
         * main handle is too close to top - there should be some spacing
+        * rewise top screw hole things..
+        * hard to remove support inside the drum... in the topE channels
         
 */
 
@@ -521,7 +523,7 @@ module wheelTop(){
                 
                 MID_CYL_H=TD+SP_TOP;
                 translate([0,0,-MID_CYL_H/2])
-                    cylinder(d=DRUM_R-.5,h=MID_CYL_H,center=true);
+                    cylinder(r=DRUM_R-.5,h=MID_CYL_H,center=true);
                 
                 // dial-gear
                 translate([0,0,-TD]) {
@@ -643,7 +645,7 @@ module topElement(){
             atAttachPositions()
                 attachment(type="out");
             translate([0,-K/2,0])
-                cylinder(h=100,r=DRUM_R/2,center=true);
+                cylinder(h=100,r=DRUM_R,center=true);
         }
         
 
