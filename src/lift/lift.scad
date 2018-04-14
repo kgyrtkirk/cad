@@ -511,7 +511,8 @@ module wheelTop(){
     H=4; //duplicate in wheelTop/Bottom
     TD=4;
     SP_TOP=.1;
-    DIAL_H=4;
+    DIAL_H=5;
+    SP_HANDLE=3;
 
     color([0,1,0])
     translate([0,-K/2,-H/2]) {
@@ -528,11 +529,15 @@ module wheelTop(){
                 // dial-gear
                 translate([0,0,-TD]) {
                     translate([0,0,-SP_TOP])
-                    turnHandle(r=4,R=16,N=16,h=DIAL_H);
+                translate([0,0,-SP_HANDLE/2])
+                    cylinder(r=DRUM_R+W,h=SP_HANDLE,center=true);
+                    
+                    translate([0,0,-SP_HANDLE])
+                    turnHandle(r=6,R=20,N=16,h=DIAL_H);
                 
                 }
             }
-            HANDLE_TOP_Z=-(TD+SP_TOP+DIAL_H);
+            HANDLE_TOP_Z=-(TD+SP_TOP+DIAL_H+SP_HANDLE);
             SCREW_HEAD_HOLE=7;
             cylinder($fn=16 ,h=100,d=3,center=true);
             translate([0,0,HANDLE_TOP_Z]){
@@ -546,9 +551,12 @@ module wheelTop(){
     }
     
 }   
+
+DRUM_R1=DRUM_R+DRUM_R/2;
+
 module wheelBottom(){
     H=4; //duplicate in wheelTop/Bottom
-    R1=DRUM_R+W;
+    R1=DRUM_R1;
 color([1,0,0])
     difference() {
         // barrel
@@ -571,7 +579,7 @@ color([1,0,0])
                 translate(C) sphere(d=2);
             }
             hull() {
-                translate((P+3*C)/4) cylinder(d=1,h=H);
+                translate((P+1*C)/2) cylinder(d=1,h=H);
                 translate(C) cylinder(d=1,h=H);
             }
             
@@ -584,7 +592,9 @@ color([1,0,0])
 }
 
 module topElement(){
-    R2=DRUM_R+W+W/2;
+    
+    R2=DRUM_R1+W;
+    //DRUM_R+W+W/2;
     
     $fn=16;
     
@@ -708,8 +718,8 @@ module wheelDev() {
 
 }
 
-//mode="wheelDev";
-mode="preview";
+mode="wheelDev";
+//mode="preview";
 //mode="topElement";
 if ( mode == "sphere"){
     $fn=64;
