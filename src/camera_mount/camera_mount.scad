@@ -5,15 +5,18 @@
 $fn=32;
 
 BJ_R=5;                 //  internal radius
-BJ_FOUNDATION_H=BJ_R/4; //  foundation dist
+BJ_FOUNDATION_H=BJ_R/4+1; //  foundation dist
 BJ_FOUNDATION_R=BJ_R/2; //  foundation r
 BJ_W=1.2;               //  wall width
-BJ_SPACING=-.1;          //  extra spacing between b&j
-BJ_JLEN_RATIO=1.5;      //  1=half ; 2=closed
+BJ_SPACING=-.15;        //  extra spacing between b&j (make it stuck)
+BJ_JLEN_RATIO=1.6;      //  1=half ; 2=closed
 BJ_CLAW_CNT=4;
 BJ_CUTOUT_WIDTH=3;
 BJ_CUTOUT_HEIGHT=8;
-    
+
+
+BJ_SEAT_R=BJ_FOUNDATION_R;
+
 module  bj_ball() {
     
     translate([0,0,BJ_R+BJ_FOUNDATION_H])
@@ -48,37 +51,75 @@ module suspension(){
     A=6;    // hole2edge
     D=8;    // acryl diam
     W=2;
+    HOLE_D=3.2;
 
     difference() {
         translate([(W+A+D)/2,0,0])
-        cube([W+A+D,30,D+2*W],center=true);
+        cube([W+A+D,W+A+D,D+2*W],center=true);
         
         translate([A+D,0,0])
         translate([-50,0,0])
         cube([100,100,D],center=true);
 
-        translate([D,0,0])
-        cylinder(d=3.2,h=30,center=true);
+        translate([D-HOLE_D/2,0,0])
+        cylinder(d=HOLE_D,h=30,center=true);
         
         translate([(W+A+D),0,0])
         rotate(90,[0,1,0])
-        cylinder(r=BJ_FOUNDATION_R+.1,h=.6,center=true);
+        cylinder(r=BJ_FOUNDATION_R,h=10,center=true);
     }
 }
 
 module intermediate(){
     W=2;
     L=50;
+    rotate(90,[0,1,0])
     difference() {
-        cylinder(r=BJ_FOUNDATION_R+W,h=L);
+        
+X=BJ_FOUNDATION_R+W+W;
+        cube([X,X,L],center=true);
 //        translate([(W+A+D)/2,0,0])
-        cylinder(r=BJ_FOUNDATION_R+.1,h=.6,center=true);
-        translate([0,0,L])
-        cylinder(r=BJ_FOUNDATION_R+.1,h=.6,center=true);
+
+/*        translate([0,0,-L/2])
+        cylinder(r=BJ_FOUNDATION_R+.3,h=.6,center=true);
+        translate([0,0,L/2])
+        cylinder(r=BJ_FOUNDATION_R+.3,h=.6,center=true);
+*/
+        
+        translate([0,X/2+W/2,0])
+        cube([X+1,X,L-2*W],center=true);
+        translate([0,-(X/2+W/2),0])
+        cube([X+1,X,L-2*W],center=true);
     }
 }
 
-mode="intermediate";
+module mount(){
+    HI=21;      //  hight
+    WI=20;      //  width    
+    W=1;      //  wall
+    PCB_W=1;
+    PCB_I=.5;
+    SP_BACK=4;  // spacing at back
+    SP_FRONT=1; // spacing at front
+    
+    
+    
+    difference(){
+        S=W+SP_BACK+PCB_W+SP_FRONT;
+        translate([0,0,S/2])
+        cube([WI,HI+2*W,S],center=true);
+        
+        // go to pcb middle in Z
+        translate([0,0,W+SP_BACK+PCB_W/2]) {
+            cube([WI+1,HI,PCB_W],center=true);
+            cube([WI+1,HI-PCB_I*2,SP_BACK*2+PCB_W/1],center=true);
+        }
+        cylinder(r=BJ_SEAT_R,h=10,center=true);
+    }
+}
+
+
+mode="bj";
 if(mode == "bj") {
     bj_ball();
     translate([BJ_R*2+2*BJ_W,0,0])
@@ -94,5 +135,5 @@ if(mode == "intermediate") {
 }
 
 if(mode == "mount") {
-    cube();
+    mount();
 }
