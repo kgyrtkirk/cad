@@ -2,16 +2,16 @@
 
 //use <ballJoint.scad>
 
-$fn=20;
+$fn=32;
 
 BJ_R=5;                 //  internal radius
 BJ_FOUNDATION_H=BJ_R/4; //  foundation dist
 BJ_FOUNDATION_R=BJ_R/2; //  foundation r
 BJ_W=1.2;               //  wall width
-BJ_SPACING=.1;          //  extra spacing between b&j
-BJ_JLEN_RATIO=1.3;      //  1=half ; 2=closed
+BJ_SPACING=-.1;          //  extra spacing between b&j
+BJ_JLEN_RATIO=1.5;      //  1=half ; 2=closed
 BJ_CLAW_CNT=4;
-BJ_CUTOUT_WIDTH=5;
+BJ_CUTOUT_WIDTH=3;
 BJ_CUTOUT_HEIGHT=8;
     
 module  bj_ball() {
@@ -43,4 +43,5 @@ module  bj_socket() {
 }
 
 bj_ball();
+translate([BJ_R*2+2*BJ_W,0,0])
 bj_socket();
