@@ -42,6 +42,57 @@ module  bj_socket() {
 
 }
 
-bj_ball();
-translate([BJ_R*2+2*BJ_W,0,0])
-bj_socket();
+
+module suspension(){
+    
+    A=6;    // hole2edge
+    D=8;    // acryl diam
+    W=2;
+
+    difference() {
+        translate([(W+A+D)/2,0,0])
+        cube([W+A+D,30,D+2*W],center=true);
+        
+        translate([A+D,0,0])
+        translate([-50,0,0])
+        cube([100,100,D],center=true);
+
+        translate([D,0,0])
+        cylinder(d=3.2,h=30,center=true);
+        
+        translate([(W+A+D),0,0])
+        rotate(90,[0,1,0])
+        cylinder(r=BJ_FOUNDATION_R+.1,h=.6,center=true);
+    }
+}
+
+module intermediate(){
+    W=2;
+    L=50;
+    difference() {
+        cylinder(r=BJ_FOUNDATION_R+W,h=L);
+//        translate([(W+A+D)/2,0,0])
+        cylinder(r=BJ_FOUNDATION_R+.1,h=.6,center=true);
+        translate([0,0,L])
+        cylinder(r=BJ_FOUNDATION_R+.1,h=.6,center=true);
+    }
+}
+
+mode="intermediate";
+if(mode == "bj") {
+    bj_ball();
+    translate([BJ_R*2+2*BJ_W,0,0])
+    bj_socket();
+}
+if(mode == "suspension") {
+    rotate(90,[0,1,0])
+    suspension();
+}
+
+if(mode == "intermediate") {
+    intermediate();
+}
+
+if(mode == "mount") {
+    cube();
+}

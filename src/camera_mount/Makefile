@@ -1,5 +1,5 @@
 OD=$(HOME)/3d/camera_mount
-MODES= suspension intermediate mount
+MODES= suspension intermediate mount bj
 
 TARGETS=	$(addsuffix .stl,$(addprefix $(OD)/,$(MODES)))
 
