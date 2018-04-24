@@ -8,6 +8,8 @@
         
 */
 
+function rZ(a,newZ) = [a[0],a[1],newZ];
+
 module closedLoop(){
     
     FLOOR=70;   // DUP!
@@ -16,8 +18,10 @@ module closedLoop(){
     ROD_LEN=70;
     
     DEPTHX=ROD_LEN; //rename depth?
-    WIDTHX=50;  // DUP!
-
+    WIDTHX=57;  // DUP! ; old: K
+    HOLE_D=1;
+    CHANNEL_D=3;
+    
     CH_U=DEPTHX/2*.8;
     CH_D=DEPTHX/2*.6;
     CH_X=WIDTHX/2*.9;
@@ -60,7 +64,59 @@ module closedLoop(){
     }
     
     
+    module channel(y_off,top) {
+        $fn=16;
+        o=[CH_X,y_off,(top?1:-1)*ROD_R];
+        i=[ROD_R,y_off,(top?1:-1)*ROD_R];
+        top=ROD_R*2;
+        
+        difference() {
+            hull() {
+                translate(o)            sphere(d=CHANNEL_D);
+                translate(i)            sphere(d=CHANNEL_D);
+                translate(rZ(o,top))    sphere(d=CHANNEL_D);
+            //    translate(rZ(i,top))    sphere(d=CHANNEL_D);
+            }
+            
+            hull() {
+                translate(o)            sphere(d=HOLE_D);
+                translate(i)            sphere(d=HOLE_D);
+            }
+            translate([0,0,-1])
+            translate(o)            sphere(d=CHANNEL_D);
+            translate([CH_X,y_off,(top?1:-1)*ROD_R]) {
+//                sphere(d=HOLE_D);
+            }
+        }
+    }
+    
+    // channels
+    module topChannels() {
+        difference() {
+            union() {
+                channel(CH_U,true);
+                channel(CH_D,false);
+                mirror() {
+                    channel(CH_U,false);
+                    channel(CH_D,true);
+                }
+                mirror([0,1,0]) {
+                    channel(CH_U,true);
+                    channel(CH_D,false);
+                    mirror() {
+                        channel(CH_U,false);
+                        channel(CH_D,true);
+                    }
+                }
+            }
+            rotate(90,[1,0,0]) {
+                cylinder(r=ROD_R+7,h=ROD_LEN,center=true);
+            }
+        }
+    }
     mainRod();
+    topChannels();
+    
 
 }
 
