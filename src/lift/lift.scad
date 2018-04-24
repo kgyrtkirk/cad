@@ -22,32 +22,39 @@ module closedLoop(){
     CH_D=DEPTHX/2*.6;
     CH_X=WIDTHX/2*.9;
     
-    module  atChannels0(){
-        translate([CH_X,CH_U,0])                    children();
-        translate([CH_X,CH_D,0])                    children();
+    module  atChannels0(xScale,yScale){
+        translate([xScale*CH_X,yScale*CH_U,0])                    children();
+        translate([xScale*CH_X,yScale*CH_D,0])                    children();
     }
-    module  atChannels1(){
-        atChannels0() children();
+    module  atChannels1(xScale,yScale){
+        atChannels0(xScale,yScale) children();
         mirror([0,1,0])
-        atChannels0() children();
+        atChannels0(xScale,yScale) children();
     }
-    module  atChannels(xScale=1,yScale=1,mirror=0) {
-        atChannels1() children();
+    module  atChannels(xScale=1,yScale=1) {
+        atChannels1(xScale,yScale) children();
         mirror([1,0,0])
-        atChannels1() children();
+        atChannels1(xScale,yScale) children();
     }
     
     module  mainRod() {
         rotate(90,[1,0,0]) {
-            cylinder(r=ROD_R,h=ROD_LEN,center=true);
+            cylinder(r=ROD_R/2,h=ROD_LEN,center=true);
         }
         
-        atChannels(){
-            hull(){
-            
-            sphere();
-            translate([-10,-10,-10])
-            sphere(3);
+        // note: screw pos?
+        // probably atChannels is abad idea
+        atChannels(xScale=0){
+            DW=2;
+            EDGE=5;
+            EDGE_W=1;
+            rotate(90,[1,0,0]) {
+                translate([0,0,0])
+                cylinder(r=ROD_R,h=DW*2,center=true);
+                translate([0,0,DW])
+                cylinder(r=ROD_R+EDGE,h=EDGE_W,center=true);
+                translate([0,0,-DW])
+                cylinder(r=ROD_R+EDGE,h=1,center=true);
             }
         }
     }
