@@ -8,6 +8,12 @@
         
 */
 
+module closedLoop(){
+    sphere();
+}
+
+
+
 
 module attachment(type="plug",railSupport=false) {
     dim_z=2;
@@ -717,9 +723,14 @@ module wheelDev() {
 
 }
 
-mode="wheelDev";
+mode="closedLoop";
 //mode="preview";
 //mode="topElement";
+
+if(mode == "closedLoop"){
+    closedLoop();
+}
+
 if ( mode == "sphere"){
     $fn=64;
 /*    difference(){
