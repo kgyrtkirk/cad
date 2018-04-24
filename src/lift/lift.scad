@@ -9,10 +9,53 @@
 */
 
 module closedLoop(){
-    sphere();
+    
+    FLOOR=70;   // DUP!
+    DRUM_R=FLOOR/PI/2;// DUP!
+    ROD_R=DRUM_R;
+    ROD_LEN=70;
+    
+    DEPTHX=ROD_LEN; //rename depth?
+    WIDTHX=50;  // DUP!
+
+    CH_U=DEPTHX/2*.8;
+    CH_D=DEPTHX/2*.6;
+    CH_X=WIDTHX/2*.9;
+    
+    module  atChannels0(){
+        translate([CH_X,CH_U,0])                    children();
+        translate([CH_X,CH_D,0])                    children();
+    }
+    module  atChannels1(){
+        atChannels0() children();
+        mirror([0,1,0])
+        atChannels0() children();
+    }
+    module  atChannels(xScale=1,yScale=1,mirror=0) {
+        atChannels1() children();
+        mirror([1,0,0])
+        atChannels1() children();
+    }
+    
+    module  mainRod() {
+        rotate(90,[1,0,0]) {
+            cylinder(r=ROD_R,h=ROD_LEN,center=true);
+        }
+        
+        atChannels(){
+            hull(){
+            
+            sphere();
+            translate([-10,-10,-10])
+            sphere(3);
+            }
+        }
+    }
+    
+    
+    mainRod();
+
 }
-
-
 
 
 module attachment(type="plug",railSupport=false) {
