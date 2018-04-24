@@ -10,21 +10,37 @@
 
 function rZ(a,newZ) = [a[0],a[1],newZ];
 
+FLOOR=70;   // DUP!
+DRUM_R=FLOOR/PI/2;// DUP!
+ROD_R=DRUM_R;
+ROD_LEN=90;
+
+K=57;
+L=90;
+
+DEPTHX=L; //rename depth? ; old L
+WIDTHX=K;  // DUP! ; old: K
+HOLE_D=1;
+CHANNEL_D=3;
+
+CH_U=DEPTHX/2*.8;
+CH_D=DEPTHX/2*.6;
+CH_X=WIDTHX/2*.9;
+
+FLOOR=70;
+e=.1;
+STAGE_H=2;
+W=2;
+SB=CH_U;
+R0=1.6;
+SA=CH_D/2;
+
+RAIL_O=4;
+
+EH=FLOOR-e-STAGE_H;
+
+
 module closedLoop(){
-    
-    FLOOR=70;   // DUP!
-    DRUM_R=FLOOR/PI/2;// DUP!
-    ROD_R=DRUM_R;
-    ROD_LEN=70;
-    
-    DEPTHX=ROD_LEN; //rename depth?
-    WIDTHX=57;  // DUP! ; old: K
-    HOLE_D=1;
-    CHANNEL_D=3;
-    
-    CH_U=DEPTHX/2*.8;
-    CH_D=DEPTHX/2*.6;
-    CH_X=WIDTHX/2*.9;
     
     module  atChannels0(xScale,yScale){
         translate([xScale*CH_X,yScale*CH_U,0])                    children();
@@ -161,34 +177,15 @@ if(type=="out") {
 //a=2;
 
 module testAttach() {
-translate([0,2.5,1])
-cube([10,4,2],center=true);
-translate([0,0,2])
-attachment("plug");
-
-if(true) 
-    {
-translate([0,10,0])
-attachment(2);
-translate([0,-10,0])
-attachment(2);
-}
+    
+    $fn=32;
+    difference() {
+    cube([10,10,4],center=true);
+        cylinder(d=HOLE_D,h=100,center=true);
+    }
 }
 
 
-FLOOR=70;
-e=.1;
-STAGE_H=2;
-K=57;
-L=90;
-W=2;
-SA=L*.8/2;
-R0=1.6;
-SB=L*.6/2 -R0-W/8;
-
-RAIL_O=4;
-
-    EH=FLOOR-e-STAGE_H;
 
     module rail(FLOOR=FLOOR){
         translate([-RAIL_O/2,-RAIL_O-W/2,0])
@@ -306,6 +303,7 @@ module wallElement(){
     
 //    translate([
 }
+
 eps=1e-5;
 
     module atAttachPositions() {
@@ -829,12 +827,16 @@ module wheelDev() {
 
 }
 
-mode="closedLoop";
+mode="attach";
 //mode="preview";
 //mode="topElement";
 
 if(mode == "closedLoop"){
+    
     closedLoop();
+    translate([-K/2,0,0])
+    rotate(90,[0,0,1])
+    wallElement();
 }
 
 if ( mode == "sphere"){
