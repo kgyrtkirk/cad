@@ -8,10 +8,10 @@ BJ_R=5;                 //  internal radius
 BJ_FOUNDATION_H=BJ_R/4+1; //  foundation dist
 BJ_FOUNDATION_R=BJ_R/2; //  foundation r
 BJ_W=1.2;               //  wall width
-BJ_SPACING=-.15;        //  extra spacing between b&j (make it stuck)
+BJ_SPACING=-.3;        //  extra spacing between b&j (make it stuck)
 BJ_JLEN_RATIO=1.6;      //  1=half ; 2=closed
 BJ_CLAW_CNT=4;
-BJ_CUTOUT_WIDTH=3;
+BJ_CUTOUT_WIDTH=3.5;
 BJ_CUTOUT_HEIGHT=8;
 
 
