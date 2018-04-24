@@ -18,14 +18,12 @@ ROD_LEN=90;
 K=57;
 L=90;
 
-DEPTHX=L; //rename depth? ; old L
-WIDTHX=K;  // DUP! ; old: K
 HOLE_D=1;
 CHANNEL_D=3;
 
-CH_U=DEPTHX/2*.8;
-CH_D=DEPTHX/2*.6;
-CH_X=WIDTHX/2*.9;
+CH_U=L/2*.8;
+CH_D=L/2*.6;
+CH_X=K/2*.9;
 
 FLOOR=70;
 e=.1;
@@ -59,7 +57,7 @@ module closedLoop(){
     
     module  mainRod() {
         rotate(90,[1,0,0]) {
-            cylinder(r=ROD_R/2,h=ROD_LEN,center=true);
+            cylinder(r=DRUM_R/2,h=ROD_LEN,center=true);
         }
         
         // note: screw pos?
@@ -70,11 +68,11 @@ module closedLoop(){
             EDGE_W=1;
             rotate(90,[1,0,0]) {
                 translate([0,0,0])
-                cylinder(r=ROD_R,h=DW*2,center=true);
+                cylinder(r=DRUM_R,h=DW*2,center=true);
                 translate([0,0,DW])
-                cylinder(r=ROD_R+EDGE,h=EDGE_W,center=true);
+                cylinder(r=DRUM_R+EDGE,h=EDGE_W,center=true);
                 translate([0,0,-DW])
-                cylinder(r=ROD_R+EDGE,h=1,center=true);
+                cylinder(r=DRUM_R+EDGE,h=1,center=true);
             }
         }
     }
@@ -82,9 +80,9 @@ module closedLoop(){
     
     module channel(y_off,top) {
         $fn=16;
-        o=[CH_X,y_off,(top?1:-1)*ROD_R];
-        i=[ROD_R,y_off,(top?1:-1)*ROD_R];
-        top=ROD_R*2;
+        o=[CH_X,y_off,(top?1:-1)*DRUM_R];
+        i=[DRUM_R,y_off,(top?1:-1)*DRUM_R];
+        top=DRUM_R*2;
         
         difference() {
             hull() {
@@ -100,7 +98,7 @@ module closedLoop(){
             }
             translate([0,0,-1])
             translate(o)            sphere(d=CHANNEL_D);
-            translate([CH_X,y_off,(top?1:-1)*ROD_R]) {
+            translate([CH_X,y_off,(top?1:-1)*DRUM_R]) {
 //                sphere(d=HOLE_D);
             }
         }
@@ -126,7 +124,7 @@ module closedLoop(){
                 }
             }
             rotate(90,[1,0,0]) {
-                cylinder(r=ROD_R+7,h=ROD_LEN,center=true);
+                cylinder(r=DRUM_R+7,h=ROD_LEN,center=true);
             }
         }
     }
@@ -827,7 +825,7 @@ module wheelDev() {
 
 }
 
-mode="attach";
+mode="closedLoop";
 //mode="preview";
 //mode="topElement";
 
