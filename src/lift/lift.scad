@@ -184,6 +184,7 @@ module floorCutPattern(pat=0){
     }
     N=5;
     for(i=[0:N-1]) {
+        L=L-2*W;    // override L to remove
         x0=-L/2+L/2/N*i;
         x1=-L/2+L/2/N*(i+1);
         if( pat != i%3 ){
@@ -310,13 +311,17 @@ eps=1e-5;
     
 
 
-module floorBase(H=W,cutout=false) {
+module floorBase(H=WALL_W,cutout=false) {
         
     difference(){
         translate([0,-K/2,H/2])
-        cube([L,K,H],center=true);
+        cube([L,K+2*WALL_W,H],center=true);
         translate([0,-K/2,H/2])
-        cube([L-2*W,K-2*W,H*5],center=true);
+        cube([L-2*W,K-2*WALL_W,H*5],center=true);
+        
+        floorCutPattern(1);
+        translate([0,-K+WALL_W,0])
+        floorCutPattern(1);
     }
 }
 
@@ -574,10 +579,10 @@ module turnHandle(r=5,R=20,N=5,h=10,cd=1){
 }
 
 module preview() {
-//    translate([0,0,-eps*100])
-//    groundFloorElement();
+    translate([0,0,-eps*100])
+    groundFloorElement();
     
-    translate([0,-3,W])
+    translate([0,0,WALL_W])
     rotate(180,[1,0,0])
     floorElement();
     
