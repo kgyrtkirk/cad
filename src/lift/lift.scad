@@ -155,10 +155,12 @@ module rail(FLOOR=FLOOR){
         cube([RAIL_O*2,RAIL_O,RAIL_O]);
     }
 
-    }
+}
 
+WALL_HEIGHT=2.5*FLOOR;
 
 module wallElement(){ 
+//    W=2*W;
     
     module atRailPositions() {
         translate([-SB,-RAIL_O,0])
@@ -168,33 +170,34 @@ module wallElement(){
         children();
     }
     
-    CLEAR=0.4;
-    atRailPositions() {
-    $fn=16;
-        
-        difference() {
-            cylinder(r=R0+W,h=FLOOR);
-            cylinder(r=R0+CLEAR,h=200,center=true);
-            SW=(R0+CLEAR+W);
-            translate([SW,0,0])
-            cube([2*SW,2*(R0+CLEAR),100*R0],center=true);
+    module mainRails() {
+        CLEAR=0.4;
+        atRailPositions() {
+            $fn=16;
+            difference() {
+                cylinder(r=R0+W,h=WALL_HEIGHT);
+                cylinder(r=R0+CLEAR,h=WALL_HEIGHT*3,center=true);
+                SW=(R0+CLEAR+W);
+                translate([SW,0,0])
+                cube([2*SW,2*(R0+CLEAR),WALL_HEIGHT*3],center=true);
 
-            rotate(180+60,[0,0,1]) {
-                cube([.1,.1,100*R0],center=true); 
+                rotate(180+60,[0,0,1]) {
+                    cube([.1,.1,WALL_HEIGHT*3],center=true); 
                 translate([0,5,0])
-                cube([10,10,100*R0],center=true); 
+                    cube([10,10,WALL_HEIGHT*3],center=true); 
+                }
             }
-            translate([0,RAIL_O,FLOOR])
-                cube([20,RAIL_O+CLEAR,STAGE_H*2+W/2],center=true);
         }
     }
-
-    p=  [
-            [L/2,0,0],
-            [L/2,EH,0],
-            [-L/2,EH,0],
-            [-L/2,0,0]];
     
+    module floorFortification() {
+        EH=FLOOR/2;
+        p=  [
+                [L/2,0,0],
+                [L/2,EH,0],
+                [-L/2,EH,0],
+                [-L/2,0,0]];
+        
     module rx(p,i,j,d) {
         $fn=32;
         hull() {
@@ -204,22 +207,39 @@ module wallElement(){
     }
 
     rotate(90,[1,0,0])
-    intersection() {
-        translate([-L/2,0,-10])
-        cube([L,EH+eps*5,20]);
-        union(){
-            
-    rx(p,0,1,4);
-            hull(){
-//            translate([0,W,-W*1.5])
-    rx(p,1,2,4);
-    rx(p,1,2,4);}
-    rx(p,2,3,4);
-    rx(p,3,0,4);
-    rx(p,0,2,2);
-    rx(p,1,3,2);
+        intersection() {
+            translate([-L/2,0,-10])
+            cube([L,EH+eps*5,20]);
+            union(){
+                rx(p,0,1,4);
+                rx(p,2,3,4);
+                rx(p,3,0,8);
+                rx(p,0,2,2);
+                rx(p,1,3,2);
+            }
         }
     }
+    
+    mainRails();
+            union(){
+    for( pos_y=[0:FLOOR:WALL_HEIGHT]) {
+        translate([0,0,pos_y]) {
+            floorFortification();
+            translate([0,0,(pos_y==0)?WALL_HEIGHT:0]) // ugly trick
+            mirror([0,0,1])
+            translate([0,0,eps])
+            floorFortification();
+        }
+    }
+    
+}
+    
+    p=  [
+            [L/2,0,0],
+            [L/2,EH,0],
+            [-L/2,EH,0],
+            [-L/2,0,0]];
+    
 //    difference() {
 //    linear_extrude(height=2) polygon(p);
   //  linear_extrude(center=true) offset(r=-1) polygon([p[0],p[1],p[2]]);
