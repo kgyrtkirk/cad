@@ -6,6 +6,10 @@
         * rewise top screw hole things..
         * hard to remove support inside the drum... in the topE channels
         
+    before v2:
+        * car attach up&down
+        
+        
 */
 
 function rZ(a,newZ) = [a[0],a[1],newZ];
@@ -793,6 +797,12 @@ module preview() {
     translate([0,0,30])
     car();
 
+
+    translate([0,K/2,FLOOR+DRUM_R])
+    rotate(90,[0,0,1])
+    closedLoop();
+
+if(false)
     translate([0,K,FLOOR+W]) {
         rotate(180,[0,1,0]) {
         topElement();
@@ -825,8 +835,8 @@ module wheelDev() {
 
 }
 
-mode="closedLoop";
-//mode="preview";
+//mode="closedLoop";
+mode="preview";
 //mode="topElement";
 
 if(mode == "closedLoop"){
