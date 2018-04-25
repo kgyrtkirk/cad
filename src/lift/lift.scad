@@ -139,57 +139,10 @@ module closedLoop(){
 }
 
 
-module attachment(type="plug",railSupport=false) {
-    dim_z=2;
-    H=dim_z;
-    D=5;
-    SCREW_D=3;
-    SS=D/2;
-    
-    
-if(type=="out") {
-    translate([0,SS,H/2])
-        cylinder($fn=32,d=6,h=10*H,center=true);
-    
-}else{
-    
-    translate([0,SS,H/2])
-    translate( (type == "plug") ? [0,0,-dim_z] : [0,0,0] ) // hackish
-
-    difference() {
-    union() {
-        cube([2*D,D,H],center=true);
-        translate([0,-W,0])
-        cube([2*D,D,H],center=true);
-        translate([6.5,0,0]){
-        cube([D,D,H],center=true);
-        }
-        if(railSupport)
-        translate([-6.35,0,0]){
-        cube([D,D,H],center=true);
-        }
-    }
-    
-        cylinder($fn=32,d=SCREW_D,h=2*H,center=true);
-    }
-}    
-}
-
-//attach_O();
-//a=2;
-
-module testAttach() {
-    
-    $fn=32;
-    difference() {
-    cube([10,10,4],center=true);
-        cylinder(d=HOLE_D,h=100,center=true);
-    }
-}
 
 
 
-    module rail(FLOOR=FLOOR){
+module rail(FLOOR=FLOOR){
         translate([-RAIL_O/2,-RAIL_O-W/2,0])
 //    rotate(180,[0,0,1])
         difference() {
@@ -207,25 +160,6 @@ module testAttach() {
 
 module wallElement(){ 
     
-    translate([0,-W,0])
-    rotate(180,[0,0,1]){
-    translate([SA,0,0])
-    attachment("socket",railSupport=true);
-    translate([-SA,0,0])
-    mirror()
-    attachment("socket",railSupport=true);
-  
-    
-    translate([SA,0,EH])
-    attachment("plug",railSupport=true);
-    translate([-SA,0,EH])
-    mirror()
-        
-    attachment("plug",railSupport=true);
-    }
-    
-    
-    
     module atRailPositions() {
         translate([-SB,-RAIL_O,0])
 //        rotate(-90,[0,0,1])
@@ -236,9 +170,6 @@ module wallElement(){
         children();
     }
     
-    
-
-
     CLEAR=0.4;
     atRailPositions() {
         $fn=16;
@@ -337,21 +268,11 @@ eps=1e-5;
 
 module floorBase(H=W,cutout=false) {
         
-    
-    atAttachPositions()
-    attachment("socket");
-        
-    
-    
     difference(){
-    translate([0,-K/2,H/2])
-    cube([L,K,H],center=true);
-    translate([0,-K/2,H/2])
-    cube([L-2*W,K-2*W,H*5],center=true);
-    
-        if(cutout)
-        atAttachPositions()
-        attachment("out");
+        translate([0,-K/2,H/2])
+        cube([L,K,H],center=true);
+        translate([0,-K/2,H/2])
+        cube([L-2*W,K-2*W,H*5],center=true);
     }
 }
 
@@ -590,12 +511,6 @@ use <threads.scad>
 //metric_thread (diameter=20, pitch=2, length=16, square=true, ///thread_size=2,
     //           groove=true, rectangle=3);
 
-
-module wheelScrew(internal) {
-    metric_thread (diameter=8, pitch=1, length=6,internal=internal);
-}
-
-
 module turnHandle(r=5,R=20,N=5,h=10,cd=1){
     translate([0,0,-h/2]){
         cylinder(r=R,h=h,center=true);
@@ -613,170 +528,6 @@ module turnHandle(r=5,R=20,N=5,h=10,cd=1){
         }
     }
 }
-
-module wheelTop(){
-    H=4; //duplicate in wheelTop/Bottom
-    TD=4;
-    SP_TOP=.1;
-    DIAL_H=5;
-    SP_HANDLE=3;
-
-    color([0,1,0])
-    translate([0,-K/2,-H/2]) {
-        
-        difference() {
-            union() {
-                translate([0,0,-1])
-                wheelScrew(false);
-                
-                MID_CYL_H=TD+SP_TOP;
-                translate([0,0,-MID_CYL_H/2])
-                    cylinder(r=DRUM_R-.5,h=MID_CYL_H,center=true);
-                
-                // dial-gear
-                translate([0,0,-TD]) {
-                    translate([0,0,-SP_TOP])
-                translate([0,0,-SP_HANDLE/2])
-                    cylinder(r=DRUM_R+W,h=SP_HANDLE,center=true);
-                    
-                    translate([0,0,-SP_HANDLE])
-                    turnHandle(r=6,R=20,N=16,h=DIAL_H);
-                
-                }
-            }
-            HANDLE_TOP_Z=-(TD+SP_TOP+DIAL_H+SP_HANDLE);
-            SCREW_HEAD_HOLE=7;
-            cylinder($fn=16 ,h=100,d=3,center=true);
-            translate([0,0,HANDLE_TOP_Z]){
-                cylinder($fn=16 ,h=8,d=SCREW_HEAD_HOLE,center=true);
-            }
-            translate([0,0,HANDLE_TOP_Z]){
-                cylinder($fn=16 ,h=2,d2=SCREW_HEAD_HOLE,d1=SCREW_HEAD_HOLE+4,center=true);
-            }
-        }
-        
-    }
-    
-}   
-
-DRUM_R1=DRUM_R+DRUM_R/2;
-
-module wheelBottom(){
-    H=4; //duplicate in wheelTop/Bottom
-    R1=DRUM_R1;
-color([1,0,0])
-    difference() {
-        // barrel
-        translate([0,-K/2,0]) {
-
-            cylinder(h=H,r=DRUM_R,center=true);
-                translate([0,0,H/2])
-            cylinder(h=W/2,r=R1,center=true);
-                translate([0,0,-H/2])
-            cylinder(h=W/2,r=R1,center=true);
-            
-        }
-        // inner holes
-        for(E = SHAFT_POINTS) {
-            C=[0,-K/2,0];
-            P=tpoint(E,C,DRUM_R);
-            $fn=8;
-            hull() {
-                translate(P) sphere(d=2);
-                translate(C) sphere(d=2);
-            }
-            hull() {
-                translate((P+1*C)/2) cylinder(d=1,h=H);
-                translate(C) cylinder(d=1,h=H);
-            }
-            
-        }
-        translate([0,-K/2,-H/2-1])
-            wheelScrew(true);
-
-    }
-
-}
-
-module topElement(){
-    
-    R2=DRUM_R1+W;
-    //DRUM_R+W+W/2;
-    
-    $fn=16;
-    
-    translate([0,0,-10]) 
-    {
-        $fn=32;
-        translate([0,-K,0])
-        rotate(180,[1,0,0])
-        floorBase(3*W,cutout=true);
-        
-        
-        
- 
-        
-        if(false)
-            %for(x=SHAFT_POINTS)
-                translate(x)
-                cylinder(r=.1,h=5);
-
-// color([0,1,0])       
-        difference(){
-            union(){
-                translate([-L/2,-K,-3*W]) {
-                    cube([L,K,W]);
-                }
-
-                difference() {
-                    union() {
-                        for(E = SHAFT_POINTS) {
-                            C=[0,-K/2,0];
-                            P=tpoint(E,C,DRUM_R);
-
-                            difference(){
-                                hull() {
-                                    translate(E) 
-                                    translate([0,0,-2.5*W])sphere(W/2);
-                                    translate(P) 
-                                    translate([0,0,-2.5*W])sphere(W/2);
-                                    translate(P) sphere(d=3);
-                                    translate(E) sphere(d=3);
-                                }
-                                hull() {
-                                    translate(P) sphere(d=1);
-                                    translate(E) sphere(d=1);
-                                }
-                                V=unit(E-P);
-                                translate(E+V*W/2)
-                                hull() {
-                                    translate([0,0,W/2]) 
-                                        sphere(W,center=true);
-                                    translate([0,0,2*W]) 
-                                        sphere(2*W,center=true);
-                                }
-                            }
-                        }
-                    }
-                    translate([0,-K/2,0])
-                    cylinder(h=100,r=R2,center=true);
-                }
-
-            }
-            atAttachPositions()
-                attachment(type="out");
-            translate([0,-K/2,0])
-                cylinder(h=100,r=DRUM_R,center=true);
-        }
-        
-
-
-    }
-    
-    
-}
-
-
 
 module preview() {
     translate([0,0,-eps*100])
@@ -801,38 +552,6 @@ module preview() {
     translate([0,K/2,FLOOR+DRUM_R])
     rotate(90,[0,0,1])
     closedLoop();
-
-if(false)
-    translate([0,K,FLOOR+W]) {
-        rotate(180,[0,1,0]) {
-        topElement();
-        translate([0,0,-10]) {
-        wheelBottom();
-        wheelTop();
-        }
-
-        }
-    }
-    
-}
-
-module wheelDev() {
-    
-    difference() {
-        union() {
-            rotate(180,[0,1,0]) {
-                topElement();
-                translate([0,0,-10])  {
-                    wheelBottom();
-                    wheelTop();
-                }
-            }
-        }
-        
-        translate([50,0,0])
-        cube([100,200,100],center=true);
-    }
-
 }
 
 //mode="closedLoop";
@@ -878,21 +597,5 @@ if( mode == "wall") {
 if(mode == "preview"){
     preview();
 }
-if(mode == "wheelDev"){
-    wheelDev();
-}
-if(mode == "topElement"){
-    topElement();
-}
-if(mode == "wheelBottom"){
-    wheelBottom();
-}
-if(mode == "wheelTop"){
-    wheelTop();
-}
-
-//rotate(-90,[1,0,0]) wallElement();
-//floorElement();
-
 
 
