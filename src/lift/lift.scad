@@ -162,17 +162,15 @@ module wallElement(){
     
     module atRailPositions() {
         translate([-SB,-RAIL_O,0])
-//        rotate(-90,[0,0,1])
         children();
         translate([SB,-RAIL_O,0])
-//        rotate(-90,[0,0,1])
         mirror([1,0,0])
         children();
     }
     
     CLEAR=0.4;
     atRailPositions() {
-        $fn=16;
+    $fn=16;
         
         difference() {
             cylinder(r=R0+W,h=FLOOR);
@@ -181,20 +179,14 @@ module wallElement(){
             translate([SW,0,0])
             cube([2*SW,2*(R0+CLEAR),100*R0],center=true);
 
-/*%            translate([sqrt(2)*2.5,-sqrt(2)*2.5,0])
-            rotate(45,[0,0,1])
-            cube([10,10,100*R0],center=true);*/
             rotate(180+60,[0,0,1]) {
                 cube([.1,.1,100*R0],center=true); 
                 translate([0,5,0])
                 cube([10,10,100*R0],center=true); 
             }
             translate([0,RAIL_O,FLOOR])
-            
                 cube([20,RAIL_O+CLEAR,STAGE_H*2+W/2],center=true);
         }
-//        translate([-W/8-R0,-(W-RAIL_O),0])
-  //      rail();
     }
 
     p=  [
@@ -555,8 +547,8 @@ module preview() {
 }
 
 //mode="closedLoop";
-mode="preview";
-//mode="topElement";
+//mode="preview";
+mode="wall";
 
 if(mode == "closedLoop"){
     
