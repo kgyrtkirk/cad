@@ -39,6 +39,7 @@ SA=CH_D/2;
 
 WALL_W=3;
 RAIL_O=WALL_W+W;
+CH_D_O=W/2;
 
 EH=FLOOR-e-STAGE_H;
 
@@ -84,6 +85,11 @@ module closedLoop(){
     
     
     module channel(y_off,top) {
+        CH_X=
+         (y_off==CH_U)?
+            K/2-RAIL_O :
+            K/2-CH_D_O;
+        
         $fn=16;
         o=[CH_X,y_off,(top?1:-1)*DRUM_R];
         i=[DRUM_R,y_off,(top?1:-1)*DRUM_R];
@@ -160,7 +166,7 @@ module rail(FLOOR=FLOOR){
 
 WALL_HEIGHT=2.5*FLOOR;
 
-module floorCutPattern(){
+module floorCutPattern(pat=0){
     eps1=1e-2;
     eps2=1e-1;
     DIA=1;
@@ -176,7 +182,6 @@ module floorCutPattern(){
         cylinder(d=DIA,h=2*L,center=true);
         
     }
-    pat=2;
     N=5;
     for(i=[0:N-1]) {
         x0=-L/2+L/2/N*i;
@@ -569,18 +574,18 @@ module turnHandle(r=5,R=20,N=5,h=10,cd=1){
 }
 
 module preview() {
-    translate([0,0,-eps*100])
-    groundFloorElement();
+//    translate([0,0,-eps*100])
+//    groundFloorElement();
     
-    translate([0,0,W])
+    translate([0,-3,W])
     rotate(180,[1,0,0])
     floorElement();
     
-    translate([0,K+e,FLOOR])
-    rotate(180,[0,1,0])
+    translate([0,K+e,0])
+//    rotate(180,[0,1,0])
     wallElement();
-    translate([0,0,FLOOR+e])
-    rotate(180,[0,1,0])
+    translate([0,0,0])
+//    rotate(180,[0,1,0])
     rotate(180,[0,0,1])
     wallElement();
     
@@ -588,14 +593,14 @@ module preview() {
     car();
 
 
-    translate([0,K/2,FLOOR+DRUM_R])
+    translate([0,K/2,WALL_HEIGHT+DRUM_R])
     rotate(90,[0,0,1])
     closedLoop();
 }
 
 //mode="closedLoop";
-//mode="preview";
-mode="wall";
+mode="preview";
+//mode="wall";
 
 if(mode == "closedLoop"){
     
