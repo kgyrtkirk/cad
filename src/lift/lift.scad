@@ -37,7 +37,8 @@ SB=CH_U;
 R0=1.6;
 SA=CH_D/2;
 
-RAIL_O=4;
+WALL_W=3;
+RAIL_O=WALL_W+W;
 
 EH=FLOOR-e-STAGE_H;
 
@@ -160,7 +161,7 @@ module rail(FLOOR=FLOOR){
 WALL_HEIGHT=2.5*FLOOR;
 
 module wallElement(){ 
-//    W=2*W;
+    W=WALL_W;
     
     module atRailPositions() {
         translate([-SB,-RAIL_O,0])
@@ -221,32 +222,18 @@ module wallElement(){
     }
     
     mainRails();
-            union(){
-    for( pos_y=[0:FLOOR:WALL_HEIGHT]) {
-        translate([0,0,pos_y]) {
-            floorFortification();
-            translate([0,0,(pos_y==0)?WALL_HEIGHT:0]) // ugly trick
-            mirror([0,0,1])
-            translate([0,0,eps])
-            floorFortification();
+    union(){
+        for( pos_y=[0:FLOOR:WALL_HEIGHT]) {
+            translate([0,0,pos_y]) {
+                floorFortification();
+                translate([0,0,(pos_y==0)?WALL_HEIGHT:0]) // ugly trick
+                mirror([0,0,1])
+                translate([0,0,eps])
+                floorFortification();
+            }
         }
     }
     
-}
-    
-    p=  [
-            [L/2,0,0],
-            [L/2,EH,0],
-            [-L/2,EH,0],
-            [-L/2,0,0]];
-    
-//    difference() {
-//    linear_extrude(height=2) polygon(p);
-  //  linear_extrude(center=true) offset(r=-1) polygon([p[0],p[1],p[2]]);
-    //}
-    
-    
-//    translate([
 }
 
 eps=1e-5;
