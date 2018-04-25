@@ -160,6 +160,36 @@ module rail(FLOOR=FLOOR){
 
 WALL_HEIGHT=2.5*FLOOR;
 
+module floorCutPattern(){
+    eps1=1e-2;
+    eps2=1e-1;
+    DIA=1;
+    $fn=16;
+    for(X=[CH_D,-CH_D])
+    translate([X,-WALL_W/2,WALL_W/2]) {
+        cylinder(d=DIA,h=2*L,center=true);
+        cube(WALL_W+eps1,center=true);
+    }
+    
+    rotate(-90,[0,1,0]) {
+        translate([WALL_W/2,-WALL_W/2,0])
+        cylinder(d=DIA,h=2*L,center=true);
+        
+    }
+    pat=2;
+    N=5;
+    for(i=[0:N-1]) {
+        x0=-L/2+L/2/N*i;
+        x1=-L/2+L/2/N*(i+1);
+        if( pat != i%3 ){
+            for(X=[(x0+x1)/2,-(x0+x1)/2])
+            translate([X,-WALL_W/2,WALL_W/2]){
+                cube([x1-x0+eps2*2,WALL_W+eps2,WALL_W+eps2],center=true);
+            }
+        }
+    }
+}
+
 module wallElement(){ 
     W=WALL_W;
     
@@ -174,7 +204,7 @@ module wallElement(){
     module mainRails() {
         CLEAR=0.4;
         atRailPositions() {
-            $fn=16;
+            $fn=32;
             difference() {
                 cylinder(r=R0+W,h=WALL_HEIGHT);
                 cylinder(r=R0+CLEAR,h=WALL_HEIGHT*3,center=true);
@@ -193,6 +223,7 @@ module wallElement(){
     
     module floorFortification() {
         EH=FLOOR/2;
+        L=L-2*W-eps;
         p=  [
                 [L/2,0,0],
                 [L/2,EH,0],
@@ -221,16 +252,25 @@ module wallElement(){
         }
     }
     
-    mainRails();
-    union(){
-        for( pos_y=[0:FLOOR:WALL_HEIGHT]) {
-            translate([0,0,pos_y]) {
-                floorFortification();
-                translate([0,0,(pos_y==0)?WALL_HEIGHT:0]) // ugly trick
-                mirror([0,0,1])
-                translate([0,0,eps])
-                floorFortification();
+    
+    difference() {
+        union(){ 
+            mainRails();
+            union(){
+                for( pos_y=[0:FLOOR:WALL_HEIGHT]) {
+                    translate([0,0,pos_y]) {
+                        floorFortification();
+                        translate([0,0,(pos_y==0)?WALL_HEIGHT:0]) // ugly trick
+                        mirror([0,0,1])
+                        translate([0,0,eps])
+                        floorFortification();
+                    }
+                }
             }
+        }
+        for( pos_y=[0:FLOOR:WALL_HEIGHT]) {
+            translate([0,0,pos_y])
+            floorCutPattern();
         }
     }
     
@@ -591,7 +631,8 @@ if ( mode == "ground") {
     groundFloorElement();
 }
 if( mode == "wall") {
-    rotate(-90,[1,0,0]) wallElement();
+    //rotate(-90,[1,0,0]) 
+    wallElement();
 }
 if(mode == "preview"){
     preview();
