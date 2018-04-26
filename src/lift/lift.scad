@@ -313,6 +313,8 @@ eps=1e-5;
 
 module floorBase(H=WALL_W,cutout=false) {
     
+    pattern=cutout?2:1;
+
     module atCutPos(){
         children();
         translate([0,-K+WALL_W,0])children();
@@ -322,6 +324,7 @@ module floorBase(H=WALL_W,cutout=false) {
         union() {
             translate([0,-K/2,H/2])
                 cube([L,K+2*WALL_W,H],center=true);
+            if(cutout)
             translate([0,-K/2,H/2-WALL_W])
                 cube([L-2*WALL_W,K,H],center=true);
         }
@@ -331,13 +334,14 @@ module floorBase(H=WALL_W,cutout=false) {
             cube([L-2*W,K,H],center=true);
         
         
-  //      if(cutout) {
+        if(cutout) {
             atCutPos()
             translate([0,0,-WALL_W])
-            floorCutPattern(2);
+            floorCutPattern(pattern);
+        }
 //        }else{
             atCutPos()
-            floorCutPattern(2);
+            floorCutPattern(pattern);
     //    }
     }
 }
@@ -622,8 +626,6 @@ module preview() {
 
 //mode="closedLoop";
 mode="preview";
-mode="ground";
-//mode="wall";
 
 if(mode == "closedLoop"){
     
