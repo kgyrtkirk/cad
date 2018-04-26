@@ -8,7 +8,10 @@
         
     before v2:
         * car attach up&down
-        
+        * floor - tying is complicated; add something...
+    
+    
+    
         
 */
 
@@ -229,9 +232,10 @@ module wallElement(){
         }
     }
     
+    LL=L-2*W0-eps2;
     module floorFortification() {
         EH=FLOOR/2;
-        L=L-2*W0-eps2;
+        L=LL;
         p=  [
                 [L/2,0,0],
                 [L/2,EH,0],
@@ -306,9 +310,14 @@ module wallElement(){
                 }
             }
             bottomCableChannel();
+            mirror()
+            bottomCableChannel();
+            translate([0,-W/2,WALL_HEIGHT+W/2])
+            cube([LL,W,W],center=true);
+            
         }
-        for( pos_y=[0:FLOOR:WALL_HEIGHT]) {
-            translate([0,0,pos_y])
+        for( pos_y=[0:FLOOR:WALL_HEIGHT+FLOOR]) {
+            translate([0,0,min(WALL_HEIGHT,pos_y)])
             floorCutPattern();
         }
     }
@@ -683,6 +692,7 @@ module preview() {
 
 //mode="closedLoop";
 mode="preview";
+//mode="wall";
 
 if(mode == "closedLoop"){
     
@@ -719,7 +729,7 @@ if ( mode == "ground") {
     groundFloorElement();
 }
 if( mode == "wall") {
-    //rotate(-90,[1,0,0]) 
+    rotate(-90,[1,0,0]) 
     wallElement();
 }
 if(mode == "preview"){
