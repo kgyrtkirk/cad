@@ -197,7 +197,9 @@ module floorCutPattern(pat=0){
 }
 
 module wallElement(){ 
+    W0=W;
     W=WALL_W;
+    eps2=.2;
     
     module atRailPositions() {
         translate([-SB,-RAIL_O,0])
@@ -229,7 +231,7 @@ module wallElement(){
     
     module floorFortification() {
         EH=FLOOR/2;
-        L=L-2*W-eps;
+        L=L-2*W0-eps2;
         p=  [
                 [L/2,0,0],
                 [L/2,EH,0],
