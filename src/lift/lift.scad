@@ -270,6 +270,7 @@ module wallElement(){
         L_W=WALL_W-eps1;
         translate([0,0,-WALL_W/2])
         difference() {
+            union() {
             hull() {
                 translate([CH_D,-CH_D_O,0])
                 cylinder(d=L_W,h=L_W,center=true);
@@ -279,11 +280,19 @@ module wallElement(){
                 translate([CH_U,-CH_D_O,0])
                 cube(L_W,center=true);
             }
+            translate([CH_U,-CH_D_O,eps1])
+                cube(L_W,center=true);
+            }
+        
+            
+
             
             translate([CH_D,-CH_D_O,W/2])
             sphere(d=L_W*1.5,center=true);
-            translate([CH_U,-RAIL_O,W/2])
-            sphere(d=L_W*1.8,center=true);
+            translate([CH_U+2,-RAIL_O,W/2])
+            rotate(60,[0,1,0])
+            cube(5.5,center=true);
+//            sphere(d=L_W*2,center=true);
             
             hull() {
                 translate([CH_D,-CH_D_O,0])
@@ -312,7 +321,7 @@ module wallElement(){
             bottomCableChannel();
             mirror()
             bottomCableChannel();
-            translate([0,-W/2,WALL_HEIGHT+W/2])
+            translate([0,-W/2,WALL_HEIGHT+W/2-.01])
             cube([LL,W,W],center=true);
             
         }
@@ -692,7 +701,7 @@ module preview() {
 
 //mode="closedLoop";
 mode="preview";
-//mode="wall";
+mode="wall";
 
 if(mode == "closedLoop"){
     
