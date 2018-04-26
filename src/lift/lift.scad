@@ -31,13 +31,13 @@ CH_X=K/2*.9;
 
 FLOOR=70;
 e=.1;
-STAGE_H=2;
+WALL_W=3;
+STAGE_H=WALL_W;
 W=2;
 SB=CH_U;
 R0=1.6;
 SA=CH_D/2;
 
-WALL_W=3;
 RAIL_O=WALL_W+W;
 CH_D_O=W/2;
 
@@ -312,16 +312,33 @@ eps=1e-5;
 
 
 module floorBase(H=WALL_W,cutout=false) {
+    
+    module atCutPos(){
+        children();
+        translate([0,-K+WALL_W,0])children();
+    }
         
     difference(){
+        union() {
+            translate([0,-K/2,H/2])
+                cube([L,K+2*WALL_W,H],center=true);
+            translate([0,-K/2,H/2-WALL_W])
+                cube([L-2*WALL_W,K,H],center=true);
+        }
         translate([0,-K/2,H/2])
-        cube([L,K+2*WALL_W,H],center=true);
-        translate([0,-K/2,H/2])
-        cube([L-2*W,K-2*WALL_W,H*5],center=true);
+            cube([L-2*W,K-2*WALL_W,H*5],center=true);
+        translate([0,-K/2,H/2+WALL_W])
+            cube([L-2*W,K,H],center=true);
         
-        floorCutPattern(1);
-        translate([0,-K+WALL_W,0])
-        floorCutPattern(1);
+        
+  //      if(cutout) {
+            atCutPos()
+            translate([0,0,-WALL_W])
+            floorCutPattern(2);
+//        }else{
+            atCutPos()
+            floorCutPattern(2);
+    //    }
     }
 }
 
@@ -355,7 +372,7 @@ module groundFloorElement() {
     }
     }
     // Side supports for car on the floor
-    for(y=[2*W-eps,K-W+eps]){
+    for(y=[W-eps,K+eps*10]){
         translate([0,y,-GROUND_H/2])
         difference() {
         color([0,1,1])
@@ -368,7 +385,7 @@ module groundFloorElement() {
     }
     
     // Front ramp
-    translate([-L/2-W/2,0,0])
+    translate([-L/2-W/2+eps*10,0,0])
             rotate(180,[0,1,0])
             rotate(-90,[1,0,0])
             linear_extrude(K+W)
@@ -605,6 +622,7 @@ module preview() {
 
 //mode="closedLoop";
 mode="preview";
+mode="ground";
 //mode="wall";
 
 if(mode == "closedLoop"){
