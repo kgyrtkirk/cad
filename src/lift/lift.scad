@@ -366,6 +366,16 @@ module floorBase(H=WALL_W,cutout=false) {
         translate([0,-K/2,H/2+WALL_W])
             cube([L-2*W,K,H],center=true);
         
+        // grave into to back of the floor element
+        if(!cutout) {
+            $fn=16;
+            hull(){
+                translate([-L/2,-WALL_W/2,H/2])
+                atCutPos()
+                    sphere(d=HOLE_D,center=true);
+            }
+            
+        }
         
         if(cutout) {
             atCutPos()
