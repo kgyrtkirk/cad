@@ -39,7 +39,7 @@ R0=1.6;
 SA=CH_D/2;
 
 RAIL_O=WALL_W+W;
-CH_D_O=W/2;
+CH_D_O=WALL_W/2;
 
 EH=FLOOR-e-STAGE_H;
 
@@ -236,15 +236,15 @@ module wallElement(){
                 [-L/2,EH,0],
                 [-L/2,0,0]];
         
-    module rx(p,i,j,d) {
-        $fn=32;
-        hull() {
-            translate(p[i]) cylinder(d=d,h=W);
-            translate(p[j])cylinder(d=d,h=W);
+        module rx(p,i,j,d) {
+            $fn=32;
+            hull() {
+                translate(p[i]) cylinder(d=d,h=W);
+                translate(p[j])cylinder(d=d,h=W);
+            }
         }
-    }
 
-    rotate(90,[1,0,0])
+        rotate(90,[1,0,0])
         intersection() {
             translate([-L/2,0,-10])
             cube([L,EH+eps*5,20]);
@@ -258,6 +258,36 @@ module wallElement(){
         }
     }
     
+    module bottomCableChannel(){
+        eps1=1e-1;
+        $fn=32;
+        L_W=WALL_W-eps1;
+        translate([0,0,-WALL_W/2])
+        difference() {
+            hull() {
+                translate([CH_D,-CH_D_O,0])
+                cylinder(d=L_W,h=L_W,center=true);
+        //        cube(L_W,center=true);
+                translate([CH_U,-RAIL_O,0])
+                cylinder(d=L_W*1.5,h=L_W,center=true);
+                translate([CH_U,-CH_D_O,0])
+                cube(L_W,center=true);
+            }
+            
+            translate([CH_D,-CH_D_O,W/2])
+            sphere(d=L_W*1.5,center=true);
+            translate([CH_U,-RAIL_O,W/2])
+            sphere(d=L_W*1.8,center=true);
+            
+            hull() {
+                translate([CH_D,-CH_D_O,0])
+                sphere(d=HOLE_D,center=true);
+                translate([CH_U,-RAIL_O,0])
+                sphere(d=HOLE_D,center=true);
+            }
+            
+        }
+    }
     
     difference() {
         union(){ 
@@ -273,6 +303,7 @@ module wallElement(){
                     }
                 }
             }
+            bottomCableChannel();
         }
         for( pos_y=[0:FLOOR:WALL_HEIGHT]) {
             translate([0,0,pos_y])
@@ -464,7 +495,7 @@ module car(){
     color([0,0,1])
     difference(){
         U=W+RAIL_O+W;
-        cube([L-3*W,K-4*W,W],center=true);
+        cube([L-3*W,K-2*W-2*WALL_W,W],center=true);
         atRailPositions()
         translate([0,3*U,0])
         cube([U,7*U,U],center=true);
@@ -473,7 +504,7 @@ module car(){
         A=3*W;  B=W;
         for( i = [0:A:L] )
         translate([-L/2 + (L%A)/2 + i,0,0])
-        cube([B,K-10*W,10],center=true);
+        cube([B,K-11*W,10],center=true);
 
 VEHICLE_WIDTH0=18;
 VEHICLE_WIDTH1=35;
@@ -619,9 +650,9 @@ module preview() {
     car();
 
 
-    translate([0,K/2,WALL_HEIGHT+DRUM_R])
+/*    translate([0,K/2,WALL_HEIGHT+DRUM_R])
     rotate(90,[0,0,1])
-    closedLoop();
+    closedLoop();*/
 }
 
 //mode="closedLoop";
@@ -643,8 +674,9 @@ if ( mode == "sphere"){
   //      cube(200);
     }
 
-*/    
-    cylinder(h=11,d=5.8);
+*/
+        sphere(d=10);
+//    cylinder(h=11,d=5.8);
     
     
 }
