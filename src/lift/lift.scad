@@ -442,6 +442,7 @@ module floorElement(){
     CONN_H=2.5;
     CONN_T=34;
     
+    // ramp'n clamp
     translate([L/2,-K,0]) {
     color([1,0,1])
         difference() {
@@ -451,6 +452,17 @@ module floorElement(){
             linear_extrude(K)
                 polygon(pp);
 //            cube([CONN_L+CONN_T,K,CONN_H]);
+            for(x=[K-WALL_W/2,WALL_W/2]){
+                translate([0,x,0])
+            hull() {
+                $fn=16;
+                translate([0,0,WALL_W/2])
+                sphere(d=HOLE_D,center=true);
+                translate([20,0,4])
+                sphere(d=HOLE_D,center=true);
+            }
+        }
+//            cube(1.1,center=true);
         }
     }
     translate([L/2+CONN_L-CONN_L0,-K,CONN_H]) {
