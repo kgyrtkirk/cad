@@ -420,10 +420,10 @@ module groundFloorElement() {
     }
     
     // Front ramp
-    translate([-L/2-W/2+eps*10,0,0])
+    translate([-L/2-W/2+eps*10,WALL_W,0])
             rotate(180,[0,1,0])
             rotate(-90,[1,0,0])
-            linear_extrude(K+W)
+            linear_extrude(K+W-2*WALL_W)
                 polygon([[0,W],[RAMP_L,-GROUND_H],[0,-GROUND_H]]);
     
     
@@ -634,9 +634,11 @@ module preview() {
     translate([0,0,-eps*100])
     groundFloorElement();
     
-    translate([0,0,WALL_W])
+    for(Y=[0:FLOOR:2*FLOOR])
+    translate([0,0,WALL_W+Y])
     rotate(180,[1,0,0])
     floorElement();
+
     
     translate([0,K+e,0])
 //    rotate(180,[0,1,0])
