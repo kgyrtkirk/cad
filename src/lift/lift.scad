@@ -10,6 +10,7 @@
         * car attach up&down
         * floor - tying is complicated; add something...
     
+        * ramp element: ramp top seems to be W not WALL_W do I still need W=2?
     
     
         
@@ -480,15 +481,16 @@ module floorElement(){
             linear_extrude(K)
                 polygon(pp);
 //            cube([CONN_L+CONN_T,K,CONN_H]);
-            for(x=[K-WALL_W/2,WALL_W/2]){
-                translate([0,x,0])
-            hull() {
-                $fn=16;
-                translate([0,0,WALL_W/2])
-                sphere(d=HOLE_D,center=true);
-                translate([20,0,4])
-                sphere(d=HOLE_D,center=true);
-            }
+            translate([0,K/2,0])
+            for(x=[1,-1]){
+                translate([0,x*(K/2-WALL_W/2),0])
+                hull() {
+                    $fn=16;
+                    translate([0,0,WALL_W/2])
+                    sphere(d=HOLE_D,center=true);
+                    translate([20,0,4])
+                    sphere(d=HOLE_D,center=true);
+                }
         }
 //            cube(1.1,center=true);
         }
@@ -701,7 +703,7 @@ module preview() {
 
 //mode="closedLoop";
 mode="preview";
-mode="wall";
+mode="floor";
 
 if(mode == "closedLoop"){
     
