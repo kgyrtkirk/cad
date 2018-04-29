@@ -11,6 +11,7 @@
         * floor - tying is complicated; add something...
     
         * ramp element: ramp top seems to be W not WALL_W do I still need W=2?
+        * attachments of ground seems to be separated...possibly eps problem
     
     
         
@@ -471,6 +472,13 @@ module floorElement(){
     CONN_H=2.5;
     CONN_T=34;
     
+    module symY(t) {
+        translate(t)
+            children();
+        mirror([0,1,0])
+            translate(t)
+                children();
+    }
     // ramp'n clamp
     translate([L/2,-K,0]) {
     color([1,0,1])
@@ -482,21 +490,42 @@ module floorElement(){
                 polygon(pp);
 //            cube([CONN_L+CONN_T,K,CONN_H]);
             translate([0,K/2,0])
-            for(x=[1,-1]){
-                mirror([0,x>0?1:0,0]) {
-                    translate([0,(K/2-WALL_W/2),0])
-                    hull() {
-                        $fn=16;
-                        translate([0,0,WALL_W/2])
-                        sphere(d=HOLE_D,center=true);
-                        translate([20,0,4])
-                        sphere(d=HOLE_D,center=true);
-                    }
+            symY([0,(K/2-WALL_W/2),0])
+                hull() {
+                    $fn=16;
+                    translate([0,0,WALL_W/2])
+                    sphere(d=HOLE_D,center=true);
+                    translate([20,0,4])
+                    sphere(d=HOLE_D,center=true);
                 }
         }
-//            cube(1.1,center=true);
+    }
+
+    color([0,1,1])
+    translate([0,-K/2,0])
+    symY([L/2+7,K/4+5,W]) {
+        HB=1.4;
+        HT=1;
+        $fn=16;
+        difference() {
+            union() {
+                cylinder(h=HB,d=3);
+                translate([0,0,HB])
+                cylinder(h=HT,d1=3,d2=5);
+            }
+            // bottom/main hole
+            hull() {
+                translate([5,0,HB/2])   sphere(d=HOLE_D);
+                translate([-5,0,HB/2])  sphere(d=HOLE_D);
+            }
+            // finalizer engrave
+            hull() {
+                translate([0,5,HB+HT-HOLE_D*1/3])   sphere(d=HOLE_D);
+                translate([0,-5,HB+HT-HOLE_D*1/3])  sphere(d=HOLE_D);
+            }
         }
     }
+
     translate([L/2+CONN_L-CONN_L0,-K,CONN_H]) {
         S=2.1;
     color([1,0,0])
