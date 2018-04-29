@@ -504,14 +504,16 @@ module floorElement(){
     color([0,1,1])
     translate([0,-K/2,0])
     symY([L/2+7,K/4+5,W]) {
-        HB=1.4;
+        HB=2;
         HT=1;
+        D1=4;
+        D2=6;
         $fn=16;
         difference() {
             union() {
-                cylinder(h=HB,d=3);
+                cylinder(h=HB,d=D1);
                 translate([0,0,HB])
-                cylinder(h=HT,d1=3,d2=5);
+                cylinder(h=HT,d1=D1,d2=D2);
             }
             // bottom/main hole
             hull() {
