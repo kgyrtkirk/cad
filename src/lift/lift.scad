@@ -483,13 +483,15 @@ module floorElement(){
 //            cube([CONN_L+CONN_T,K,CONN_H]);
             translate([0,K/2,0])
             for(x=[1,-1]){
-                translate([0,x*(K/2-WALL_W/2),0])
-                hull() {
-                    $fn=16;
-                    translate([0,0,WALL_W/2])
-                    sphere(d=HOLE_D,center=true);
-                    translate([20,0,4])
-                    sphere(d=HOLE_D,center=true);
+                mirror([0,x>0?1:0,0]) {
+                    translate([0,(K/2-WALL_W/2),0])
+                    hull() {
+                        $fn=16;
+                        translate([0,0,WALL_W/2])
+                        sphere(d=HOLE_D,center=true);
+                        translate([20,0,4])
+                        sphere(d=HOLE_D,center=true);
+                    }
                 }
         }
 //            cube(1.1,center=true);
