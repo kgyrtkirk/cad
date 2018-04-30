@@ -67,6 +67,20 @@ module closedLoop(){
         atChannels1(xScale,yScale) children();
     }
     
+    module wheelDrum(){
+        DW=2;
+        EDGE=5;
+        EDGE_W=1;
+        union() {
+            translate([0,0,0])
+            cylinder(r=DRUM_R,h=DW*2,center=true);
+            translate([0,0,DW])
+            cylinder(r=DRUM_R+EDGE,h=EDGE_W,center=true);
+            translate([0,0,-DW])
+            cylinder(r=DRUM_R+EDGE,h=1,center=true);
+        }
+    }
+    
     module  mainRod() {
         rotate(90,[1,0,0]) {
             cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
@@ -75,19 +89,8 @@ module closedLoop(){
         // note: screw pos?
         // probably atChannels is abad idea
         atChannels(xScale=0){
-            DW=2;
-            EDGE=5;
-            EDGE_W=1;
             rotate(90,[1,0,0]) {
-                
-                union() {
-                    translate([0,0,0])
-                    cylinder(r=DRUM_R,h=DW*2,center=true);
-                    translate([0,0,DW])
-                    cylinder(r=DRUM_R+EDGE,h=EDGE_W,center=true);
-                    translate([0,0,-DW])
-                    cylinder(r=DRUM_R+EDGE,h=1,center=true);
-                }
+                wheelDrum();
             }
         }
     }
