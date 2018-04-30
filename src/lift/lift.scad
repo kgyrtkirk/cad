@@ -162,10 +162,11 @@ module closedLoop(){
 //                cylinder($fn=4, r=DRUM_R/2+W,h=2*S,center=true);
             }
             
-%            symY([0,(CH_D+CH_U)/2,0])
-            symY([0,WHEEL_THICK+(CH_U-CH_D)/2,0])
+            symY([0,(CH_D+CH_U)/2,0])
+            symY([0,WHEEL_THICK/2+(CH_U-CH_D)/2+HOLE_D+.5,0])
             rotate(90,[0,0,1])
             rotate(90,[1,0,0]) {
+                $fn=16;
             cylinder(d=HOLE_D,h=100,center=true);
             }
         }
