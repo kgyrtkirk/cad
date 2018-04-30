@@ -154,22 +154,25 @@ module closedLoop(){
     module  mainRod() {
         difference() {
             union() {
-                cube([ROD_R,ROD_R,ROD_LEN],center=true);
+                cube([ROD_R,ROD_LEN,ROD_R],center=true);
                 //cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
     S=CH_D-WHEEL_THICK/2-.1;
                 color([1,0,0])
-                cube([ROD_R+W,ROD_R+W,2*S],center=true);
+                cube([ROD_R+W,2*S,ROD_R+W],center=true);
 //                cylinder($fn=4, r=DRUM_R/2+W,h=2*S,center=true);
             }
             
-%            symY([0,CH_D,0])
-            rotate(90,[1,0,0])
+%            symY([0,(CH_D+CH_U)/2,0])
+            symY([0,WHEEL_THICK+(CH_U-CH_D)/2,0])
+            rotate(90,[0,0,1])
+            rotate(90,[1,0,0]) {
             cylinder(d=HOLE_D,h=100,center=true);
+            }
         }
     }
     module  mainRodPreview() {
         
-        rotate(90,[1,0,0])
+//        rotate(90,[1,0,0])
         mainRod();
         // note: screw pos?
         // probably atChannels is abad idea
