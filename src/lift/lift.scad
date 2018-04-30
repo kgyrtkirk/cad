@@ -51,11 +51,12 @@ EH=FLOOR-e-STAGE_H;
 
 module closedLoop(){
     
-    module  atChannels0(xScale,yScale){
+    module  atChannels0(xScale,yScale=1){
         translate([xScale*CH_X,yScale*CH_U,0])                    children();
-        translate([xScale*CH_X,yScale*CH_D,0])                    children();
+        translate([xScale*CH_X,yScale*CH_D,0])             mirror([0,1,0])
+                   children();
     }
-    module  atChannels1(xScale,yScale){
+    module  atChannels1(xScale,yScale=1){
         atChannels0(xScale,yScale) children();
         mirror([0,1,0])
         atChannels0(xScale,yScale) children();
@@ -68,7 +69,7 @@ module closedLoop(){
     
     module  mainRod() {
         rotate(90,[1,0,0]) {
-            cylinder(r=DRUM_R/2,h=ROD_LEN,center=true);
+            cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
         }
         
         // note: screw pos?
@@ -78,12 +79,15 @@ module closedLoop(){
             EDGE=5;
             EDGE_W=1;
             rotate(90,[1,0,0]) {
-                translate([0,0,0])
-                cylinder(r=DRUM_R,h=DW*2,center=true);
-                translate([0,0,DW])
-                cylinder(r=DRUM_R+EDGE,h=EDGE_W,center=true);
-                translate([0,0,-DW])
-                cylinder(r=DRUM_R+EDGE,h=1,center=true);
+                
+                union() {
+                    translate([0,0,0])
+                    cylinder(r=DRUM_R,h=DW*2,center=true);
+                    translate([0,0,DW])
+                    cylinder(r=DRUM_R+EDGE,h=EDGE_W,center=true);
+                    translate([0,0,-DW])
+                    cylinder(r=DRUM_R+EDGE,h=1,center=true);
+                }
             }
         }
     }
@@ -734,16 +738,16 @@ module preview() {
     closedLoop();*/
 }
 
-//mode="closedLoop";
-mode="preview";
-mode="floor";
+mode="closedLoop";
+//mode="preview";
+//mode="floor";
 
 if(mode == "closedLoop"){
     
     closedLoop();
-    translate([-K/2,0,0])
-    rotate(90,[0,0,1])
-    wallElement();
+//    translate([-K/2,0,0])
+  //  rotate(90,[0,0,1])
+    //wallElement();
 }
 
 if ( mode == "sphere"){
