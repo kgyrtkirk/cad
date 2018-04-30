@@ -21,7 +21,7 @@ function rZ(a,newZ) = [a[0],a[1],newZ];
 
 FLOOR=70;   // DUP!
 DRUM_R=FLOOR/PI/2;// DUP!
-ROD_R=DRUM_R;
+ROD_R=DRUM_R/2;
 ROD_LEN=90;
 
 K=57;
@@ -48,6 +48,16 @@ CH_D_O=WALL_W/2;
 
 EH=FLOOR-e-STAGE_H;
 
+
+// these names might be misleading; they are used in wheels
+DW=2;
+EDGE=5;
+EDGE_W=1;
+
+WHEEL_THICK=DW*2+EDGE_W;
+
+
+
 module symY(t) {
     translate(t)
         children();
@@ -56,12 +66,37 @@ module symY(t) {
             children();
 }
 
+module cableTiePost(){
+    HB=2;
+    HT=1;
+    D1=4;
+    D2=6;
+    $fn=16;
+    difference() {
+        union() {
+            cylinder(h=HB,d=D1);
+            translate([0,0,HB])
+            cylinder(h=HT,d1=D1,d2=D2);
+        }
+        // bottom/main hole
+        hull() {
+            translate([5,0,HB/2])   sphere(d=HOLE_D);
+            translate([-5,0,HB/2])  sphere(d=HOLE_D);
+        }
+        // finalizer engrave
+        hull() {
+            translate([0,5,HB+HT-HOLE_D*1/3])   sphere(d=HOLE_D);
+            translate([0,-5,HB+HT-HOLE_D*1/3])  sphere(d=HOLE_D);
+        }
+    }
+}
+
 module closedLoop(){
     
     module  atChannels0(xScale,yScale=1){
-        translate([xScale*CH_X,yScale*CH_U,0])                    children();
-        translate([xScale*CH_X,yScale*CH_D,0])             mirror([0,1,0])
-                   children();
+        translate([xScale*CH_X,yScale*CH_U,0])             mirror([0,1,0])
+                    children();
+        translate([xScale*CH_X,yScale*CH_D,0])                   children();
     }
     module  atChannels1(xScale,yScale=1){
         atChannels0(xScale,yScale) children();
@@ -73,11 +108,25 @@ module closedLoop(){
         mirror([1,0,0])
         atChannels1(xScale,yScale) children();
     }
+    module  mainRodCut() {
+            cylinder($fn=4, r=ROD_R+.1,h=ROD_LEN,center=true);
+    }
+    
+    module wheelIntermed() {
+!        difference() {
+            union() {
+                $fn=64;
+                H=CH_U-CH_D-WHEEL_THICK-.1;
+                cylinder(r=(ROD_R+DRUM_R)/2,h=H);
+            }
+            rotate(45)
+            symY([0,ROD_R,0])
+            cylinder($fn=16,d=HOLE_D,h=10,center=true);
+            mainRodCut();
+        }
+    }
     
     module wheelDrum(){
-        DW=2;
-        EDGE=5;
-        EDGE_W=1;
 !        difference() {
             union() {
                 $fn=64;
@@ -86,10 +135,17 @@ module closedLoop(){
                 translate([0,0,DW])
                 cylinder(r=DRUM_R+EDGE,h=EDGE_W,center=true);
                 translate([0,0,-DW])
-                cylinder(r=DRUM_R+EDGE,h=1,center=true);
+                cylinder(r=DRUM_R+EDGE,h=EDGE_W,center=true);
+                symY([0,DRUM_R,EDGE_W+DW/2])
+                cableTiePost();
             }
             symY([0,DRUM_R,0])
             cylinder($fn=16,d=HOLE_D,h=10,center=true);
+            // holes near rod for main position
+            rotate(45)
+            symY([0,ROD_R,0])
+            cylinder($fn=16,d=HOLE_D,h=10,center=true);
+            mainRodCut();
         }
     }
     
@@ -516,28 +572,7 @@ module floorElement(){
     color([0,1,1])
     translate([0,-K/2,0])
     symY([L/2+7,K/4+5,W]) {
-        HB=2;
-        HT=1;
-        D1=4;
-        D2=6;
-        $fn=16;
-        difference() {
-            union() {
-                cylinder(h=HB,d=D1);
-                translate([0,0,HB])
-                cylinder(h=HT,d1=D1,d2=D2);
-            }
-            // bottom/main hole
-            hull() {
-                translate([5,0,HB/2])   sphere(d=HOLE_D);
-                translate([-5,0,HB/2])  sphere(d=HOLE_D);
-            }
-            // finalizer engrave
-            hull() {
-                translate([0,5,HB+HT-HOLE_D*1/3])   sphere(d=HOLE_D);
-                translate([0,-5,HB+HT-HOLE_D*1/3])  sphere(d=HOLE_D);
-            }
-        }
+        cableTiePost();
     }
 
     translate([L/2+CONN_L-CONN_L0,-K,CONN_H]) {
