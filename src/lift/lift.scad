@@ -72,6 +72,7 @@ module cableTiePost(){
     D1=4;
     D2=6;
     $fn=16;
+    color([0,1,0])
     difference() {
         union() {
             cylinder(h=HB,d=D1);
@@ -113,11 +114,11 @@ module closedLoop(){
     }
     
     module wheelIntermed() {
-!        difference() {
+        difference() {
             union() {
                 $fn=64;
                 H=CH_U-CH_D-WHEEL_THICK-.1;
-                cylinder(r=(ROD_R+DRUM_R)/2,h=H);
+                cylinder(r=(ROD_R+DRUM_R)/2,h=H,center=true);
             }
             rotate(45)
             symY([0,ROD_R,0])
@@ -127,7 +128,7 @@ module closedLoop(){
     }
     
     module wheelDrum(){
-!        difference() {
+        difference() {
             union() {
                 $fn=64;
                 translate([0,0,0])
@@ -153,7 +154,10 @@ module closedLoop(){
         rotate(90,[1,0,0]) {
             cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
         }
+    }
+    module  mainRodPreview() {
         
+        mainRod();
         // note: screw pos?
         // probably atChannels is abad idea
         atChannels(xScale=0){
@@ -161,6 +165,9 @@ module closedLoop(){
                 wheelDrum();
             }
         }
+        symY([0,(CH_D+CH_U)/2,0])
+        rotate(90,[1,0,0])
+        wheelIntermed();
     }
     
     
@@ -219,7 +226,7 @@ module closedLoop(){
             }
         }
     }
-    mainRod();
+    mainRodPreview();
     topChannels();
     
 
