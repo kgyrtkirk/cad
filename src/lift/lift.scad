@@ -48,6 +48,13 @@ CH_D_O=WALL_W/2;
 
 EH=FLOOR-e-STAGE_H;
 
+module symY(t) {
+    translate(t)
+        children();
+    mirror([0,1,0])
+        translate(t)
+            children();
+}
 
 module closedLoop(){
     
@@ -71,13 +78,18 @@ module closedLoop(){
         DW=2;
         EDGE=5;
         EDGE_W=1;
-        union() {
-            translate([0,0,0])
-            cylinder(r=DRUM_R,h=DW*2,center=true);
-            translate([0,0,DW])
-            cylinder(r=DRUM_R+EDGE,h=EDGE_W,center=true);
-            translate([0,0,-DW])
-            cylinder(r=DRUM_R+EDGE,h=1,center=true);
+!        difference() {
+            union() {
+                $fn=64;
+                translate([0,0,0])
+                cylinder(r=DRUM_R,h=DW*2,center=true);
+                translate([0,0,DW])
+                cylinder(r=DRUM_R+EDGE,h=EDGE_W,center=true);
+                translate([0,0,-DW])
+                cylinder(r=DRUM_R+EDGE,h=1,center=true);
+            }
+            symY([0,DRUM_R,0])
+            cylinder($fn=16,d=HOLE_D,h=10,center=true);
         }
     }
     
@@ -479,13 +491,6 @@ module floorElement(){
     CONN_H=2.5;
     CONN_T=34;
     
-    module symY(t) {
-        translate(t)
-            children();
-        mirror([0,1,0])
-            translate(t)
-                children();
-    }
     // ramp'n clamp
     translate([L/2,-K,0]) {
     color([1,0,1])
