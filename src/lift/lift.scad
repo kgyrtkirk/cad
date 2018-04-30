@@ -110,7 +110,7 @@ module closedLoop(){
         atChannels1(xScale,yScale) children();
     }
     module  mainRodCut() {
-            cylinder($fn=4, r=ROD_R+.1,h=ROD_LEN,center=true);
+        cube([ROD_R+.1,ROD_R+.1,ROD_LEN],center=true);
     }
     
     module wheelIntermed() {
@@ -143,7 +143,7 @@ module closedLoop(){
             symY([0,DRUM_R,0])
             cylinder($fn=16,d=HOLE_D,h=50,center=true);
             // holes near rod for main position
-            rotate(45,[0,0,1])
+            rotate(90,[0,0,1])
             symY([0,ROD_R,0])
             cylinder($fn=16,d=HOLE_D,h=50,center=true);
             
@@ -152,23 +152,24 @@ module closedLoop(){
     }
     
     module  mainRod() {
-        rotate(90,[1,0,0])
         difference() {
             union() {
-                cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
+                cube([ROD_R,ROD_R,ROD_LEN],center=true);
+                //cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
     S=CH_D-WHEEL_THICK/2-.1;
                 color([1,0,0])
-                cylinder($fn=4, r=DRUM_R/2+W,h=2*S,center=true);
+                cube([ROD_R+W,ROD_R+W,2*S],center=true);
+//                cylinder($fn=4, r=DRUM_R/2+W,h=2*S,center=true);
             }
             
 %            symY([0,CH_D,0])
             rotate(90,[1,0,0])
-            rotate(45,[0,1,0])
             cylinder(d=HOLE_D,h=100,center=true);
         }
     }
     module  mainRodPreview() {
         
+        rotate(90,[1,0,0])
         mainRod();
         // note: screw pos?
         // probably atChannels is abad idea
