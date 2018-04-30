@@ -110,7 +110,7 @@ module closedLoop(){
         atChannels1(xScale,yScale) children();
     }
     module  mainRodCut() {
-        cube([ROD_R+W+.1,ROD_R+.1,ROD_LEN],center=true);
+        cube([ROD_R+.1,ROD_R+.1,ROD_LEN],center=true);
     }
     
     module wheelIntermed() {
@@ -154,7 +154,7 @@ module closedLoop(){
     module  mainRod() {
         difference() {
             union() {
-                cube([ROD_R+W,ROD_LEN,ROD_R],center=true);
+                cube([ROD_R,ROD_LEN,ROD_R],center=true);
                 //cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
     S=CH_D-WHEEL_THICK/2-.1;
                 color([1,0,0])
