@@ -122,7 +122,7 @@ module closedLoop(){
             }
             rotate(45)
             symY([0,ROD_R,0])
-            cylinder($fn=16,d=HOLE_D,h=10,center=true);
+            cylinder($fn=16,d=HOLE_D,h=20,center=true);
             mainRodCut();
         }
     }
@@ -141,18 +141,30 @@ module closedLoop(){
                 cableTiePost();
             }
             symY([0,DRUM_R,0])
-            cylinder($fn=16,d=HOLE_D,h=10,center=true);
+            cylinder($fn=16,d=HOLE_D,h=50,center=true);
             // holes near rod for main position
-            rotate(45)
+            rotate(45,[0,0,1])
             symY([0,ROD_R,0])
-            cylinder($fn=16,d=HOLE_D,h=10,center=true);
+            cylinder($fn=16,d=HOLE_D,h=50,center=true);
+            
             mainRodCut();
         }
     }
     
     module  mainRod() {
-        rotate(90,[1,0,0]) {
-            cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
+        rotate(90,[1,0,0])
+        difference() {
+            union() {
+                cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
+    S=CH_D-WHEEL_THICK/2-.1;
+                color([1,0,0])
+                cylinder($fn=4, r=DRUM_R/2+W,h=2*S,center=true);
+            }
+            
+%            symY([0,CH_D,0])
+            rotate(90,[1,0,0])
+            rotate(45,[0,1,0])
+            cylinder(d=HOLE_D,h=100,center=true);
         }
     }
     module  mainRodPreview() {
@@ -160,7 +172,7 @@ module closedLoop(){
         mainRod();
         // note: screw pos?
         // probably atChannels is abad idea
-        atChannels(xScale=0){
+        atChannels1(xScale=0){
             rotate(90,[1,0,0]) {
                 wheelDrum();
             }
@@ -710,8 +722,6 @@ TIRE_OFF=(VEHICLE_WIDTH1+VEHICLE_WIDTH0)/4;
 use <scad-utils/transformations.scad>
 
 function    to_vec3(x) = [x[0]/x[3],x[1]/x[3],x[2]/x[3] ];
-
-echo("a",[1,2,3,4]);
 
 // computes the tangential point
 function    tpoint(e,c,r) =
