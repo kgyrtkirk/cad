@@ -238,25 +238,7 @@ module closedLoop(){
             ?v
             :[0,-DRUM_R,0];
         
-        echo("I",i0);
         i=[i0[0],y_off,i0[1]];
-        echo(i);
-        
-//        i=[DRUM_R,y_off,(top?1:-1)*DRUM_R];
-        
-//              i=[DRUM_R,y_off,(top?1:-1)*DRUM_R];
-        echo(top);
-      if(top) {
-            // probably later
-            // e,c,r
-            echo(DRUM_R);
-            translate([v[0],0,v[1]])
-            sphere(10);
-//            i=[10,11,12];
-        }else{
-//            i=[DRUM_R,y_off,(top?1:-1)*DRUM_R];
-        i=[0,y_off,0];
-        }
         
         
         difference() {
