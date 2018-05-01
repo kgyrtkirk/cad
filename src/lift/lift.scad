@@ -21,7 +21,7 @@ function rZ(a,newZ) = [a[0],a[1],newZ];
 
 FLOOR=70;   // DUP!
 DRUM_R=FLOOR/PI/2;// DUP!
-ROD_R=DRUM_R/2;
+ROD_R=6;
 ROD_LEN=90;
 
 K=57;
@@ -33,6 +33,8 @@ CHANNEL_D=3;
 CH_U=L/2*.8;
 CH_D=L/2*.6;
 CH_X=K/2*.9;
+
+CH_C=(CH_U+CH_D)/2;
 
 FLOOR=70;
 e=.1;
@@ -118,6 +120,7 @@ module closedLoop(){
             union() {
                 $fn=64;
                 H=CH_U-CH_D-WHEEL_THICK-.1;
+                echo("interH",H);
                 cylinder(r=(ROD_R+DRUM_R)/2,h=H,center=true);
             }
             rotate(45)
@@ -162,7 +165,7 @@ module closedLoop(){
 //                cylinder($fn=4, r=DRUM_R/2+W,h=2*S,center=true);
             }
             
-            symY([0,(CH_D+CH_U)/2,0])
+            symY([0,CH_C,0])
             symY([0,WHEEL_THICK/2+(CH_U-CH_D)/2+HOLE_D+.5,0])
             rotate(90,[0,0,1])
             rotate(90,[1,0,0]) {
@@ -182,7 +185,7 @@ module closedLoop(){
                 wheelDrum();
             }
         }
-        symY([0,(CH_D+CH_U)/2,0])
+        symY([0,CH_C,0])
         rotate(90,[1,0,0])
         wheelIntermed();
     }
