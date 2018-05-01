@@ -23,6 +23,7 @@ FLOOR=70;   // DUP!
 DRUM_R=FLOOR/PI/2;// DUP!
 ROD_R=6;
 ROD_LEN=90;
+INTERMED_R=ROD_R+2;
 
 K=57;
 L=90;
@@ -58,6 +59,7 @@ EDGE_W=1;
 
 WHEEL_THICK=DW*2+EDGE_W;
 
+INTERMED_H=CH_U-CH_D-WHEEL_THICK-.1;
 
 
 module symY(t) {
@@ -119,11 +121,10 @@ module closedLoop(){
         difference() {
             union() {
                 $fn=64;
-                H=CH_U-CH_D-WHEEL_THICK-.1;
-                echo("interH",H);
-                cylinder(r=(ROD_R+DRUM_R)/2,h=H,center=true);
+                echo("interH",INTERMED_H);
+                cylinder(r=INTERMED_R,h=INTERMED_H,center=true);
             }
-            rotate(45)
+//            rotate(45)
             symY([0,ROD_R,0])
             cylinder($fn=16,d=HOLE_D,h=20,center=true);
             mainRodCut();
@@ -206,7 +207,7 @@ module closedLoop(){
             hull() {
                 translate(o)            sphere(d=CHANNEL_D);
                 translate(i)            sphere(d=CHANNEL_D);
-                translate(rZ(o,top))    sphere(d=CHANNEL_D);
+                translate(rZ(i,top))    sphere(d=CHANNEL_D);
             //    translate(rZ(i,top))    sphere(d=CHANNEL_D);
             }
             
@@ -246,9 +247,20 @@ module closedLoop(){
             }
         }
     }
-    mainRodPreview();
-    topChannels();
+    module topCage() {
+        color([0,0,1])
+        symY([0,CH_C,0]) {
+            rotate(90,[1,0,0])
+            difference() {
+                cylinder(r=INTERMED_R+2*W,h=INTERMED_H-1,center=true);
+                cylinder(h=100,r=INTERMED_R+.1,center=true);
+            }
+        }
+        topChannels();
+    }
     
+    mainRodPreview();
+!    topCage();
 
 }
 
