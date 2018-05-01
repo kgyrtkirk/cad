@@ -234,7 +234,7 @@ module closedLoop(){
         
             v=tpoint([CH_X,-DRUM_R,0],[0,0,0],DRUM_R);
             echo("V",v);
-        i0=  (top==true)
+        i0=  top
             ?v
             :[0,-DRUM_R,0];
         
@@ -264,7 +264,7 @@ module closedLoop(){
                 translate(o1)            sphere(d=CHANNEL_D);
                 translate(o)            sphere(d=CHANNEL_D);
                 translate(i)            sphere(d=CHANNEL_D);
-                translate(rZ(o1,topZ))    sphere(d=CHANNEL_D);
+                translate([K/4,y_off,DRUM_R])    sphere(d=CHANNEL_D);
             //    translate(rZ(i,topZ))    sphere(d=CHANNEL_D);
             }
             
@@ -303,20 +303,37 @@ module closedLoop(){
                 }
             }
             rotate(90,[1,0,0]) {
-                cylinder(r=DRUM_R+7,h=ROD_LEN,center=true);
+                cylinder(r=DRUM_R+EDGE+1,h=ROD_LEN,center=true);
             }
         }
     }
     module topCage() {
         color([0,0,1])
-        symY([0,CH_C,0]) {
-            rotate(90,[1,0,0])
-            difference() {
-                cylinder(r=INTERMED_R+2*W,h=INTERMED_H-1,center=true);
-                cylinder(h=100,r=INTERMED_R+.1,center=true);
+        difference() {
+            union(){
+                symY([0,CH_C,0]) {
+                    rotate(90,[1,0,0])
+                    difference() {
+                        cylinder(r=INTERMED_R+2*W,h=INTERMED_H-1,center=true);
+                        cylinder(h=100,r=INTERMED_R+.1,center=true);
+                    }
+                    symX([0,0,0]) {
+                        hull() {
+                            symY([0,(CH_D-CH_U)/2+HOLE_D,0])
+                            translate([K/4,0,DRUM_R])
+                                    cube(W/2,center=true);
+                            
+                            symY([0,(CH_D-CH_U)/2+HOLE_D,0])
+                            translate([K/2,0,-DRUM_R-1.5*W])
+                                    cube(W/2,center=true);
+                        }
+                    }
+                }
+                
+
             }
-            symX([K/2-W/2,0,0]) {
-                cylinder(d=W,h=10);
+            rotate(90,[1,0,0]) {
+                cylinder(r=DRUM_R+EDGE+1,h=ROD_LEN,center=true);
             }
         }
         topChannels();
