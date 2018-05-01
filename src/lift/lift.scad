@@ -227,28 +227,45 @@ module closedLoop(){
             K/2-CH_D_O;
         
         $fn=16;
-        o1=[CH_D,y_off,(top?1:-1)*DRUM_R];
-        o=[CH_X,y_off,(top?1:-1)*DRUM_R];
-        i=[DRUM_R,y_off,(top?1:-1)*DRUM_R];
-        top=DRUM_R*2;
+        o1=[CH_D,y_off,(top?-1:-1)*DRUM_R];
+        o=[CH_X,y_off,(top?-1:-1)*DRUM_R];
+        topZ=DRUM_R*2;
         
-        if(false) {
+        
+            v=tpoint([CH_X,-DRUM_R,0],[0,0,0],DRUM_R);
+            echo("V",v);
+        i0=  (top==true)
+            ?v
+            :[0,-DRUM_R,0];
+        
+        echo("I",i0);
+        i=[i0[0],y_off,i0[1]];
+        echo(i);
+        
+//        i=[DRUM_R,y_off,(top?1:-1)*DRUM_R];
+        
+//              i=[DRUM_R,y_off,(top?1:-1)*DRUM_R];
+        echo(top);
+      if(top) {
             // probably later
             // e,c,r
-            v=tpoint([CH_X,-DRUM_R,0],[0,0,0],DRUM_R);
-            echo(v);
             echo(DRUM_R);
             translate([v[0],0,v[1]])
             sphere(10);
+//            i=[10,11,12];
+        }else{
+//            i=[DRUM_R,y_off,(top?1:-1)*DRUM_R];
+        i=[0,y_off,0];
         }
         
         
         difference() {
             hull() {
                 translate(o1)            sphere(d=CHANNEL_D);
+                translate(o)            sphere(d=CHANNEL_D);
                 translate(i)            sphere(d=CHANNEL_D);
-                translate(rZ(o1,top))    sphere(d=CHANNEL_D);
-            //    translate(rZ(i,top))    sphere(d=CHANNEL_D);
+                translate(rZ(o1,topZ))    sphere(d=CHANNEL_D);
+            //    translate(rZ(i,topZ))    sphere(d=CHANNEL_D);
             }
             
             hull() {
