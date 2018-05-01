@@ -189,13 +189,13 @@ module closedLoop(){
                 cube([ROD_R,ROD_LEN,ROD_R],center=true);
                 //cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
     S=CH_D-WHEEL_THICK/2-.1;
-                color([1,0,0])
-                cube([ROD_R+W,2*S,ROD_R+W],center=true);
+//                color([1,0,0])
+  //              cube([ROD_R+W,2*S,ROD_R+W],center=true);
 //                cylinder($fn=4, r=DRUM_R/2+W,h=2*S,center=true);
             }
             
             symY([0,CH_C,0])
-            symY([0,WHEEL_THICK/2+(CH_U-CH_D)/2+HOLE_D+.5,0])
+            symY([0,WHEEL_THICK/2+(CH_U-CH_D)/2+HOLE_D/2,0])
             rotate(90,[0,0,1])
             rotate(90,[1,0,0]) {
                 $fn=16;
@@ -291,38 +291,49 @@ module closedLoop(){
     }
     module topCage() {
         color([0,0,1])
+        // spurious?
         difference() {
             union(){
+                rotate(90)
+                translate([0,K/2,-DRUM_R-W-WALL_W-WALL_W])
+                floorBase(2*WALL_W);
                 symY([0,CH_C,0]) {
                     rotate(90,[1,0,0])
                     difference() {
-                        cylinder(r=INTERMED_R+2*W,h=INTERMED_H-1,center=true);
+                        $fn=64;
+                        union() {
+                            hull() {
+                                translate([0,DRUM_R-W,0])
+                                cube([K/2,W/2,W],center=true);
+                                translate([0,-DRUM_R+W,0])
+                                cube([K-W-W,W/2,W],center=true);
+                            }
+                            cylinder(r=INTERMED_R+2*W,h=INTERMED_H-1,center=true);
+                        }
                         cylinder(h=100,r=INTERMED_R+.1,center=true);
                     }
                     symX([0,0,0]) {
+                        WW=W/sqrt(2);
                         hull() {
                             symY([0,(CH_D-CH_U)/2+HOLE_D,0])
                             translate([K/4,0,DRUM_R])
-                                    cube(W/2,center=true);
+                                    cube(WW,center=true);
                             
                             symY([0,(CH_D-CH_U)/2+HOLE_D,0])
                             translate([K/2,0,-DRUM_R-1.5*W])
-                                    cube(W/2,center=true);
+                                    cube(WW,center=true);
                         }
                     }
                 }
                 
 
             }
-            rotate(90,[1,0,0]) {
-                cylinder(r=DRUM_R+EDGE+1,h=ROD_LEN,center=true);
-            }
         }
         topChannels();
     }
     
     mainRodPreview();
-!    topCage();
+    topCage();
 
 }
 
