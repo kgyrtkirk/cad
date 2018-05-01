@@ -17,6 +17,27 @@
         
 */
 
+
+use <scad-utils/transformations.scad>
+
+function    to_vec3(x) = [x[0]/x[3],x[1]/x[3],x[2]/x[3] ];
+
+// computes the tangential point
+function    tpoint(e,c,r) =
+    let(
+            l=norm(c-e),
+            s=sqrt(l*l - r*r),
+            a=-asin(r/l)
+        )
+    e+
+    (s/l)*to_vec3( 
+        rotation([0,0,a])*
+        concat(c-e,1)
+    )
+;
+
+function unit(v) = v/norm(v);
+
 function rZ(a,newZ) = [a[0],a[1],newZ];
 
 FLOOR=70;   // DUP!
@@ -202,6 +223,17 @@ module closedLoop(){
         o=[CH_X,y_off,(top?1:-1)*DRUM_R];
         i=[DRUM_R,y_off,(top?1:-1)*DRUM_R];
         top=DRUM_R*2;
+        
+        if(false) {
+            // probably later
+            // e,c,r
+            v=tpoint([CH_X,-DRUM_R,0],[0,0,0],DRUM_R);
+            echo(v);
+            echo(DRUM_R);
+            translate([v[0],0,v[1]])
+            sphere(10);
+        }
+        
         
         difference() {
             hull() {
@@ -739,25 +771,6 @@ TIRE_OFF=(VEHICLE_WIDTH1+VEHICLE_WIDTH0)/4;
 }
 }
 
-use <scad-utils/transformations.scad>
-
-function    to_vec3(x) = [x[0]/x[3],x[1]/x[3],x[2]/x[3] ];
-
-// computes the tangential point
-function    tpoint(e,c,r) =
-    let(
-            l=norm(c-e),
-            s=sqrt(l*l - r*r),
-            a=-asin(r/l)
-        )
-    e+
-    (s/l)*to_vec3( 
-        rotation([0,0,a])*
-        concat(c-e,1)
-    )
-;
-
-function unit(v) = v/norm(v);
 
 DRUM_R=FLOOR/PI/2;
 
