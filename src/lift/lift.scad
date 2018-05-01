@@ -90,6 +90,13 @@ module symY(t) {
         translate(t)
             children();
 }
+module symX(t) {
+    translate(t)
+        children();
+    mirror([1,0,0])
+        translate(t)
+            children();
+}
 
 module cableTiePost(){
     HB=2;
@@ -220,6 +227,7 @@ module closedLoop(){
             K/2-CH_D_O;
         
         $fn=16;
+        o1=[CH_D,y_off,(top?1:-1)*DRUM_R];
         o=[CH_X,y_off,(top?1:-1)*DRUM_R];
         i=[DRUM_R,y_off,(top?1:-1)*DRUM_R];
         top=DRUM_R*2;
@@ -237,9 +245,9 @@ module closedLoop(){
         
         difference() {
             hull() {
-                translate(o)            sphere(d=CHANNEL_D);
+                translate(o1)            sphere(d=CHANNEL_D);
                 translate(i)            sphere(d=CHANNEL_D);
-                translate(rZ(i,top))    sphere(d=CHANNEL_D);
+                translate(rZ(o1,top))    sphere(d=CHANNEL_D);
             //    translate(rZ(i,top))    sphere(d=CHANNEL_D);
             }
             
@@ -248,7 +256,10 @@ module closedLoop(){
                 translate(i)            sphere(d=HOLE_D);
             }
             translate([0,0,-1])
+            hull() {
             translate(o)            sphere(d=CHANNEL_D);
+            translate(o1)            sphere(d=CHANNEL_D);
+            }
             translate([CH_X,y_off,(top?1:-1)*DRUM_R]) {
 //                sphere(d=HOLE_D);
             }
@@ -286,6 +297,9 @@ module closedLoop(){
             difference() {
                 cylinder(r=INTERMED_R+2*W,h=INTERMED_H-1,center=true);
                 cylinder(h=100,r=INTERMED_R+.1,center=true);
+            }
+            symX([K/2-W/2,0,0]) {
+                cylinder(d=W,h=10);
             }
         }
         topChannels();
