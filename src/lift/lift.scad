@@ -294,7 +294,7 @@ module closedLoop(){
         // spurious?
         difference() {
             union(){
-                rotate(90)
+                rotate(-90)
                 translate([0,K/2,-DRUM_R-W-WALL_W-WALL_W])
                 floorBase(2*WALL_W);
                 symY([0,CH_C,0]) {
@@ -577,7 +577,7 @@ module floorBase(H=WALL_W,cutout=false) {
         if(!cutout) {
             $fn=16;
             hull(){
-                translate([-L/2,-WALL_W/2,H/2])
+                translate([-L/2,-WALL_W/2,WALL_W/2])
                 atCutPos()
                     sphere(d=HOLE_D,center=true);
             }
@@ -867,13 +867,13 @@ module preview() {
     car();
 
 
-/*    translate([0,K/2,WALL_HEIGHT+DRUM_R])
+    translate([0,K/2,WALL_HEIGHT+DRUM_R+WALL_W*W+W+.1])
     rotate(90,[0,0,1])
-    closedLoop();*/
+    closedLoop();
 }
 
-mode="closedLoop";
-//mode="preview";
+//mode="closedLoop";
+mode="preview";
 //mode="floor";
 
 if(mode == "closedLoop"){
