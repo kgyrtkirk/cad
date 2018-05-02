@@ -125,100 +125,103 @@ module cableTiePost(){
 }
 
     
-    module  atChannels0(xScale,yScale=1){
-        translate([xScale*CH_X,yScale*CH_U,0])             mirror([0,1,0])
-                    children();
-        translate([xScale*CH_X,yScale*CH_D,0])             
-                    children();
-    }
-    module  atChannels1(xScale,yScale=1){
-        atChannels0(xScale,yScale) children();
-        mirror([0,1,0])
-        atChannels0(xScale,yScale) children();
-    }
-    module  atChannels(xScale=1,yScale=1) {
-        atChannels1(xScale,yScale) children();
-        mirror([1,0,0])
-        atChannels1(xScale,yScale) children();
-    }
-    module  mainRodCut() {
-        cube([ROD_R+.1,ROD_R+.1,ROD_LEN],center=true);
-    }
+module  atChannels0(xScale,yScale=1){
+    translate([xScale*CH_X,yScale*CH_U,0])             mirror([0,1,0])
+                children();
+    translate([xScale*CH_X,yScale*CH_D,0])             
+                children();
+}
+module  atChannels1(xScale,yScale=1){
+    atChannels0(xScale,yScale) children();
+    mirror([0,1,0])
+    atChannels0(xScale,yScale) children();
+}
+module  atChannels(xScale=1,yScale=1) {
+    atChannels1(xScale,yScale) children();
+    mirror([1,0,0])
+    atChannels1(xScale,yScale) children();
+}
+
+module  mainRodCut() {
+    cube([ROD_R+.1,ROD_R+.1,ROD_LEN],center=true);
+}
     
-    module wheelIntermed() {
-        difference() {
-            union() {
-                $fn=64;
-                echo("interH",INTERMED_H);
-                cylinder(r=INTERMED_R,h=INTERMED_H,center=true);
-            }
-//            rotate(45)
-            symY([0,ROD_R,0])
-            cylinder($fn=16,d=HOLE_D,h=20,center=true);
-            mainRodCut();
+module wheelIntermed() {
+    difference() {
+        union() {
+            $fn=64;
+            echo("interH",INTERMED_H);
+            cylinder(r=INTERMED_R,h=INTERMED_H,center=true);
         }
+        symY([0,ROD_R,0])
+        cylinder($fn=16,d=HOLE_D,h=20,center=true);
+        mainRodCut();
     }
+}
     
-    module wheelDrum(){
-        difference() {
-            union() {
-                $fn=64;
-                translate([0,0,0])
-                cylinder(r=DRUM_R,h=DW*2,center=true);
-                translate([0,0,DW])
-                cylinder(r=DRUM_R+EDGE,h=EDGE_W,center=true);
-                translate([0,0,-DW])
-                cylinder(r=DRUM_R+EDGE,h=EDGE_W,center=true);
-                symY([0,DRUM_R,EDGE_W+DW/2])
-                cableTiePost();
-            }
-            symY([0,DRUM_R,0])
-            cylinder($fn=16,d=HOLE_D,h=50,center=true);
-            // holes near rod for main position
-            rotate(90,[0,0,1])
-            symY([0,ROD_R,0])
-            cylinder($fn=16,d=HOLE_D,h=50,center=true);
-            
-            mainRodCut();
+module wheelDrum(){
+    difference() {
+        union() {
+            $fn=64;
+            translate([0,0,0])
+            cylinder(r=DRUM_R,h=DW*2,center=true);
+            translate([0,0,DW])
+            cylinder(r=DRUM_R+EDGE,h=EDGE_W,center=true);
+            translate([0,0,-DW])
+            cylinder(r=DRUM_R+EDGE,h=EDGE_W,center=true);
+            symY([0,DRUM_R,EDGE_W+DW/2])
+            cableTiePost();
         }
-    }
-    
-    module  mainRod() {
-        difference() {
-            union() {
-                cube([ROD_R,ROD_LEN,ROD_R],center=true);
-                //cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
-    S=CH_D-WHEEL_THICK/2-.1;
-//                color([1,0,0])
-  //              cube([ROD_R+W,2*S,ROD_R+W],center=true);
-//                cylinder($fn=4, r=DRUM_R/2+W,h=2*S,center=true);
-            }
-            
-            symY([0,CH_C,0])
-            symY([0,WHEEL_THICK/2+(CH_U-CH_D)/2+HOLE_D/2,0])
-            rotate(90,[0,0,1])
-            rotate(90,[1,0,0]) {
-                $fn=16;
-            cylinder(d=HOLE_D,h=100,center=true);
-            }
-        }
-    }
-    module  mainRodPreview() {
+        symY([0,DRUM_R,0])
+        cylinder($fn=16,d=HOLE_D,h=50,center=true);
+        // holes near rod for main position
+        rotate(90,[0,0,1])
+        symY([0,ROD_R,0])
+        cylinder($fn=16,d=HOLE_D,h=50,center=true);
         
-//        rotate(90,[1,0,0])
-        mainRod();
-        // note: screw pos?
-        // probably atChannels is abad idea
-        atChannels1(xScale=0){
-            rotate(90,[1,0,0]) {
-                wheelDrum();
-            }
-        }
-        symY([0,CH_C,0])
-        rotate(90,[1,0,0])
-        wheelIntermed();
+        mainRodCut();
     }
+}
     
+module  mainRod() {
+    difference() {
+        union() {
+            cube([ROD_R,ROD_LEN,ROD_R],center=true);
+            //cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
+            S=CH_D-WHEEL_THICK/2-.1;
+            // color([1,0,0])
+            // cube([ROD_R+W,2*S,ROD_R+W],center=true);
+            // cylinder($fn=4, r=DRUM_R/2+W,h=2*S,center=true);
+        }
+        
+        symY([0,CH_C,0])
+        symY([0,WHEEL_THICK/2+(CH_U-CH_D)/2+HOLE_D/2,0])
+        rotate(90,[0,0,1])
+        rotate(90,[1,0,0]) {
+            $fn=16;
+        cylinder(d=HOLE_D,h=100,center=true);
+        }
+    }
+}
+    
+module  mainRodPreview() {
+    
+    mainRod();
+    // note: screw pos?
+    // probably atChannels is abad idea
+    atChannels1(xScale=0){
+        rotate(90,[1,0,0]) {
+            wheelDrum();
+        }
+    }
+    symY([0,CH_C,0])
+    rotate(90,[1,0,0])
+    wheelIntermed();
+}
+    
+    
+    
+module topCage() {
     
     module channel(y_off,top) {
         CH_X=
@@ -260,11 +263,12 @@ module cableTiePost(){
             translate(o1)            sphere(d=CHANNEL_D);
             }
             translate([CH_X,y_off,(top?1:-1)*DRUM_R]) {
-//                sphere(d=HOLE_D);
+    //                sphere(d=HOLE_D);
             }
         }
     }
-    
+
+        
     // channels
     module topChannels() {
         difference() {
@@ -289,48 +293,48 @@ module cableTiePost(){
             }
         }
     }
-    module topCage() {
-        color([0,0,1])
-        // spurious?
-        difference() {
-            union(){
-                rotate(-90)
-                translate([0,K/2,-DRUM_R-W-WALL_W-WALL_W])
-                floorBase(2*WALL_W);
-                symY([0,CH_C,0]) {
-                    rotate(90,[1,0,0])
-                    difference() {
-                        $fn=64;
-                        union() {
-                            hull() {
-                                translate([0,DRUM_R-W,0])
-                                cube([K/2,W/2,W],center=true);
-                                translate([0,-DRUM_R+W,0])
-                                cube([K-W-W,W/2,W],center=true);
-                            }
-                            cylinder(r=INTERMED_R+2*W,h=INTERMED_H-1,center=true);
-                        }
-                        cylinder(h=100,r=INTERMED_R+.1,center=true);
-                    }
-                    symX([0,0,0]) {
-                        WW=W/sqrt(2);
+
+    color([0,0,1])
+    // spurious?
+    difference() {
+        union(){
+            rotate(-90)
+            translate([0,K/2,-DRUM_R-W-WALL_W-WALL_W])
+            floorBase(2*WALL_W);
+            symY([0,CH_C,0]) {
+                rotate(90,[1,0,0])
+                difference() {
+                    $fn=64;
+                    union() {
                         hull() {
-                            symY([0,(CH_D-CH_U)/2+HOLE_D,0])
-                            translate([K/4,0,DRUM_R])
-                                    cube(WW,center=true);
-                            
-                            symY([0,(CH_D-CH_U)/2+HOLE_D,0])
-                            translate([K/2,0,-DRUM_R-1.5*W])
-                                    cube(WW,center=true);
+                            translate([0,DRUM_R-W,0])
+                            cube([K/2,W/2,W],center=true);
+                            translate([0,-DRUM_R+W,0])
+                            cube([K-W-W,W/2,W],center=true);
                         }
+                        cylinder(r=INTERMED_R+2*W,h=INTERMED_H-1,center=true);
+                    }
+                    cylinder(h=100,r=INTERMED_R+.1,center=true);
+                }
+                symX([0,0,0]) {
+                    WW=W/sqrt(2);
+                    hull() {
+                        symY([0,(CH_D-CH_U)/2+HOLE_D,0])
+                        translate([K/4,0,DRUM_R])
+                                cube(WW,center=true);
+                        
+                        symY([0,(CH_D-CH_U)/2+HOLE_D,0])
+                        translate([K/2,0,-DRUM_R-1.5*W])
+                                cube(WW,center=true);
                     }
                 }
-                
-
             }
+            
+
         }
-        topChannels();
     }
+    topChannels();
+}
     
 module closedLoop() {
     
