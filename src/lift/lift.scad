@@ -124,12 +124,12 @@ module cableTiePost(){
     }
 }
 
-module closedLoop(){
     
     module  atChannels0(xScale,yScale=1){
         translate([xScale*CH_X,yScale*CH_U,0])             mirror([0,1,0])
                     children();
-        translate([xScale*CH_X,yScale*CH_D,0])                   children();
+        translate([xScale*CH_X,yScale*CH_D,0])             
+                    children();
     }
     module  atChannels1(xScale,yScale=1){
         atChannels0(xScale,yScale) children();
@@ -331,6 +331,8 @@ module closedLoop(){
         }
         topChannels();
     }
+    
+module closedLoop() {
     
     mainRodPreview();
     topCage();
