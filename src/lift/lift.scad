@@ -587,6 +587,19 @@ module floorBase(H=WALL_W,cutout=false) {
                 atCutPos()
                     sphere(d=HOLE_D,center=true);
             }
+            if(H>WALL_W){
+                hull()
+                    translate([L/2,-WALL_W/2,WALL_W/2])
+                    atCutPos()
+                    sphere(d=HOLE_D,center=true);
+                for(y=[3,6,9]) {
+                    translate([0,-K/2,0])
+                    symY([L/2,y,WALL_W/2])
+                        rotate(90,[0,1,0])
+                        cylinder(d=HOLE_D,h=10,center=true);
+                    
+                }
+            }
             
         }
         

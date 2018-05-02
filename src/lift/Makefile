@@ -1,5 +1,5 @@
 OD=$(HOME)/3d/lift
-MODES= car wall floor ground sphere
+MODES= car wall floor ground sphere mainRod wheelIntermed wheelDrum topCage
 
 TARGETS=	$(addsuffix .stl,$(addprefix $(OD)/,$(MODES)))
 
