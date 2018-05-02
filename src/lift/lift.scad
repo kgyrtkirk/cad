@@ -923,5 +923,17 @@ if( mode == "wall") {
 if(mode == "preview"){
     preview();
 }
+if(mode == "mainRod"){
+    mainRod();
+}
+if(mode == "wheelIntermed"){
+    wheelIntermed();
+}
+if(mode == "wheelDrum"){
+    wheelDrum();
+}
+if(mode == "topCage"){
+    topCage();
+}
 
 
