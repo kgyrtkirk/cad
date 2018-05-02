@@ -183,10 +183,39 @@ module wheelDrum(){
     }
 }
     
+module turnHandle(r=5,R=20,N=5,h=5,cd=1){
+    translate([0,0,-h/2]){
+        cylinder(r=R,h=h,center=true);
+        for(i=[1:N]){
+            a=i*360/N;
+            translate([R*sin(a),R*cos(a),0]) {
+                
+                for(mZ=[0,1]) {
+                    mirror([0,0,mZ])
+                    translate([0,0,h/2-cd/2])
+                    cylinder(r1=r,r2=r-cd,h=cd,center=true);
+                }
+                cylinder(r=r,h=h-2*cd,center=true);
+            }
+        }
+    }
+}
+
+module turnKnob(){
+    difference() {
+        turnHandle();
+        mainRodCut();
+    }
+}
+
+
+ROD_OVER=10;
+
 module  mainRod() {
     difference() {
         union() {
-            cube([ROD_R,ROD_LEN,ROD_R],center=true);
+            translate([0,ROD_OVER/2,0])
+            cube([ROD_R,ROD_LEN+ROD_OVER,ROD_R],center=true);
             //cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
             S=CH_D-WHEEL_THICK/2-.1;
             // color([1,0,0])
@@ -217,6 +246,10 @@ module  mainRodPreview() {
     symY([0,CH_C,0])
     rotate(90,[1,0,0])
     wheelIntermed();
+
+%    translate([0,L/2+ROD_OVER,0])
+    rotate(90,[1,0,0])
+    turnKnob();
 }
     
     
@@ -845,24 +878,6 @@ use <threads.scad>
 
 //metric_thread (diameter=20, pitch=2, length=16, square=true, ///thread_size=2,
     //           groove=true, rectangle=3);
-
-module turnHandle(r=5,R=20,N=5,h=10,cd=1){
-    translate([0,0,-h/2]){
-        cylinder(r=R,h=h,center=true);
-        for(i=[1:N]){
-            a=i*360/N;
-            translate([R*sin(a),R*cos(a),0]) {
-                
-                for(mZ=[0,1]) {
-                    mirror([0,0,mZ])
-                    translate([0,0,h/2-cd/2])
-                    cylinder(r1=r,r2=r-cd,h=cd,center=true);
-                }
-                cylinder(r=r,h=h-2*cd,center=true);
-            }
-        }
-    }
-}
 
 module preview() {
     translate([0,0,-eps*100])
