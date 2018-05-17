@@ -201,10 +201,17 @@ module turnHandle(r=5,R=20,N=5,h=5,cd=1){
     }
 }
 
+KNOB_H=5;
 module turnKnob(){
     difference() {
         turnHandle();
-        mainRodCut();
+        // holes near rod for main position
+        for(r=[0,90])
+        rotate(r,[0,0,1])
+        symY([0,ROD_R,0])
+        cylinder($fn=16,d=HOLE_D,h=50,center=true);
+
+        mainRodCut(h=KNOB_H);
     }
 }
 
@@ -214,8 +221,9 @@ ROD_OVER=10;
 module  mainRod() {
     difference() {
         union() {
-            translate([0,ROD_OVER/2,0])
-            cube([ROD_R,ROD_LEN+ROD_OVER,ROD_R],center=true);
+            O=ROD_OVER+KNOB_H;
+            translate([0,O/2,0])
+            cube([ROD_R,ROD_LEN+O,ROD_R],center=true);
             //cylinder($fn=4, r=DRUM_R/2,h=ROD_LEN,center=true);
             S=CH_D-WHEEL_THICK/2-.1;
             // color([1,0,0])
@@ -230,6 +238,13 @@ module  mainRod() {
             $fn=16;
         cylinder(d=HOLE_D,h=100,center=true);
         }
+        
+        translate([0,L/2+ROD_OVER-HOLE_D/2,0])
+        for(r=[0,90])
+        rotate(r,[0,1,0])
+        cylinder($fn=16,d=HOLE_D,h=100,center=true);
+            
+        
     }
 }
     
@@ -963,5 +978,7 @@ if(mode == "wheelDrum"){
 if(mode == "topCage"){
     topCage();
 }
-
+if(mode == "turnKnob"){
+    turnKnob();
+}
 
