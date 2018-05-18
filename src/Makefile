@@ -1,5 +1,5 @@
 OD=$(HOME)/3d/scad
-MODES= first_layer rod_26mm_32mm
+MODES= first_layer rod_26mm_32mm bigyo ford_rear_door_button
 
 TARGETS=	$(addsuffix .stl,$(addprefix $(OD)/,$(MODES)))
 
