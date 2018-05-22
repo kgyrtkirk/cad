@@ -1,5 +1,5 @@
 OD=$(HOME)/3d/gtruck
-MODES= attach	hook1
+MODES= attach	hook1 trashCanTop trashPrint
 
 TARGETS=	$(addsuffix .stl,$(addprefix $(OD)/,$(MODES)))
 

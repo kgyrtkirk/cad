@@ -21,15 +21,16 @@ HOLDER_Y=3;         // remaining holder
 
 
 
+CAN_X0=30/2;
+CAN_Y0=30/2;
+CAN_X1=40/2;
+CAN_Y1=40/2;
+CAN_X2=CAN_X1+W/2;
+CAN_Y2=CAN_Y1+W/2;
+CAN_R=5;
+CAN_H=50;
+
 module trashCan() {
-    CAN_X0=30/2;
-    CAN_Y0=30/2;
-    CAN_X1=40/2;
-    CAN_Y1=40/2;
-    CAN_X2=CAN_X1+W/2;
-    CAN_Y2=CAN_Y1+W/2;
-    CAN_R=5;
-    CAN_H=50;
     W=2;
     $fn=16;
     module roundedBlock(dim=[10,10,2],zPos=0) {
@@ -78,9 +79,9 @@ module trashCan() {
     }
     
     HINGE_X=10;
-    HINGE_W=4;
+    HINGE_W=4.5;
     HINGE_D0=1.6;
-    HINGE_D1=HINGE_D0+.4;
+    HINGE_D1=HINGE_D0+.6;
 
                 
     translate([0,CAN_Y2,CAN_H]) {
@@ -102,7 +103,7 @@ module trashCan() {
 
             }
             symX([HINGE_X,1,-HINGE_W/2])
-            hinge2(HINGE_W+0.03,HINGE_W+1,HINGE_D0);
+            hinge2(HINGE_W+0.03,HINGE_W+2,HINGE_D0);
         }
         
     }
@@ -116,7 +117,7 @@ module hanger(){
         SHAVE=WW/2;
             translate([0,-WW/2,0])
         hull() {
-            translate([0,SHAVE/2,7*W])
+            translate([0,SHAVE/2,10*W])
             cube([AS_U-P_DIST-2*W,WW-SHAVE,.01],center=true);
             translate([0,0,0])
             cube([AS_U-P_DIST,WW,.01],center=true);
@@ -181,7 +182,13 @@ module attachment() {
 
 }
 
-mode="trashCan";
+module trashCanPrint(){
+    translate([0,0,CAN_H])
+    rotate(180,[1,0,0])
+    trashCan();
+}
+
+mode="trashCanTop";
 if(mode=="hook1"){
     hook1();
 }
@@ -191,4 +198,13 @@ if(mode=="attach"){
 if(mode=="trashCan"){
     trashCan();
 }
+if(mode=="trashPrint"){
+    trashCanPrint();
+}
 
+if(mode=="trashCanTop"){
+    intersection() {
+        trashCanPrint();
+        cube([100,100,10],center=true);
+    }
+}
