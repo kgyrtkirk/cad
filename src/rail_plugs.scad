@@ -1,4 +1,4 @@
-$fn=64;
+$fn=32;
 
 ADJ=.5;
 
@@ -8,7 +8,7 @@ L=17.5-R;
 H=11.8;
 
 D=10;
-R0=4.5;
+R0=4.8;
 //R0=4.6;
 //R0=4.5;
 O=.5;
@@ -40,14 +40,16 @@ translate([0,0,-5]) {
 
 module m2() { 
         rotate(-90,[1,0,0])
-    metric_thread (R0,1,D+5);
+    metric_thread (R0,1,D+5,internal=false);
 }
 
 
 
 
+rotate(90,[1,0,0]){
 
-#m1();
+m1();
 translate([10,0,H/2])
 m2();
 
+}

@@ -10,7 +10,7 @@ module symY(t) {
 }
 
 
-module  cappedCylinder(d=1,h=1,center=true,capB=1,capT=1) {
+module  cappedCylinder(d=1,h=1,center=true,capB=3,capT=1) {
    sq2 =sqrt(2);
     translate([0,0,-h/2])
     {
@@ -19,7 +19,7 @@ module  cappedCylinder(d=1,h=1,center=true,capB=1,capT=1) {
         cylinder(d=d,h=h-capB-capT);
 
         translate([0,0,h-capT])
-        cylinder(d2=d-capT*sq2,d1=d,h=capB);
+        cylinder(d2=d-capT*sq2,d1=d,h=capT);
 //    cylinder(d=d,h=h-cap,center=center);
     }
     
@@ -27,9 +27,9 @@ module  cappedCylinder(d=1,h=1,center=true,capB=1,capT=1) {
 }
 
 module cross() {
-    W=3;
+    W=2.0;
     DIA=10;
-    H=50;
+    H=41;
     cylinder(d1=DIA*2,d2=0,h=DIA);
     translate([0,0,H/2]) {
         cube([W,DIA,H],center=true);
@@ -38,10 +38,10 @@ module cross() {
     }
 }
 
-D=40;
+D=42;
 W=1.6;
 P=11;
-CLAMP_D=8;
+CLAMP_D=7;
 CLAMP_G=2;
 
 translate([0,0,P/2])
@@ -56,7 +56,7 @@ difference() {
         }
     }
     translate([0,0,W])
-    cappedCylinder(d=40-2*W,h=P,center=true);
+    cappedCylinder(d=D-2*W,h=P,center=true);
     symY([0,CLAMP_D/2,W+W])
     cube([100,W/2,P],center=true);
     

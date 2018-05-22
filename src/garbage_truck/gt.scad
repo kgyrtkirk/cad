@@ -12,7 +12,7 @@ HOLE_DIST=4;
 HOLE_Y=1;
 HOLE_D=1;
 
-P_DIST=.5;
+P_DIST=0.7;
 
 
 HOLDER_THICKNESS=4; // remaining holder thickness
@@ -95,7 +95,7 @@ module attachment() {
 
 }
 
-mode="hook1";
+mode="trashCan";
 if(mode=="hook1"){
     hook1();
 }

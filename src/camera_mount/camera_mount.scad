@@ -6,6 +6,8 @@ $fn=32;
 
 BJ_R=5;                 //  internal radius
 BJ_FOUNDATION_H=BJ_R/4+1; //  foundation dist
+BJ_NUT_H=5;
+BJ_FOUNDATION_BALL=BJ_FOUNDATION_H+BJ_NUT_H;
 BJ_FOUNDATION_R=BJ_R/2; //  foundation r
 BJ_W=1.2;               //  wall width
 BJ_SPACING=-.3;        //  extra spacing between b&j (make it stuck)
@@ -19,11 +21,26 @@ BJ_SEAT_R=BJ_FOUNDATION_R;
 
 module  bj_ball() {
     
-    translate([0,0,BJ_R+BJ_FOUNDATION_H])
+    translate([0,0,BJ_R+BJ_FOUNDATION_BALL])
         sphere(r=BJ_R,center=true);
-    cylinder(r=BJ_FOUNDATION_R,h=BJ_FOUNDATION_H+BJ_R);
+    cylinder(r=BJ_FOUNDATION_R,h=BJ_FOUNDATION_BALL+BJ_R);
 }
 
+module bj_thread(internal) {
+    translate([0,0,-.1])
+    metric_thread (diameter=BJ_R*2+BJ_W, pitch=1, length=6,internal=internal);
+}
+
+
+use <threads.scad>
+module bj_nut() {
+ //metric_thread (diameter=20, pitch=2, length=16, square=true, ///thread_size=2,
+     //           groove=true, rectangle=3);
+    difference() {
+        cylinder($fn=6,h=BJ_NUT_H,r=BJ_R+BJ_W*2);
+        bj_thread(true);
+    }
+}
 
 module  bj_socket() {
     
@@ -40,10 +57,16 @@ module  bj_socket() {
             rotate(-a)
             cube([BJ_CUTOUT_WIDTH,BJ_R*2,BJ_CUTOUT_HEIGHT],center=true);
         }
+        
+        skewZ()
+        bj_nut();
+//        bj_thread(false);
     }
     cylinder(r=BJ_FOUNDATION_R,h=BJ_FOUNDATION_H+BJ_W/2);
 
 }
+
+
 
 
 module suspension(){
@@ -121,9 +144,12 @@ module mount(){
 
 mode="bj";
 if(mode == "bj") {
+    SP=BJ_R*2+2*BJ_W;
     bj_ball();
-    translate([BJ_R*2+2*BJ_W,0,0])
+    translate([SP,0,0])
     bj_socket();
+    translate([-SP,0,0])
+    bj_nut();
 }
 if(mode == "suspension") {
     rotate(90,[0,1,0])
