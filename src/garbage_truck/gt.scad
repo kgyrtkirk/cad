@@ -1,4 +1,5 @@
 
+use <../syms.scad>
 
 AS_U=12;        //  attachment hole size
 AS_V=3;
@@ -21,17 +22,107 @@ HOLDER_Y=3;         // remaining holder
 
 
 module trashCan() {
-    SCALE=.57;
-    
-    union() {
-        translate([0,SCALE*-33,0])
-        scale(SCALE)
-        import("TrashCan-movableWheels_v3.stl");
-        translate([0,0,SCALE*(100-3)])
-        cube([20,3,3],center=true);
+    CAN_X0=30/2;
+    CAN_Y0=30/2;
+    CAN_X1=40/2;
+    CAN_Y1=40/2;
+    CAN_X2=CAN_X1+W/2;
+    CAN_Y2=CAN_Y1+W/2;
+    CAN_R=5;
+    CAN_H=50;
+    W=2;
+    $fn=16;
+    module roundedBlock(dim=[10,10,2],zPos=0) {
+        hull()
+        symXY([dim[0],dim[1],zPos]){
+            sphere(d=dim[2]);
+        }
     }
+    
+    difference() {
+        union () {
+            // main "cup"
+            hull() {
+                dx=CAN_X1-CAN_X0;
+                dy=CAN_X1-CAN_X0;
+                roundedBlock([CAN_X0,CAN_Y0,CAN_R]);
+                roundedBlock([CAN_X1+dx,CAN_Y1+dy,CAN_R],CAN_H*2);
+            }
+            // enlarged top
+            roundedBlock([CAN_X2,CAN_Y2,CAN_R],CAN_H);
+            
+
+        }
+        hull() {
+            roundedBlock([CAN_X0-W,CAN_Y0-W,CAN_R],W);
+            roundedBlock([CAN_X1-W,CAN_Y1-W,CAN_R],CAN_H+W);
+        }
+        translate([0,0,2*CAN_H])
+        cube(CAN_H*2,center=true);
+    }
+    
+    
+    module hinge2(HINGE_W,HINGE_H,HINGE_D1){
+        difference() {
+            hull() {
+                translate([0,1,0])
+                cube(HINGE_W,center=true);
+                translate([0,HINGE_W,0])
+                    rotate(90,[0,1,0])
+                cylinder(d=HINGE_W,h=HINGE_H,center=true);
+            }
+            translate([0,HINGE_W,0])
+            rotate(90,[0,1,0])
+            cylinder(d=HINGE_D1,h=HINGE_H+1,center=true);
+        }
+    }
+    
+    HINGE_X=10;
+    HINGE_W=4;
+    HINGE_D0=1.6;
+    HINGE_D1=HINGE_D0+.4;
+
+                
+    translate([0,CAN_Y2,CAN_H]) {
+
+        symX([HINGE_X,1,-HINGE_W/2]) {
+            hinge2(HINGE_W,HINGE_W,HINGE_D1);
+        }
+
+        difference() {
+            union() {
+                hull()
+                    symX([HINGE_X+HINGE_W,1+HINGE_W,-HINGE_W/2]) {
+                    sphere(d=HINGE_W);
+                }
+                translate([0,HINGE_W+1,0])
+                rotate(180,[0,0,1])
+                rotate(90,[1,0,0])
+                hanger();
+
+            }
+            symX([HINGE_X,1,-HINGE_W/2])
+            hinge2(HINGE_W+0.03,HINGE_W+1,HINGE_D0);
+        }
+        
+    }
+    
+
 
 }
+
+module hanger(){
+    WW=AS_V-P_DIST;
+        SHAVE=WW/2;
+            translate([0,-WW/2,0])
+        hull() {
+            translate([0,SHAVE/2,7*W])
+            cube([AS_U-P_DIST-2*W,WW-SHAVE,.01],center=true);
+            translate([0,0,0])
+            cube([AS_U-P_DIST,WW,.01],center=true);
+        }
+}
+
 module hook1() {
     union() {
         translate([0,0,ATT_V+W/2])
@@ -41,12 +132,7 @@ module hook1() {
             translate([0,3*W,0])
             cube([AS_U-P_DIST,AS_V-P_DIST,W],center=true);
         }
-        hull() {
-            translate([0,3*W,2*W])
-            cube([AS_U-P_DIST,AS_V-P_DIST,W],center=true);
-            translate([0,3*W,0])
-            cube([AS_U-P_DIST,AS_V-P_DIST,W],center=true);
-        }
+        hanger();
     }
     
     
