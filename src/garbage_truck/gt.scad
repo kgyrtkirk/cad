@@ -30,6 +30,13 @@ CAN_Y2=CAN_Y1+W/2;
 CAN_R=5;
 CAN_H=50;
 
+HINGE_X=10;
+HINGE_W=4.5;
+HINGE_D0=2;
+HINGE_D1=HINGE_D0+.6;
+
+
+
 module trashCan() {
     W=2;
     $fn=16;
@@ -62,6 +69,26 @@ module trashCan() {
         cube(CAN_H*2,center=true);
     }
     
+    module joint() {
+        symX([HINGE_X,1,-HINGE_W/2]) {
+        hingePost(HINGE_W,HINGE_W/2,HINGE_D1);
+        }
+
+        difference() {
+            union() {
+                hull()
+                    symX([HINGE_X+HINGE_W,1+HINGE_W,-HINGE_W/2]) {
+                    sphere(d=HINGE_W);
+                }
+                translate([0,HINGE_W+1,0])
+                children();
+
+            }
+            symX([HINGE_X,1,-HINGE_W/2])
+            hingePost(HINGE_W+0.04,HINGE_W/2+2,HINGE_D0);
+        }
+
+    }
     
     module hingePost(HINGE_W,HINGE_H,HINGE_D1){
         difference() {
@@ -78,34 +105,12 @@ module trashCan() {
         }
     }
     
-    HINGE_X=10;
-    HINGE_W=4.5;
-    HINGE_D0=2;
-    HINGE_D1=HINGE_D0+.6;
-
-                
     translate([0,CAN_Y2,CAN_H]) {
+        joint()
+            rotate(180,[0,0,1])
+            rotate(90,[1,0,0])
+            hanger();
 
-        symX([HINGE_X,1,-HINGE_W/2]) {
-            hingePost(HINGE_W,HINGE_W/2,HINGE_D1);
-        }
-
-        difference() {
-            union() {
-                hull()
-                    symX([HINGE_X+HINGE_W,1+HINGE_W,-HINGE_W/2]) {
-                    sphere(d=HINGE_W);
-                }
-                translate([0,HINGE_W+1,0])
-                rotate(180,[0,0,1])
-                rotate(90,[1,0,0])
-                hanger();
-
-            }
-            symX([HINGE_X,1,-HINGE_W/2])
-            hingePost(HINGE_W+0.04,HINGE_W/2+2,HINGE_D0);
-        }
-        
     }
     
 
