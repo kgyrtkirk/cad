@@ -1,3 +1,4 @@
+// fix: better hanger() it should stuck more
 
 use <../syms.scad>
 
@@ -35,17 +36,60 @@ HINGE_W=4.5;
 HINGE_D0=2;
 HINGE_D1=HINGE_D0+.6;
 
+module roundedBlock(dim=[10,10,2],zPos=0) {
+    hull()
+    symXY([dim[0],dim[1],zPos]){
+        sphere(d=dim[2]);
+    }
+}
 
+module trashCanLid(){
+    LID_SPACE=.5;
+    HINGE_X_OFF=-CAN_Y2-HINGE_W-1;
+    
+//    cube(HINGE_W,center=true);
+    module rodX(pos,d=HINGE_W) {
+        hull()
+        symX(pos)
+            sphere(d=d);
+    }
+    
+    module rods(idx) {
+       if(idx==0)
+        rodX([HINGE_X/3,0,0],HINGE_W);
+       if(idx==1)
+        rodX([HINGE_X*2/3,-HINGE_W/3,HINGE_W/2+LID_SPACE/2+CAN_R/2-W/2],W-.1);
+       if(idx==2)
+        rodX([HINGE_X*2,-HINGE_W*2,HINGE_W/2+LID_SPACE/2+CAN_R/2-W/2],W-.1);
+    }
+    hull() {
+        rods(0);
+        rods(1);
+    }
+    hull() {
+        rods(1);
+        rods(2);
+    }
 
-module trashCan() {
+    
+  //  rotate(90,[0,1,0])
+//    cylinder(h=HINGE_X,d=HINGE_W,center=true);
+    
+    color([0,1,0]) 
+    translate([0,HINGE_X_OFF,W+LID_SPACE])
+        difference() {
+            roundedBlock([CAN_X2,CAN_Y2,CAN_R],0);
+            translate([0,0,-W])
+            roundedBlock([CAN_X1,CAN_Y1,CAN_R],0);
+            translate([0,0,-CAN_H/2])
+            cube([CAN_X2*3,CAN_Y2*3,CAN_H],center=true);
+        }
+
+}
+
+module trashCan(open=true) {
     W=2;
     $fn=16;
-    module roundedBlock(dim=[10,10,2],zPos=0) {
-        hull()
-        symXY([dim[0],dim[1],zPos]){
-            sphere(d=dim[2]);
-        }
-    }
     
     difference() {
         union () {
@@ -80,7 +124,7 @@ module trashCan() {
                     symX([HINGE_X+HINGE_W,1+HINGE_W,-HINGE_W/2]) {
                     sphere(d=HINGE_W);
                 }
-                translate([0,HINGE_W+1,0])
+                translate([0,HINGE_W+1,-HINGE_W/2])
                 children();
 
             }
@@ -91,6 +135,7 @@ module trashCan() {
     }
     
     module hingePost(HINGE_W,HINGE_H,HINGE_D1){
+        color([.4,.4,1])
         difference() {
             hull() {
                 translate([0,1,0])
@@ -108,6 +153,7 @@ module trashCan() {
     rotate(180)
     translate([0,CAN_Y2,CAN_H]) {
         joint()
+                translate([0,0,HINGE_W/2])
             rotate(180,[0,0,1])
             rotate(90,[1,0,0])
             hanger();
@@ -115,7 +161,8 @@ module trashCan() {
     
     translate([0,CAN_Y2,CAN_H]) {
         joint()
-            cube(3,center=true);
+            rotate(open?180:0,[1,0,0])
+            trashCanLid();
     }
     
 
@@ -215,6 +262,6 @@ if(mode=="trashPrint"){
 if(mode=="trashCanTop"){
     intersection() {
         trashCanPrint();
-        cube([100,100,10],center=true);
+        cube([200,200,20],center=true);
     }
 }
