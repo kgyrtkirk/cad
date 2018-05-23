@@ -105,12 +105,17 @@ module trashCan() {
         }
     }
     
+    rotate(180)
     translate([0,CAN_Y2,CAN_H]) {
         joint()
             rotate(180,[0,0,1])
             rotate(90,[1,0,0])
             hanger();
-
+    }
+    
+    translate([0,CAN_Y2,CAN_H]) {
+        joint()
+            cube(3,center=true);
     }
     
 
