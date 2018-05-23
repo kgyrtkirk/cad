@@ -63,11 +63,11 @@ module trashCan() {
     }
     
     
-    module hinge2(HINGE_W,HINGE_H,HINGE_D1){
+    module hingePost(HINGE_W,HINGE_H,HINGE_D1){
         difference() {
             hull() {
                 translate([0,1,0])
-                cube(HINGE_W,center=true);
+                cube([HINGE_H,HINGE_W,HINGE_W],center=true);
                 translate([0,HINGE_W,0])
                     rotate(90,[0,1,0])
                 cylinder(d=HINGE_W,h=HINGE_H,center=true);
@@ -80,14 +80,14 @@ module trashCan() {
     
     HINGE_X=10;
     HINGE_W=4.5;
-    HINGE_D0=1.6;
+    HINGE_D0=2;
     HINGE_D1=HINGE_D0+.6;
 
                 
     translate([0,CAN_Y2,CAN_H]) {
 
         symX([HINGE_X,1,-HINGE_W/2]) {
-            hinge2(HINGE_W,HINGE_W,HINGE_D1);
+            hingePost(HINGE_W,HINGE_W/2,HINGE_D1);
         }
 
         difference() {
@@ -103,7 +103,7 @@ module trashCan() {
 
             }
             symX([HINGE_X,1,-HINGE_W/2])
-            hinge2(HINGE_W+0.03,HINGE_W+2,HINGE_D0);
+            hingePost(HINGE_W+0.04,HINGE_W/2+2,HINGE_D0);
         }
         
     }
