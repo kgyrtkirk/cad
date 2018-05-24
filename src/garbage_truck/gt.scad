@@ -22,10 +22,10 @@ HOLDER_Y=3;         // remaining holder
 
 
 
-CAN_X0=30/2;
-CAN_Y0=30/2;
-CAN_X1=40/2;
-CAN_Y1=40/2;
+CAN_X0=27/2;
+CAN_Y0=27/2;
+CAN_X1=35/2;
+CAN_Y1=35/2;
 CAN_X2=CAN_X1+W/2;
 CAN_Y2=CAN_Y1+W/2;
 CAN_R=5;
@@ -35,6 +35,9 @@ HINGE_X=10;
 HINGE_W=4.5;
 HINGE_D0=2;
 HINGE_D1=HINGE_D0+.6;
+LID_SPACE=.4;
+
+CRITICAL_H=HINGE_W+LID_SPACE+CAN_R/2+.1;
 
 module roundedBlock(dim=[10,10,2],zPos=0) {
     hull()
@@ -44,7 +47,7 @@ module roundedBlock(dim=[10,10,2],zPos=0) {
 }
 
 module trashCanLid(){
-    LID_SPACE=.5;
+    LID_SPACE=.2;
     HINGE_X_OFF=-CAN_Y2-HINGE_W-1;
     
 //    cube(HINGE_W,center=true);
@@ -55,12 +58,13 @@ module trashCanLid(){
     }
     
     module rods(idx) {
+        ZZ=HINGE_W/2-W/2+LID_SPACE+CAN_R/2;
        if(idx==0)
-        rodX([HINGE_X/3,0,0],HINGE_W);
+        rodX([HINGE_X-HINGE_W,0,0],HINGE_W);
        if(idx==1)
-        rodX([HINGE_X*2/3,-HINGE_W/3,HINGE_W/2+LID_SPACE/2+CAN_R/2-W/2],W-.1);
+        rodX([HINGE_X-HINGE_W/2,-HINGE_W/3,ZZ],W-.1);
        if(idx==2)
-        rodX([HINGE_X*2,-HINGE_W*2,HINGE_W/2+LID_SPACE/2+CAN_R/2-W/2],W-.1);
+        rodX([CAN_X1,-HINGE_W*2,ZZ],W-.1);
     }
     hull() {
         rods(0);
@@ -76,7 +80,7 @@ module trashCanLid(){
 //    cylinder(h=HINGE_X,d=HINGE_W,center=true);
     
     color([0,1,0]) 
-    translate([0,HINGE_X_OFF,W+LID_SPACE])
+    translate([0,HINGE_X_OFF,HINGE_W/2+LID_SPACE])
         difference() {
             roundedBlock([CAN_X2,CAN_Y2,CAN_R],0);
             translate([0,0,-W])
@@ -89,7 +93,7 @@ module trashCanLid(){
 
 module trashCan(open=true) {
     W=2;
-    $fn=16;
+    $fn=24;
     
     difference() {
         union () {
@@ -129,7 +133,7 @@ module trashCan(open=true) {
 
             }
             symX([HINGE_X,1,-HINGE_W/2])
-            hingePost(HINGE_W+0.04,HINGE_W/2+2,HINGE_D0);
+            hingePost(HINGE_W+0.04,HINGE_W/2+1,HINGE_D0);
         }
 
     }
@@ -170,14 +174,15 @@ module trashCan(open=true) {
 }
 
 module hanger(){
-    WW=AS_V-P_DIST;
+    UU=AS_U; //-P_DIST
+    WW=AS_V; //-P_DIST;
         SHAVE=WW/2;
             translate([0,-WW/2,0])
         hull() {
             translate([0,SHAVE/2,10*W])
-            cube([AS_U-P_DIST-2*W,WW-SHAVE,.01],center=true);
+            cube([UU-2*W,WW-SHAVE,.01],center=true);
             translate([0,0,0])
-            cube([AS_U-P_DIST,WW,.01],center=true);
+            cube([UU,WW,.01],center=true);
         }
 }
 
@@ -242,10 +247,10 @@ module attachment() {
 module trashCanPrint(){
     translate([0,0,CAN_H])
     rotate(180,[1,0,0])
-    trashCan();
+    trashCan(true);
 }
 
-mode="trashCanTop";
+mode="trashPrint";
 if(mode=="hook1"){
     hook1();
 }
@@ -262,6 +267,6 @@ if(mode=="trashPrint"){
 if(mode=="trashCanTop"){
     intersection() {
         trashCanPrint();
-        cube([200,200,20],center=true);
+        cube([200,200,CRITICAL_H*2],center=true);
     }
 }
