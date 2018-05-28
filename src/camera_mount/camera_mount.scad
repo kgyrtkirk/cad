@@ -1,5 +1,4 @@
 
-
 //use <ballJoint.scad>
 
 $fn=32;
@@ -28,7 +27,7 @@ module  bj_ball() {
 
 module bj_thread(internal) {
     translate([0,0,-.1])
-    metric_thread (diameter=BJ_R*2+BJ_W, pitch=1, length=6,internal=internal);
+    metric_thread (diameter=BJ_R*2+BJ_W+BJ_W, pitch=1, length=6,internal=internal);
 }
 
 
@@ -36,11 +35,23 @@ use <threads.scad>
 module bj_nut() {
  //metric_thread (diameter=20, pitch=2, length=16, square=true, ///thread_size=2,
      //           groove=true, rectangle=3);
+//    render()
     difference() {
-        cylinder($fn=6,h=BJ_NUT_H,r=BJ_R+BJ_W*2);
+        cylinder($fn=6,h=BJ_NUT_H,r=BJ_R+BJ_W*3);
         bj_thread(true);
     }
 }
+
+module skewZ(val) {
+    multmatrix(m =  [   [1,0,0,0],
+                        [0,1,0,0],
+                        [0,0,1,0],
+                        [0,0,0,1],
+                    ]) 
+    children();
+}
+ 
+
 
 module  bj_socket() {
     
@@ -52,14 +63,28 @@ module  bj_socket() {
             cube([100,100,BJ_R*2],center=true);
         
         for(i=[1:BJ_CLAW_CNT]){
+//        for(i=[1:1]){
             a=i*360/BJ_CLAW_CNT;
+            b=(2*i+1)*360/2/BJ_CLAW_CNT;
             translate([sin(a)*BJ_R,cos(a)*BJ_R,0])
             rotate(-a)
             cube([BJ_CUTOUT_WIDTH,BJ_R*2,BJ_CUTOUT_HEIGHT],center=true);
+            
+
+            if(false) {
+                        translate([0,0,-BJ_R/3])
+                        rotate(3,[cos(b)*BJ_R,-sin(b)*BJ_R,0])
+                        intersection() {
+                            bj_nut();
+                            translate([sin(b)*BJ_R,cos(b)*BJ_R,0])
+                            cube(10,center=true);
+                        }
+                    }
+
         }
         
-        skewZ()
-        bj_nut();
+//        skewZ()
+//        bj_nut();
 //        bj_thread(false);
     }
     cylinder(r=BJ_FOUNDATION_R,h=BJ_FOUNDATION_H+BJ_W/2);
