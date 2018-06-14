@@ -9,7 +9,7 @@ BJ_NUT_H=5;
 BJ_FOUNDATION_BALL=BJ_FOUNDATION_H+BJ_NUT_H;
 BJ_FOUNDATION_R=BJ_R/2; //  foundation r
 BJ_W=1.2;               //  wall width
-BJ_SPACING=-.3;        //  extra spacing between b&j (make it stuck)
+BJ_SPACING=.05;        //  extra spacing between b&j (make it stuck)
 BJ_JLEN_RATIO=1.6;      //  1=half ; 2=closed
 BJ_CLAW_CNT=4;
 BJ_CUTOUT_WIDTH=3.5;
@@ -71,7 +71,8 @@ module  bj_socket() {
             cube([BJ_CUTOUT_WIDTH,BJ_R*2,BJ_CUTOUT_HEIGHT],center=true);
             
 
-            if(false) {
+//            if(false) 
+                {
                         translate([0,0,-BJ_R/3])
                         rotate(3,[cos(b)*BJ_R,-sin(b)*BJ_R,0])
                         intersection() {
