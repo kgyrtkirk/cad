@@ -49,7 +49,7 @@ myPoints = [ for(t = [0:90:222]) [cos(t+45),sin(t+45)] ];
 myPath = [ for(t = [0:3.6:360])
     [5*cos(2*t),5*sin(2*t), (t<0)?0:((t*t*90)/500/100 * 4*pi/180)] ];
 
-O_W=.7;
+O_W=.8;
 
 module connector(){
 
@@ -87,21 +87,27 @@ module connector(){
     }
 }
 
+partial=false;
 module ramp()
 {
-//translate([00,SP_R,0])
-//cube([30,50,50],center=true);
-    rotate(180,[1,0,0])
-    union(){
-path_extrude(points=shape_U, path=sPath);
+    intersection() {
+        if(partial) {
+        translate([00,-SP_R,0])
+        rotate(20,[0,0,1])
+        cube([30,50,50],center=true);
+        }
+            rotate(180,[1,0,0])
+            union(){
+        path_extrude(points=shape_U, path=sPath);
 
-translate(sPathMain[0])
-connector();
+        translate(sPathMain[0])
+        connector();
 
-translate(sPathMain[len(sPathMain)-1])
-rotate(180-SP_A,[0,0,1])
-connector();
-}
+        translate(sPathMain[len(sPathMain)-1])
+        rotate(180-SP_A,[0,0,1])
+        connector();
+        }
+    }
 }
 
 
@@ -125,7 +131,8 @@ path_extrude(points=shape_S, path=sPath);
 }
 
 
-        render() ramp();
+ramp();
+
 difference() {
     
     union() {
