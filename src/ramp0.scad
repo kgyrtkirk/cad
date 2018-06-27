@@ -1,6 +1,6 @@
 use <../libraries/path_extrude.scad>
 
-U_W=44.5;
+U_W=45;
 U_H=10;
 D=1.4;
 U_OV=8;
@@ -49,7 +49,7 @@ myPoints = [ for(t = [0:90:222]) [cos(t+45),sin(t+45)] ];
 myPath = [ for(t = [0:3.6:360])
     [5*cos(2*t),5*sin(2*t), (t<0)?0:((t*t*90)/500/100 * 4*pi/180)] ];
 
-O_W=.9;
+O_W=1;
 
 module connector(){
 
@@ -87,7 +87,7 @@ module connector(){
     }
 }
 
-partial=true;
+partial=false;
 module ramp()
 {
     intersection() {
