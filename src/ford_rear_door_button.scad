@@ -27,7 +27,7 @@ module  cappedCylinder(d=1,h=1,center=true,capB=3,capT=1) {
 }
 
 module cross() {
-    W=2.0;
+    W=1.8;
     DIA=10;
     H=41;
     cylinder(d1=DIA*2,d2=0,h=DIA);
@@ -40,9 +40,10 @@ module cross() {
 
 D=42;
 W=1.6;
-P=11;
+P=12;
 CLAMP_D=7;
 CLAMP_G=2;
+CLAMP_GE=1;
 
 translate([0,0,P/2])
 difference() {
@@ -51,7 +52,7 @@ difference() {
         translate([0,0,P/2])
         hull() {
         translate([0,0,0-CLAMP_G])
-            cube([D+CLAMP_G,CLAMP_D,.1],center=true);
+            cube([D+CLAMP_G+CLAMP_GE,CLAMP_D,.1],center=true);
             cube([D,CLAMP_D,.1],center=true);
         }
     }
