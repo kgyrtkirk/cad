@@ -8,7 +8,7 @@ BJ_FOUNDATION_H=BJ_R/4+1; //  foundation dist
 BJ_NUT_H=5;
 BJ_FOUNDATION_BALL=BJ_FOUNDATION_H+BJ_NUT_H;
 BJ_FOUNDATION_R=BJ_R/2; //  foundation r
-BJ_W=1.2;               //  wall width
+BJ_W=2;               //  wall width
 BJ_SPACING=.05;        //  extra spacing between b&j (make it stuck)
 BJ_JLEN_RATIO=1.6;      //  1=half ; 2=closed
 BJ_CLAW_CNT=4;
@@ -25,11 +25,15 @@ module  bj_ball() {
     cylinder(r=BJ_FOUNDATION_R,h=BJ_FOUNDATION_BALL+BJ_R);
 }
 
+trial=false;
 module bj_thread(internal) {
-    translate([0,0,-.1])
+    translate([0,0,-.1]) {
+    if(trial)
+    cylinder(d=BJ_R*2+BJ_W+BJ_W,h=6);
+        else
     metric_thread (diameter=BJ_R*2+BJ_W+BJ_W, pitch=1, length=6,internal=internal);
+    }
 }
-
 
 use <threads.scad>
 module bj_nut() {
@@ -71,7 +75,7 @@ module  bj_socket() {
             cube([BJ_CUTOUT_WIDTH,BJ_R*2,BJ_CUTOUT_HEIGHT],center=true);
             
 
-//            if(false) 
+//            if(true) 
                 {
                         translate([0,0,-BJ_R/3])
                         rotate(3,[cos(b)*BJ_R,-sin(b)*BJ_R,0])
