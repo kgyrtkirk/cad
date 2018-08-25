@@ -1,14 +1,16 @@
 $fn=32;
 
-ADJ=.5;
+ADJ=0;
 
 W=6.0-ADJ;
 R=(11.3-ADJ)/2;
 L=17.5-R;
 H=11.8;
 
-D=10;
-R0=4.8;
+eps=1e-3;
+D=5;
+R0=4.3;
+R1=6;
 //R0=4.6;
 //R0=4.5;
 O=.5;
@@ -28,10 +30,10 @@ translate([0,0,-H/2]) {
             circle(R);
     }
 }
-rotate(90,[1,0,0]) {
-translate([0,0,-5]) {
+rotate(-90,[1,0,0]) {
+translate([0,0,-eps]) {
    metric_thread (R0,1,D,internal=true);
-%   sphere(d=R0-1);
+   sphere(d=R0-1);
 }
 }
 
@@ -39,17 +41,40 @@ translate([0,0,-5]) {
 }
 
 module m2() { 
-        rotate(-90,[1,0,0])
-    metric_thread (R0,1,D+5,internal=false);
+    //rotate(-90,[1,0,0]) 
+    translate([0,0,1])
+    intersection() {
+        union() {
+            PH=1;
+            K=7/PH;
+            for(x=[0:0+(K-1)*PH]) {
+                translate([0,0,x])
+                cylinder(d2=R1,d1=R1-1,h=1);
+            }
+                translate([0,0,K*PH])
+            metric_thread (R0,1,D,internal=false);
+        }
+        cube(center=true,[100,D/2,100]);
+    }
 }
 
 
 
+mode="preview";
 
+if(mode=="m1") {
+    rotate(90,[1,0,0])
+    m1();
+}
+if(mode=="m2") {
+    rotate(90,[1,0,0])
+    m2();
+}
+
+if(mode=="preview") {
 rotate(90,[1,0,0]){
-
 m1();
-translate([10,0,H/2])
+translate([8,D/4,-1])
 m2();
-
+}
 }

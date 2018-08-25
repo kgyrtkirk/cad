@@ -1,0 +1,27 @@
+
+def outputDir="/home/kirk/3d/scad"
+
+def partMap = [
+	'rail_plugs':	['m1','m2'],
+		]
+
+task allScad() {}
+
+partMap.each { inputName,modes ->
+	modes.each { mode ->
+		println "${inputName} ; ${mode}"
+		def outputName="${inputName}@${mode}"
+		def oFile=new File(outputDir,"${outputName}.stl")
+		def t=task("scad_${outputName}",type:Exec) {
+			def inputFile=file("${inputName}.scad")
+			inputs.file inputFile
+			outputs.file oFile
+			commandLine "openscad-nightly","-D","mode=\"$mode\"","-o",oFile,inputFile
+//			doLast 
+//				exec("asd")
+			// oFile
+//			}
+		}
+		allScad.dependsOn(t)
+	}
+}
