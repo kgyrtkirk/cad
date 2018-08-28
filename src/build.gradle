@@ -2,7 +2,7 @@
 def outputDir="/home/kirk/3d/scad"
 
 def partMap = [
-	'rail_plugs':	['m1','m2'],
+	'rail_plugs':	['m1','m2','m3'],
 	'Aqee_customizable_toy_train_tracks':	['x'],
 		]
 

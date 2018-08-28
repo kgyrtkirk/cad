@@ -10,14 +10,14 @@ H=11.8;
 eps=1e-3;
 D=5;
 R0=4.3;
-R1=5;
+//R1=5;
 //R0=4.6;
 //R0=4.5;
 O=.5;
 
 include <threads.scad> 
 
-module m1() {
+module plug(R1=5) {
 
 translate([0,0,H/2]) 
 union() {
@@ -46,42 +46,38 @@ union() {
 }
 }
 
+module m1() { 
+    plug(5);
+}
 module m2() { 
-    //rotate(-90,[1,0,0]) 
-    translate([0,0,1])
-    intersection() {
-        union() {
-            PH=1;
-            K=7/PH;
-            for(x=[0:0+(K-1)*PH]) {
-                translate([0,0,x])
-                cylinder(d2=R1,d1=R1-1,h=1);
-            }
-                translate([0,0,K*PH])
-            metric_thread (R0,1,D,internal=false);
-        }
-        cube(center=true,[100,D/2,100]);
-    }
+    plug(5.5);
+}
+module m3() { 
+    plug(6);
 }
 
 
 
-mode="m1";
+mode="preview";
 
 if(mode=="m1") {
-//    rotate(90,[1,0,0])
     m1();
 }
 if(mode=="m2") {
-    rotate(90,[1,0,0])
-    m1();
+    m2();
+}
+if(mode=="m3") {
+    m3();
 }
 
 if(mode=="preview") {
 //rotate(90,[1,0,0])
     {
+        SEP=R*2+1;
 m1();
-//translate([8,D/4,-1])
-//m2();
+translate([SEP,0,0])
+m2();
+translate([2*SEP,0,0])
+m3();
 }
 }
