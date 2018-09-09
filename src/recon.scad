@@ -110,6 +110,21 @@ module board_mount() {
             
         }
     }
+        translate([0,-B_W/2,0]) {
+            // top left corner
+            DF=3.2;
+            C1=5.8+DF/2;
+            C2=33.7+DF/2;
+            for(x=[C1,C2]) 
+            translate([0,x,0]) {
+                $fn=16;
+                difference() {
+                cylinder(d=6,h=H1);
+                cylinder(d=2.8,h=H1*2);
+                }
+            }
+        }
+    
 }
 
 
