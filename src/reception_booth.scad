@@ -29,10 +29,11 @@ module barrier() {
          
          for(x=[BARRIER_W+2*BARRIER_W:2*BARRIER_W:BARRIER_L-2*BARRIER_W]) {
              translate([x,0,0])
+             render()
                 intersection() {
                     rotate(45,[0,0,1])
                     cube([10,1,11],center=true);
-                    S=BARRIER_H-1;
+                    S=BARRIER_H-1.6;
                   cube([S+10,S,11],center=true);
                 }
              
