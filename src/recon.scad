@@ -5,8 +5,9 @@ HOLE_D=4;
 
 
 module plexiHole() {
+    //HOLE_D in plexi; but use M3
     $fn=16;
-    cylinder(d=HOLE_D,h=16,center=true);
+    cylinder(d=3.2,h=16,center=true);
 }
 
 module servo_mount() {
@@ -85,6 +86,15 @@ module board_mount() {
     L=50;
     B_W=53;
     
+    
+    Y1=20+HOLE_D/2;
+    Y2=Y1+22+HOLE_D;
+    XX2=34+HOLE_D;
+
+    X1=(L-XX2)/2;
+    X2=X1+XX2;
+
+    
     difference() {
         translate([0,0,H2/2])
         cube([L,B_W+2*W,H2],center=true);
@@ -97,12 +107,6 @@ module board_mount() {
 
         translate([L/2,-B_W/2,0]) {
             // top left corner
-            Y1=20+HOLE_D/2;
-            Y2=Y1+22+HOLE_D;
-            XX2=34+HOLE_D;
-            
-            X1=(L-XX2)/2;
-            X2=X1+XX2;
             translate([-X1,Y1,0])    plexiHole();
             translate([-X1,Y2,0])    plexiHole();
             translate([-X2,Y2,0])    plexiHole();
@@ -110,7 +114,7 @@ module board_mount() {
             
         }
     }
-        translate([0,-B_W/2,0]) {
+        translate([L/2-X1,-B_W/2,0]) {
             // top left corner
             DF=3.2;
             C1=5.8+DF/2;
