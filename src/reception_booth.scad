@@ -7,15 +7,37 @@ BARRIER_W=2;
 BARRIER_H=5;
 BARRIER_L=LANE_W+LANE_SEP*2;
 
+module hullChain(pos){
+    for(i=[0:len(pos)-2]) {
+         hull() {
+             translate(pos[i])
+                children();
+             translate(pos[i+1])
+                children();
+         }
+     }
+}
+
 module barrier() {
 
      difference() {
-         hull() {
-            for(x=[0,BARRIER_L-BARRIER_W])
-                translate([x,0,0])
+         hullChain([[0,-10,0],[0,0,0],[BARRIER_L-BARRIER_W,0,0]])
                 cylinder($fn=16,d=BARRIER_H,h=BARRIER_W,center=true);
-        }
         cylinder($fn=32,d=HOLE_D_FREE,h=100,center=true);
+         
+         
+         
+         for(x=[BARRIER_W+2*BARRIER_W:2*BARRIER_W:BARRIER_L-2*BARRIER_W]) {
+             translate([x,0,0])
+                intersection() {
+                    rotate(45,[0,0,1])
+                    cube([10,1,11],center=true);
+                    S=BARRIER_H-1;
+                  cube([S+10,S,11],center=true);
+                }
+             
+             
+         }
     }
 //    cube([BARRIER_L,BARRIER_W,BARRIER_H]);
 }
