@@ -6,6 +6,7 @@ def partMap = [
 	'Aqee_customizable_toy_train_tracks':	['x'],
 	'ballon_tie':	['default'],
 	'recon':	['servo_mount','stepdown_mount','board_mount'],
+	'reception_booth':	['road','barrier_post','barrier_post2','booth','barrier'],
 		]
 
 task allScad() {}
