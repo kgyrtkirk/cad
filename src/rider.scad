@@ -1,3 +1,11 @@
+// notes:
+//	* all plexi holes: fill up the remaining part of the 4mm hole somehow; there is too much play
+//	* servo_mount: add hook into plexi to prevent pitch
+//	* arduino mount: add more holes for board - it can came out...
+//	* stepdown: remove overhang; probably change orientation
+//
+
+
 include <syms.scad>
 //include <9g_servo.scad>
 
