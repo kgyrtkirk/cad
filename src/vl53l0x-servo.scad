@@ -43,11 +43,12 @@ module pcb() {
     
     difference() {
         union() {
-            cube(B_D,center=true);
             sensorChip();
+            color([0,.7,0]) {
+            cube(B_D,center=true);
             hull()
-            atHoles() {
-                cylinder($fn=16,d=BOARD_HOLE_D+BOARD_HOLE_EXT*2,h=BOARD_D,center=true);
+            atHoles()
+            cylinder($fn=16,d=BOARD_HOLE_D+BOARD_HOLE_EXT*2,h=BOARD_D,center=true);
             }
         }
         atHoles() {
@@ -67,7 +68,7 @@ module holder() {
     eps=1e-4;
     atHoles() {
         intersection() {
-            color([0,1,0]) {
+            color([1,0,1]) {
                 cylinder($fn=16,d=3,h=BOARD_D+.5,center=true);
                 translate([0,0,P_SIZE-eps])
                 cylinder($fn=16,d1=4,d2=3,h=BOARD_D+.5,center=true);
@@ -79,10 +80,23 @@ module holder() {
         }
     }
     
-    difference() {
-        translate([0,0,BOARD_D*2])
-        cube([HOLDER_W,HOLDER_H,W],center=true);
-        sensorChip(1,20);
+    translate([0,0,BOARD_D+eps]) {
+        for(T=[BOARD_H/2-BOARD_D/2,-3])
+        hull() {
+            translate([0,T,0])
+            cube([BOARD_W-1,.1,BOARD_D],center=true);
+            translate([0,T-BOARD_D,BOARD_D/2])
+            cube([BOARD_W-3,.1,eps],center=true);
+        }
+    }
+    intersection() {
+        difference() {
+            translate([0,0,BOARD_D*2])
+            cube([HOLDER_W,HOLDER_H,W],center=true);
+            sensorChip(1,20);
+        }
+//        translate([0,-HOLDER_W/2-4,0])
+  //      sphere(HOLDER_W);
     }
 }
 module servoHorn(height=1.6){
@@ -117,7 +131,11 @@ module servoMount(){
     translate([0,0,-HH/2])
     difference() {
         translate([0,0,HH/2-.7])
-        cube([35,12,HH],center=true);
+        hull()
+        symX([30/2,0,0]) {
+            cylinder(d=12,h=HH,center=true);
+        }
+//        cube([35,12,HH],center=true);
         servoHorn();
     }
 }
@@ -135,6 +153,9 @@ mode="preview";
 if(mode=="preview") {
     rotate(90,[1,0,0])
     pcb();
+    fullMount();
+}
+if(mode=="fullMount") {
     fullMount();
 }
 
