@@ -2,7 +2,7 @@
 BOARD_D=1.5;
 BOARD_H=12.2;
 BOARD_W=15.5;
-BOARD_HOLE_W1=16.6;
+BOARD_HOLE_W1=16.6 + 1; // extra space added; to make the board stuck
 BOARD_W2=24.6;
 BOARD_HOLE_D=3.2;
 BOARD_HOLE_EXT=(BOARD_W2-BOARD_HOLE_W1-2*BOARD_HOLE_D)/2;
@@ -60,7 +60,7 @@ module pcb() {
 }
 
     W=1.6;
-    HOLDER_W=BOARD_W2-2;
+    HOLDER_W=BOARD_W2-2*.6;
     HOLDER_H=2*W+BOARD_H+2;
 
 module holder() {
@@ -71,9 +71,9 @@ module holder() {
             color([1,0,1]) {
                 cylinder($fn=16,d=3,h=BOARD_D+.5,center=true);
                 translate([0,0,P_SIZE-eps])
-                cylinder($fn=16,d1=4,d2=3,h=BOARD_D+.5,center=true);
+                cylinder($fn=16,d1=5,d2=3,h=BOARD_D+.5,center=true);
                 translate([0,0,-P_SIZE+eps])
-                cylinder($fn=16,d1=3,d2=4,h=BOARD_D+.5,center=true);
+                cylinder($fn=16,d1=3,d2=5,h=BOARD_D+.5,center=true);
             }
             translate([0,-BOARD_HOLE_D/4,-6])
             cube([10,BOARD_HOLE_D/2,12]);
@@ -123,6 +123,7 @@ module servoHorn(height=1.6){
         symX([x,0,0])
         cylinder(h=T*5,d=1,center=true);
     }
+    cylinder(h=T*5,d=5,center=true);
     
 }
 
