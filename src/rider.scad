@@ -17,41 +17,76 @@ module plexiHole() {
     $fn=16;
     cylinder(d=3.2,h=16,center=true);
 }
+module plexiHole0() {
+    //HOLE_D in plexi; but use M3
+    $fn=16;
+    cylinder(d=4,h=16,center=true);
+}
 
 module servo_mount() {
     SERVO_W=12.5;
     SERVO_H=15.5;
+    SERVO_L=23;
     W=1.6;
-    L=40;
+    L=39;
+    PW=3;
     
     $fn=16;
     
     difference() {
-        translate([L/2-2.5*HOLE_D,0,(SERVO_H+W)/2])
-        cube([L,SERVO_W+2*W,SERVO_H+W],center=true);
+        translate([L/2-2.5*HOLE_D,0,(SERVO_H+W)/2-(PW+W)/2])
+        cube([L,SERVO_W+2*W,SERVO_H+W+PW+W],center=true);
     
-        translate([L/2,0,SERVO_H/2+W])
-        cube([L,SERVO_W+.1,SERVO_H+.1],center=true);
+        translate([SERVO_L/2,0,SERVO_H/2+W])
+        cube([SERVO_L,SERVO_W+.1,SERVO_H+.1],center=true);
+        
+        translate([L/2,0,(SERVO_H-W)/2+W])
+        cube([L,SERVO_W+.1,SERVO_H-W],center=true);
     
         translate([-L/2-W,0,(SERVO_H-W)/2+W])
         cube([L,L,SERVO_H-W],center=true);
     
         translate([-1.3-1.1,0,SERVO_H+W])
-        cylinder(d=2.2,h=SERVO_H*2,center=true);
+        cylinder(d=1.8,h=SERVO_H*2,center=true);
+        translate([SERVO_L+1.3+1.1,0,SERVO_H+W])
+        cylinder(d=1.8,h=SERVO_H*2,center=true);
     
         
-        translate([L/2,0,SERVO_H])
-    rotate(40,[0,1,0])
-        cube([2*L,L,L/2],center=true);
+//        translate([L/2,0,SERVO_H])
+  //  rotate(40,[0,1,0])
+    //    cube([2*L,L,L/2],center=true);
 
         translate([-HOLE_D-W-L/2,0,L/2+W])
         cube([L,L,L],center=true);
     
     
-        translate([-1.5*HOLE_D,0,0])
+    H_X=-1.5*HOLE_D;
+        translate([H_X,0,0])
         symY([0,(6+HOLE_D)/2,0]) {
             plexiHole();
         }
+        
+        difference() {
+            union() {
+            translate([0,0,-PW/2])
+            cube([100,100,PW],center=true);
+            translate([-3,0,-10])
+            cube(20,center=true);
+            }
+            translate([H_X+HOLE_D/2+2.7+4+9.7+30/2+1,0,0])
+            cylinder($fn=32,d=30,h=100,center=true);
+            
+      //      translate([H_X,0,0])
+    //        symY([0,(6+HOLE_D)/2,0]) {
+  //              plexiHole0();
+//            }
+
+        }
+        
+        translate([H_X+HOLE_D/2+2.7+4+9.7+30/2+1+W,0,0])
+        cylinder($fn=32,d=30-W,h=10,center=true);
+        
+        
     }
     
     
@@ -141,17 +176,17 @@ module board_mount() {
 
 
 
+mode="board_mount";
+mode="stepdown_mount";
 mode="servo_mount";
 if(mode=="servo_mount"){
     servo_mount();
 }
 
-mode="stepdown_mount";
 if(mode=="stepdown_mount"){
     stepdown_mount();
 }
 
-mode="board_mount";
 if(mode=="board_mount"){
     board_mount();
 }
