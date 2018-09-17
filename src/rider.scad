@@ -26,7 +26,8 @@ module plexiHole0() {
 module servo_mount() {
     SERVO_W=12.5;
     SERVO_H=15.5;
-    SERVO_L=23;
+    SERVO_L=23+1;
+    SERVO_HOLE_X=(27.4-SERVO_L)/2;
     W=1.6;
     L=39;
     PW=3;
@@ -46,9 +47,9 @@ module servo_mount() {
         translate([-L/2-W,0,(SERVO_H-W)/2+W])
         cube([L,L,SERVO_H-W],center=true);
     
-        translate([-1.3-1.1,0,SERVO_H+W])
+        translate([-SERVO_HOLE_X,0,SERVO_H+W])
         cylinder(d=1.8,h=SERVO_H*2,center=true);
-        translate([SERVO_L+1.3+1.1,0,SERVO_H+W])
+        translate([SERVO_L+SERVO_HOLE_X,0,SERVO_H+W])
         cylinder(d=1.8,h=SERVO_H*2,center=true);
     
         
