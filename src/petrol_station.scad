@@ -16,9 +16,9 @@ ROAD_EDGE_W=10;
 ROAD_W=LANE_W+2*ROAD_EDGE_W+PLATFORM_W;
 ROAD_RAMP_LEN=10;
 
-PUMP_HANDLE_D=2.6;
-PUMP_HANDLE_INT=10;
-PUMP_CABLE_D=1.2;
+PUMP_HANDLE_D=2.8;
+PUMP_HANDLE_INT=7.5;
+PUMP_CABLE_D=1.5;
 PUMP_CABLE_ATTACH_H=PLATFORM_H+PUMP_CABLE_D/2+W;
 
 eps=.01;
@@ -37,16 +37,16 @@ module toZ0(P) {
 function shrinkXY(p,val) = [p[0]-2*val,p[1]-2*val,p[2]];
 
 module petrolPump() {
-    
     difference() {
+        color([.7,0,0])
         union() {
             toZ0(PUMP_BODY)
             cube(PUMP_BODY,center=true);
             toZ0(PUMP_BODY+PUMP_BODY+PUMP_HEAD)
             cube(PUMP_HEAD,center=true);
         }
-        toZ0(PUMP_BODY+PUMP_HEAD-[0,0,2*W])
-        cube(shrinkXY(PUMP_BODY,W)+[0,0,PUMP_HEAD[2]],center=true);
+        toZ0(PUMP_BODY-[0,0,2*W])
+        cube(shrinkXY(PUMP_BODY,W),center=true);
         
         cube([20,3,ROAD_H*2],center=true);
         cube([3,20,ROAD_H*2],center=true);
@@ -60,6 +60,10 @@ module petrolPump() {
         symY([0,PUMP_HEAD[1]/2,PUMP_BODY[2]+PUMP_HEAD[2]/2])
         rotate(-60,[1,0,0])
         cube([PUMP_HANDLE_D,PUMP_HANDLE_D,PUMP_HANDLE_INT*2],center=true);
+        
+        color([0,0,1])
+        symX([PUMP_HEAD[0]/2,0,PUMP_BODY[2]+PUMP_HEAD[2]/2])
+        cube([W,PUMP_HEAD[1]-W,PUMP_HEAD[2]-W],center=true);
     }
     
     
@@ -124,3 +128,6 @@ if(mode=="preview")
 
 if(mode=="road")
     road();
+if(mode=="pump")
+    rotate(180,[1,0,0])
+    petrolPump();
