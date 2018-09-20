@@ -2,12 +2,12 @@ use <syms.scad>
 
 W=1.6;
 
-ROAD_H=2;
-FLOOR_H=4;
+ROAD_H=1;
+FLOOR_H=2;
 LANE_W=45;
 
 PLATFORM_W=20;
-PLATFORM_H=5;
+PLATFORM_H=3;
 PLATFORM_Y=70;
 
 
@@ -17,7 +17,7 @@ ROAD_W=LANE_W+2*ROAD_EDGE_W+PLATFORM_W;
 ROAD_RAMP_LEN=10;
 
 PUMP_HANDLE_D=2.8;
-PUMP_HANDLE_INT=7.5;
+PUMP_HANDLE_INT=9;
 PUMP_CABLE_D=1.5;
 PUMP_CABLE_ATTACH_H=PLATFORM_H+PUMP_CABLE_D/2+W;
 
@@ -53,11 +53,11 @@ module petrolPump() {
         
         
         translate([0,0,PUMP_CABLE_ATTACH_H])
-        rotate(90,[1,0,0])
-        cylinder($fn=16,d=PUMP_CABLE_D,h=100,center=true);
+        rotate(-90,[1,0,0])
+        cylinder($fn=16,d=PUMP_CABLE_D,h=100);
         
         
-        symY([0,PUMP_HEAD[1]/2,PUMP_BODY[2]+PUMP_HEAD[2]/2])
+        translate([0,PUMP_HEAD[1]/2,PUMP_BODY[2]+PUMP_HEAD[2]/2])
         rotate(-60,[1,0,0])
         cube([PUMP_HANDLE_D,PUMP_HANDLE_D,PUMP_HANDLE_INT*2],center=true);
         
@@ -109,7 +109,6 @@ module road() {
 }
 
 
-
 module preview() {
     road();
     translate(POS_PUMP_1)
@@ -131,3 +130,12 @@ if(mode=="road")
 if(mode=="pump")
     rotate(180,[1,0,0])
     petrolPump();
+
+
+if(mode=="roadPart") {
+    intersection() {
+        translate(POS_PUMP_1)
+        cube([30,20,20],center=true);
+        road();
+    }
+}
