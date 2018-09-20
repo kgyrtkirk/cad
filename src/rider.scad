@@ -124,10 +124,10 @@ module board_mount() {
     W=1.6;
     S=60.4;
     D2=3.2;
-    H1=4*W;
-    H2=5*W;
+    H1=5*W;
+    H2=6*W;
     
-    L=50;
+    L=60;
     B_W=53;
     
     
@@ -158,17 +158,19 @@ module board_mount() {
             
         }
     }
-        translate([L/2-X1,-B_W/2,0]) {
+        translate([+50/2,-B_W/2,0]) {
             // top left corner
             DF=3.2;
-            C1=5.8+DF/2;
-            C2=33.7+DF/2;
-            for(x=[C1,C2]) 
-            translate([0,x,0]) {
+            C1=[0,5.8+DF/2,0];
+            C2=[0,33.7+DF/2,0];
+            C3=[-50.8,33.7+15.2+DF/2,0];
+            C4=[-50.8-1.3,5.8-5.1+DF/2,0];
+            for(x=[C1,C2,C3,C4]) 
+            translate(x) {
                 $fn=16;
                 difference() {
                 cylinder(d=6,h=H1);
-                cylinder(d=2.8,h=H1*2);
+                cylinder(d=2.6,h=H1*2);
                 }
             }
         }
@@ -177,9 +179,9 @@ module board_mount() {
 
 
 
-mode="board_mount";
 mode="stepdown_mount";
 mode="servo_mount";
+mode="board_mount";
 if(mode=="servo_mount"){
     servo_mount();
 }
