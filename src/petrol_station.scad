@@ -1,3 +1,5 @@
+// FIXME: lane is too narrow!!!!
+
 use <syms.scad>
 
 W=1.6;
