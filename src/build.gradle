@@ -9,6 +9,7 @@ def partMap = [
 	'reception_booth':	['road','barrier_post','barrier_post2','booth','barrier'],
 	'vl53l0x-servo':	['fullMount'],
 	'petrol_station':	['road','pump','roadPart'],
+	'mini_c270_mod':	['foot','middle','cameraHolder'],
 		]
 
 task allScad() {}
