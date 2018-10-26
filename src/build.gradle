@@ -10,6 +10,7 @@ def partMap = [
 	'vl53l0x-servo':	['fullMount'],
 	'petrol_station':	['road','pump','roadPart'],
 	'mini_c270_mod':	['foot','middle','cameraHolder'],
+	'fiesta_2003_vent_mount':	['ventPart'],
 		]
 
 task allScad() {}
