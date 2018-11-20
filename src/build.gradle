@@ -11,6 +11,7 @@ def partMap = [
 	'petrol_station':	['road','pump','roadPart'],
 	'mini_c270_mod':	['foot','middle','cameraHolder'],
 	'fiesta_2003_vent_mount':	['ventPart'],
+	'shower_booth_handle':	['handleA','handleB'],
 		]
 
 task allScad() {}

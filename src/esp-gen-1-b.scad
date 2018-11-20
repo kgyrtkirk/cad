@@ -327,6 +327,7 @@ module product1(partIdx){
         difference(){
             product(false);
             cut_y=[ -2*WALL_TH, yValues[0], yValues[1], D+2*WALL_TH ];
+//            cut_y=[ -2*WALL_TH, yValues[0], yValues[1], D+2*WALL_TH ];
             zBox( cut_y[0], cut_y[partIdx]);
             zBox( cut_y[partIdx+1], cut_y[3]);
         }
@@ -358,7 +359,9 @@ module product1(partIdx){
     }
 }
 
-if(doProjs){
+mode="preview";
+
+if(mode=="project"){
     projection(cut=true) {
         // dht plane
         translate([3*WALL_TH,0,-WALL_TH-PCB_Z-PCB_T-PCB_DHT_Z0])
@@ -383,7 +386,8 @@ if(doProjs){
         translate([-A0-2*WALL_TH,0,0])
         product(true);
     }
-}else{
+}
+if(mode=="preview") {
     product1(0);
     translate([0,0,10])
     product1(1);
