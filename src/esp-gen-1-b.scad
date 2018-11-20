@@ -305,13 +305,13 @@ module unionDiffOperator(diff){
 module straps( idx, mask, rotation, loc_xy, yValues){
     
         strap_cut=idx == 1 ? 1 : 0;
-
+/*
         if(idx == 1 || (idx==2 && mask>=2))
         translate(concat(loc_xy,[yValues[1]]))
         rotate(rotation,[0,0,1])
         rotate(180,[0,1,0])
         snap0(strap_cut);
-    
+  */  
         if((mask%2)==1 && idx != 2)
         translate(concat(loc_xy,[yValues[0]]))
         rotate(rotation,[0,0,1])
@@ -326,10 +326,9 @@ module product1(partIdx){
         yValues=[D0-WALL_TH, D-WALL_TH];
         difference(){
             product(false);
-            cut_y=[ -2*WALL_TH, yValues[0], yValues[1], D+2*WALL_TH ];
-//            cut_y=[ -2*WALL_TH, yValues[0], yValues[1], D+2*WALL_TH ];
+            cut_y=[ -2*WALL_TH, yValues[0], D+2*WALL_TH ];
             zBox( cut_y[0], cut_y[partIdx]);
-            zBox( cut_y[partIdx+1], cut_y[3]);
+            zBox( cut_y[partIdx+1], cut_y[2]);
         }
     
         
