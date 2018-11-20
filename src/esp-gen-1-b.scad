@@ -258,7 +258,7 @@ module zBox(z0,z1){
 STRAP_H0=WALL_TH*3;
 STRAP_H1=WALL_TH*2;
 STRAP_D=.2;
-STRAP_W=WALL_TH*3;
+STRAP_W=WALL_TH*8;
 STRAP_R=1.5*WALL_TH;
 
 module snap0(cut_offset=0){
@@ -345,7 +345,9 @@ module product1(partIdx){
         straps( partIdx, 3, 180, [WALL_TH+STRAP_W,B], yValues );
         straps( partIdx, 3, 180, [A-(WALL_TH+STRAP_W),B], yValues );
      //   straps( partIdx, 2, 0, [(A+A0)/2,B0], yValues );
-        straps( partIdx, 3, 90, [A,(B0+B)/2], yValues );
+        //straps( partIdx, 3, 90, [A,(B0+B)/2], yValues );
+        straps( partIdx, 3, 90, [A,B0+STRAP_W], yValues );
+        straps( partIdx, 3, 90, [A,B-STRAP_W], yValues );
         
 //        strap
         
