@@ -156,7 +156,7 @@ module pirDome(){
 }
 
 module dcPlug(){
-%    translate([-5,0,0])
+    translate([-5,0,0])
     translate([10,9,11]/2)
     cube([10,10,12],center=true)
 //    cube([10,9,11]);
@@ -396,6 +396,14 @@ if(mode=="preview") {
     product1(0);
     translate([0,0,10])
     product1(1);
-    translate([0,0,20])
-    product1(2);
+//    translate([0,0,20])
+  //  product1(2);
+}
+
+if(mode=="bottom") {
+    product1(0);
+}
+if(mode=="top") {
+    rotate(180,[1,0,0])
+    product1(1);
 }
