@@ -1,11 +1,18 @@
 $fn=32;
 
+WALL_TH=.8;     // 1/2 of wall thickness
+
+STRAP_H0=WALL_TH*3;
+STRAP_H1=WALL_TH*2;
+STRAP_D=.2;
+STRAP_W=WALL_TH*8;
+STRAP_R=1.5*WALL_TH;
+
 PCB_BELOW=2;
 PCB_T=1.6;      // pcb thickness
-PCB_S=2-PCB_T;  // spacing between pcb/wall
 PCB_Z=2;        // spacing between pcb/botton
 PCB_OVER=16.555;
-WALL_TH=.8;     // 1/2 of wall thickness
+PCB_S=2-PCB_T+STRAP_R;  // spacing between pcb/wall
 
 MIL=25.4/1000;
 PCB_W=4400 * MIL;
@@ -149,8 +156,11 @@ module pirDome(){
 }
 
 module dcPlug(){
-    translate([-5,0,0])
-    cube([10,9,11]);
+%    translate([-5,0,0])
+    translate([10,9,11]/2)
+    cube([10,10,12],center=true)
+//    cube([10,9,11]);
+    ;
 }
 module jackPlug(){
     translate([0,0,0.1])
@@ -254,12 +264,6 @@ module zBox(z0,z1){
     translate([0,0,c])
     cube([3*A,3*B,d],center=true);
 }
-
-STRAP_H0=WALL_TH*3;
-STRAP_H1=WALL_TH*2;
-STRAP_D=.2;
-STRAP_W=WALL_TH*8;
-STRAP_R=1.5*WALL_TH;
 
 module snap0(cut_offset=0){
     translate([0,WALL_TH,0]) {
