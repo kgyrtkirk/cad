@@ -1,9 +1,9 @@
 $fn=64;
-W=2;
-H=1;
 
 mode="push_in";
 mode="islands";
+mode="circles";
+
 if(mode=="push_in") {
     e=0.1/2;
     cylinder(d=10-e,h=5);
@@ -14,7 +14,7 @@ if(mode=="push_in") {
     }
 }
 
-module ring(d){
+module ring(d,W=2,H=1){
     difference() {    
         cylinder(h=H,d=d+W);
         cylinder(h=22,d=d,center=true);
@@ -28,4 +28,8 @@ if(mode=="islands") {
         translate([20,0,(i%3)*H])
         ring(13*i %10 + 0);
     }
+}
+
+if(mode=="circles") {
+    ring(200,H=.6);
 }

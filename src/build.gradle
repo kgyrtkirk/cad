@@ -14,6 +14,8 @@ def partMap = [
 	'shower_booth_handle':	['handleA','handleB'],
 	'esp-gen-1-b':		['top', 'bottom'],
 	'calib':		['push_in','circles','islands'],
+	'wheelNutDriver':	['def'],
+	'drillHolder':		['def'],
 		]
 
 task allScad() {}
