@@ -12,18 +12,18 @@ HOLE_L=4;
 use <threads.scad>
 module thread(I=false) {
     if(I) {
-        translate([0,0,0])
+        translate([0,0,1])
         cylinder(d1=HOLE_D+1,d2=HOLE_D-1,h=HANDLE_W,center=true);
     }
 
-    translate([0,0,-HANDLE_W/2])
+    translate([0,0,-HANDLE_W/2+1])
     metric_thread (diameter=HOLE_D, pitch=1.25, length=HANDLE_W/2+HOLE_L+ROD_H-1, internal = I);
 }
 
 
 //thread();
 
-module handle() {
+module handle0() {
     rotate_extrude(convexity = 10) {
     //    translate([2, 0, 0])
     //    circle(r = 2);
@@ -45,19 +45,36 @@ module handle() {
     }
 }
 
+module handle(topPart) {
+    K=100;
+    z=HANDLE_W/2 + (topPart ? -K/2 : K/2);
+    
+    difference() {
+        handle0();
+        translate([0,0,z])
+        cube([HANDLE_D*3,HANDLE_D*3,K],center=true);
+    }
+}
+
+
 module handleA() {
-    handle();
+    handle(true);
     translate([0,0,HANDLE_W+ROD_H])
     thread(false);
 }
 
 module handleB() {
     difference() {
-        handle();
+        handle(true);
         translate([0,0,HANDLE_W+.1])
         thread(true);
     }
 }
+
+module handleT() {
+    handle(false);
+}
+
 
 mode="preview";
 if(mode=="handleA") {
@@ -66,15 +83,27 @@ if(mode=="handleA") {
 if(mode=="handleB") {
     handleB();
 }
+if(mode=="handleT") {
+    handleT();
+}
 
 if(mode=="preview") {
     difference() {
         union() {
+            translate([0,0,-1])
+            handleT();
+            
             handleA();
             translate([0,0,2*HANDLE_W+2*ROD_H+HOLE_L])
-            rotate(180,[1,0,0])
-            handleB();
+            rotate(4/1.25*360+180,[0,0,1])
+            rotate(180,[1,0,0]) {
+                translate([0,0,-1])
+                handleT();
+                handleB();
+            }
+            
         }
+        translate([0,0,-10])
         cube([100,100,100]);
     }
 }
