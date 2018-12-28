@@ -16,6 +16,7 @@ def partMap = [
 	'calib':		['push_in','circles','islands'],
 	'wheelNutDriver':	['def'],
 	'drillHolder':		['def'],
+	'puzzle_box_viktor':	['lid','base'],
 		]
 
 task allScad() {}
