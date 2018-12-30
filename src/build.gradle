@@ -17,6 +17,7 @@ def partMap = [
 	'wheelNutDriver':	['def'],
 	'drillHolder':		['def'],
 	'puzzle_box_viktor':	['lid','base'],
+	'toilet-holder1':	['part0','part1','part2','joint'],
 		]
 
 task allScad() {}
