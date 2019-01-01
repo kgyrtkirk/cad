@@ -16,6 +16,18 @@ SP=.4;
 HINGE_SPACE=SP;
 HANDLE_W=4*W;
 
+module decorationCuts(xSpace,ySpace){
+    CUTW0=W;
+    N=floor((ySpace-CUTW0) / (2*CUTW0) );
+    //N=3;
+    CUTW=ySpace / (2*N+1);
+    echo(CUTW);
+    
+    for(z=[CUTW+CUTW/2:2*CUTW:ySpace])
+    translate([0,0,z])
+    cube([CUTW,xSpace-2*CUTW,CUTW],center=true);
+}
+
 module containerPart() {
 
     difference() { 
@@ -27,11 +39,24 @@ module containerPart() {
         translate([0,0,-W])
         cube(DIM-2*[W,W,0],center=true);
         
-        
         // cut out door-x
         cube([111,DIM[1]-2*W,2*(HINGE_D2+SP)],center=true);
         // cut out door top/bottom handle pos
         cube([HANDLE_W+W,111,2*(W+SP)],center=true);
+        
+        // side cuts
+        symX([-DIM[0]/2,0,HINGE_D2+SP])
+        decorationCuts(DIM[1],DIM[2]-HINGE_D2-SP);
+        
+        // top cuts
+        translate([0,DIM[1]/2,HINGE_D2+SP])
+        rotate(90,[0,0,1])
+        decorationCuts(DIM[0],DIM[2]-HINGE_D2-SP);
+
+        translate([-DIM[0]/2,0,DIM[2]])
+       rotate(90,[0,1,0])
+        decorationCuts(DIM[1],DIM[0]);
+        
     }
 }
 
@@ -99,9 +124,15 @@ module lidPartBase(DOOR_W) {
 
 module lidPart(DOOR_W) {
     difference() {
+        rotate(180,[0,1,0])
         lidPartBase(DOOR_W);
         symY([0,HINGE_K,0])
         hingePart(HINGE_D0,HINGE_D2+2*SP,HINGE_W+2*SP);
+        
+        translate([HINGE_D2/2,0,HINGE_D2/2])
+       rotate(90,[0,1,0])
+       decorationCuts(DIM[1]-2*(W+SP),DOOR_W-HINGE_D2/2);
+
     }
 }
 
@@ -115,14 +146,14 @@ module container(open=false) {
     ([DOOR_W,0,HINGE_D2/2]) {
         symY([0,HINGE_K,0])
         hingePart();
-        rotate(open?180:0,[0,1,0])
+        rotate(open?0:-180,[0,1,0])
         lidPart(DOOR_W);
     }
     
 }
 
 mode="preview";
-mode="print";
+//mode="print";
 mode="door";
 if(mode=="preview"){
     difference() {
@@ -142,7 +173,7 @@ if(mode=="print"){
 if(mode=="door"){
     intersection() {
         container(true);
-        cube([100,100,15],center=true);
+        cube([100,100,20],center=true);
         
     }
 }
