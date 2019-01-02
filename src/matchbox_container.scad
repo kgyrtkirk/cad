@@ -8,11 +8,11 @@ eps=1e-4;
 DIM=[ 40, 40, 110 ];
 
 HINGE_K=10;             // diff between hinge center and y center
-HINGE_D0=W;             // hinge axis diameter
-HINGE_D1=HINGE_D0+.6;   // hinge hole diameter
+HINGE_D0=1.2;             // hinge axis diameter
+HINGE_D1=HINGE_D0+.8;   // hinge hole diameter
 HINGE_D2=HINGE_D1+W;
-HINGE_W=4;
-SP=.4;
+HINGE_W=DIM[1]/10;
+SP=.6;
 HINGE_SPACE=SP;
 HANDLE_W=4*W;
 
@@ -104,12 +104,14 @@ module lidPartBase(DOOR_W) {
 
     }
     
+    
+    A=W/4;
     translate([-DOOR_W+SP/2,0,-HINGE_D2/2+W/2])
 //    translate([HANDLE_W/2-SP-W/2,0,0]) 
-    translate([(HANDLE_W-2*W)/4+W/2,0,0]) 
+    translate([A+(HANDLE_W-2*W)/4+W/2,0,0]) 
     {
         hull()
-        symXY([(HANDLE_W-2*W)/4,DIM[1]/2-W/2,0])
+        symXY([A+(HANDLE_W-2*W)/4,DIM[1]/2-W/2,0])
         sphere(d=W);
     }
         
@@ -154,7 +156,7 @@ module container(open=false) {
 
 mode="preview";
 //mode="print";
-mode="door";
+//mode="door";
 if(mode=="preview"){
     difference() {
         container();

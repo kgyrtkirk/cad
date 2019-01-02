@@ -21,6 +21,10 @@ def partMap = [
 	'matchbox_container':	['print','door'],
 		]
 
+def projMap = [
+	'matchbox_container':	['floor'],
+	]
+
 task allScad() {}
 
 partMap.each { inputName,modes ->
@@ -33,10 +37,6 @@ partMap.each { inputName,modes ->
 			inputs.file inputFile
 			outputs.file oFile
 			commandLine "openscad-nightly","-D","mode=\"$mode\"","-o",oFile,inputFile
-//			doLast 
-//				exec("asd")
-			// oFile
-//			}
 		}
 		allScad.dependsOn(t)
 	}
