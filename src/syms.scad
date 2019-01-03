@@ -13,6 +13,14 @@ module symX(t) {
             children();
 }
 
+module symZ(t) {
+    translate(t)
+        children();
+    mirror([0,0,1])
+        translate(t)
+            children();
+}
+
 module	symXY(t) {
 	tx=t[0];
 	ty=t[1];
