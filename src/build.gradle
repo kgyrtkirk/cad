@@ -26,6 +26,7 @@ def projMap = [
 	]
 
 task allScad() {}
+task allPdf() {}
 
 partMap.each { inputName,modes ->
 	modes.each { mode ->
@@ -39,6 +40,30 @@ partMap.each { inputName,modes ->
 			commandLine "openscad-nightly","-D","mode=\"$mode\"","-o",oFile,inputFile
 		}
 		allScad.dependsOn(t)
+	}
+}
+
+projMap.each { inputName,modes ->
+	modes.each { mode ->
+		println "${inputName} ; ${mode}"
+		def outputName="${inputName}@${mode}"
+		def sFile=new File(outputDir,"${outputName}.svg")
+		def oFile=new File(outputDir,"${outputName}.pdf")
+		def t=task("scad_${outputName}",type:Exec) {
+			def inputFile=file("${inputName}.scad")
+			inputs.file inputFile
+			outputs.file sFile
+			commandLine "openscad-nightly","-D","mode=\"$mode\"","-o",sFile,inputFile
+		}
+		def t2=task("inkscape_${outputName}",type:Exec) {
+			dependsOn t
+			inputs.file sFile
+			outputs.file oFile
+			commandLine "inkscape","--without-gui","--export-pdf=$oFile",sFile
+		}
+
+		allScad.dependsOn(t2)
+		allPdf.dependsOn(t2)
 	}
 }
 

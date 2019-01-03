@@ -1,3 +1,5 @@
+// notes:
+// never again design with z as a physically flat dir
 
 use <syms.scad>
 
@@ -6,6 +8,7 @@ W=1.6;
 eps=1e-4;
 
 DIM=[ 40, 40, 110 ];
+OVERHANG_ANGLE=60;
 
 HINGE_K=10;             // diff between hinge center and y center
 HINGE_D0=1.2;             // hinge axis diameter
@@ -35,9 +38,22 @@ module containerPart() {
         translate([0,0,DIM[2]/2])
         cube(DIM,center=true);
         
-        translate([0,0,DIM[2]/2])
-        translate([0,0,-W])
-        cube(DIM-2*[W,W,0],center=true);
+        S=min(DIM[0],DIM[1]);
+        SL=1/tan(OVERHANG_ANGLE)*S/2;
+        echo("S=",S," SL=",SL);
+        
+        translate([0,0,DIM[2]/2]) {
+            // clear support free end
+            translate([0,0,DIM[2]/2-W-SL-.1])
+            linear_extrude(height=SL,scale=0)
+            square(size=[DIM[0]-2*W,DIM[1]-2*W],center=true);
+            
+//#            cylinder($fn=4,d1=DIM[0]-2*W,d2=0,h=SL,center=true);
+            
+            // clear cargo space
+            translate([0,0,-W-SL])
+            cube(DIM-2*[W,W,0],center=true);
+        }
         
         // cut out door-x
         cube([111,DIM[1]-2*W,2*(HINGE_D2+SP)],center=true);
@@ -138,10 +154,63 @@ module lidPart(DOOR_W) {
     }
 }
 
+module trailerMountPattern() {
+    // this random chineese trailer has some wierd mount pattern...
+    CUT_L=2*W+.1;
+    D_HOLE=3;
+    W=1.2;
+    
+    L=106.5 - W;
+//    L=105.1 + W;
+    K=34.6 - W;
+    
+    module cX(D,L) {
+        TOLERANCE=-.5;
+        OFF=D>0?D+L:0;
+        symY([0,OFF/2,0]){
+            cube([K+10*W,L+TOLERANCE,20],center=true);
+        }
+    }
+    
+    translate([0,DIM[2]+.005*W,0]/2) {
+        OO=( (50.9+W/2-39) - (14.6-W/2+D_HOLE/2))/2;
+        difference()  {
+            cube([K+W,L+W,CUT_L],center=true);
+            //main cut
+            cube([K-W,L-W,20],center=true);
+
+            translate([0,-OO,0]) {
+                
+                cX(0,7.3);
+                cX(23.6,3.4);
+                cX(54.2,7.5);
+                cX(85.6,3);
+            }
+            
+        }
+        echo("OO",OO);
+        translate([0,-OO,-1.1]) {
+            MAGNET_D=1.9;
+            $fn=16;
+            cylinder(h=CUT_L,d=MAGNET_D,center=false);
+            symY([0,39,0])
+            cylinder(h=CUT_L,d=MAGNET_D,center=false);
+        }
+        // hook crap
+        symX([(K/2-(5.1-W)),-L/2+2,0])
+        cube([W,4,CUT_L],center=true);
+    }
+    
+}
 
 
 module container(open=false) {
-    containerPart();
+    difference() {
+        containerPart();
+        translate([0,-DIM[1]/2,0])
+        rotate(90,[1,0,0])
+        trailerMountPattern();
+    }
     
     DOOR_W=DIM[0]/2-HINGE_D2/2;
     symX
@@ -157,6 +226,7 @@ module container(open=false) {
 mode="preview";
 //mode="print";
 //mode="door";
+//mode="floor";
 if(mode=="preview"){
     difference() {
         container();
@@ -178,4 +248,11 @@ if(mode=="door"){
         cube([100,100,20],center=true);
         
     }
+}
+
+if(mode=="floor"){
+    projection(cut=true)
+    rotate(90,[1,0,0])
+    translate([0,DIM[1]/2-eps,0])
+    container(true);
 }
