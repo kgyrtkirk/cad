@@ -1,11 +1,7 @@
 use <syms.scad>
-
-
-mode="preview";
-
-$fn=(mode=="def") ? 16 : 4;   // line detail
+$fn=16;
 N=16;   // number of lines
-S=(mode=="def") ? 20 : 10;   // line detail
+S=20;   // line detail
 M=100;  // object scale
 
 if(false)
@@ -29,48 +25,46 @@ function f(v) = ([
 function v3r(d) = [ cos(d), sin(d), 0 ];
 
 // maps points to a non-perpicular axis position
-function g(v3,D) = 
- v3 *[ v3r(D[0]),
-  v3r(D[1]),
+function g(v3) = 
+ v3 *[ v3r(60),
+  v3r(120),
   [ 0,0,1]
 ]* M;
 
-function g1(v3,Q) = 
+function g1(v3) = 
  v3 *[ [1,0,0],
   [0,1,0],
   [ 0,0,1]
-]* M + [Q[0],Q[1],0];
+]* M;
 
 
-module cx(a,b,D) {
+module cx(a,b) {
     for(i=[0:1:S-1]) {
         x=s((i+0.0)/S);
         y=s((i+1.0)/S);
         hull() {
-            translate(g(f(x*a+(1-x)*b),D))
+            translate(g(f(x*a+(1-x)*b)))
             children();
-            translate(g(f(y*a+(1-y)*b),D))
+            translate(g(f(y*a+(1-y)*b)))
             children();
         }
     }
 }
 
 
-module dx(u0,u1,v0,v1,n,D,Q) {
+module dx(u,v,n) {
     for(i=[0:n]) {
-        j=(n-i);
-        cx(u0*j/n+u1*i/n, v0*i/n+v1*j/n+Q,D) {
+        j=n-i;
+        cx(u*i/n, v*j/n) {
                 sphere();
         }
 
     }
 }
 
-//dx( [0,.5,0],[0,1,0],[.5,0,0],[1,0,0],N,[60,120],[0,0]);
-dx( [0,1,0],[0,1.5,0],[0,0,0],[.5,0,0],N,[0,120],[0,0,0]);
+dx( [1,0,0],[0,1,0],N);
 
 K=5;
-/*
 symX()
 hull() {
     R=K/M;
@@ -83,4 +77,3 @@ hull() {
     translate(g([1-R,R,0]))
         sphere();
 }
-*/
