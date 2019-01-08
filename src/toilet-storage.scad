@@ -1,3 +1,4 @@
+use <syms.scad>
 $fn=16;
 N=16;   // number of lines
 S=20;   // line detail
@@ -30,6 +31,12 @@ function g(v3) =
   [ 0,0,1]
 ]* M;
 
+function g1(v3) = 
+ v3 *[ [1,0,0],
+  [0,1,0],
+  [ 0,0,1]
+]* M;
+
 
 module cx(a,b) {
     for(i=[0:1:S-1]) {
@@ -37,9 +44,9 @@ module cx(a,b) {
         y=s((i+1.0)/S);
         hull() {
             translate(g(f(x*a+(1-x)*b)))
-            sphere();
+            children();
             translate(g(f(y*a+(1-y)*b)))
-            sphere();
+            children();
         }
     }
 }
@@ -48,8 +55,25 @@ module cx(a,b) {
 module dx(u,v,n) {
     for(i=[0:n]) {
         j=n-i;
-        cx(u*i/n, v*j/n);
+        cx(u*i/n, v*j/n) {
+                sphere();
+        }
+
     }
 }
 
 dx( [1,0,0],[0,1,0],N);
+
+K=5;
+symX()
+hull() {
+    R=K/M;
+    translate(g([0,0,0]))
+        sphere();
+    translate(g([R,R,0]))
+        sphere();
+    translate(g([1,0,0]))
+        sphere();
+    translate(g([1-R,R,0]))
+        sphere();
+}
