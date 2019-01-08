@@ -19,7 +19,10 @@ def partMap = [
 	'puzzle_box_viktor':	['lid','base'],
 	'toilet-holder1':	['part0','part1','part2','joint'],
 	'matchbox_container':	['print','door'],
-	'magnastix-blocks':	['p4','p3'],
+	'magnastix-blocks':	['p4','p3','p6'],
+	'filament_roll_end':	['def'],
+	'nespresso-honeycomb':	['def'],
+	'toilet-hanger1':	['def'],
 		]
 
 def projMap = [

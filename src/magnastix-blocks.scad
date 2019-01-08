@@ -7,6 +7,8 @@ STICK_D=5.7;
 STICK_END_D=7.1;
 STICK_END_H=4.1;
 
+SP=.6; // spacing 
+
 ENL=STICK_END_D-STICK_D;
 echo("ENL",ENL);
 
@@ -49,16 +51,18 @@ module nGon(eLength,n) {
 
 module panel(n) {
     E=STICK_L+BALL_D;
-    SP=1.2;
     difference() {
 //#        nGon(E,n)
 //        rotate(90,[0,1,0])
   //      cylinder(d=STICK_D+SP+2*W,h=E,center=true);
         nGon(E,n)
-        intersection() {
-            stickAndBall(SP+2*W);
-            translate([0,-E/2-W,0])
-            cube([E-BALL_D+W+W,E,STICK_D+W/2],center=true);
+        union() {
+            intersection() {
+                stickAndBall(SP+2*W);
+                G=STICK_D;
+                translate([0,-G/2-W,0])
+               cube([E,G,STICK_D*2/3],center=true);
+            }
         }
         
         nGon(E,n)
@@ -71,6 +75,10 @@ mode="p4";
 if(mode=="p4") {
     panel(4);
 }
+if(mode=="p6") {
+    panel(6);
+}
+
 if(mode=="p3") {
     panel(3);
 }
