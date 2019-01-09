@@ -83,35 +83,70 @@ module fx(n,m) {
     
 }
 
-fx(2*N,2*N);
+//fx(2*N,2*N);
+
+
+
 
 K=5;
 
-hull() {
-    R=K/M;
-    translate(g([-1,0,0]))
-        mySphere();
-    translate(g([-1,R,0]))
-        mySphere();
-    translate(g([1,0,0]))
-        mySphere();
-    translate(g([1,R,0]))
-        mySphere();
+module foot() {
+    hull() {
+        R=K/M;
+        translate(g([-1,0,0]))
+            mySphere();
+        translate(g([-1,R,0]))
+            mySphere();
+        translate(g([1,0,0]))
+            mySphere();
+        translate(g([1,R,0]))
+            mySphere();
+    }
+
+    symX()
+    hull() {
+        R=K/M;
+        translate(g([-1,1,0]))
+            mySphere();
+        translate(g([-1,0,0]))
+            mySphere();
+        translate(g([-1+R,1,0]))
+            mySphere();
+        translate(g([-1+R,0,0]))
+            mySphere();
+    }
 }
 
-symX()
-hull() {
-    R=K/M;
-    translate(g([-1,1,0]))
-        mySphere();
-    translate(g([-1,0,0]))
-        mySphere();
-    translate(g([-1+R,1,0]))
-        mySphere();
-    translate(g([-1+R,0,0]))
-        mySphere();
-}
+//echo(g(f([0,1,0])));
 
-echo(g(f([0,1,0])));
+
+
+//foot();
+
+
+a=[ g([0,0,0]), g([1,0,0]),g([1,1,0]), g([2,1,0]) ];
+
+// "invents" a matrix for which the given axis is the Z axis
+function buildMatForZ(z) = [
+    cross(z,[z[1],z[2],z[0]]),
+    cross(z,cross(z,[z[1],z[2],z[0]])),
+    z
+];
+
+module showPiece(p) {
+    d1=p[2]-p[0];
+    k=buildMatForZ(d1/norm(d1));
+//    echo(k);
+    multmatrix(d1)
+    cube();
+    
+    hull() {
+        translate(p[1]) mySphere();
+        translate(p[2]) mySphere();
+    }
+}
+$fn=16;
+
+//showPiece(a);
 
 
