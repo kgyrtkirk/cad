@@ -3,6 +3,8 @@ use <syms.scad>
 mode="defc";
 render=(mode=="def") && false;
 
+
+eps=1e-4;
 $fn=render ? 16 : 4;   // line detail
 M=100;  // object scale
 N=M/(50/8)/2;   // number of lines
@@ -126,27 +128,43 @@ module foot() {
 
 a=[ g([0,0,0]), g([1,0,0]),g([1,1,0]), g([2,1,0]) ];
 
+function unit(v) = norm(v)>0 ? v/norm(v) : undef; 
+
+function transpose(m) = // m is any rectangular matrix of objects
+  [ for(j=[0:len(m[0])-1]) [ for(i=[0:len(m)-1]) m[i][j] ] ];
+
+function m33tom44(m,p=[0,0,0]) = [
+    concat(m[0], p[0]),
+    concat(m[1], p[1]),
+    concat(m[2], p[2]),
+    [0,0,0,1],
+];
 // "invents" a matrix for which the given axis is the Z axis
 function buildMatForZ(z) = [
-    cross(z,[z[1],z[2],z[0]]),
-    cross(z,cross(z,[z[1],z[2],z[0]])),
-    z
+    unit(cross(z,[0,0,1])),
+    unit(cross(z,cross(z,[0,0,1]))),
+    unit(z)
 ];
 
+
+function computePointMatrix(p0,p1,p2) =
+    m33tom44(transpose(buildMatForZ(p2-p0)),p1);
+
+// 4 point cylinder line
 module showPiece(p) {
     d1=p[2]-p[0];
-    k=buildMatForZ(d1/norm(d1));
-//    echo(k);
-    multmatrix(d1)
-    cube();
-    
+    d2=p[3]-p[1];
+    k1=m33tom44(transpose(buildMatForZ(d1/norm(d1))),p[1]);
+    k2=m33tom44(transpose(buildMatForZ(d2/norm(d2))),p[2]);
     hull() {
-        translate(p[1]) mySphere();
-        translate(p[2]) mySphere();
+        multmatrix(k1)
+            cylinder(h=eps,d1=W,d2=0);
+        multmatrix(k2)
+            cylinder(h=eps,d1=W,d2=0);
     }
 }
-$fn=16;
+$fn=160;
 
-//showPiece(a);
+showPiece(a);
 
 
