@@ -131,7 +131,7 @@ module part(idx) {
 }
 
 mode="preview";
-mode="joint";
+//mode="joint";
 
 if(mode=="part0") { part(0); }
 if(mode=="part1") { part(1); }
