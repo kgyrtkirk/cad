@@ -31,21 +31,24 @@ function f(v) = ([
 // calculates a vector in the given dir (0=x axis)
 function v3r(d) = [ cos(d), sin(d), 0 ];
 
-// maps points to a non-perpicular axis position
-function g(v3) = 
- v3 *[ v3r(0),
-  v3r(90),
-  [ 0,0,1]
-]* M;
+// final changes to points
+function g(v3) =  v3 * M;
 
-module cx(a,b,D) {
+
+
+function cx2(a,b) = [
+    
+];
+
+
+module cx(a,b) {
     for(i=[0:1:S-1]) {
         x=s((i+0.0)/S);
         y=s((i+1.0)/S);
         hull() {
-            translate(g(f(x*a+(1-x)*b),D))
+            translate(g(f(x*a+(1-x)*b)))
             children();
-            translate(g(f(y*a+(1-y)*b),D))
+            translate(g(f(y*a+(1-y)*b)))
             children();
         }
     }
@@ -126,7 +129,10 @@ module foot() {
 //foot();
 
 
-a=[ g([0,0,0]), g([1,0,0]),g([1,1,0]), g([2,1,0]) ];
+a=[
+        [ g([0,.4,0]), g([1,0,0]),g([1,1,0]), g([2,1,0]) ],
+        [ undef, g([0.9,0,0]),g([.1,1,0]), g([.2,1,0]) ],
+    ];
 
 function unit(v) = norm(v)>0 ? v/norm(v) : undef; 
 
@@ -140,31 +146,42 @@ function m33tom44(m,p=[0,0,0]) = [
     [0,0,0,1],
 ];
 // "invents" a matrix for which the given axis is the Z axis
-function buildMatForZ(z) = [
-    unit(cross(z,[0,0,1])),
-    unit(cross(z,cross(z,[0,0,1]))),
+function buildMatForZ(z,x) = [
+    unit(cross(z,cross(z,x))),
+    unit(cross(z,x)),
     unit(z)
 ];
 
 
 function computePointMatrix(p0,p1,p2) =
-    m33tom44(transpose(buildMatForZ(p2-p0)),p1);
+    m33tom44(transpose(buildMatForZ(p2-p0,p1-p0)),p1);
 
 // 4 point cylinder line
-module showPiece(p) {
-    d1=p[2]-p[0];
-    d2=p[3]-p[1];
-    k1=m33tom44(transpose(buildMatForZ(d1/norm(d1))),p[1]);
-    k2=m33tom44(transpose(buildMatForZ(d2/norm(d2))),p[2]);
+  
+module cylPiece(p) {
+    module pieceNode(p0,p1,p2) {
+        s=(unit(p2-p1) * unit(p2-p0));
+        if(p0 == undef || p2 == undef || abs(s)<0.5) {
+            translate(p1)
+                sphere($fn=30,d=W);
+        }else{
+            multmatrix(computePointMatrix(p0,p1,p2))
+                scale([1/s,1,1])
+                cylinder(h=eps,d1=W,d2=0);
+        }
+    }
     hull() {
-        multmatrix(k1)
-            cylinder(h=eps,d1=W,d2=0);
-        multmatrix(k2)
-            cylinder(h=eps,d1=W,d2=0);
+        pieceNode(p[0],p[1],p[2]);
+        pieceNode(p[1],p[2],p[3]);
     }
 }
 $fn=160;
 
-showPiece(a);
+
+//function genLinePieces
 
 
+for(x = a){  cylPiece(x); }
+
+
+echo([1,2,3]*[2,2,2]);
