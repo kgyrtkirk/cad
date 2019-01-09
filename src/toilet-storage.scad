@@ -1,12 +1,13 @@
 use <syms.scad>
 
 
-mode="preview";
+mode="def";
+render=(mode=="def");
 
-$fn=(mode=="def") ? 16 : 4;   // line detail
-N=16;   // number of lines
-S=(mode=="def") ? 20 : 10;   // line detail
-M=100;  // object scale
+$fn=render ? 16 : 4;   // line detail
+N=8;   // number of lines
+S=render ? 4*N : N;   // line detail
+M=50;  // object scale
 
 if(false)
 linear_extrude(twist=360) {
@@ -20,18 +21,25 @@ function s(v) = (cos(v*180+180)+1)/2;
 
 // maps 2d points onto a "hill" alike thing;
 // retains points on x/y axes
-function f(v) = ([
+function f0(v) = ([
     v[0],v[1],pow(v[0]*v[1],.5)*2
 ] + [ v[1]*v[0],v[1]*v[0],0]*2);
+
+function f1(v) = [v[0],v[1],0];
+
+function f(v) = ([
+    v[0],v[1]+pow((1-v[0]*v[0])*v[1],1),
+pow((1-v[0]*v[0])*v[1],.25)/2
+] );
 
 
 // calculates a vector in the given dir (0=x axis)
 function v3r(d) = [ cos(d), sin(d), 0 ];
 
 // maps points to a non-perpicular axis position
-function g(v3,D) = 
- v3 *[ v3r(D[0]),
-  v3r(D[1]),
+function g(v3) = 
+ v3 *[ v3r(0),
+  v3r(90),
   [ 0,0,1]
 ]* M;
 
@@ -66,21 +74,62 @@ module dx(u0,u1,v0,v1,n,D,Q) {
     }
 }
 
-//dx( [0,.5,0],[0,1,0],[.5,0,0],[1,0,0],N,[60,120],[0,0]);
-dx( [0,1,0],[0,1.5,0],[0,0,0],[.5,0,0],N,[0,120],[0,0,0]);
+module fx(n,m) {
+    u0=[-1,0,0];
+    u1=[1,0,0];
+    v0=[0,0,0];
+    v1=[0,1,0];
+
+    for(i=[0:n]) {
+        j=(n-i);
+        z=u0*i/n+u1*j/n;
+        cx(z+v0,z+v1,[0,90]) {
+                sphere();
+        }
+    }
+    
+    for(i=[0:m]) {
+        j=(m-i);
+        z=v0*i/m+v1*j/m;
+        cx(z+u0,z+u1,[0,90]) {
+                sphere();
+        }
+    }
+    
+}
+
+//symX()
+//dx( [-1,0,0],[-1,1,0],[-1,0,0],[1,0,0],N,[0,90],[0,0]);
+//dx( [-1,0,0],[-1,1,0],[1,0,0],[1,1,0],N,[0,90],[0,0]);
+//dx( [0,1,0],[0,1.5,0],[0,0,0],[.5,0,0],N,[0,120],[0,0,0]);
+
+fx(2*N,N);
 
 K=5;
-/*
-symX()
+
 hull() {
     R=K/M;
-    translate(g([0,0,0]))
+    translate(g([-1,0,0]))
         sphere();
-    translate(g([R,R,0]))
+    translate(g([-1,R,0]))
         sphere();
     translate(g([1,0,0]))
         sphere();
-    translate(g([1-R,R,0]))
+    translate(g([1,R,0]))
         sphere();
 }
-*/
+
+symX()
+hull() {
+    R=K/M;
+    translate(g([-1,1,0]))
+        sphere();
+    translate(g([-1,0,0]))
+        sphere();
+    translate(g([-1+R,1,0]))
+        sphere();
+    translate(g([-1+R,0,0]))
+        sphere();
+}
+
+
