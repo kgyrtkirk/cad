@@ -1,12 +1,12 @@
 use <syms.scad>
 
-mode="defc";
+mode="def";
 render=(mode=="def") && false;
 
 
 eps=1e-4;
 $fn=render ? 16 : 4;   // line detail
-M=100;  // object scale
+M=50;  // object scale
 N=M/(50/8)/2;   // number of lines
 S=render ? 4*N : 4*N;   // line detail
 
@@ -153,21 +153,25 @@ function buildMatForZ(z,x) = [
 ];
 
 
-function computePointMatrix(p0,p1,p2) =
-    m33tom44(transpose(buildMatForZ(p2-p0,p1-p0)),p1);
+function computePointMatrix(z,x,t) =
+    m33tom44(transpose(buildMatForZ(z,x)),t);
 
 // 4 point cylinder line
   
-module cylPiece(p) {
+module cylPiece(p,diameter=W) {
     module pieceNode(p0,p1,p2) {
         s=(unit(p2-p1) * unit(p2-p0));
-        if(p0 == undef || p2 == undef || abs(s)<0.5) {
+        if(p0 == undef || p2 == undef /*|| abs(s)<0.5*/) {
             translate(p1)
-                sphere($fn=30,d=W);
+                sphere(d=diameter);
         }else{
-            multmatrix(computePointMatrix(p0,p1,p2))
+//            echo(s);
+            m=(s>.97)   ? computePointMatrix(p2-p0,[1,1,0],p1)
+                        : computePointMatrix(p2-p0,p1-p0,p1);
+                
+            multmatrix(m)
                 scale([1/s,1,1])
-                cylinder(h=eps,d1=W,d2=0);
+                cylinder(h=eps,d1=diameter,d2=0);
         }
     }
     hull() {
@@ -175,13 +179,73 @@ module cylPiece(p) {
         pieceNode(p[1],p[2],p[3]);
     }
 }
-$fn=160;
+
+SW=.55;
+module supportPiece(p) {
+    t=[0,M,0];
+    g=p[1]-t;
+    r=g[2]/norm(g);
+    a=acos(r);
+    if(a<60) {
+            color([1,0,0])
+        hull() {
+            translate([0,0,-W])
+            cylPiece(p,W);
+            translate(6/g[2]*(t-p[1]))
+            cylPiece(p,SW);
+        }
+
+        hull() {
+            translate([0,0,-W])
+            cylPiece(p,SW);
+            translate(t)
+                sphere($fn=4,d=SW);
+        }
+    }
+}
 
 
-//function genLinePieces
+//$fn=160;
 
 
-for(x = a){  cylPiece(x); }
+function interpol(x,a,b) =  x*a+(1-x)*b;
 
+function cx2(a,b) = [
+    for(i=[0:1:S])  g(f(interpol( s(i/S), a, b)))
+];
+
+function quads(arr) = [
+        for(i=[-1:len(arr)-3])
+            [ for(j=[0:3]) arr[i+j] ]
+    ];
+
+b=quads(cx2([1,0,0],[0,1,0]));
+
+//for(x = a){  cylPiece(x); }
+//for(x = b){  cylPiece(x); }
+
+module fx2(n,m) {
+    u0=[-1,0,0];
+    u1=[1,0,0];
+    v0=[0,0,0];
+    v1=[0,1,0];
+
+    l=[
+        for(i=[0:n]) 
+            quads(cx2(interpol(i/n,u0,u1)+v0,interpol(i/n,u0,u1)+v1)),
+        for(i=[0:m]) 
+            quads(cx2(interpol(i/n,v0,v1)+u0,interpol(i/n,v0,v1)+u1)),
+    ];
+//        for(a = [l[0]]){ for(x = a){ cylPiece(x); }}
+        for(a = l){ for(x = a){ cylPiece(x); }}
+//    cylPiece(l[0][2]);
+        
+//        for(a = [l[3]]){ for(x = a){ supportPiece(x); }}
+        for(a = l){ for(x = a){ supportPiece(x); }}
+}
+
+//hull()
+
+fx2(2*N,2*N);
 
 echo([1,2,3]*[2,2,2]);
