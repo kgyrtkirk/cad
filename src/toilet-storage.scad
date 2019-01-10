@@ -1,6 +1,6 @@
 use <syms.scad>
 
-render=false;
+render=true;
 
 
 eps=1e-4;
@@ -33,65 +33,6 @@ function v3r(d) = [ cos(d), sin(d), 0 ];
 // final changes to points
 function g(v3) =  v3 * M;
 
-
-
-function cx2(a,b) = [
-    
-];
-
-
-module cx(a,b) {
-    for(i=[0:1:S-1]) {
-        x=s((i+0.0)/S);
-        y=s((i+1.0)/S);
-        hull() {
-            translate(g(f(x*a+(1-x)*b)))
-            children();
-            translate(g(f(y*a+(1-y)*b)))
-            children();
-        }
-    }
-}
-
-module dx(u0,u1,v0,v1,n,D,Q) {
-    for(i=[0:n]) {
-        j=(n-i);
-        cx(u0*j/n+u1*i/n, v0*i/n+v1*j/n+Q,D) {
-                mySphere();
-        }
-
-    }
-}
-
-module fx(n,m) {
-    u0=[-1,0,0];
-    u1=[1,0,0];
-    v0=[0,0,0];
-    v1=[0,1,0];
-
-    for(i=[0:n]) {
-        j=(n-i);
-        z=u0*i/n+u1*j/n;
-        cx(z+v0,z+v1,[0,90]) {
-                mySphere();
-        }
-    }
-    
-    for(i=[0:m]) {
-        j=(m-i);
-        z=v0*i/m+v1*j/m;
-        cx(z+u0,z+u1,[0,90]) {
-                mySphere();
-        }
-    }
-    
-}
-
-//fx(2*N,2*N);
-
-
-
-
 K=5;
 
 module foot() {
@@ -120,18 +61,6 @@ module foot() {
             mySphere();
     }
 }
-
-//echo(g(f([0,1,0])));
-
-
-
-//foot();
-
-
-a=[
-        [ g([0,.4,0]), g([1,0,0]),g([1,1,0]), g([2,1,0]) ],
-        [ undef, g([0.9,0,0]),g([.1,1,0]), g([.2,1,0]) ],
-    ];
 
 function unit(v) = norm(v)>0 ? v/norm(v) : undef; 
 
@@ -179,34 +108,6 @@ module cylPiece(p,diameter=W) {
     }
 }
 
-SW=.55;
-module supportPiece(p) {
-    t=[0,M,0];
-    g=p[1]-t;
-    r=g[2]/norm(g);
-    a=acos(r);
-    if(a<60) {
-            color([1,0,0])
-        hull() {
-            translate([0,0,-W])
-            cylPiece(p,W);
-            translate(6/g[2]*(t-p[1]))
-            cylPiece(p,SW);
-        }
-
-        hull() {
-            translate([0,0,-W])
-            cylPiece(p,SW);
-            translate(t)
-                sphere($fn=4,d=SW);
-        }
-    }
-}
-
-
-//$fn=160;
-
-
 function interpol(x,a,b) =  x*a+(1-x)*b;
 
 function cx2(a,b) = [
@@ -214,14 +115,9 @@ function cx2(a,b) = [
 ];
 
 function quads(arr) = [
-        for(i=[-1:len(arr)-3])
+    for(i=[-1:len(arr)-3])
             [ for(j=[0:3]) arr[i+j] ]
     ];
-
-b=quads(cx2([1,0,0],[0,1,0]));
-
-//for(x = a){  cylPiece(x); }
-//for(x = b){  cylPiece(x); }
 
 module fx2(n,m,om=0,dia) {
     u00=[-1,0,0];
@@ -261,7 +157,7 @@ module m() {
 module basePart() {
     difference() {
         m();
-        r(W+1);
+        r(W+.4);
     }
 }
 
@@ -270,9 +166,10 @@ module lidPart() {
     r();
 }
 
-mode="preview0";
+mode="preview";
 if(mode=="preview") {
     basePart();
+    
 }
 if(mode=="base") {
     basePart();
