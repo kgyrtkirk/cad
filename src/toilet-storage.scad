@@ -1,7 +1,6 @@
 use <syms.scad>
 
-mode="def";
-render=(mode=="def") && false;
+render=false;
 
 
 eps=1e-4;
@@ -224,28 +223,60 @@ b=quads(cx2([1,0,0],[0,1,0]));
 //for(x = a){  cylPiece(x); }
 //for(x = b){  cylPiece(x); }
 
-module fx2(n,m) {
-    u0=[-1,0,0];
-    u1=[1,0,0];
-    v0=[0,0,0];
-    v1=[0,1,0];
+module fx2(n,m,om=0,dia) {
+    u00=[-1,0,0];
+    u01=[1,0,0];
+    v00=[0,0,0];
+    v01=[0,1,0];
 
+    uOff=om*(u01-u00) / (n+2);
+    vOff=om*(v01-v00) / (m+1);
+    u0=u00+uOff;
+    u1=u01-uOff;
+    v0=v00+vOff;
+    v1=v01;
+    
+    dN=(om==0)?0:1;
+    
     l=[
-        for(i=[0:n]) 
+        for(i=[dN:n-dN]) 
             quads(cx2(interpol(i/n,u0,u1)+v0,interpol(i/n,u0,u1)+v1)),
-        for(i=[0:m]) 
-            quads(cx2(interpol(i/n,v0,v1)+u0,interpol(i/n,v0,v1)+u1)),
+        for(i=[0:m-dN]) 
+            quads(cx2(interpol(i/m,v0,v1)+u0,interpol(i/m,v0,v1)+u1)),
     ];
-//        for(a = [l[0]]){ for(x = a){ cylPiece(x); }}
-        for(a = l){ for(x = a){ cylPiece(x); }}
-//    cylPiece(l[0][2]);
-        
-//        for(a = [l[3]]){ for(x = a){ supportPiece(x); }}
-        for(a = l){ for(x = a){ supportPiece(x); }}
+    for(a = l){ for(x = a){ cylPiece(x,dia); }}
 }
 
 //hull()
 
-fx2(2*N,2*N);
+//fx2(2*N,2*N);
+module r(d=W) {
+    color([0,1,0])
+    fx2(2*N-2,2*N-1,1,d);
+}
+module m() {
+    fx2(2*N,2*N,0,W);
+}
 
-echo([1,2,3]*[2,2,2]);
+module basePart() {
+    difference() {
+        m();
+        r(W+1);
+    }
+}
+
+module lidPart() {
+    rotate(-12,[1,0,0])
+    r();
+}
+
+mode="preview0";
+if(mode=="preview") {
+    basePart();
+}
+if(mode=="base") {
+    basePart();
+}
+if(mode=="lid") {
+    lidPart();
+}

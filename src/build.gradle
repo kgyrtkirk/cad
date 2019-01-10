@@ -42,7 +42,7 @@ partMap.each { inputName,modes ->
 			def inputFile=file("${inputName}.scad")
 			inputs.file inputFile
 			outputs.file oFile
-			commandLine "openscad-nightly","-D","mode=\"$mode\"","-o",oFile,inputFile
+			commandLine "openscad-nightly","-D","mode=\"$mode\"","-D","render=true","-o",oFile,inputFile
 		}
 		allScad.dependsOn(t)
 	}
