@@ -23,7 +23,7 @@ def partMap = [
 	'filament_roll_end':	['def'],
 	'nespresso-honeycomb':	['def'],
 	'toilet-hanger':	['def'],
-	'toilet-storage':	['def'],
+	'toilet-storage':	['base','lid'],
 		]
 
 def projMap = [

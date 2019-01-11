@@ -1,19 +1,25 @@
+// * do not make a 90 degree turn at the foot ; or make it not rounded at bottom
+// * raise rods in X dir
+// * probably lower overhang support angle? and print with generic support
+// * use brim?
+// * enable adaptive layers or .3
+
 use <syms.scad>
 
 render=true;
 
 
 eps=1e-4;
-$fn=render ? 16 : 4;   // line detail
+$fn=render ? 16 : 16;   // line detail
 M=50;  // object scale
 N=M/(50/8)/2;   // number of lines
-S=render ? 4*N : 4*N;   // line detail
+S=render ? 8*N : 2*N;   // line detail
 
 W=3;
 
-module mySphere() {
+module mySphere(d=W) {
     color([1,0,0])
-    sphere(d=W);
+    sphere(d=d);
 }
 
 
@@ -36,30 +42,39 @@ function g(v3) =  v3 * M;
 K=5;
 
 module foot() {
-    hull() {
-        R=K/M;
-        translate(g([-1,0,0]))
-            mySphere();
-        translate(g([-1,R,0]))
-            mySphere();
-        translate(g([1,0,0]))
-            mySphere();
-        translate(g([1,R,0]))
-            mySphere();
-    }
+    difference() {
+        translate([0,0,-W/2])
+        union() {
+            hull() {
+                R=K/M;
+                translate(g([-1,0,0]))
+                    mySphere(2*W);
+                translate(g([-1,R,0]))
+                    mySphere(2*W);
+                translate(g([1,0,0]))
+                    mySphere(2*W);
+                translate(g([1,R,0]))
+                    mySphere(2*W);
+            }
 
-    symX()
-    hull() {
-        R=K/M;
-        translate(g([-1,1,0]))
-            mySphere();
-        translate(g([-1,0,0]))
-            mySphere();
-        translate(g([-1+R,1,0]))
-            mySphere();
-        translate(g([-1+R,0,0]))
-            mySphere();
+            symX()
+            hull() {
+                R=K/M;
+                translate(g([-1,1,0]))
+                    mySphere(2*W);
+                translate(g([-1,0,0]))
+                    mySphere(2*W);
+                translate(g([-1+R,1,0]))
+                    mySphere(2*W);
+                translate(g([-1+R,0,0]))
+                    mySphere(2*W);
+            }
+        }
+#        translate([0,0,-500-W/2])
+        cube(1000,center=true);
     }
+    
+    
 }
 
 function unit(v) = norm(v)>0 ? v/norm(v) : undef; 
@@ -119,21 +134,18 @@ function quads(arr) = [
             [ for(j=[0:3]) arr[i+j] ]
     ];
 
-module fx2(n,m,om=0,dia) {
-    u00=[-1,0,0];
-    u01=[1,0,0];
-    v00=[0,0,0];
-    v01=[0,1,0];
 
-    uOff=om*(u01-u00) / (n+2);
-    vOff=om*(v01-v00) / (m+1);
-    u0=u00+uOff;
-    u1=u01-uOff;
-    v0=v00+vOff;
-    v1=v01;
-    
-    dN=(om==0)?0:1;
-    
+    u0=[-1,0,0];
+    u1=[1,0,0];
+    v0=[0,0,0];
+    v1=[0,1,0];
+
+n=2*N;
+m=2*N;
+            
+            
+module fx2(om=0,dia) {
+    dN=0;
     l=[
         for(i=[dN:n-dN]) 
             quads(cx2(interpol(i/n,u0,u1)+v0,interpol(i/n,u0,u1)+v1)),
@@ -143,37 +155,73 @@ module fx2(n,m,om=0,dia) {
     for(a = l){ for(x = a){ cylPiece(x,dia); }}
 }
 
-//hull()
+module cutOut() { 
+    points=[
+        for(i=[1:n-1]) 
+            interpol(i/n,u0,u1)+interpol(-1/m,v0,v1),
+        for(i=[0:m-1]) 
+            interpol(i/n,v0,v1)+interpol(1/n,u1,u0),
+        for(i=[2:n-1]) 
+            interpol(i/n,u1,u0)+interpol(1/m,v1,v0),
+        for(i=[2:m]) 
+            interpol(i/n,v1,v0)+interpol(1/n,u0,u1),
+    //        interpol(i/n,u0,u1)+v1,
+//        for(i=[0:m-1]) 
+  //          quads(cx2(interpol(i/m,v0,v1)+u0,interpol(i/m,v0,v1)+u1)),
+    ];
+        
+        
+        p2=[for(p=points) [ g(f(p))[0],g(f(p))[1] ] ];
+         
+        linear_extrude() {
+            polygon(p2);
+        }
+        
+        if(false)
+        color([1,0,0])
+        hull() 
+        for(x=[points[0]])
+            translate(g(f(x)))
+            sphere($fn=4,d=10);
+    
+}
 
-//fx2(2*N,2*N);
-module r(d=W) {
-    color([0,1,0])
-    fx2(2*N-2,2*N-1,1,d);
-}
-module m() {
-    fx2(2*N,2*N,0,W);
-}
 
 module basePart() {
-    difference() {
-        m();
-        r(W+.4);
-    }
+    fx2(0,W);
 }
 
 module lidPart() {
-    rotate(-12,[1,0,0])
-    r();
+    color([0,1,0])
+    intersection() {
+        basePart();
+        cutOut();
+    }
 }
+
+module floorPart() {
+    difference() {
+        basePart();
+        cutOut();
+    }
+    foot();
+}
+    
+
 
 mode="preview";
 if(mode=="preview") {
-    basePart();
+    
+    floorPart();
+    translate([0,0,10])
+        lidPart();
     
 }
 if(mode=="base") {
-    basePart();
+    floorPart();
 }
 if(mode=="lid") {
+    translate([0,0,-21])
+    rotate(-13.5,[1,0,0])
     lidPart();
 }
