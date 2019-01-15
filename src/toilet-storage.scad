@@ -10,7 +10,7 @@ render=false;
 
 eps=1e-4;
 $fn=render ? 16 :4;   // line detail
-M=50;  // object scale
+M=100;  // object scale
 N=M/(50/8)/2;   // number of lines
 S=render ? 8*N : 2*N;   // line detail
 n=4*N;
@@ -154,21 +154,25 @@ module fx2(om=0,dia) {
     for(a = l){ for(x = a){ cylPiece(x,dia); }}
 }
 
+C_X=2;
+C_Y=2;
+
+
 module cutOut() { 
-    C_X=1;
-    C_Y=1;
+    C_X=2;
+    C_Y=2;
     points=[
         //Y+
-        for(i=[1:n-1]) 
+        for(i=[C_X:n-C_X]) 
             interpol(i/n,u0,u1)+interpol(-1/m,v0,v1),
         //X-
-        for(i=[1:m-1]) 
+        for(i=[0:m-C_Y]) 
             interpol(i/m,v0,v1)+interpol(C_X/n,u1,u0),
         //Y-
-        for(i=[2:n-1]) 
+        for(i=[C_X+1:n-C_X]) 
             interpol(i/n,u1,u0)+interpol(C_Y/m,v1,v0),
         //X+
-        for(i=[2:m]) 
+        for(i=[C_Y+1:m]) 
             interpol(i/m,v1,v0)+interpol(C_X/n,u0,u1),
     //        interpol(i/n,u0,u1)+v1,
 //        for(i=[0:m-1]) 
@@ -182,10 +186,11 @@ module cutOut() {
             polygon(p2);
         }
         
-        if(true)
-        color([1,0,0])
-        hull() 
-        for(x=[points[0]])
+        if(false)
+%        color([1,0,0])
+        for(p0=[points])
+//        hull() 
+        for(x=p0)
             translate(g(f(x)))
             sphere($fn=4,d=10);
     
@@ -214,7 +219,7 @@ module floorPart() {
     
 
 
-mode="preview";
+mode="lid";
 if(mode=="preview") {
     
     floorPart();
@@ -226,7 +231,21 @@ if(mode=="base") {
     floorPart();
 }
 if(mode=="lid") {
-    translate([0,0,-21])
-    rotate(-13.5,[1,0,0])
+    k0=[for(i=[0,m-C_Y]) 
+    (interpol(i/m,v0,v1)+interpol(C_X/n,u1,u0))];
+    k=[for(i=k0)  g(f(i))];
+    d=k[0]-k[1];
+    
+//    for(p=k)
+  //      translate(p)
+    //        sphere(3);
+    
+//    echo(d);
+    alpha=atan2(d[2],d[1]);
+    echo(alpha);
+
+    
+    translate(-k[1])
+    rotate(-alpha,[1,0,0])
     lidPart();
 }
