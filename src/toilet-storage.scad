@@ -154,13 +154,11 @@ module fx2(om=0,dia) {
     for(a = l){ for(x = a){ cylPiece(x,dia); }}
 }
 
-C_X=2;
+C_X=2+3;
 C_Y=2;
 
 
 module cutOut() { 
-    C_X=2;
-    C_Y=2;
     points=[
         //Y+
         for(i=[C_X:n-C_X]) 
@@ -219,7 +217,7 @@ module floorPart() {
     
 
 
-mode="lid";
+mode="base";
 if(mode=="preview") {
     
     floorPart();
