@@ -24,6 +24,8 @@ def partMap = [
 	'nespresso-honeycomb':	['def'],
 	'toilet-hanger':	['def'],
 	'toilet-storage':	['base','lid'],
+'CarriageV3__AnetA8_E3Dv6_Mount_TNS': ['def'],
+'wooden_train_trailer_car':['def'],
 		]
 
 def projMap = [

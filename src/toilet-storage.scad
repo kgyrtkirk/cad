@@ -1,4 +1,3 @@
-// * do not make a 90 degree turn at the foot ; or make it not rounded at bottom
 // * raise rods in X dir
 // * probably lower overhang support angle? and print with generic support
 // * use brim?
@@ -6,14 +5,16 @@
 
 use <syms.scad>
 
-render=true;
+render=false;
 
 
 eps=1e-4;
-$fn=render ? 16 : 16;   // line detail
+$fn=render ? 16 :4;   // line detail
 M=50;  // object scale
 N=M/(50/8)/2;   // number of lines
 S=render ? 8*N : 2*N;   // line detail
+n=4*N;
+m=2*N;
 
 W=3;
 
@@ -39,7 +40,7 @@ function v3r(d) = [ cos(d), sin(d), 0 ];
 // final changes to points
 function g(v3) =  v3 * M;
 
-K=5;
+K=8-W;
 
 module foot() {
     difference() {
@@ -70,7 +71,7 @@ module foot() {
                     mySphere(2*W);
             }
         }
-#        translate([0,0,-500-W/2])
+        translate([0,0,-500-W/2])
         cube(1000,center=true);
     }
     
@@ -140,8 +141,6 @@ function quads(arr) = [
     v0=[0,0,0];
     v1=[0,1,0];
 
-n=2*N;
-m=2*N;
             
             
 module fx2(om=0,dia) {
@@ -156,15 +155,21 @@ module fx2(om=0,dia) {
 }
 
 module cutOut() { 
+    C_X=1;
+    C_Y=1;
     points=[
+        //Y+
         for(i=[1:n-1]) 
             interpol(i/n,u0,u1)+interpol(-1/m,v0,v1),
-        for(i=[0:m-1]) 
-            interpol(i/n,v0,v1)+interpol(1/n,u1,u0),
+        //X-
+        for(i=[1:m-1]) 
+            interpol(i/m,v0,v1)+interpol(C_X/n,u1,u0),
+        //Y-
         for(i=[2:n-1]) 
-            interpol(i/n,u1,u0)+interpol(1/m,v1,v0),
+            interpol(i/n,u1,u0)+interpol(C_Y/m,v1,v0),
+        //X+
         for(i=[2:m]) 
-            interpol(i/n,v1,v0)+interpol(1/n,u0,u1),
+            interpol(i/m,v1,v0)+interpol(C_X/n,u0,u1),
     //        interpol(i/n,u0,u1)+v1,
 //        for(i=[0:m-1]) 
   //          quads(cx2(interpol(i/m,v0,v1)+u0,interpol(i/m,v0,v1)+u1)),
@@ -173,11 +178,11 @@ module cutOut() {
         
         p2=[for(p=points) [ g(f(p))[0],g(f(p))[1] ] ];
          
-        linear_extrude() {
+        linear_extrude(200) {
             polygon(p2);
         }
         
-        if(false)
+        if(true)
         color([1,0,0])
         hull() 
         for(x=[points[0]])
