@@ -5,14 +5,14 @@
 
 use <syms.scad>
 
-render=false;
+render1=false;//render;
 
 
 eps=1e-4;
-$fn=render ? 16 :4;   // line detail
+$fn=render1 ? 16 :4;   // line detail
 M=100;  // object scale
 N=M/(50/8)/2;   // number of lines
-S=render ? 8*N : 2*N;   // line detail
+S=render1 ? 8*N : 2*N;   // line detail
 n=4*N;
 m=2*N;
 
@@ -145,6 +145,11 @@ function quads(arr) = [
             
 module fx2(om=0,dia) {
     dN=0;
+    
+//        for(i=[1:1]) 
+  //          quads(cx2(interpol(i/4/n,u0,u1)+v0,interpol(i/4/n,u0,u1)+v1)),
+    
+    
     l=[
         for(i=[dN:n-dN]) 
             quads(cx2(interpol(i/n,u0,u1)+v0,interpol(i/n,u0,u1)+v1)),
@@ -227,6 +232,9 @@ if(mode=="preview") {
 }
 if(mode=="base") {
     floorPart();
+}
+if(mode=="full") {
+    basePart();
 }
 if(mode=="lid") {
     k0=[for(i=[0,m-C_Y]) 
