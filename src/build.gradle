@@ -21,7 +21,7 @@ def partMap = [
 	'matchbox_container':	['print','door'],
 	'magnastix-blocks':	['p4','p3','p6'],
 	'filament_roll_end':	['def'],
-	'nespresso-honeycomb':	['def'],
+	'nespresso-honeycomb':	['y1','y2','c1','c2'],
 	'toilet-hanger':	['def'],
 	'toilet-storage':	['base','lid','full'],
 'CarriageV3__AnetA8_E3Dv6_Mount_TNS': ['def'],

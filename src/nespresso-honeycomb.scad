@@ -41,7 +41,7 @@ mag_wall = 0.6; // mm, magnet backing wall minimum size
 abit = 0.001; //use for making overlap to get single manifold stl
 alot = 150;
 
-$fn = 200;
+$fn = 60;
 
 Di = di * (2/sqrt(3)); // mm, circumdiameter of inner side of honeycomb
 
@@ -63,6 +63,7 @@ y_max = floor(y/2);
 // each pod cell
 module cell() {
             DD=(di + cell_wall)*2/sqrt(3);
+    difference() {
     union() {
         difference() {
             cylinder(d = DD, h = total_body_depth, $fn = 6);
@@ -109,10 +110,19 @@ module cell() {
             cube([dm/2, abit, lip_depth+lip_angle_offset], center=true);
         }
     }
+%        for(a=[30:60:360-1]) {
+            rotate(a,[0,0,1]){
+                translate([DD*sqrt(3)/2/2,0,0]) {
+                    cube([cell_wall+abit,10,4*lip_depth+abit],center=true);
+                    cube([cell_wall/2-abit,10,2*lip_depth+abit],center=true);
+                }
+            }
+        }
+    }
 }
 
 // main body
-//if(false)
+if(false)
 union() {
     for(i = [x_min:x_max]){
         for(j=[ for (jj=[y_min:y_max]) jj+(0.5 * abs(i%2))]){
@@ -134,3 +144,53 @@ union() {
 
 
 //cube([220,220,1],center=true);
+
+//echo (dm);
+
+
+mode="i1";
+
+module part(g) {
+    union() {
+    for(y=[0:len(g)-1]){
+        r=g[y];
+        for(x=[0:len(r)-1]){
+//            translate([x*sqrt(3)/2,(x/2+y)*sqrt(3)/2,0]*dm)
+            if(r[x]==1) {
+//                o=(x%2)==0 ? 0 : .5;
+                o=x/2;
+                translate([x*sqrt(3)/2,o-y,0]*dm)
+                cell();
+            }
+        }
+    }
+}
+}
+
+if(mode=="preview") {
+
+part([
+    [1,1,1,1,1,1],
+    [1],
+    [0,1],
+    [1,0,1,1,1],
+    [0,1,1],
+    [0,1,1],
+    ]);
+}
+if(mode=="i1"){
+    part([[1]]);
+}
+if(mode=="y1"){
+    part([[0,0,1],[0,1,1],[0,0,0,1]]);
+}
+if(mode=="y2"){
+    part([[0,1],[0,0,1,1],[0,0,1,0]]);
+}
+if(mode=="c1"){
+    part([[1,1],[0,1]]);
+}
+if(mode=="c2"){
+    part([[0,1],[0,1,1]]);
+}
+
