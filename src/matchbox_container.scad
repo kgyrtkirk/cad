@@ -160,47 +160,16 @@ module trailerMountPattern() {
     D_HOLE=3;
     W=1.2;
     
-    L=106.5 - W;
-//    L=105.1 + W;
-    K=34.6 - W;
-    
-    module cX(D,L) {
-        TOLERANCE=-.5;
-        OFF=D>0?D+L:0;
-        symY([0,OFF/2,0]){
-            cube([K+10*W,L+TOLERANCE,20],center=true);
-        }
-    }
-    
     translate([0,DIM[2]+.005*W,0]/2) {
         OO=( (50.9+W/2-39) - (14.6-W/2+D_HOLE/2))/2;
-        difference()  {
-            cube([K+W,L+W,CUT_L],center=true);
-            //main cut
-            cube([K-W,L-W,20],center=true);
-
-            translate([0,-OO,0]) {
-                
-                cX(0,7.3);
-                cX(23.6,3.4);
-                cX(54.2,7.5);
-                cX(85.6,3);
-            }
-            
-        }
-        echo("OO",OO);
-        translate([0,-OO,-1.1]) {
+        translate([0,-OO,-CUT_L/2]) {
             MAGNET_D=1.95;
             $fn=16;
             cylinder(h=CUT_L,d=MAGNET_D,center=false);
             symY([0,39,0])
             cylinder(h=CUT_L,d=MAGNET_D,center=false);
         }
-        // hook crap
-        symX([(K/2-(5.1-W)),-L/2+2,0])
-        cube([W,4,CUT_L],center=true);
     }
-    
 }
 
 
