@@ -26,6 +26,7 @@ def partMap = [
 	'toilet-storage':	['base','lid','full'],
 'CarriageV3__AnetA8_E3Dv6_Mount_TNS': ['def'],
 'wooden_train_trailer_car':['def'],
+	'smadapt':	['def'],
 		]
 
 def projMap = [

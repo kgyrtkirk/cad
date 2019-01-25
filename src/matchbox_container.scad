@@ -190,7 +190,7 @@ module trailerMountPattern() {
         }
         echo("OO",OO);
         translate([0,-OO,-1.1]) {
-            MAGNET_D=1.9;
+            MAGNET_D=1.95;
             $fn=16;
             cylinder(h=CUT_L,d=MAGNET_D,center=false);
             symY([0,39,0])
