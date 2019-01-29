@@ -2,7 +2,7 @@ $fn=32;
 
 H2=23.8;
 H1=19.0;
-W=35.6;
+W=35.6 ;
 PORT_SIZE=18;
 A=0.3;
 E=0.3;
@@ -36,6 +36,20 @@ module base() {
         }
         rotate(45,[0,1,0])
         cube(pyth(W,H2)-(H2-H1)-6,center=true);
+        
+        
+        
+        translate([0,D3/2,0])  
+       rotate(90,[0,1,0]) 
+        cylinder($fn=4,h=100,d=pyth(H2,W)/sqrt(2)+.8,center=true);
+        translate([0,D3/2,0])  {
+            union() {
+                for(a=[0:180:180])
+            rotate(90+a,[1,0,0])
+            rotate(360/8/2)
+            cylinder($fn=8,h=D3,d1=pyth(W,H2),d2=20);
+            }
+        }
     }
 
 }
@@ -118,17 +132,17 @@ if(mode=="tube") {
         D=(PORT_SIZE-2);
         rotate(30)
         difference() {
-            K=3;
+            K=4;
             cylinder(d=D,center=true,h=D3+1);
             for(a=[0:120:360])
                 rotate(a)
-            translate([R1,0,D3/2-K/2])
+            translate([0,0,D3/2-K/2])
             rotate(45,[1,0,0])
                 cube([D/2,K,K]);
             
             difference() {
-                cylinder(r=R2,center=true,h=D3+1);
-                cylinder(r=R1,center=true,h=D3+1);
+                cylinder(r2=R1,r1=R2,center=true,h=D3+1);
+//                cylinder(r=R1,center=true,h=D3+1);
             }
 
         }
