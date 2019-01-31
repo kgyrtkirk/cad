@@ -24,8 +24,8 @@ def partMap = [
 	'nespresso-honeycomb':	['y1','y2','c1','c2'],
 	'toilet-hanger':	['def'],
 	'toilet-storage':	['base','lid','full'],
-'CarriageV3__AnetA8_E3Dv6_Mount_TNS': ['def'],
-'wooden_train_trailer_car':['def'],
+	'CarriageV3__AnetA8_E3Dv6_Mount_TNS': ['def'],
+	'wooden_train_trailer_car':['def'],
 	'smadapt':	['def'],
 	'playdoh_tanka_extrusion_shapes':	['b0','rot3','spagetti','predator','lines','star','tube']
 		]
