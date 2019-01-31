@@ -89,10 +89,11 @@ module mod0() {
 function const3(val)=[val,val,val];
 
 module holderPart0() {
+    H_ADJ=W;
     difference() {
         union() {
-            translate([0,0,PHONE[2]/2+W/2])
-            roundedBlock(PHONE+[0,0,W/4]);
+            translate([0,0,PHONE[2]/2+W/2+H_ADJ])
+            roundedBlock(PHONE+[-W*4,-W*4,2*W]);
 //            cube(PHONE,center=true);
             translate([0,W,0])
             cube(SLOT+[2*W,0,2*W],center=true);
@@ -105,8 +106,10 @@ module holderPart0() {
             cube(SLOT-[W,W,0],center=true);
         }
         
-            translate([0,0,PHONE[2]/2+W+W])
+            translate([0,0,PHONE[2]/2+W+H_ADJ])
             roundedBlock(PHONE-[PHONE[2],PHONE[2],-.1]);
+            translate([0,0,PHONE[2]/2+W+W+W+W+W+H_ADJ])
+            roundedBlock(PHONE-[PHONE[2],PHONE[2],0]*2);
     }
 }
 
@@ -116,17 +119,9 @@ module holderPart() {
                     hull() {
                         $fn=16;
                         translate(X0Y0) 
-                        hull() {
-                            cube(10,center=true);
-                            translate([0,0,PHONE[2]])
-                            cube(10,center=true);
-                        }
+                        cylinder(d=10,h=35,center=true);
                         translate(C0) 
-                        hull() {
-                            cube(5,center=true);
-                            translate([0,0,PHONE[2]])
-                            cube(5,center=true);
-                        }
+                        cylinder(d=5,h=35,center=true);
                     }
     }
 
@@ -137,11 +132,11 @@ module holderPart() {
             symX([0,0,0]) {
                 C0=[0,SLOT[1]/2,0];
                 X0Y0=[PHONE[0]/2,-PHONE[1]/2,0];
-                X1Y0=[PHONE[0]/2/3,-PHONE[1]/2,0];
+                X1Y0=[PHONE[0]/2*3/4,-PHONE[1]/2,0];
                 X0Y1=[PHONE[0]/2,-PHONE[1]/4,0];
                 X0Y2=[PHONE[0]/2,PHONE[1]/2/2,0];
-                d1(X0Y0,C0);
-//                d1(X1Y0,C0);
+//                d1(X0Y0,C0);
+                d1(X1Y0,C0);
 //                d1(X0Y1,C0);
                 d1(X0Y2,C0);
             }
