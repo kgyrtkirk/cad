@@ -1,5 +1,7 @@
 include <syms.scad>
 
+render=false;
+$fn=render ? 64 : 16;
 
 W=1.6;
 
@@ -11,7 +13,7 @@ H_S_D=H_C_D; // unmeasured?
 
 H_SPACE=15;
 V_SPACE=20;
-DEPTH=12;    // max: 32?
+DEPTH=15;    // max: 32?
 
 SPHERE_D=100;
 
@@ -74,27 +76,30 @@ module h1(e=0,f=0) {
 
 
 
-module mod0() {
-    cube(SLOT,center=true);
+module mod0(multipart=true) {
+    if(multipart) {
+        cube(SLOT,center=true);
+    }
     r=SPHERE_D/2;
     SPHERE_Z=DEPTH+sqrt(r*r-Y2*Y2);
     difference() {
-        h1(W*2,0);
+        h1(W*4,0);
         h1(0,1);
-        translate([0,0,-SPHERE_Z])
-        sphere($fn=64,d=SPHERE_D);
+//        translate([0,0,-SPHERE_Z])
+  //      sphere($fn=64,d=SPHERE_D);
     }
 }
 
 function const3(val)=[val,val,val];
 
-module holderPart0() {
+module holderPart0(multipart=true) {
     H_ADJ=W;
     difference() {
         union() {
             translate([0,0,PHONE[2]/2+W/2+H_ADJ])
             roundedBlock(PHONE+[-W*4,-W*4,2*W]);
 //            cube(PHONE,center=true);
+            if(multipart)
             translate([0,W,0])
             cube(SLOT+[2*W,0,2*W],center=true);
         }
@@ -114,7 +119,7 @@ module holderPart0() {
 }
 
 
-module holderPart() {
+module holderPart(multipart=true) {
     module d1(X0Y0,C0) {
                     hull() {
                         $fn=16;
@@ -126,7 +131,14 @@ module holderPart() {
     }
 
     intersection() {
-        holderPart0();
+        union() {
+            holderPart0(multipart);
+            if(!multipart) {
+                translate([0,0,W+SP])
+                mod0();
+            }
+        }
+        
         union() {
         translate([0,0,SLOT[2]])
             symX([0,0,0]) {
@@ -144,15 +156,19 @@ module holderPart() {
     }
 }
 
-mode="preview";
+mode="allinone";
 
 if(mode == "preview" ){
     holderPart();
     translate([0,0,-10])
-//    rotate(180,[1,0,0])
     mod0();
 }
 if(mode == "ventPart" ){
     rotate(90,[0,1,0])
     mod0();
+}
+
+
+if(mode == "allinone" ){
+    holderPart(false);
 }

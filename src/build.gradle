@@ -10,7 +10,7 @@ def partMap = [
 	'vl53l0x-servo':	['fullMount'],
 	'petrol_station':	['road','pump','roadPart'],
 	'mini_c270_mod':	['foot','middle','cameraHolder'],
-	'fiesta_2003_vent_mount':	['ventPart'],
+	'fiesta_2003_vent_mount':	['ventPart','allinone'],
 	'shower_booth_handle':	['handleA','handleB','handleT'],
 	'esp-gen-1-b':		['top', 'bottom'],
 	'calib':		['push_in','circles','islands'],
