@@ -25,7 +25,7 @@ SP=.2;
 SP3=[SP,SP,SP];
 SLOT=[X*2+2*W,Y2*2+2*W,W];
 
-PHONE=[76,151,8.6];
+PHONE=[76,151,8.6]+ [1,1,1];
 
 
 module roundedBlock(dim=[10,10,2],zPos=0) {
@@ -83,7 +83,13 @@ module mod0(multipart=true) {
     r=SPHERE_D/2;
     SPHERE_Z=DEPTH+sqrt(r*r-Y2*Y2);
     difference() {
-        h1(W*4,0);
+        union() {
+            h1(W*4,0);
+            symX([X-W,0,-DEPTH/2])
+            cube([2*W,Y2*2,DEPTH],center=true);
+//            symY([0,Y/2,-DEPTH])
+  //          cylinder(d1=H_SPACE,d2=2*Y2,h=DEPTH);
+        }
         h1(0,1);
 //        translate([0,0,-SPHERE_Z])
   //      sphere($fn=64,d=SPHERE_D);
@@ -126,7 +132,7 @@ module holderPart(multipart=true) {
                         translate(X0Y0) 
                         cylinder(d=10,h=35,center=true);
                         translate(C0) 
-                        cylinder(d=5,h=35,center=true);
+                        cylinder(d=10,h=35,center=true);
                     }
     }
 
@@ -135,18 +141,18 @@ module holderPart(multipart=true) {
             holderPart0(multipart);
             if(!multipart) {
                 translate([0,0,W+SP])
-                mod0();
+                mod0(multipart);
             }
         }
         
         union() {
         translate([0,0,SLOT[2]])
             symX([0,0,0]) {
-                C0=[0,SLOT[1]/2,0];
+                C0=[0,SLOT[1]*.4,0];
                 X0Y0=[PHONE[0]/2,-PHONE[1]/2,0];
                 X1Y0=[PHONE[0]/2*3/4,-PHONE[1]/2,0];
                 X0Y1=[PHONE[0]/2,-PHONE[1]/4,0];
-                X0Y2=[PHONE[0]/2,PHONE[1]/2/2,0];
+                X0Y2=[PHONE[0]/2,PHONE[1]/2/2*0,0];
 //                d1(X0Y0,C0);
                 d1(X1Y0,C0);
 //                d1(X0Y1,C0);
