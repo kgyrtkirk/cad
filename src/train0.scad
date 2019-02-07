@@ -5,6 +5,8 @@ RAIL_DEPTH=3;
 SP=1;
 W=1.6;
 
+WHEEL_DIST=(20.5+31)/2;
+
 
 
 L=80;
@@ -16,14 +18,29 @@ WHEEL_H=W;
 SCREW_L=6;
 NUT_H=1;
 eps=1e-4;
-SIDE_W=20;
+SIDE_W=WHEEL_DIST-WHEEL_H-SPACER_H*2;
 CARRIAGE_H=WHEEL_R;
 
 $fn=32;
 module wheel() {
-    difference() {
-        cylinder(r=WHEEL_R, h=WHEEL_H,center=true);
-        cylinder(r=AXIS_R,h=100,center=true);
+    H1=W/4;
+    H2=W/2;
+    E=.3;
+    DECOR_R=WHEEL_R-RAIL_DEPTH-W;
+    rotate_extrude($fn=64) {
+        polygon([    
+            [ROD_R,-H2],
+            [ROD_R,H1],
+            [ROD_R*2,H1],
+            [ROD_R*2,H2],
+            [WHEEL_R,H2],
+            [WHEEL_R,H1],
+            [WHEEL_R-E,H1],
+            [WHEEL_R-E,-H1],
+            [WHEEL_R,-H1],
+            [WHEEL_R,-H2],
+
+            ]);
     }
 }
 
@@ -102,6 +119,7 @@ module body() {
         translate([0,0,CARRIAGE_H-W])
         cube([SIDE_W,2*W,2*W],center=true);
        //        roundedBlock([SIDE_W,SIDE_W/2,W],center=true);
+        if(false)
         symX([AXIS_L/2,0,0])  {
             cylinder(d=CARRIAGE_H);
             cylinder(d=W);
@@ -125,9 +143,8 @@ module body() {
 }
 
 
-mode="preview";
+mode="body";
 if(mode=="preview") {
-    
     body();
     symX([AXIS_L/2,0,0])
     symY([0,-SIDE_W/2-WHEEL_H/2-SPACER_H,0])
@@ -143,4 +160,10 @@ if(mode=="wp") {
 
 if(mode=="attach"){
     attachment();
+}
+
+if(mode=="body"){
+    $fn=64;
+    rotate(180,[1,0,0])
+    body();
 }
