@@ -1,19 +1,23 @@
 use <syms.scad>;
 
+ROD_R=3.2/2;
+RAIL_DEPTH=3;
+SP=1;
+W=1.6;
+
+
+
 L=80;
 AXIS_L=L*3/4;
-TRACK_IN=2;
-W=1.6;
-SP=1;
 SPACER_H=.5;
 AXIS_R=3.2/2;
-WHEEL_R=TRACK_IN+SP+W+AXIS_R;
+WHEEL_R=RAIL_DEPTH+SP+W+AXIS_R;
 WHEEL_H=W;
 SCREW_L=6;
 NUT_H=1;
 eps=1e-4;
 SIDE_W=20;
-CARRIAGE_H=WHEEL_R+SP;
+CARRIAGE_H=WHEEL_R;
 
 $fn=32;
 module wheel() {
@@ -94,7 +98,7 @@ module body() {
         symX([AXIS_L/2,0,0])
         wheelPlatform();
         translate([0,0,CARRIAGE_H])
-        roundedBlock([L/2,SIDE_W/2,W],center=true);
+        cube([L/2,SIDE_W/2,W/2]*2,center=true);
         translate([0,0,CARRIAGE_H-W])
         cube([SIDE_W,2*W,2*W],center=true);
        //        roundedBlock([SIDE_W,SIDE_W/2,W],center=true);
@@ -121,7 +125,7 @@ module body() {
 }
 
 
-mode="attach";
+mode="preview";
 if(mode=="preview") {
     
     body();
