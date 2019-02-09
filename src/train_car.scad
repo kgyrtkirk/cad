@@ -1,6 +1,5 @@
 use <syms.scad>;
 
-ROD_R=3.2/2;
 RAIL_DEPTH=3;
 SP=1;
 W=1.6;
@@ -11,20 +10,22 @@ WHEEL_DIST=(20.5+31)/2;
 
 L=80;
 AXIS_L=L*3/4;
-SPACER_H=.5;
-AXIS_R=3.2/2;
+SPACER_H=.8;    // screw spacer
+AXIS_R=3.3/2;
 WHEEL_R=RAIL_DEPTH+SP+W+AXIS_R;
-WHEEL_H=W;
-SCREW_L=6;
-NUT_H=1;
+WHEEL_H=3;
+SCREW_L=12; // 12/8
+NUT_H=3;
 eps=1e-4;
-SIDE_W=WHEEL_DIST-WHEEL_H-SPACER_H*2;
+SIDE_W=WHEEL_DIST-WHEEL_H-2*SPACER_H;
 CARRIAGE_H=WHEEL_R;
+AXIS_LOST_LENGTH=2.1-1.4;
 
 $fn=32;
 module wheel() {
-    H1=W/4;
-    H2=W/2;
+    ROD_R=AXIS_R+.1;
+    H1=WHEEL_H/4;
+    H2=WHEEL_H/2;
     E=.3;
     DECOR_R=WHEEL_R-RAIL_DEPTH-W;
     rotate_extrude($fn=64) {
@@ -47,30 +48,35 @@ module wheel() {
 //wheel();
 
 module wheelPlatform() {
-    SCREW_STOP=(SIDE_W/2+SPACER_H+WHEEL_H)-SCREW_L;
+    SCREW_STOP=(SIDE_W/2+SPACER_H+WHEEL_H*5/8+AXIS_LOST_LENGTH)-SCREW_L;
     echo(SCREW_STOP);
     module side() {
         hull() {
             rotate(90,[1,0,0])
-            cylinder(r=AXIS_R,h=SIDE_W,center=true);
+            cylinder(r=AXIS_R+W,h=SIDE_W,center=true);
             translate([0,0,CARRIAGE_H])
-                cube([15,SIDE_W,eps],center=true);
+                cube([20,SIDE_W,eps],center=true);
         }
         rotate(90,[1,0,0])
         cylinder(r=AXIS_R+W,h=SIDE_W,center=true);
     }
     
     module cutoutPattern() {
+        D_NUT=5.5/cos(30);
+        echo("DN",D_NUT);
         translate([0,-SCREW_STOP,0])
-        rotate(90,[1,0,0])
-        cylinder(r=AXIS_R,h=100);
-        NUT_Y=( SIDE_W/2+SCREW_STOP)/2;
+        rotate(90,[1,0,0]) {
+            cylinder(r=AXIS_R,h=100);
+            translate([0,0,-AXIS_R])
+            cylinder(r1=0,r2=AXIS_R,h=AXIS_R);
+        }
+        NUT_Y=SIDE_W/4;
         hull()
         for(z=[0,-10])
         translate([0,-NUT_Y,z])
         rotate(90,[1,0,0])
         rotate(90)
-        cylinder($fn=6,d=5.5,h=NUT_H);
+        cylinder($fn=6,d=D_NUT,h=NUT_H);
     }
     
 //    translate([0,SIDE_W/2,0])
@@ -82,16 +88,16 @@ module wheelPlatform() {
     
 }
 
-module attachment() {
+module attachment(cutout=false) {
     AW=W/2;
-    MAGNET_D=6;
-    MAGNET_H=2;
+    MAGNET_D=cutout?5*AW:6;
+    MAGNET_H=2.8;
 
     D1=MAGNET_D;
     H1=MAGNET_H;
     D2=MAGNET_D+2*AW;
     H2=MAGNET_H+2*AW;
-    D3=3;
+    D3=cutout?4:3;
     H3=20;
 
     translate([0,0,-H2/2])
@@ -99,7 +105,13 @@ module attachment() {
         cylinder(d=D2,h=H2,center=true);
         cylinder(d=D1,h=H1,center=true);
     }
-    cylinder(d1=D3,d2=D3,h=H3);
+    difference() {
+        cylinder(d1=D3,d2=D3,h=H3);
+        for(h=[H3-2*W,H3-4*W])
+        translate([0,0,h])
+        rotate(90,[1,0,0])
+        cylinder(d=1,h=H3,center=true);
+    }
 }
 
 module roundedBlock(dim=[10,10,2],zPos=0) {
@@ -129,11 +141,11 @@ module body() {
     
     difference() {
         posPart();
-        symX([-L/2,0,CARRIAGE_H-W-W-W])
+        symX([-L/2,0,CARRIAGE_H-W-W-W/2])
         rotate(85,[0,1,0])
         hull()
         symY([0,W,0])
-        attachment();
+        attachment(true);
         
         symX([SIDE_W/4,0,CARRIAGE_H-W])
         rotate(90,[1,0,0])
@@ -143,9 +155,13 @@ module body() {
 }
 
 
-mode="body";
+mode="preview";
 if(mode=="preview") {
-    body();
+    difference() {
+        body();
+        translate([AXIS_L/2,0,0])
+        cube(20);
+    }
     symX([AXIS_L/2,0,0])
     symY([0,-SIDE_W/2-WHEEL_H/2-SPACER_H,0])
     rotate(90,[1,0,0])
@@ -164,6 +180,21 @@ if(mode=="attach"){
 
 if(mode=="body"){
     $fn=64;
-    rotate(180,[1,0,0])
+    rotate(90,[1,0,0])
     body();
+}
+
+
+if(mode=="wheel"){
+    wheel();
+}
+
+if(mode=="bodyp"){
+    $fn=64;
+    intersection() {
+        rotate(90,[1,0,0])
+        body();
+        translate([L/2,0,0])
+        cube(L/2,center=true);
+    }
 }
