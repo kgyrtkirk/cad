@@ -27,7 +27,7 @@ def partMap = [
 	'CarriageV3__AnetA8_E3Dv6_Mount_TNS': ['def'],
 	'wooden_train_trailer_car':['def'],
 	'smadapt':	['def'],
-	'train_car':		['body','attach','wheel','bodyp'],
+	'train_car':		['body','attach','wheel','bodyp','spacer'],
 	'playdoh_tanka_extrusion_shapes':	['b0','rot3','spagetti','predator','lines','star','tube']
 		]
 

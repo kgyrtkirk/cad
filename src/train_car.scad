@@ -9,7 +9,9 @@ WHEEL_DIST=(20.5+31)/2;
 
 
 L=80;
-AXIS_L=L*3/4;
+WHEEL_PLATFORM_FOUNDATION_L=20;
+MAGNET_SPACING=60;
+AXIS_L=L-WHEEL_PLATFORM_FOUNDATION_L;
 SPACER_H=.8;    // screw spacer
 AXIS_R=3.3/2;
 WHEEL_R=RAIL_DEPTH+SP+W+AXIS_R;
@@ -20,8 +22,8 @@ eps=1e-4;
 SIDE_W=WHEEL_DIST-WHEEL_H-2*SPACER_H;
 CARRIAGE_H=WHEEL_R;
 AXIS_LOST_LENGTH=2.1-1.4;
-
 $fn=32;
+
 module wheel() {
     ROD_R=AXIS_R+.1;
     H1=WHEEL_H/4;
@@ -55,7 +57,7 @@ module wheelPlatform() {
             rotate(90,[1,0,0])
             cylinder(r=AXIS_R+W,h=SIDE_W,center=true);
             translate([0,0,CARRIAGE_H])
-                cube([20,SIDE_W,eps],center=true);
+                cube([WHEEL_PLATFORM_FOUNDATION_L,SIDE_W,eps],center=true);
         }
         rotate(90,[1,0,0])
         cylinder(r=AXIS_R+W,h=SIDE_W,center=true);
@@ -128,8 +130,8 @@ module body() {
         wheelPlatform();
         translate([0,0,CARRIAGE_H])
         cube([L/2,SIDE_W/2,W/2]*2,center=true);
-        translate([0,0,CARRIAGE_H-W])
-        cube([SIDE_W,2*W,2*W],center=true);
+//        translate([0,0,CARRIAGE_H-W])
+  //      cube([SIDE_W,2*W,2*W],center=true);
        //        roundedBlock([SIDE_W,SIDE_W/2,W],center=true);
         if(false)
         symX([AXIS_L/2,0,0])  {
@@ -140,16 +142,25 @@ module body() {
     }
     
     difference() {
-        posPart();
+        intersection() {
+            posPart();
+            RR=W*4;
+            hull()
+            symY([0,SIDE_W/2-RR,0])
+            symX([L/2-RR,0,0])
+                cylinder($fn=128,r=RR,h=50,center=true);
+        }
+        
         symX([-L/2,0,CARRIAGE_H-W-W-W/2])
         rotate(85,[0,1,0])
         hull()
         symY([0,W,0])
         attachment(true);
         
-        symX([SIDE_W/4,0,CARRIAGE_H-W])
-        rotate(90,[1,0,0])
-        cylinder(d=1,h=10,center=true);
+        // cut out magnet
+/*        symX([MAGNET_SPACING/2,0,0])
+            cylinder(d=2,h=10);
+*/
     }
     
 }
@@ -198,3 +209,12 @@ if(mode=="bodyp"){
         cube(L/2,center=true);
     }
 }
+
+if(mode=="spacer"){
+    $fn=64;
+    difference() {
+        cylinder(r=AXIS_R+2*W,h=SPACER_H/2,center=true);
+        cylinder(r=AXIS_R+.2,h=10,center=true);
+    }
+}
+
