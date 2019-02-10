@@ -1,5 +1,16 @@
 use <syms.scad>;
 
+/*
+
+before v1:
+ * decide distance /places of magnets
+ * add small grooves between wheel/body
+ * reduce lost to 0?
+
+
+
+*/
+
 RAIL_DEPTH=3;
 SP=1;
 W=1.6;
@@ -79,6 +90,12 @@ module wheelPlatform() {
         rotate(90,[1,0,0])
         rotate(90)
         cylinder($fn=6,d=D_NUT,h=NUT_H);
+        
+        // attachment anchor point
+        translate([-2,0,5])
+        rotate(45)
+        rotate(-90,[0,1,0])
+        cylinder(d=1,h=30,center=false);
     }
     
 //    translate([0,SIDE_W/2,0])
@@ -152,7 +169,7 @@ module body() {
         }
         
         symX([-L/2,0,CARRIAGE_H-W-W-W/2])
-        rotate(85,[0,1,0])
+        rotate(86.6,[0,1,0])
         hull()
         symY([0,W,0])
         attachment(true);
@@ -166,7 +183,7 @@ module body() {
 }
 
 
-mode="preview";
+mode="bodyp";
 if(mode=="preview") {
     difference() {
         body();
@@ -191,7 +208,7 @@ if(mode=="attach"){
 
 if(mode=="body"){
     $fn=64;
-    rotate(90,[1,0,0])
+    rotate(180,[1,0,0])
     body();
 }
 
@@ -203,7 +220,7 @@ if(mode=="wheel"){
 if(mode=="bodyp"){
     $fn=64;
     intersection() {
-        rotate(90,[1,0,0])
+        rotate(180,[1,0,0])
         body();
         translate([L/2,0,0])
         cube(L/2,center=true);
