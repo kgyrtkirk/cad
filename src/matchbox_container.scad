@@ -9,6 +9,7 @@ eps=1e-4;
 
 DIM=[ 40, 40, 110 ];
 OVERHANG_ANGLE=60;
+MAGNET_D=1.95;
 
 HINGE_K=10;             // diff between hinge center and y center
 HINGE_D0=1.2;             // hinge axis diameter
@@ -163,7 +164,6 @@ module trailerMountPattern() {
     translate([0,DIM[2]+.005*W,0]/2) {
         OO=( (50.9+W/2-39) - (14.6-W/2+D_HOLE/2))/2;
         translate([0,-OO,-CUT_L/2]) {
-            MAGNET_D=1.95;
             $fn=16;
             cylinder(h=CUT_L,d=MAGNET_D,center=false);
             symY([0,39,0])
@@ -199,9 +199,9 @@ mode="preview";
 if(mode=="preview"){
     difference() {
         container();
-        X=300;
-        translate([0,0,-X/2])
-        cube(X);
+//        X=;
+        translate([0,0,-5])
+        cube(DIM+[10,10,10]);
     }
 }
 

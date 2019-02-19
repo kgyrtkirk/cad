@@ -4,7 +4,6 @@ use <syms.scad>;
 
 before v1:
  * decide distance /places of magnets
- * add small grooves between wheel/body
  * reduce lost to 0?
 
 
@@ -21,6 +20,7 @@ WHEEL_DIST=(20.5+31)/2;
 
 L=80;
 WHEEL_PLATFORM_FOUNDATION_L=20;
+CARGO_MAGNET_D=3;
 MAGNET_SPACING=40;
 AXIS_L=L-WHEEL_PLATFORM_FOUNDATION_L;
 SPACER_H=.8;    // screw spacer
@@ -200,7 +200,6 @@ module body() {
             cylinder(r=K,h=40);
         }
         
-        CARGO_MAGNET_D=2;
         // cut out magnet
         symX([MAGNET_SPACING/2,0,0]) {
             cylinder(d=CARGO_MAGNET_D,h=10);
