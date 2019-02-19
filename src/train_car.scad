@@ -150,7 +150,6 @@ module roundedBlock(dim=[10,10,2],zPos=0) {
     }
 }
 
-
 module body() {
     module posPart() {
         symX([AXIS_L/2,0,0])
@@ -202,10 +201,7 @@ module body() {
         
         // cut out magnet
         symX([MAGNET_SPACING/2,0,0]) {
-            cylinder(d=CARGO_MAGNET_D,h=10);
-            for(d=[45,-45])
-            rotate(d)
-            cube([2*CARGO_MAGNET_D,W/3,30],center=true);
+            magnetCut(CARGO_MAGNET_D,W/3);
         }
 
     }

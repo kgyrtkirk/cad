@@ -7,9 +7,10 @@ use <syms.scad>
 W=1.6;
 eps=1e-4;
 
-DIM=[ 40, 40, 110 ];
+DIM=[ 40, 40, 80 ];
 OVERHANG_ANGLE=60;
-MAGNET_D=1.95;
+MAGNET_D=3;
+MAGNET_SPACING=40;
 
 HINGE_K=10;             // diff between hinge center and y center
 HINGE_D0=1.2;             // hinge axis diameter
@@ -162,12 +163,11 @@ module trailerMountPattern() {
     W=1.2;
     
     translate([0,DIM[2]+.005*W,0]/2) {
-        OO=( (50.9+W/2-39) - (14.6-W/2+D_HOLE/2))/2;
-        translate([0,-OO,-CUT_L/2]) {
-            $fn=16;
-            cylinder(h=CUT_L,d=MAGNET_D,center=false);
-            symY([0,39,0])
-            cylinder(h=CUT_L,d=MAGNET_D,center=false);
+        translate([0,0,-CUT_L/2]) 
+        {
+            $fn=32;
+            symY([0,MAGNET_SPACING/2,0])
+            magnetCut(MAGNET_D,W/3);
         }
     }
 }

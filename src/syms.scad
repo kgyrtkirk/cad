@@ -29,3 +29,11 @@ module	symXY(t) {
 	symY([0,ty,tz])
 		children();
 }
+
+module magnetCut(D,S) {
+    cylinder(d=D,h=10);
+    for(d=[45,-45])
+    rotate(d)
+    cube([2*D,S,30],center=true);
+}
+
