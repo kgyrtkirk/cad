@@ -75,14 +75,23 @@ module platform2() {
                     cylinder($fn=16,d=PLATFORM_RAIL_H-2*W,h=W*3,center=true);
                     }
                 }
-            symX([PLATFORM_W2/2-W,PLATFORM_L2/2,0]) 
-                    rotate(90,[0,90,0])
-                    cylinder($fn=16,d=PLATFORM_RAIL_H,h=W);
             
 //            cube([W,PLATFORM_L2,PLATFORM_H2]); 
 //                translate([W/2,0,PLATFORM_H2])
   //          basePart(W,PLATFORM_L2,PLATFORM_H2*2);
+                if(false)
+            hull()
+                translate([-PLATFORM_W2/8,0,0])
+            symX([PLATFORM_W2/8-W,PLATFORM_L2/2,PLATFORM_RAIL_H/2]) 
+            rotate(90,[0,90,0])
+            cylinder($fn=16,d=PLATFORM_RAIL_H,h=W);
             }
+            hull()
+            symX([PLATFORM_W2/2-W,PLATFORM_L2,PLATFORM_RAIL_H/2]) 
+            rotate(90,[0,90,0])
+            cylinder($fn=32,d=PLATFORM_RAIL_H,h=W);
+
+
         }
         translate([0,E+CAR_L/2+W,0]) {
             cube([PLATFORM_W2-2*WHEEL_W-4*W,CAR_L,20],center=true);

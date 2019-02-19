@@ -116,15 +116,16 @@ module attachment(cutout=false) {
     if(cutout) {
 %        cylinder(d=4,h=30);
     }else {
-        AW=W/2;
+        AW=W;
+        AH=W/2;
         MAGNET_D=6;
-        MAGNET_H=2.8;
+        MAGNET_H=2.8+.2;
 
         D1=MAGNET_D;
         H1=MAGNET_H;
         D2=MAGNET_D+2*AW;
-        H2=MAGNET_H+2*AW;
-        D3=cutout?4:3;
+        H2=MAGNET_H+2*AH;
+        D3=3;
         H3=20;
 
         translate([0,0,-H2/2])
