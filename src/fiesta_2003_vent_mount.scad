@@ -4,16 +4,16 @@ render=false;
 $fn=render ? 64 : 16;
 
 W=1.6;
+EE=.1;
+V_C_D=3.9-EE; // ~3.6?
+V_S_D=3-EE;
 
-V_C_D=3.9; // ~3.6?
-V_S_D=3;
-
-H_C_D=1.8;
+H_C_D=1.8-EE;
 H_S_D=H_C_D; // unmeasured?
 
 H_SPACE=15;
 V_SPACE=20;
-DEPTH=15;    // max: 32?
+DEPTH=30;    // max: 32?
 
 SPHERE_D=100;
 
@@ -128,11 +128,12 @@ module holderPart0(multipart=true) {
 module holderPart(multipart=true) {
     module d1(X0Y0,C0) {
                     hull() {
+                        D=DEPTH*3;
                         $fn=16;
                         translate(X0Y0) 
-                        cylinder(d=10,h=35,center=true);
+                        cylinder(d=10,h=D,center=true);
                         translate(C0) 
-                        cylinder(d=10,h=35,center=true);
+                        cylinder(d=10,h=D,center=true);
                     }
     }
 

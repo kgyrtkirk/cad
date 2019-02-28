@@ -13,7 +13,7 @@ def partMap = [
 	'fiesta_2003_vent_mount':	['ventPart','allinone'],
 	'shower_booth_handle':	['handleA','handleB','handleT'],
 	'esp-gen-1-b':		['top', 'bottom'],
-	'calib':		['push_in','circles','islands'],
+	'calib':		['push_in','circles','islands','matrioska'],
 	'wheelNutDriver':	['def'],
 	'drillHolder':		['def'],
 	'puzzle_box_viktor':	['lid','base'],

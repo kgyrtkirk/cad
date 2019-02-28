@@ -1,8 +1,9 @@
-$fn=64;
+$fn=16;
 
 mode="push_in";
 mode="islands";
 mode="circles";
+mode="matrioska";
 
 if(mode=="push_in") {
     e=0.1/2;
@@ -32,4 +33,24 @@ if(mode=="islands") {
 
 if(mode=="circles") {
     ring(200,H=.6);
+}
+
+if(mode=="matrioska") {
+    
+    W1=10;
+    W2=8;
+    H1=3;
+    H2=3;
+    
+    difference() {
+        union() {
+            translate([0,0,-H1/2])
+            cube([W1,W1,H1],center=true);
+            translate([0,0,H2/2])
+            cube([W2,W2,H2],center=true);
+        }
+//        mirror([0,0,1])
+  //      cylinder(d=4,h=H1/2);
+    }
+    
 }
