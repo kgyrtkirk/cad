@@ -37,3 +37,8 @@ module magnetCut(D,S) {
     cube([2*D,S,30],center=true);
 }
 
+
+// calculates the radius from "segment" paramers:
+// https://en.wikipedia.org/wiki/Circular_segment
+function    circleSlice2radius2(c,h) = (c/2)*(c/2)/(2*h);
+

@@ -8,9 +8,9 @@ W=4;
 DRIVER_D=10;
 DRIVER_L=30;
 INC_L=5;
-FINGER_DIA=16;
+FINGER_DIA=20;
 ARM_L=50;
-ARM_W=FINGER_DIA+10;
+ARM_W=FINGER_DIA+12;
 
 
 translate([0,0,INC_L])
@@ -19,6 +19,7 @@ cylinder($fn=6,d=DRIVER_D,h=DRIVER_L);
 cylinder($fn=6,r1=R+W,h=INC_L,d2=DRIVER_D);
 translate([0,0,-INC_L/2]) {
 
+    rotate(90)
     difference() {
     hull()
     for(x=[-1,1])
