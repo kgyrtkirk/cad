@@ -32,10 +32,12 @@ def partMap = [
 	'battery_shell':	['def'],
 	'hole_adapter':		['m44','m36'],
 	'stand':		['stand'],
+	'esp-gen-3':		['top', 'bottom'],
 		]
 
 def projMap = [
 	'matchbox_container':	['floor'],
+	'esp-gen-3':		['project'],
 	]
 
 task allScad() {}
