@@ -33,6 +33,8 @@ def partMap = [
 	'hole_adapter':		['m44','m36'],
 	'stand':		['stand'],
 	'esp-gen-3':		['top', 'bottom'],
+	'box_clip':		['def'],
+	'dolce_gusto_piccolo_nonslip':	['def'],
 		]
 
 def projMap = [

@@ -40,5 +40,4 @@ module magnetCut(D,S) {
 
 // calculates the radius from "segment" paramers:
 // https://en.wikipedia.org/wiki/Circular_segment
-function    circleSlice2radius2(c,h) = (c/2)*(c/2)/(2*h);
-
+function    circleSlice2radius2(c,h) = (c*c/8/h)+ h/2;
