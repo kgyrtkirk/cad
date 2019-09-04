@@ -4,7 +4,7 @@ $fn=32;
 K=12;       //  hanger body thickness
 R=20/2;     //  cherry radius
 W=3;        //  wall sizes
-HD=3.1;     //  hanger hook wire diameter
+HD=5.5;     //  hanger hook wire diameter
 HDI=HD-.3;   // make the cutout smaller
 H=30;       //  hanger h
 // internal
@@ -32,10 +32,12 @@ module cherry() {
 module product() {
     difference() {
         union() {
-            cylinder(d=HD+W,h=5,center=true);
+            cylinder(d1=HD+2*W,d2=HD+W,h=5,center=true);
             cherry();
         }
+        
         cylinder(d=HD,h=50,center=true);
+        /*
         translate([-HDI/2,0,-50])
         cube([HDI,100,100]);
 
@@ -44,6 +46,7 @@ module product() {
         translate([0,W*2/3,0])
         rotate(90,[0,1,0])
         cylinder(d=1,h=50,center=true);
+        */
         
     }
 }

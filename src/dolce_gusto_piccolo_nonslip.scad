@@ -2,7 +2,7 @@ use <syms.scad>
 
 
 W=1.6;          // reality ~2.0
-GRID_H=18.5;    // reality ~17.5 
+GRID_H=19;    // reality ~17.5 
 //cube([100,100,1],center=true);
 
 
@@ -37,7 +37,7 @@ module cutShape() {
 }
 
 module centerGrid() {
-    DEPTH=1;
+    DEPTH=1.5;
     dist=70/12;
     cnt=6;
     BASE_Y0=2;
@@ -68,6 +68,9 @@ module centerGrid() {
     cube([(2*cnt+1)*dist,W,W],center=true);
 
     translate([0,BASE_Y1,W/2])
+    cube([(2*cnt+1)*dist,W,W],center=true);
+
+    translate([0,-33,W/2])
     cube([(2*cnt+1)*dist,W,W],center=true);
     
 }
