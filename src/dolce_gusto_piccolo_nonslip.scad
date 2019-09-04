@@ -40,11 +40,22 @@ module centerGrid() {
     DEPTH=1;
     dist=70/12;
     cnt=6;
+    BASE_Y0=2;
+    BASE_Y1=-18;
     difference() {
         // blades
         for(i=[-cnt-.5:cnt+.5]){ 
-            translate([i*dist,0,GRID_H/2])
-            cube([W,200,GRID_H],center=true);
+            
+            hull() {
+                translate([i*dist,0,0]) {
+                translate([0,-10,GRID_H-W/2])
+                cube([W,70,W],center=true);
+                translate([0,-100-BASE_Y0,W/2])
+                cube([W,W,W],center=true);
+                translate([0,100+BASE_Y1,W/2])
+                cube([W,W,W],center=true);
+                }
+            }
         }
         //top-cuts
 
@@ -53,10 +64,10 @@ module centerGrid() {
             cube([200,W,2*DEPTH],center=true);
         }
     }
-    translate([0,0,W/2])
+    translate([0,BASE_Y0,W/2])
     cube([(2*cnt+1)*dist,W,W],center=true);
 
-    translate([0,-20,W/2])
+    translate([0,BASE_Y1,W/2])
     cube([(2*cnt+1)*dist,W,W],center=true);
     
 }

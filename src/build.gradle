@@ -35,6 +35,7 @@ def partMap = [
 	'esp-gen-3':		['top', 'bottom'],
 	'box_clip':		['def'],
 	'dolce_gusto_piccolo_nonslip':	['def'],
+	'hanger_cherry':	['def','fitting'],
 		]
 
 def projMap = [
