@@ -1,6 +1,6 @@
 // fix: better hanger() it should stuck more
 
-use <../syms.scad>
+use <syms.scad>
 
 AS_U=12;        //  attachment hole size
 AS_V=3;
