@@ -37,6 +37,7 @@ def partMap = [
 	'box_clip':		['def'],
 	'dolce_gusto_piccolo_nonslip':	['def'],
 	'hanger_cherry':	['def','fitting'],
+	'rolo':			['print'],
 		]
 
 def projMap = [
