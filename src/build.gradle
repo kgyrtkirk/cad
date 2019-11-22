@@ -38,6 +38,8 @@ def partMap = [
 	'dolce_gusto_piccolo_nonslip':	['def'],
 	'hanger_cherry':	['def','fitting'],
 	'rolo':			['print'],
+	'thumbwheel':		['m3'],
+	'basket_clamp':		['def'],
 		]
 
 def projMap = [
