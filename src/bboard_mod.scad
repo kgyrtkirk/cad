@@ -59,8 +59,11 @@ module logicGate(w) {
 
 for(i=[0:3]) {
     SP=80;
-    echo(B/2-3*SP/2);
-    translate([B/2-3*SP/2+i*SP,SP,0])
+    X=B/2-3*SP/2+i*SP;
+//    X=30+40+i*SP;
+    Y=SP;
+    echo(X,Y);
+    translate([X,Y,0])
     logicGate(w=100);
 }
 //symX([30/2,0,0])

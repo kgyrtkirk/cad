@@ -11,7 +11,13 @@ difference() {
     cube([WIDTH+2*W,THICK+2*W,LEN],center=true);
     translate([0,0,1])
     cube([WIDTH,THICK,LEN],center=true);
-    cube([NECK,THICK,LEN*2],center=true);
+        translate([0,0,-LEN/2])
+   hull() {
+        cube([WIDTH-W/2,THICK+W/2,.001],center=true);
+        translate([0,0,1.1])
+        cube([WIDTH,THICK,.001],center=true);
+//        cube([NECK,THICK,LEN*2],center=true);
+    }  
     
     translate([0,0,-1.5*W])
     rotate(90)
