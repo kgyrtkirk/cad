@@ -96,12 +96,19 @@ dueHoles = [
         }
     }
 
-
-// right next to motor post
-qPoint=[STOMACH[0]/2+W/2,WHEEL_DIST_Y/2+ttMotorHoleO()-POST_W/2-W/2,-STOMACH[2]/2+W/2];
-pPositions=[ for (x=[0:3]) 
-            [ (x>=2 ? 1 : -1 ) *qPoint[0],((x==1||x==3) ? 1 : -1 ) *qPoint[1] ,qPoint[2] ]];
-
+module plateWedge(dCube=0) {
+    translate([POST_W/2-SW,ttMotorHoleO()+6,0])
+        minkowski() {
+        hull() {
+            translate([0,0,3*SW])
+            cube([SW,2*POST_W,SW]);
+            translate([-5*SW,0,-SW])
+            cube([SW,2*POST_W,SW]);
+        }
+        cube(dCube,center=true);
+    }
+}
+    
 
 module chassis() {
     /*
@@ -121,6 +128,8 @@ module chassis() {
                 cube([POST_W/2,POST_W,STOMACH[2]],center=true);
             }
             motor();
+           translate([-POST_W/2,0,-STOMACH[2]/2])
+            plateWedge(.3);
 
         translate([POST_W/2,0,MOTOR_Z_OFF]) {
 
@@ -162,11 +171,13 @@ module chassis() {
             motor_mount_post(STOMACH[2]);
     %        motor();
     }
-    for(p = pPositions) translate(p) 
+    // right next to motor post
+    q=[STOMACH[0]/2+W/2,WHEEL_DIST_Y/2+ttMotorHoleO()-POST_W/2-W/2,-STOMACH[2]/2+W/2];
+    p=[ for (x=[0:3]) [ (x>=2 ? 1 : -1 ) *q[0],((x==1||x==3) ? 1 : -1 ) *q[1] ,q[2] ]];
+    for(pp = p) translate(pp) 
         cube([W,W,W],center=true);
-    allHull(pPositions)
+    allHull(p)
         cylinder(d=W,h=W,center=true);
-    p=pPositions;
     symX([0,0,0])
     for(i=[0,1])
     allHull( [ p[i],(p[1]+p[0])/2,p[i]+[0,0,STOMACH[2]/2]])
@@ -196,30 +207,15 @@ module mounts() {
 
 
 module bottomPlate() {
+    translate([STOMACH[0]/2,WHEEL_DIST_Y/2,-STOMACH[2]/2]) {
+        plateWedge();
+    }
 //        rotate(45,[0,1,0])
 //        cube([POST_W/2,2*POST_W,POST_W],center=true);
 //    }
-    K=8;
-    L=3*W;
-    translate((pPositions[1]+pPositions[3])/2)
-    translate([0,0,-W/2+K/2])
-    translate([0,W/2+3+L/2,0])
-    difference() {
-        hull() {
-            translate([0,0,K/2])  cube([W,L,.1],center=true);
-            translate([0,0,-K/2])  cube([3*W,L,.1],center=true);
-        }
-        rotate(270,[1,0,0]) {
-            translate([0,0,-L/2-.1]) {
-                cylinder($fn=32,d=3.5,h=30);
-                cylinder($fn=32,d2=3.5,d1=5,h=2);
-            }
-        }
-    }
-    color([.6,.6,.9])
+
     translate([0,PLATE_DEPTH/4,-STOMACH[2]/2-SW/2]) {
-        cube( [PLATE_WIDTH, PLATE_DEPTH/2, SW],center=true);
-        
+    cube( [PLATE_WIDTH, PLATE_DEPTH/2, SW],center=true);
     }
 }
 
