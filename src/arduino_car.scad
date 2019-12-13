@@ -2,8 +2,15 @@
 use <syms.scad>
 use <tt-motor.scad>
 
-W=4;                  // wall
+SW=1.6;                       // small wall
+W=4;                        // wall
 STOMACH=[55+2*3,120,45];    // space available inside
+M3HOLE=3.2;
+M3NUT=6.2;
+
+POST_W=8;
+PLATE_WIDTH=STOMACH[0]+2*(ttMotorW()+POST_W);
+PLATE_DEPTH=200;
 
 WHEEL_DIST_Y=115;
     MOTOR_Z_OFF=-STOMACH[2]/2+ttMotorH()/2;
@@ -22,7 +29,7 @@ module battery_holder(mount_holes_only=false) {
     }
     $fn=16;
     symX([H_DIST/2,0,0])
-    cylinder(d=3,h=20,center=true);
+    cylinder(d=M3HOLE,h=20,center=true);
 }
 // with W wall in XYZ in mind
 function    chassisPos(p) = 
@@ -67,15 +74,14 @@ dueHoles = [
     for(x = dueHoles) {
         translate(x)
         difference() {
-            cylinder(d=6,h=H);
-            cylinder(d=3.2,h=3*H,center=true);
+            cylinder(d=M3NUT,h=H);
+            cylinder(d=M3HOLE,h=3*H,center=true);
         }
     }
     
 }
 }
 //!arduinoStand();
-POST_W=8;
     module base() {
         hull() {
             symY([0,STOMACH[1]/2,-STOMACH[2]/2])
@@ -90,6 +96,20 @@ POST_W=8;
         }
     }
 
+module plateWedge(dCube=0) {
+    translate([POST_W/2-SW,ttMotorHoleO()+6,0])
+        minkowski() {
+        hull() {
+            translate([0,0,3*SW])
+            cube([SW,2*POST_W,SW]);
+            translate([-5*SW,0,-SW])
+            cube([SW,2*POST_W,SW]);
+        }
+        cube(dCube,center=true);
+    }
+}
+    
+
 module chassis() {
     /*
     difference() {
@@ -98,6 +118,7 @@ module chassis() {
         
     }
     */
+    // actual position is the axle pos
     module motor_mount_post(h) {
         difference() {
             hull() {
@@ -107,11 +128,17 @@ module chassis() {
                 cube([POST_W/2,POST_W,STOMACH[2]],center=true);
             }
             motor();
-        translate([POST_W/2,0,MOTOR_Z_OFF])
-        rotate(90)
-            at_tt_motor_mount_holes() {
-                translate([0,0,POST_W])
-                cylinder($fn=6,d=6,h=4,center=true);
+           translate([-POST_W/2,0,-STOMACH[2]/2])
+            plateWedge(.3);
+
+        translate([POST_W/2,0,MOTOR_Z_OFF]) {
+
+            rotate(90)
+                at_tt_motor_mount_holes() {
+                    translate([0,0,POST_W])
+                    cylinder($fn=6,d=M3NUT,h=4,center=true);
+                    cylinder($fn=32,d=M3HOLE,h=40,center=true);
+                }
             }
         }
     }
@@ -121,6 +148,12 @@ module chassis() {
         tt_motor_scad();
     }
     
+    module atMotorPoints() {
+        symY([0,WHEEL_DIST_Y/2,0]) 
+            symX([STOMACH[0]/2+POST_W/2,0,0])
+                children();
+    }
+
     module     allHull(p) {
         for(i = [0:len(p)-2]) {
         for(j = [i+1:len(p)-1]) {
@@ -134,11 +167,9 @@ module chassis() {
     }
 
     
-    symX([STOMACH[0]/2+POST_W/2,0,0]) {
-        symY([0,WHEEL_DIST_Y/2,0]) {
+    atMotorPoints() {
             motor_mount_post(STOMACH[2]);
     %        motor();
-        }
     }
     // right next to motor post
     q=[STOMACH[0]/2+W/2,WHEEL_DIST_Y/2+ttMotorHoleO()-POST_W/2-W/2,-STOMACH[2]/2+W/2];
@@ -174,9 +205,30 @@ module mounts() {
 }
 
 
-//tt_motor_scad();
-mode="motor_mount";
 
+module bottomPlate() {
+    translate([STOMACH[0]/2,WHEEL_DIST_Y/2,-STOMACH[2]/2]) {
+        plateWedge();
+    }
+//        rotate(45,[0,1,0])
+//        cube([POST_W/2,2*POST_W,POST_W],center=true);
+//    }
+
+    translate([0,PLATE_DEPTH/4,-STOMACH[2]/2-SW/2]) {
+    cube( [PLATE_WIDTH, PLATE_DEPTH/2, SW],center=true);
+    }
+}
+
+//tt_motor_scad();
+mode="preview";
+
+if(mode=="preview") {
+    chassis();
+    bottomPlate();
+    translate([0,-10,-10])
+    rotate(180)
+    bottomPlate();
+}
 
 if(mode == "motor_mount") {
     intersection() {

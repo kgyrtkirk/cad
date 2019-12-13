@@ -12,6 +12,7 @@ rotate(-90,[1,0,0])
 }
 
 function ttMotorH() = 22.5;
+function ttMotorW() = 19;
 function ttMotorHoleO() = -20.5;
 function ttMotorNippleO() = -11;
 
