@@ -12,6 +12,7 @@ M3NUT=6.2;
 
 POST_W=8;
 PLATE_WIDTH=STOMACH[0]+2*(ttMotorW()+POST_W);
+PLATE_WIDTH2=STOMACH[0]+2*(POST_W);
 PLATE_DEPTH=200;
 
 WHEEL_DIST_Y=115;
@@ -45,7 +46,7 @@ module chassisPiece(p) {
     cube(W,center=true);
 }
 
-module arduinoStand() {
+module arduinoStand0(stands) {
     SCREW_L=12;
     PCB_W=2;
     H=SCREW_L-PCB_W;
@@ -75,14 +76,27 @@ dueHoles = [
 
     for(x = dueHoles) {
         translate(x)
-        difference() {
-            cylinder(d=M3NUT,h=H);
+        if(stands) {
+            difference() {
+                cylinder(d=M3NUT,h=H);
+                cylinder(d=M3HOLE,h=3*H,center=true);
+            }
+        }else{
+            // cut
             cylinder(d=M3HOLE,h=3*H,center=true);
         }
     }
     
 }
 }
+
+module arduinoStand(stands) {
+    translate([0,70,0])
+    rotate(180)
+    arduinoStand0(stands);
+
+}
+
 //!arduinoStand();
     module base() {
         hull() {
@@ -185,22 +199,6 @@ module chassis() {
     
 }
 
-module mounts() {
-        difference() {
-%        base();
-    }
-    translate([0,0,-STOMACH[2]/2]) {
-    translate([0,70,0])
-        rotate(180)
-        arduinoStand();
-    translate([0,-80,0])
-        battery_holder();
-    }
-
-
-}
-
-
 
 module bottomPlate() {
 
@@ -215,15 +213,35 @@ module bottomPlate() {
     }
 }
 
+module topPlate(part=0) {
+        translate([0,0,-(STOMACH[2]/2+SW/2)]) {
+        difference() {
+            union() {
+                cube( [PLATE_WIDTH2, PLATE_DEPTH, SW],center=true);
+                arduinoStand(true);
+            }
+        arduinoStand(false);
+        translate([0,-80,0])
+            rotate(90)
+            battery_holder();
+    }
+        }
+    
+ }
+
 //tt_motor_scad();
 mode="preview";
 
 if(mode=="preview") {
     chassis();
-    bottomPlate();
-    translate([0,-10,-10])
-    rotate(180)
-    bottomPlate();
+    rotate(180,[1,0,0])
+    topPlate();
+    if(false) {
+        bottomPlate();
+        translate([0,-10,-10])
+        rotate(180)
+        bottomPlate();
+    }
 }
 
 if(mode == "motor_mount") {
