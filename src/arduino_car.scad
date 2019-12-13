@@ -5,6 +5,8 @@ use <tt-motor.scad>
 SW=1.6;                       // small wall
 W=4;                        // wall
 STOMACH=[55+2*3,120,45];    // space available inside
+
+TIGHT_M3HOLE=2.9;
 M3HOLE=3.2;
 M3NUT=6.2;
 
@@ -96,16 +98,10 @@ dueHoles = [
         }
     }
 
-module plateWedge(dCube=0) {
-    translate([POST_W/2-SW,ttMotorHoleO()+6,0])
-        minkowski() {
-        hull() {
-            translate([0,0,3*SW])
-            cube([SW,2*POST_W,SW]);
-            translate([-5*SW,0,-SW])
-            cube([SW,2*POST_W,SW]);
-        }
-        cube(dCube,center=true);
+module plateWedge(tight=true) {
+    d=tight?TIGHT_M3HOLE:M3HOLE;
+    translate([POST_W/2,ttMotorHoleO()+3,0]){
+            cylinder($fn=32,d=d,h=60,center=true);
     }
 }
     
@@ -129,7 +125,7 @@ module chassis() {
             }
             motor();
            translate([-POST_W/2,0,-STOMACH[2]/2])
-            plateWedge(.3);
+            plateWedge(true);
 
         translate([POST_W/2,0,MOTOR_Z_OFF]) {
 
@@ -207,15 +203,15 @@ module mounts() {
 
 
 module bottomPlate() {
-    translate([STOMACH[0]/2,WHEEL_DIST_Y/2,-STOMACH[2]/2]) {
-        plateWedge();
-    }
-//        rotate(45,[0,1,0])
-//        cube([POST_W/2,2*POST_W,POST_W],center=true);
-//    }
 
-    translate([0,PLATE_DEPTH/4,-STOMACH[2]/2-SW/2]) {
-    cube( [PLATE_WIDTH, PLATE_DEPTH/2, SW],center=true);
+    difference() {
+        translate([0,PLATE_DEPTH/4,-STOMACH[2]/2-SW/2]) {
+            
+            cube( [PLATE_WIDTH, PLATE_DEPTH/2, SW],center=true);
+        }
+        symX([STOMACH[0]/2,WHEEL_DIST_Y/2,-STOMACH[2]/2]) {
+            plateWedge(false);
+        }
     }
 }
 
