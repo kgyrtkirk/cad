@@ -41,6 +41,7 @@ def partMap = [
 	'thumbwheel':		['m3'],
 	'basket_clamp':		['def'],
 	'wire_clamp3':		['def'],
+	'arduino_car':		['motor_mount'],
 		]
 
 def projMap = [
