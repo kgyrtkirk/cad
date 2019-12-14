@@ -1,3 +1,10 @@
+// monitor battery
+// switch
+// servo + laser
+//
+// wheel step counter
+// lights ws28?
+// i2c display?
 
 use <syms.scad>
 use <tt-motor.scad>
@@ -46,7 +53,7 @@ module chassisPiece(p) {
     cube(W,center=true);
 }
 
-module arduinoStand0(stands) {
+module arduinoStand(stands) {
     SCREW_L=12;
     PCB_W=2;
     H=SCREW_L-PCB_W;
@@ -59,6 +66,8 @@ dueDepth = 101.6 + 1.1;
     
     translate([-ngWidth/2,0,0]) {
 %    translate([0,0,H]) {
+        translate([0,0,26])
+        cube([ngWidth,dueDepth,1.6]);
         cube([ngWidth,dueDepth,1.6]);
         translate([5,0,1.6])
         cube(14);
@@ -79,7 +88,7 @@ dueHoles = [
         if(stands) {
             difference() {
                 cylinder(d=M3NUT,h=H);
-                cylinder(d=M3HOLE,h=3*H,center=true);
+                cylinder(d=TIGHT_M3HOLE,h=3*H,center=true);
             }
         }else{
             // cut
@@ -88,13 +97,6 @@ dueHoles = [
     }
     
 }
-}
-
-module arduinoStand(stands) {
-    translate([0,70,0])
-    rotate(180)
-    arduinoStand0(stands);
-
 }
 
 //!arduinoStand();
@@ -114,8 +116,8 @@ module arduinoStand(stands) {
 
 module plateWedge(tight=true) {
     d=tight?TIGHT_M3HOLE:M3HOLE;
-    translate([POST_W/2,ttMotorHoleO()+3,0]){
-            cylinder($fn=32,d=d,h=60,center=true);
+    translate([POST_W/2,ttMotorHoleO()+3,STOMACH[2]/2]){
+            cylinder($fn=32,d=d,h=STOMACH[2]*1.5,center=true);
     }
 }
     
@@ -212,30 +214,87 @@ module bottomPlate() {
         }
     }
 }
-
 module topPlate(part=0) {
+    H=500;
+    intersection() {
+        topPlate0();
+        if(part>=0) 
+            translate([0,H/2,0]*(part*2-1))
+            cube(H,center=true);
+    }
+}
+
+
+function    eP(a,b,alpha) = [
+    a*cos(alpha),
+    b*sin(alpha)
+];
+
+
+module m1(W00=PLATE_WIDTH2) {
+    W0=W00/2;
+    W1=PLATE_WIDTH/2;
+    H=PLATE_DEPTH/2;
+    K=W1/2;
+    points = [ 
+        [W0,-H],
+        [W0,H],
+        [W1,H],
+        for(a=[0:180]) eP(W1,K,a)+[0,H],
+        [-W1,H],
+        [-W0,H],
+        [-W0,-H],
+        for(a=[180:360]) eP(W1,K,a)+[0,-H],
+    ];
+    polygon(points);
+}
+
+
+module topPlate0() {
         translate([0,0,-(STOMACH[2]/2+SW/2)]) {
         difference() {
             union() {
-                cube( [PLATE_WIDTH2, PLATE_DEPTH, SW],center=true);
+                //cube( [PLATE_WIDTH2, PLATE_DEPTH, SW],center=true);
+                linear_extrude(height=SW)m1();
+                translate([0,50,0])
+                rotate(180)
                 arduinoStand(true);
             }
-        arduinoStand(false);
+            
+            
+/*            K=21;
+            D=12;
+            for(j=[-5:10])
+                translate([j*sqrt(3)/2*K,j*K/2,0])
+            for(i=[0:10])
+                translate([0,-i*K,0])*/
+            
+            translate([0,-40,0])
+            cylinder($fn=6,d=40,h=100,center=true);
+            symX([20,-80,0])
+            cylinder($fn=6,d=30,h=100,center=true);
         translate([0,-80,0])
             rotate(90)
             battery_holder();
+            
+            symY([0,0,0])
+            symX([STOMACH[0]/2,WHEEL_DIST_Y/2,-STOMACH[2]/2]) {
+            plateWedge(false);
+        }
+
     }
         }
+        
     
  }
 
 //tt_motor_scad();
-mode="preview";
+mode="topPlate0";
 
 if(mode=="preview") {
     chassis();
     rotate(180,[1,0,0])
-    topPlate();
+    topPlate(-1);
     if(false) {
         bottomPlate();
         translate([0,-10,-10])
@@ -255,6 +314,12 @@ if(mode == "motor_mount") {
 
 if(mode=="chassis")
     chassis();
+
+if(mode=="topPlate0")
+    topPlate(0);
+if(mode=="topPlate1")
+    topPlate(1);
+
 //mounts();
 //battery_holder();
 
