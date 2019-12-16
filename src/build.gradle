@@ -8,7 +8,7 @@ def partMap = [
 	'ballon_tie':	['default'],
 	'rider':	['servo_mount','stepdown_mount','board_mount'],
 	'reception_booth':	['road','barrier_post','barrier_post2','booth','barrier'],
-	'vl53l0x-servo':	['fullMount'],
+	'vl53l0x-servo':	['fullMount','fullMount0'],
 	'petrol_station':	['road','pump','roadPart'],
 	'mini_c270_mod':	['foot','middle','cameraHolder'],
 	'fiesta_2003_vent_mount':	['ventPart','allinone'],

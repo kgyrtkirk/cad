@@ -9,6 +9,7 @@
 use <syms.scad>
 use <tt-motor.scad>
 use <9g_servo.scad>
+use <vl53l0x-servo.scad>
 
 SW=1.6;                       // small wall
 W=4;                        // wall
@@ -247,6 +248,11 @@ module m1(W00=PLATE_WIDTH2) {
         [-W0,-H],
         for(a=[180:360]) eP(W1,K,a)+[0,-H],
     ];
+        $fn=32;
+    OQ=4;
+    offset(r=OQ)
+    offset(r=-2*OQ)
+    offset(r=OQ)
     polygon(points);
 }
 
@@ -305,8 +311,12 @@ module topPlate0() {
                 translate([0,50,0])
                 rotate(180)
                 arduinoStand(true);
-                translate([0,PLATE_DEPTH/2-10,0])
-                servo_mount();
+                translate([0,PLATE_DEPTH*9/16,0]) {
+                    servo_mount();
+                    translate([0,0,30])
+                    rotate(180)
+                    %fullMount();
+                }
             }
             
             

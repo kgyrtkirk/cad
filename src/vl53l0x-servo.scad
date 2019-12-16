@@ -3,6 +3,8 @@ BOARD_D=1.5;
 BOARD_H=12.2;
 BOARD_W=15.5;
 BOARD_HOLE_W1=16.6 ; // extra space added; to make the board stuck
+BOARD_HOLE_DIST=(16.6 + 23.1+.2)/2 ;
+echo(BOARD_HOLE_DIST);
 BOARD_W2=24.6;
 BOARD_HOLE_D=3.0;
 BOARD_HOLE_EXT=(BOARD_W2-BOARD_HOLE_W1-2*BOARD_HOLE_D)/2;
@@ -111,7 +113,9 @@ module servoHorn(height=1.6){
     
 }
 
-module servoMount(){
+
+
+module servoMount0(){
     HH=3;
     translate([0,0,-HH/2])
     difference() {
@@ -124,15 +128,85 @@ module servoMount(){
         servoHorn();
     }
 }
+module servoMount1(){
+    HH=2;
+    difference() {
+        hull()
+        symX([BOARD_HOLE_W1/2,0,0]) {
+            cylinder(d=12,h=HH,center=true);
+        }
+//        cube([35,12,HH],center=true);
+        cylinder($fn=30,h=50,d=5,center=true);
+    }
+}
 
-module  fullMount() {
+SERVO_D0=4.725;
+
+module servoMount(){
+    HH=1.6;
+    difference() {
+        hull()
+        symX([BOARD_HOLE_W1/2,0,0]) {
+            cylinder(d=12,h=HH,center=true);
+        }
+//        cube([35,12,HH],center=true);
+        cylinder($fn=30,h=50,d=SERVO_D0,center=true);
+    }
+}
+
+
+module  fullMount0() {
     rotate(90,[1,0,0])
     holder();
 //    translate([0,2,-HOLDER_H/2])
+    D0=11.5+(14.3-11.5)*2;
     translate([0,7.5,0])
     servoMount();
     
 }
+
+module  fullMount() {
+    D0=11.5+(14.3-11.5)*2;
+    OFF=D0/2+1.6;
+    
+    DEPTH=8;
+    D1=2.9+.1; // tight 3mm
+    D2=min(5,D1+1.4*2);
+    //W=(D2-D1)/2;
+    W=2;
+    //XSERVO_D0=4.8;
+    SERVO_D1=SERVO_D0+3;
+    translate([0,-OFF,0])
+    difference() {
+        $fn=32;
+        union() {
+            symX([BOARD_HOLE_DIST/2,DEPTH/2,D1/2+W]) {
+                rotate(90,[1,0,0])
+                difference() {
+                    cylinder($fn=32,h=DEPTH,d=D2,center=true);
+                    cylinder($fn=32,h=2*DEPTH,d=D1,center=true);
+                }
+            }
+            // the servo mount body
+            symX([0,0,W/2]) {
+                hull() {
+                    translate([BOARD_HOLE_DIST/2,DEPTH/2,0])
+                    cube([D1,DEPTH,W],center=true);
+                    translate([0,OFF,0])
+                    cylinder(h=W,d=SERVO_D1,center=true);
+                }
+            }
+        }
+        translate([0,OFF,W/2])
+        cylinder($fn=15,h=W*2,d=SERVO_D0+.5,center=true);
+    }
+    
+//    translate([0,2,-HOLDER_H/2])
+//    translate([0,7.5,0])
+  //  servoMount();
+    
+}
+
 
 
 mode="fullMount";
@@ -143,8 +217,12 @@ if(mode=="preview") {
     fullMount();
 }
 if(mode=="fullMount") {
-    rotate(180,[0,1,0])
+//    rotate(180,[0,1,0])
     fullMount();
+}
+if(mode=="fullMount0") {
+    rotate(180,[0,1,0])
+    fullMount0();
 }
 
 //minkowski() {
