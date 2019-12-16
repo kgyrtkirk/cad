@@ -2,9 +2,9 @@
 BOARD_D=1.5;
 BOARD_H=12.2;
 BOARD_W=15.5;
-BOARD_HOLE_W1=16.6 + 1; // extra space added; to make the board stuck
+BOARD_HOLE_W1=16.6 ; // extra space added; to make the board stuck
 BOARD_W2=24.6;
-BOARD_HOLE_D=3.2;
+BOARD_HOLE_D=3.0;
 BOARD_HOLE_EXT=(BOARD_W2-BOARD_HOLE_W1-2*BOARD_HOLE_D)/2;
 
 //echo "hole_ext" % BOARD_HOLE_EXT;
@@ -19,6 +19,8 @@ module symX(t) {
 }
 
 module atHoles() {
+    echo (24.7-2*.7-3);
+    echo(BOARD_HOLE_W1+BOARD_HOLE_D);
     symX([(BOARD_HOLE_W1+BOARD_HOLE_D)/2,0,0])
         children();
 }
@@ -133,13 +135,15 @@ module  fullMount() {
 }
 
 
-mode="preview";
+mode="fullMount";
+//mode="preview";
 if(mode=="preview") {
     rotate(90,[1,0,0])
     pcb();
     fullMount();
 }
 if(mode=="fullMount") {
+    rotate(180,[0,1,0])
     fullMount();
 }
 
