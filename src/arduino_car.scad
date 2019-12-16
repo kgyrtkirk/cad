@@ -8,6 +8,7 @@
 
 use <syms.scad>
 use <tt-motor.scad>
+use <9g_servo.scad>
 
 SW=1.6;                       // small wall
 W=4;                        // wall
@@ -15,7 +16,7 @@ STOMACH=[55+2*3,120,45];    // space available inside
 
 TIGHT_M3HOLE=2.9;
 M3HOLE=3.2;
-M3NUT=6.2;
+M3NUT=6.5;
 
 POST_W=8;
 PLATE_WIDTH=STOMACH[0]+2*(ttMotorW()+POST_W);
@@ -249,6 +250,51 @@ module m1(W00=PLATE_WIDTH2) {
     polygon(points);
 }
 
+module servo_mount() {
+    servo_mount0();
+}
+
+module servo_mount0() {
+    SERVO_W=12.5;
+    SERVO_H=15.5;
+    SERVO_L=23+1;
+    SERVO_HOLE_X=(27.4-SERVO_L)/2;
+    W=SW;
+    L=39;
+    PW=3;
+    
+    $fn=16;
+    
+    HOLE_D=3;
+    XO=-[servo_9g_pin_off()[0],-servo_9g_pin_off()[1],-W];
+    translate(XO)
+    difference() {
+        translate([L/2-2.5*HOLE_D,0,(SERVO_H+W)/2-W/2])
+        cube([L,SERVO_W+2*W,SERVO_H+W+W],center=true);
+    
+        translate([SERVO_L/2,0,SERVO_H/2+W])
+        cube([SERVO_L,SERVO_W+.1,SERVO_H+.1],center=true);
+        
+    
+        translate([-SERVO_HOLE_X,0,SERVO_H+W])
+        cylinder(d=1.8,h=SERVO_H*2,center=true);
+        translate([SERVO_L+SERVO_HOLE_X,0,SERVO_H+W])
+        cylinder(d=1.8,h=SERVO_H*2,center=true);
+    
+        
+        translate([L/2-2.5*HOLE_D,0,(SERVO_H+W)/2-(PW+W)/2+W])
+        cube([2*L,SERVO_W,SERVO_H],center=true);
+        
+//        cube(100);
+        
+    }
+    
+    
+//    translate([0,0,1/2])
+%    translate(XO)
+    9g_motor();
+}
+
 
 module topPlate0() {
         translate([0,0,-(STOMACH[2]/2+SW/2)]) {
@@ -259,6 +305,8 @@ module topPlate0() {
                 translate([0,50,0])
                 rotate(180)
                 arduinoStand(true);
+                translate([0,PLATE_DEPTH/2-10,0])
+                servo_mount();
             }
             
             
@@ -289,8 +337,13 @@ module topPlate0() {
  }
 
 //tt_motor_scad();
-mode="topPlate0";
+ 
+mode="topPlate1";
+//mode="s1";
 
+if(mode=="s1") {
+    servo_mount();
+}
 if(mode=="preview") {
     chassis();
     rotate(180,[1,0,0])
@@ -311,6 +364,9 @@ if(mode == "motor_mount") {
         
     }
 }
+
+
+
 
 if(mode=="chassis")
     chassis();

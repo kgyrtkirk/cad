@@ -80,24 +80,6 @@ module holder() {
         }
     }
     
-    translate([0,0,BOARD_D+eps]) {
-        for(T=[BOARD_H/2-BOARD_D/2,-3])
-        hull() {
-            translate([0,T,0])
-            cube([BOARD_W-1,.1,BOARD_D],center=true);
-            translate([0,T-BOARD_D,BOARD_D/2])
-            cube([BOARD_W-3,.1,eps],center=true);
-        }
-    }
-    intersection() {
-        difference() {
-            translate([0,0,BOARD_D*2])
-            cube([HOLDER_W,HOLDER_H,W],center=true);
-            sensorChip(1,20);
-        }
-//        translate([0,-HOLDER_W/2-4,0])
-  //      sphere(HOLDER_W);
-    }
 }
 module servoHorn(height=1.6){
     L=32;
@@ -144,7 +126,8 @@ module servoMount(){
 module  fullMount() {
     rotate(90,[1,0,0])
     holder();
-    translate([0,2,-HOLDER_H/2])
+//    translate([0,2,-HOLDER_H/2])
+    translate([0,7.5,0])
     servoMount();
     
 }

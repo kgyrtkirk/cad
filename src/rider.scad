@@ -92,7 +92,7 @@ module servo_mount() {
     
     
 //    translate([0,0,1/2])
-  //  9g_motor();
+    9g_motor();
 }
 
 module stepdown_mount() {
@@ -180,8 +180,8 @@ module board_mount() {
 
 
 mode="stepdown_mount";
-mode="servo_mount";
 mode="board_mount";
+mode="servo_mount";
 if(mode=="servo_mount"){
     servo_mount();
 }
