@@ -1,3 +1,7 @@
+// arduino screw length ?
+// battery holder screw dist +=1mm
+
+
 // monitor battery
 // switch
 // servo + laser
