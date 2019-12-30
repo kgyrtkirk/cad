@@ -16,7 +16,13 @@ module doorLabel(){
     linear_extrude(height=3)
     text("Haindrich",
         size=10,
-        font="DejaVu Sans:style:Bold",
+        font=
+    //"Lato:style=Black",
+    //"Ataxia Outline BRK:style=Regular",
+    //"Gillius ADF:style=Bold",
+    "Georgia:style=Bold",
+    //"GFS Didot:style=Bold",
+    //"Bitstream Vera Sans:style=Bold",
         halign="center",valign="center");
 
     /*color("orange")
