@@ -54,7 +54,10 @@ module doorLabel(){
     }
 }
 
-s=2;
+
+mode="full";
+s=(mode=="preview")?1:2;
+
 scale([s,s,.9])
 doorLabel();
 
