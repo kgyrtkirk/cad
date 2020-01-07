@@ -13,13 +13,18 @@ PLATFORM_W2=CAR_W+2*W;
 PLATFORM_H1=3*W;
 PLATFORM_H2=2*W;
 
-RAMP_ANGLE=10;
+RAMP_ANGLE=8;
 RAMP_RATE=1/tan(RAMP_ANGLE);
 
 PLATFORM_L2=CAR_L+2*W+RAMP_RATE*PLATFORM_H2;
 PLATFORM_L1=PLATFORM_L2+RAMP_RATE*PLATFORM_H1;
 
 WHEEL_CENTER=CAR_W-WHEEL_W;
+
+
+ELEVATE_H=50;   //  elevator height
+AXIS_D=W;
+
 
 
 module basePart(PLATFORM_W1,PLATFORM_L1,PLATFORM_H1) {
@@ -110,7 +115,55 @@ module platform2() {
 }
 
 
+module hullLine() {
+    for(o = [0:$children-2])  {
+        hull() {
+            children(o+0);
+            children(o+1);
+        }
+    }
+}
+
+module frameL() {
+    $fn=32;
+    D=AXIS_D+2*W;
+    FRAME_L_FOOT=30;
+    
+    p0=[(PLATFORM_H1+PLATFORM_RAIL_H)/2,ELEVATE_H,0];
+    p1=[FRAME_L_FOOT,0,0];
+    color("red")
+    difference() {
+        hullLine() {
+            translate(p0)
+            cylinder(d=D,h=W);
+            cylinder(d=D,h=W);
+            translate(p1)
+            cylinder(d=D/2,h=W);
+        }
+        translate(p0)
+            cylinder(d=AXIS_D,h=10,center=true);
+            cylinder(d=AXIS_D,h=10,center=true);
+    }
+}
+
+
+module  preview(alpha) {
 platform1();
 
-    translate([0,0,PLATFORM_H1+.1])
-    platform2();
+translate([0,0,PLATFORM_H1+.1])
+platform2();
+
+
+//translate([0,-CAR_L*2/3,0])
+for(a=[-ELEVATE_H-10,0])
+translate([0,a,0])
+symX([PLATFORM_W2/2+W,-ELEVATE_H+PLATFORM_L2/2,PLATFORM_H1/2])
+rotate(alpha,[1,0,0])
+rotate(-90,[0,1,0])
+frameL();
+
+}
+
+preview(30);
+
+

@@ -1,0 +1,87 @@
+digraph G {
+
+    node [style=filled];
+    Villany_Terv -> Konyha_Rendel -> Konyha_Erkezik -> Konyha_EloSzerel -> Konyha_Epit;
+    Konyha_Terv ->  Konyha_Rendel;
+
+
+    JarolapFelszed[fillcolor=red];
+    Belso_Ajto_Csere[fillcolor=red];
+    Villany_Terv[fillcolor=yellow];
+    VizCsovekMaradhatnak[fillcolor=red];
+    Konyha_Elszallit[fillcolor=red];
+    VizCsovekMaradhatnak->Konyha_Lebont;
+    Konyha_Kipakol->Konyha_Lebont->Konyha_Elszallit->JarolapFelszed;
+    Pakolas_szobaba-> JarolapFelszed;
+    JarolapFelszed -> Belso_Ajto_Csere [color=red];
+    ToloajtoSinekJok[fillcolor=red];
+    ToloajtoSinekJok -> ToloajtoCsere->JarolapFelszed[color=red];
+    Belso_Ajto_Csere -> JarolapFelszed -> Festes_Nappali;
+    JarolapFelszed -> Konyhai_Villany -> Konyhai_Csempe;
+    Radiator_Halo_Konyha -> Festes_Nappali -> Konyha_Epit;
+
+    Radiator_Halo_Konyha[fillcolor=red];
+    Konyhai_Csempe[fillcolor=red];
+    ToloajtoCsere[fillcolor=red];
+
+    Wc_van_PotCsempe[fillcolor=yellow];
+    Wc_CsempeCsere[fillcolor=red];
+    Wc_GipszesCsempesCucc[fillcolor=red];
+    Wc_van_PotCsempe -> Wc_CsempeCsere;
+    Wc_van_PotCsempe -> Wc_GipszesCsempesCucc;
+
+    Almennyezet[fillcolor=yellow];
+    Almennyezet -> Konyha_Epit;
+
+    Padlo_Nappali[fillcolor=red];
+    Padlo_Szobak[fillcolor=red];
+    Konyhai_Csempe -> Konyha_Epit;
+    Villany_PadloAlatt[fillcolor=yellow];
+    Villany_PadloAlatt ->Padlo_Nappali;
+    JarolapFelszed -> Padlo_Nappali -> Konyha_Epit;
+    Padlo_Nappali->Szobakat_Kipakol -> Padlo_Szobak -> Festes_Szobak -> Visszapakol;
+
+    Klima_VendegSzoba[fillcolor=yellow];
+    Redony_GyerekSzoba[fillcolor=yellow];
+    Redony_VendegSzoba[fillcolor=yellow];
+    Redony_GyerekSzoba->Redony_VendegSzoba;
+
+    Redony_VendegSzoba -> Festes_Szobak;
+    VillanyX[fillcolor=yellow];
+    Vilagitas_Nappali[fillcolor=yellow];
+    Vilagitas_Folyoso[fillcolor=yellow];
+    FiRele[fillcolor=yellow];
+    VillanyDoboz[fillcolor=yellow];
+    {Vilagitas_Folyoso,Vilagitas_Nappali} -> Vilagitas;
+    {Vilagitas,VillanyX,FiRele,VillanyDoboz} -> Villany_Terv;
+    Villany_Szerel[fillcolor=yellow];
+    Villany_Terv -> Villany_Szerel;
+
+/*
+  subgraph cluster_0 {
+    style=filled;
+    color=lightgrey;
+    node [style=filled,color=white];data:image/svg+xml;charset=utf-8,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%20standalone%3D%22no%22%3F%3E%0A%3C!DOCTYPE%20svg%20PUBLIC%20%22-%2F%2FW3C%2F%2FDTD%20SVG%201.1%2F%2FEN%22%20%22http%3A%2F%2Fwww.w3.org%2FGraphics%2FSVG%2F1.1%2FDTD%2Fsvg11.dtd%22%3E%0A%3C!--%20Generated%20by%20graphviz%20version%202.40.1%20(20161225.0304)%0A%20--%3E%0A%3C!--%20Title%3A%20G%20Pages%3A%201%20--%3E%0A%3Csvg%20width%3D%22908pt%22%20height%3D%22332pt%22%20viewBox%3D%220.00%200.00%20907.75%20332.00%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%3Cg%20id%3D%22graph0%22%20class%3D%22graph%22%20transform%3D%22scale(1%201)%20rotate(0)%20translate(4%20328)%22%3E%0A%3Ctitle%3EG%3C%2Ftitle%3E%0A%3Cpolygon%20fill%3D%22%23ffffff%22%20stroke%3D%22transparent%22%20points%3D%22-4%2C4%20-4%2C-328%20903.7501%2C-328%20903.7501%2C4%20-4%2C4%22%2F%3E%0A%3C!--%20Villany_Terv%20--%3E%0A%3Cg%20id%3D%22node1%22%20class%3D%22node%22%3E%0A%3Ctitle%3EVillany_Terv%3C%2Ftitle%3E%0A%3Cellipse%20fill%3D%22%23d3d3d3%22%20stroke%3D%22%23000000%22%20cx%3D%2263.0604%22%20cy%3D%22-306%22%20rx%3D%2263.1209%22%20ry%3D%2218%22%2F%3E%0A%3Ctext%20text-anchor%3D%22middle%22%20x%3D%2263.0604%22%20y%3D%22-301.8%22%20font-family%3D%22Times%2Cserif%22%20font-size%3D%2214.00%22%20fill%3D%22%23000000%22%3EVillany_Terv%3C%2Ftext%3E%0A%3C%2Fg%3E%0A%3C!--%20Konyha_Rendel%20--%3E%0A%3Cg%20id%3D%22node2%22%20class%3D%22node%22%3E%0A%3Ctitle%3EKonyha_Rendel%3C%2Ftitle%3E%0A%3Cellipse%20fill%3D%22%23d3d3d3%22%20stroke%3D%22%23000000%22%20cx%3D%22136.0604%22%20cy%3D%22-234%22%20rx%3D%2273.583%22%20ry%3D%2218%22%2F%3E%0A%3Ctext%20text-anchor%3D%22middle%22%20x%3D%22136.0604%22%20y%3D%22-229.8%22%20font-family%3D%22Times%2Cserif%22%20font-size%3D%2214.00%22%20fill%3D%22%23000000%22%3EKonyha_Rendel%3C%2Ftext%3E%0A%3C%2Fg%3E%0A%3C!--%20Villany_Terv%26%2345%3B%26gt%3BKonyha_Rendel%20--%3E%0A%3Cg%20id%3D%22edge1%22%20class%3D%22edge%22%3E%0A%3Ctitle%3EVillany_Terv-%26gt%3BKonyha_Rendel%3C%2Ftitle%3E%0A%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23000000%22%20d%3D%22M80.7317%2C-288.5708C89.8105%2C-279.6164%20101.0295%2C-268.551%20110.9868%2C-258.7302%22%2F%3E%0A%3Cpolygon%20fill%3D%22%23000000%22%20stroke%3D%22%23000000%22%20points%3D%22113.6369%2C-261.0323%20118.2989%2C-251.5182%20108.7214%2C-256.0485%20113.6369%2C-261.0323%22%2F%3E%0A%3C%2Fg%3E%0A%3C!--%20Konyha_Erkezik%20--%3E%0A%3Cg%20id%3D%22node3%22%20class%3D%22node%22%3E%0A%3Ctitle%3EKonyha_Erkezik%3C%2Ftitle%3E%0A%3Cellipse%20fill%3D%22%23d3d3d3%22%20stroke%3D%22%23000000%22%20cx%3D%22136.0604%22%20cy%3D%22-162%22%20rx%3D%2276.4304%22%20ry%3D%2218%22%2F%3E%0A%3Ctext%20text-anchor%3D%22middle%22%20x%3D%22136.0604%22%20y%3D%22-157.8%22%20font-family%3D%22Times%2Cserif%22%20font-size%3D%2214.00%22%20fill%3D%22%23000000%22%3EKonyha_Erkezik%3C%2Ftext%3E%0A%3C%2Fg%3E%0A%3C!--%20Konyha_Rendel%26%2345%3B%26gt%3BKonyha_Erkezik%20--%3E%0A%3Cg%20id%3D%22edge2%22%20class%3D%22edge%22%3E%0A%3Ctitle%3EKonyha_Rendel-%26gt%3BKonyha_Erkezik%3C%2Ftitle%3E%0A%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23000000%22%20d%3D%22M136.0604%2C-215.8314C136.0604%2C-208.131%20136.0604%2C-198.9743%20136.0604%2C-190.4166%22%2F%3E%0A%3Cpolygon%20fill%3D%22%23000000%22%20stroke%3D%22%23000000%22%20points%3D%22139.5605%2C-190.4132%20136.0604%2C-180.4133%20132.5605%2C-190.4133%20139.5605%2C-190.4132%22%2F%3E%0A%3C%2Fg%3E%0A%3C!--%20Konyha_EloSzerel%20--%3E%0A%3Cg%20id%3D%22node4%22%20class%3D%22node%22%3E%0A%3Ctitle%3EKonyha_EloSzerel%3C%2Ftitle%3E%0A%3Cellipse%20fill%3D%22%23d3d3d3%22%20stroke%3D%22%23000000%22%20cx%3D%22136.0604%22%20cy%3D%22-90%22%20rx%3D%2283.9508%22%20ry%3D%2218%22%2F%3E%0A%3Ctext%20text-anchor%3D%22middle%22%20x%3D%22136.0604%22%20y%3D%22-85.8%22%20font-family%3D%22Times%2Cserif%22%20font-size%3D%2214.00%22%20fill%3D%22%23000000%22%3EKonyha_EloSzerel%3C%2Ftext%3E%0A%3C%2Fg%3E%0A%3C!--%20Konyha_Erkezik%26%2345%3B%26gt%3BKonyha_EloSzerel%20--%3E%0A%3Cg%20id%3D%22edge3%22%20class%3D%22edge%22%3E%0A%3Ctitle%3EKonyha_Erkezik-%26gt%3BKonyha_EloSzerel%3C%2Ftitle%3E%0A%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23000000%22%20d%3D%22M136.0604%2C-143.8314C136.0604%2C-136.131%20136.0604%2C-126.9743%20136.0604%2C-118.4166%22%2F%3E%0A%3Cpolygon%20fill%3D%22%23000000%22%20stroke%3D%22%23000000%22%20points%3D%22139.5605%2C-118.4132%20136.0604%2C-108.4133%20132.5605%2C-118.4133%20139.5605%2C-118.4132%22%2F%3E%0A%3C%2Fg%3E%0A%3C!--%20Konyha_Epit%20--%3E%0A%3Cg%20id%3D%22node5%22%20class%3D%22node%22%3E%0A%3Ctitle%3EKonyha_Epit%3C%2Ftitle%3E%0A%3Cellipse%20fill%3D%22%23d3d3d3%22%20stroke%3D%22%23000000%22%20cx%3D%22136.0604%22%20cy%3D%22-18%22%20rx%3D%2262.5643%22%20ry%3D%2218%22%2F%3E%0A%3Ctext%20text-anchor%3D%22middle%22%20x%3D%22136.0604%22%20y%3D%22-13.8%22%20font-family%3D%22Times%2Cserif%22%20font-size%3D%2214.00%22%20fill%3D%22%23000000%22%3EKonyha_Epit%3C%2Ftext%3E%0A%3C%2Fg%3E%0A%3C!--%20Konyha_EloSzerel%26%2345%3B%26gt%3BKonyha_Epit%20--%3E%0A%3Cg%20id%3D%22edge4%22%20class%3D%22edge%22%3E%0A%3Ctitle%3EKonyha_EloSzerel-%26gt%3BKonyha_Epit%3C%2Ftitle%3E%0A%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23000000%22%20d%3D%22M136.0604%2C-71.8314C136.0604%2C-64.131%20136.0604%2C-54.9743%20136.0604%2C-46.4166%22%2F%3E%0A%3Cpolygon%20fill%3D%22%23000000%22%20stroke%3D%22%23000000%22%20points%3D%22139.5605%2C-46.4132%20136.0604%2C-36.4133%20132.5605%2C-46.4133%20139.5605%2C-46.4132%22%2F%3E%0A%3C%2Fg%3E%0A%3C!--%20Konyha_Terv%20--%3E%0A%3Cg%20id%3D%22node6%22%20class%3D%22node%22%3E%0A%3Ctitle%3EKonyha_Terv%3C%2Ftitle%3E%0A%3Cellipse%20fill%3D%22%23d3d3d3%22%20stroke%3D%22%23000000%22%20cx%3D%22209.0604%22%20cy%3D%22-306%22%20rx%3D%2264.8331%22%20ry%3D%2218%22%2F%3E%0A%3Ctext%20text-anchor%3D%22middle%22%20x%3D%22209.0604%22%20y%3D%22-301.8%22%20font-family%3D%22Times%2Cserif%22%20font-size%3D%2214.00%22%20fill%3D%22%23000000%22%3EKonyha_Terv%3C%2Ftext%3E%0A%3C%2Fg%3E%0A%3C!--%20Konyha_Terv%26%2345%3B%26gt%3BKonyha_Rendel%20--%3E%0A%3Cg%20id%3D%22edge5%22%20class%3D%22edge%22%3E%0A%3Ctitle%3EKonyha_Terv-%26gt%3BKonyha_Rendel%3C%2Ftitle%3E%0A%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23000000%22%20d%3D%22M191.3891%2C-288.5708C182.3103%2C-279.6164%20171.0913%2C-268.551%20161.134%2C-258.7302%22%2F%3E%0A%3Cpolygon%20fill%3D%22%23000000%22%20stroke%3D%22%23000000%22%20points%3D%22163.3994%2C-256.0485%20153.8219%2C-251.5182%20158.4839%2C-261.0323%20163.3994%2C-256.0485%22%2F%3E%0A%3C%2Fg%3E%0A%3C!--%20VillanyX%20--%3E%0A%3Cg%20id%3D%22node7%22%20class%3D%22node%22%3E%0A%3Ctitle%3EVillanyX%3C%2Ftitle%3E%0A%3Cellipse%20fill%3D%22%23ff0000%22%20stroke%3D%22%23000000%22%20cx%3D%22339.0604%22%20cy%3D%22-306%22%20rx%3D%2246.9477%22%20ry%3D%2218%22%2F%3E%0A%3Ctext%20text-anchor%3D%22middle%22%20x%3D%22339.0604%22%20y%3D%22-301.8%22%20font-family%3D%22Times%2Cserif%22%20font-size%3D%2214.00%22%20fill%3D%22%23000000%22%3EVillanyX%3C%2Ftext%3E%0A%3C%2Fg%3E%0A%3C!--%20Belso_Ajto_Csere%20--%3E%0A%3Cg%20id%3D%22node8%22%20class%3D%22node%22%3E%0A%3Ctitle%3EBelso_Ajto_Csere%3C%2Ftitle%3E%0A%3Cellipse%20fill%3D%22%23d3d3d3%22%20stroke%3D%22%23000000%22%20cx%3D%22486.0604%22%20cy%3D%22-306%22%20rx%3D%2281.6789%22%20ry%3D%2218%22%2F%3E%0A%3Ctext%20text-anchor%3D%22middle%22%20x%3D%22486.0604%22%20y%3D%22-301.8%22%20font-family%3D%22Times%2Cserif%22%20font-size%3D%2214.00%22%20fill%3D%22%23000000%22%3EBelso_Ajto_Csere%3C%2Ftext%3E%0A%3C%2Fg%3E%0A%3C!--%20JarolapFelszed%20--%3E%0A%3Cg%20id%3D%22node9%22%20class%3D%22node%22%3E%0A%3Ctitle%3EJarolapFelszed%3C%2Ftitle%3E%0A%3Cellipse%20fill%3D%22%23d3d3d3%22%20stroke%3D%22%23000000%22%20cx%3D%22486.0604%22%20cy%3D%22-234%22%20rx%3D%2268.3343%22%20ry%3D%2218%22%2F%3E%0A%3Ctext%20text-anchor%3D%22middle%22%20x%3D%22486.0604%22%20y%3D%22-229.8%22%20font-family%3D%22Times%2Cserif%22%20font-size%3D%2214.00%22%20fill%3D%22%23000000%22%3EJarolapFelszed%3C%2Ftext%3E%0A%3C%2Fg%3E%0A%3C!--%20Belso_Ajto_Csere%26%2345%3B%26gt%3BJarolapFelszed%20--%3E%0A%3Cg%20id%3D%22edge6%22%20class%3D%22edge%22%3E%0A%3Ctitle%3EBelso_Ajto_Csere-%26gt%3BJarolapFelszed%3C%2Ftitle%3E%0A%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23000000%22%20d%3D%22M486.0604%2C-287.8314C486.0604%2C-280.131%20486.0604%2C-270.9743%20486.0604%2C-262.4166%22%2F%3E%0A%3Cpolygon%20fill%3D%22%23000000%22%20stroke%3D%22%23000000%22%20points%3D%22489.5605%2C-262.4132%20486.0604%2C-252.4133%20482.5605%2C-262.4133%20489.5605%2C-262.4132%22%2F%3E%0A%3C%2Fg%3E%0A%3C!--%20Radiator_Halo%20--%3E%0A%3Cg%20id%3D%22node10%22%20class%3D%22node%22%3E%0A%3Ctitle%3ERadiator_Halo%3C%2Ftitle%3E%0A%3Cellipse%20fill%3D%22%23d3d3d3%22%20stroke%3D%22%23000000%22%20cx%3D%22654.0604%22%20cy%3D%22-306%22%20rx%3D%2267.776%22%20ry%3D%2218%22%2F%3E%0A%3Ctext%20text-anchor%3D%22middle%22%20x%3D%22654.0604%22%20y%3D%22-301.8%22%20font-family%3D%22Times%2Cserif%22%20font-size%3D%2214.00%22%20fill%3D%22%23000000%22%3ERadiator_Halo%3C%2Ftext%3E%0A%3C%2Fg%3E%0A%3C!--%20Radiator_Konyha%20--%3E%0A%3Cg%20id%3D%22node11%22%20class%3D%22node%22%3E%0A%3Ctitle%3ERadiator_Konyha%3C%2Ftitle%3E%0A%3Cellipse%20fill%3D%22%23d3d3d3%22%20stroke%3D%22%23000000%22%20cx%3D%22820.0604%22%20cy%3D%22-306%22%20rx%3D%2279.8798%22%20ry%3D%2218%22%2F%3E%0A%3Ctext%20text-anchor%3D%22middle%22%20x%3D%22820.0604%22%20y%3D%22-301.8%22%20font-family%3D%22Times%2Cserif%22%20font-size%3D%2214.00%22%20fill%3D%22%23000000%22%3ERadiator_Konyha%3C%2Ftext%3E%0A%3C%2Fg%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E
+    a0 -> a1 -> a2 -> a3;
+    label = "process #1";
+  }
+
+  subgraph cluster_1 {
+    node [style=filled];
+    b0 -> b1 -> b2 -> b3;
+    label = "process #2";
+    color=blue
+  }
+  start -> a0;
+  start -> b0;
+  a1 -> b3;
+  b2 -> a3;
+  a3 -> a0;
+  a3 -> end;
+  a45;
+  b3 -> end;
+
+  start [shape=Mdiamond];
+  end [shape=Msquare];
+  */
+}
