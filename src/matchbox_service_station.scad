@@ -147,23 +147,32 @@ module frameL() {
 }
 
 
+function rotX(v,a)=[
+        v[0],
+        v[1]*cos(a) - v[2]*sin(a),
+        v[1]*sin(a) + v[2]*cos(a)
+    ];
+
+
 module  preview(alpha) {
-platform1();
+    platform1();
 
-translate([0,0,PLATFORM_H1+.1])
-platform2();
+    
+    translate(rotX([0,ELEVATE_H,0],alpha))
+    translate([0,0,PLATFORM_H1+.1])
+    platform2();
 
 
-//translate([0,-CAR_L*2/3,0])
-for(a=[-ELEVATE_H-10,0])
-translate([0,a,0])
-symX([PLATFORM_W2/2+W,-ELEVATE_H+PLATFORM_L2/2,PLATFORM_H1/2])
-rotate(alpha,[1,0,0])
-rotate(-90,[0,1,0])
-frameL();
+    //translate([0,-CAR_L*2/3,0])
+    for(a=[-ELEVATE_H-10,0])
+    translate([0,a,0])
+    symX([PLATFORM_W2/2+W,-ELEVATE_H+PLATFORM_L2/2,PLATFORM_H1/2])
+    rotate(alpha,[1,0,0])
+    rotate(-90,[0,1,0])
+    frameL();
 
 }
 
-preview(30);
+preview(0);
 
 

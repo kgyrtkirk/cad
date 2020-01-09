@@ -4,7 +4,10 @@ digraph G {
     Villany_Terv -> Konyha_Rendel -> Konyha_Erkezik -> Konyha_EloSzerel -> Konyha_Epit;
     Konyha_Terv ->  Konyha_Rendel;
 
+    Zarhato_Halo[fillcolor=yellow];
 
+    Bejarati_Ajto_Keres -> Bejarati_Ajto_Csere;
+    Bejarati_Ajto_Csere[fillcolor=red];
     JarolapFelszed[fillcolor=red];
     Belso_Ajto_Csere[fillcolor=red];
     Villany_Terv[fillcolor=yellow];
