@@ -43,6 +43,7 @@ def partMap = [
 	'wire_clamp3':		['def'],
 	'arduino_car':		['motor_mount','topPlate0','topPlate1','chassis'],
 	'door_label':		['preview','full'],
+	'dolce2fix':		['def'],
 		]
 
 def projMap = [
