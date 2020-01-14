@@ -157,8 +157,10 @@ function rotX(v,a)=[
 module  preview(alpha) {
     platform1();
 
+    A=[0,ELEVATE_H,PLATFORM_H1];
     
-    translate(rotX([0,ELEVATE_H,0],alpha))
+    translate(rotX(A,alpha))
+    translate(-A)
     translate([0,0,PLATFORM_H1+.1])
     platform2();
 
@@ -173,6 +175,6 @@ module  preview(alpha) {
 
 }
 
-preview(0);
+preview(90);
 
 
