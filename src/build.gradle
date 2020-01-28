@@ -45,6 +45,8 @@ def partMap = [
 	'door_label':		['preview','full'],
 	'dolce2fix':		['def'],
 	'toy_cover_piece':	['def'],
+	'letter':		['0123','4567','89'],
+	'baby_lock':		['89'],
 		]
 
 def projMap = [
