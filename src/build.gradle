@@ -46,7 +46,8 @@ def partMap = [
 	'dolce2fix':		['def'],
 	'toy_cover_piece':	['def'],
 	'letter':		['0123','4567','89'],
-	'baby_lock':		['89'],
+	'baby_lock':		['89','91','70'],
+	'maximera_front_drill': ['main','addon'],
 		]
 
 def projMap = [
