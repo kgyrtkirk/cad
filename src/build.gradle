@@ -48,6 +48,7 @@ def partMap = [
 	'letter':		['0123','4567','89'],
 	'slippers_mount':	['def'],
 	'baby_lock':		['89','91','70'],
+	'baby_lock2':		['main','aux'],
 	'maximera_front_drill': ['main','addon'],
 		]
 
