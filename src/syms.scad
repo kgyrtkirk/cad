@@ -41,3 +41,9 @@ module magnetCut(D,S) {
 // calculates the radius from "segment" paramers:
 // https://en.wikipedia.org/wiki/Circular_segment
 function    circleSlice2radius2(c,h) = (c*c/8/h)+ h/2;
+
+function toInt(str) = 
+    let(d = [for (s = str) ord(s) - 48], l = len(d) - 1)
+    [for (i = 0, a = d[i];i <= l;i = i + 1, a = 10 * a + d[i]) a][l];
+        
+

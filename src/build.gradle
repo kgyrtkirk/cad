@@ -51,6 +51,7 @@ def partMap = [
 	'baby_lock2':		['main','aux'],
 	'baby_lock3':		['main'],
 	'maximera_front_drill': ['main','addon'],
+	'can_cap':		['75500'],
 		]
 
 def projMap = [
