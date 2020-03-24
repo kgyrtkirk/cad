@@ -5,3 +5,9 @@
 [submodule "libraries/scad-utils"]
 	path = libraries/scad-utils
 	url = https://github.com/openscad/scad-utils
+[submodule "libraries/threadlib"]
+	path = libraries/threadlib
+	url = https://github.com/adrianschlatter/threadlib
+[submodule "libraries/list-comprehension-demos"]
+	path = libraries/list-comprehension-demos
+	url = https://github.com/openscad/list-comprehension-demos

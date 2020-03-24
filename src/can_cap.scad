@@ -8,12 +8,12 @@ echo(D);
 W=1.6;
 EDGE_H=3;
 IN=.5;
-
+U=.9;
 $fn=128;
 
 difference() {
     cylinder(d=D+2*W,h=W+EDGE_H+W);
-    translate([0,0,W]) {
+    translate([0,0,U]) {
     cylinder(d=D-2*IN,h=W+EDGE_H+W);
     cylinder(d=D,h=EDGE_H);
     }
