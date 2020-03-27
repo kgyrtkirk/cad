@@ -90,4 +90,8 @@ if(mode=="magnet-test"){
     }
 }
 
+if(mode=="holder") {
+	cylinder(d=DI-W,h=15);
+}
+
 //cube();
