@@ -57,6 +57,7 @@ def partMap = [
 	'geocaching_box1':	['holder','full','magnet-test'],
 	'activity_board_1':	['def'],
 	'box_wheel':		['frame','wheel','w1'],
+	'bb_maoam_dispenser':	['storage','dispenser','hole','arm','top'],
 		]
 
 def projMap = [

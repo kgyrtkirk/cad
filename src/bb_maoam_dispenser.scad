@@ -1,10 +1,11 @@
 use <syms.scad>
 use <9g_servo.scad>
 
-MAOAM_DIMS=[27.7,8.6,15.8]+[1,1,1];
+//MAOAM_DIMS=[27.7,8.6,15.8]+[1,1,1];
+MAOAM_DIMS=[15.8,27.7,8.6]+[1,1,1];
 W=1.6;
-EPS=1e-5;
-CAPACITY=7;
+EPS=3e-3;
+CAPACITY=13;
 
 ARM_LENGTH=90;
 module maoam() {
@@ -82,10 +83,18 @@ servoPos=[-MAOAM_DIMS[0]/2-SERVO_X,0,MAOAM_DIMS[2]*.7+ARM_LENGTH];
 
 module storage2() {
     difference() {
+        union() {
         hull()  {
-            translate(P_TOP)    cube(MAOAM_DIMS+2*[W,W,W],center=true);
+            translate(P_TOP)    cube(MAOAM_DIMS+2*[W,W,-EPS],center=true);
             translate(P_BOTTOM) cube(MAOAM_DIMS+2*[W,W,W],center=true);
         }
+    translate([-MAOAM_DIMS[0]/2-W,-5,servoPos[2]])
+    cube([2*W,20,50],center=true);
+    translate(servoPos)
+    rotate(-90,[1,0,0])
+    rotate(90)
+    servo_mount();
+    }
         
         //channel
         hull()  {
@@ -94,18 +103,23 @@ module storage2() {
         }
         
         // loader cut
-        translate(P_TOP+[0,W,0])    cube(MAOAM_DIMS+[0,2*W,0],center=true);
+        translate(P_TOP+[0,W,0])    cube(MAOAM_DIMS+[0,W,0],center=true);
         
         // ejector cut
         translate(P_BOTTOM)    cube(MAOAM_DIMS+[3*W,0,0],center=true);
+        
+        for(i=[0:CAPACITY]) {
+            translate(cPos(i)) {
+                symY([0,MAOAM_DIMS[0]/2,0])
+                rotate(90,[0,1,0])
+                cylinder($fn=4,d=5,h=50,center=true);
+                rotate(90)
+                rotate(90,[0,1,0])
+                cylinder($fn=4,d=5,h=50,center=true);
+            }
+        }
     }
     
-    translate([-MAOAM_DIMS[0]/2-W,-5,servoPos[2]])
-    cube([2*W,20,50],center=true);
-    translate(servoPos)
-    rotate(-90,[1,0,0])
-    rotate(90)
-    servo_mount();
     
 %    translate(servoPos)
     rotate(10,[0,1,0])
@@ -114,11 +128,100 @@ module storage2() {
 
 
 module dispenserPart() {
-  cylinder(d=22);  
+    MWW=MAOAM_DIMS+2*[W,W,W];
+    difference() {
+        hull() {
+            translate(cPos(0))  cube(MAOAM_DIMS+2*[W,W,-EPS],center=true);
+            translate(cPos(-3)) cube(MAOAM_DIMS+2*[W,W,W],center=true);
+        }
+        //sidecut
+        
+        translate(cPos(0)+[-W,0,0])  cube(MAOAM_DIMS+2*[W,0,0],center=true);
+        hull() {
+        translate(cPos(0)+[0,0,0])  cube(MAOAM_DIMS+2*[0,0,0],center=true);
+        translate(cPos(-2)+[0,0,0])  cube(MAOAM_DIMS+2*[0,0,0],center=true);
+        }
+        hull() {
+            translate(cPos(-2)+[0,0,0])  cube(MAOAM_DIMS+2*[0,0,0],center=true);
+            translate(cPos(-3)+[0,MAOAM_DIMS[1],0])  cube(MAOAM_DIMS+2*[0,W,0],center=true);
+        }
+//            translate(cPos(-1)) cube(MAOAM_DIMS+2*[W,W,W],center=true);
+        
+    }
+    
+//  cylinder(d=22);  
+}
+module dispenserPart2() {
+    
+    difference() {
+        union() {
+            intersection() {
+                hull() {
+                    translate(cPos(0))  cube(MAOAM_DIMS+4*[W,0,W],center=true);
+                    translate(cPos(-2)) cube(MAOAM_DIMS+4*[W,0,W],center=true);
+                }
+                translate([0,MAOAM_DIMS[1]/2-W,0])
+                translate(cPos(-2))
+                rotate(-90,[1,0,0])
+                cylinder(d=25,h=20,center=true);
+                
+            }
+            translate([0,MAOAM_DIMS[1]/2-W,0])
+            translate(cPos(-2))
+            rotate(-90,[1,0,0])
+            cylinder(d=25,h=3.6+W);
+
+            translate([0,MAOAM_DIMS[1]/2+3.6,0])
+            translate(cPos(-2))
+            rotate(-90,[1,0,0])
+            cylinder(d1=40,d2=35,h=3);
+
+        }
+            translate([0,MAOAM_DIMS[1]/2,0])
+            translate(cPos(-2))
+            rotate(-90,[1,0,0])
+            cylinder(d=23,h=50);
+
+
+        hull() {
+            translate(cPos(1))  cube(MAOAM_DIMS+2*[W,W,W],center=true);
+            translate(cPos(-2)) cube(MAOAM_DIMS+2*[W,W,W],center=true);
+        }
+        
+    }
+        
+
+    
 }
 
 
-dispenserPart();
-storage2();
+mode="preview";
+if(mode=="preview") {
+    stOff=[-MAOAM_DIMS[0]-W-W-W,0,0];
+    translate(stOff)
+    storage2();
+    dispenserPart();
+    translate(cPos(-1.5))
+    dispenserPart2();
+    translate(cPos(CAPACITY-1.5)+stOff)
+    rotate(180,[0,1,0])
+    dispenserPart2();
+}
 
+if(mode=="storage") {
+    storage2();
+}
+if(mode=="dispenser") {
+    dispenserPart();
+}
+if(mode=="hole") {
+    rotate(-90,[1,0,0])
+    dispenserPart2();
+}
+if(mode=="arm") {
+    arm();
+}
+if(mode=="top"){
+    cube([MAOAM_DIMS[0],MAOAM_DIMS[1],0]+[W,W,W]);
+}
 
