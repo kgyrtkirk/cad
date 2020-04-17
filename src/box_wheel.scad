@@ -5,16 +5,16 @@ $fn=48;
 W=2;
 D=22;   // hole diameter
 P=6;
-AD=3.2;
+AD=3.5;
 BB=50;
 
 WHEEL_D1=D-2*W-2*W;
 WHEEL_D2=D-2*W-3*W;
 WHEEL_H=D/2;
 
-module axis(){
+module axis(dia){
     rotate(90,[1,0,0])
-    cylinder(d=AD,center=true,h=BB);
+    cylinder(d=dia,center=true,h=BB);
 }
 
 module frame() {
@@ -30,7 +30,7 @@ module frame() {
         translate([0,0,-AD/2])
         cylinder(d=D-2*W,h=AD,center=true);
         
-        axis();
+        axis(AD);
     }
 }
 
@@ -42,7 +42,18 @@ module wheel() {
         rotate(90,[1,0,0])
         cylinder(d1=WHEEL_D1,d2=WHEEL_D2,h=WHEEL_H/3);
         
-        axis();
+
+        axis(AD);
+    }
+}
+
+module w1() {
+    difference() {
+    translate([0,WHEEL_H/2,0])
+        rotate(-90,[1,0,0])
+        cylinder(d=AD+W,h=(D-2*W-WHEEL_H-W/2)/2);
+    
+        axis(AD+.3);
     }
 }
 
@@ -53,6 +64,7 @@ if(mode=="preview") {
         union() {
             frame();
             wheel();
+            w1();
         }
         cube(BB);
     }
@@ -63,6 +75,10 @@ if(mode=="frame") {
 if(mode=="wheel") {
     rotate(90,[1,0,0])
     wheel();
+}
+if(mode=="w1") {
+    rotate(90,[1,0,0])
+    w1();
 }
 
 

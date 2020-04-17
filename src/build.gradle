@@ -55,6 +55,8 @@ def partMap = [
 	'dxf_car1':	['def'],
 	'dxf_car2':	['def'],
 	'geocaching_box1':	['holder','full','magnet-test'],
+	'activity_board_1':	['def'],
+	'box_wheel':		['frame','wheel','w1'],
 		]
 
 def projMap = [
