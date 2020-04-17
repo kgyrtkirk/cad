@@ -11,3 +11,6 @@
 [submodule "libraries/list-comprehension-demos"]
 	path = libraries/list-comprehension-demos
 	url = https://github.com/openscad/list-comprehension-demos
+[submodule "libraries/IoP-satellite"]
+	path = libraries/IoP-satellite
+	url = https://github.com/MisterHW/IoP-satellite
