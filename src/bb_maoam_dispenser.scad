@@ -164,7 +164,7 @@ module cover() {
 
 
 BOARD_W=4;
-mode="preview";
+mode="cover";
 if(mode=="preview") {
     difference() {
         union() {
@@ -184,19 +184,10 @@ if(mode=="preview") {
 if(mode=="wheel") {
     wheel();
 }
-if(mode=="driveGear") {
-    driveGear();
-}
-if(mode=="hole") {
-    rotate(-90,[1,0,0])
-    dispenserPart2();
-}
-if(mode=="arm") {
-    arm();
-}
-if(mode=="top"){
-    cube([MAOAM_DIMS[0],MAOAM_DIMS[1],0]+[W,W,W]);
-}
 
+if(mode=="cover") {
+    rotate(180,[1,0,0])
+    cover();
+}
 
 
