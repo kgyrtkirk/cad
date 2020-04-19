@@ -14,3 +14,9 @@
 [submodule "libraries/IoP-satellite"]
 	path = libraries/IoP-satellite
 	url = https://github.com/MisterHW/IoP-satellite
+[submodule "libraries/gears"]
+	path = libraries/gears
+	url = https://github.com/chrisspen/gears
+[submodule "libraries/cycloid_gear"]
+	path = libraries/cycloid_gear
+	url = https://gist.github.com/iluvcapra/8216164

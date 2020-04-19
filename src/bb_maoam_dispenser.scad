@@ -1,6 +1,12 @@
 
 use <syms.scad>
 use <9g_servo.scad>
+use <../libraries/gears/gears.scad>
+use <../libraries/cycloid_gear/cycloid_gear.scad>
+
+
+
+
 
 //MAOAM_DIMS=[27.7,8.6,15.8]+[1,1,1];
 MAOAM_DIMS=[8.6,15.8,27.7]+[1,1,1];
@@ -15,7 +21,8 @@ OVERSCALE=1.1;
 C_R1=CAPACITY*MAOAM_DIMS[0]*OVERSCALE/PI/2;
 C_R2=C_R1+MAOAM_DIMS[1]*OVERSCALE;
 
-WHEEL_H=MAOAM_DIMS[2]*OVERSCALE;
+GEAR_W=5;
+WHEEL_H=MAOAM_DIMS[2]*OVERSCALE+GEAR_W;
 
 module hullPairs(pos){
     for(i=[0:len(pos)-2]){
@@ -38,12 +45,15 @@ module atCartridgeDirs(middle) {
     }
     
 }
+            echo("CR2:",C_R2*2);
 
 module wheel() {
     
     difference() {
         union() {
-            cylinder(r=C_R2,h=W);
+spur_gear (modul=2, tooth_number=36, width=GEAR_W, bore=4, pressure_angle=20, helix_angle=0, optimized=false);
+//            CycloidGear(60,3,5);
+//            translate([0,0,GEAR_W])            cylinder(r=C_R2,h=W);
             cylinder(r=C_R1,h=WHEEL_H+W+CL);
         }
         cylinder(r=C_R1-W,h=WHEEL_H*3,center=true);
@@ -51,8 +61,9 @@ module wheel() {
     
     atCartridgeDirs() {
             hull() {
-                translate([C_R1,0,0]) cylinder(d=W,h=WHEEL_H);
-                translate([C_R2-W/2,0,WHEEL_H/2]) cube([W,W,WHEEL_H],center=true);
+                H=WHEEL_H-GEAR_W;
+                translate([C_R1,0,GEAR_W]) cylinder(d=W,h=H);
+                translate([C_R2-W/2,0,H/2+GEAR_W]) cube([W,W,H],center=true);
             }
 %            translate([C_R1,0,0])
             rotate(-90)
@@ -88,31 +99,17 @@ module cover() {
             translate([(C_R2+C_R1)/2,0,0])
             cylinder(d=DD,h=100);
         }
-        
+        translate([C_R2,0,0])
+        cylinder(r=C_R1,h=2*(GEAR_W+CL),center=true);
     }
 }
 
-
-module dispenserPart2() {
+module driveGear(){
     
-    difference() {
-        union() {
-            intersection() {
-                rotate(-90,[1,0,0])
-                cylinder(d=25,h=20,center=true);
-                
-            }
-            rotate(-90,[1,0,0])
-            cylinder(d=25,h=3.6+W);
+    spur_gear (modul=2, tooth_number=10, width=GEAR_W/2, bore=2, pressure_angle=20, helix_angle=0, optimized=true);
 
-            rotate(-90,[1,0,0])
-            cylinder(d1=40,d2=35,h=3);
-
-        }
-            rotate(-90,[1,0,0])
-            cylinder(d=23,h=50);
-    }
 }
+
 
 
 mode="preview";
@@ -121,14 +118,17 @@ if(mode=="preview") {
         union() {
             wheel();
             cover();
+            translate([36+12,0,0])
+            rotate(360/12/2)
+            driveGear();
         }
         translate([0,0,-W])
         cube(100);
     }
 }
 
-if(mode=="storage") {
-    storage2();
+if(mode=="wheel") {
+    wheel();
 }
 if(mode=="dispenser") {
     dispenserPart();
@@ -143,4 +143,6 @@ if(mode=="arm") {
 if(mode=="top"){
     cube([MAOAM_DIMS[0],MAOAM_DIMS[1],0]+[W,W,W]);
 }
+
+
 
