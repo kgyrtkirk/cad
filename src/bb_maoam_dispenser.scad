@@ -9,8 +9,8 @@ use <../libraries/stepper.scad>
 
 //MAOAM_DIMS=[27.7,8.6,15.8]+[1,1,1];
 MAOAM_DIMS=[8.6,15.8,27.7]+[1,1,1];
-W=1.6;
-CL=.4;
+W=.9;
+CL=.8;
 
 EPS=3e-3;
 CAPACITY=16;
@@ -61,6 +61,7 @@ module wheel() {
                 cylinder(r=5,h=4);
             }
             
+            scale([1,1,3])
             translate([0,0,4])
             mirror([0,0,1])
             stepper_28byj48_shaft(.1) ;
@@ -68,30 +69,35 @@ module wheel() {
     difference() {
         union() {
             cylinder(r=C_R2,h=W);
-            cylinder(r=C_R1,h=WHEEL_H+W+CL);
+            cylinder(r=C_R1,h=CL+WHEEL_H+CL+W);
         }
 //        translate([0,0,W])
         cylinder(r=C_R1-W,h=WHEEL_H*3,center=true);
-        
-        //decor stuff
-        if(false)
-        atCartridgeDirs() {
-            hull() {
+        atCartridgeDirs(true) {
+            for(h=[.25,.5,.75]*WHEEL_H) {
                 $fn=16;
-                DD=MAOAM_DIMS[0]*2/3;
-                translate([C_R1/3,0,0]) cylinder(d=EPS,h=3*W,center=true);
-                translate([C_R1-DD,0,0]) cylinder(d=DD,h=3*W,center=true);
+                translate([C_R1,0,h])
+                rotate(90,[0,1,0])
+                cylinder(d=MAOAM_DIMS[0]/2,h=10,center=true);
             }
         }
-
     }
     
+    
     atCartridgeDirs() {
+        difference() {
             hull() {
                 H=WHEEL_H;
                 translate([C_R1,0,0]) cylinder(d=W,h=H);
                 translate([C_R2-W/2,0,H/2+0]) cube([W,W,H],center=true);
             }
+            for(h=[.25,.5,.75]*WHEEL_H) {
+                $fn=16;
+                translate([(C_R1+C_R2)/2,0,h])
+                rotate(90,[1,0,0])
+                cylinder(d=MAOAM_DIMS[0]/2,h=10,center=true);
+            }
+        }
 %            translate([C_R1,0,W])
             rotate(-90)
             rotate(-360/2/CAPACITY)
@@ -164,7 +170,7 @@ module cover() {
 
 
 BOARD_W=4;
-mode="cover";
+mode="wheel";
 if(mode=="preview") {
     difference() {
         union() {
