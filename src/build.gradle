@@ -1,3 +1,4 @@
+import static groovy.io.FileType.*
 
 def outputDir="/home/kirk/3d/scad"
 
@@ -57,8 +58,12 @@ def partMap = [
 	'geocaching_box1':	['holder','full','magnet-test'],
 	'activity_board_1':	['def'],
 	'box_wheel':		['frame','wheel','w1'],
-	'bb_maoam_dispenser':	['cover','wheel'],
+	'bb_maoam_dispenser':	['cover','wheel','driveGear','driveGearCover'],
 		]
+
+//new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
+//	println f
+//}
 
 def projMap = [
 	'matchbox_container':	['floor'],
