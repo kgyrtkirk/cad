@@ -148,8 +148,10 @@ module wheel() {
         difference() {
             hull() {
                 H=WHEEL_H-GEAR_W;
+                Q=3*W;
                 translate([C_R1,0,GEAR_W]) cylinder(d=W,h=H);
-                translate([C_R2-W/2,0,H/2+GEAR_W]) cube([W,W,H],center=true);
+                translate([C_R2-W/2-Q,0,H/2+GEAR_W]) cube([W,W,H],center=true);
+                translate([C_R2-W/2,0,H/2+GEAR_W+Q/2]) cube([W,W,H-Q],center=true);
             }
             for(h=[.25,.5,.75]*WHEEL_H) {
                 $fn=16;
@@ -168,6 +170,7 @@ module wheel() {
 
 
 module ccylinder(r,h) {
+    $fn=128;
     C=W;
     cylinder(r=r,h=h-C);
     translate([0,0,h-C])
@@ -226,9 +229,12 @@ module cover() {
         // decor
         atCartridgeDirs(true) {
             DD=MAOAM_DIMS[0]*2/3;
-            translate([0,0,WHEEL_H/2])
-            rotate(90,[1,0,0])
-            cylinder(d=DD,h=100);
+            for(h=[.25,.5,.75]*(WHEEL_H+2*CL+W)) {
+                $fn=16;
+                translate([C_R2,0,h])
+                rotate(90,[0,1,0])
+                cylinder(d=DD,h=10,center=true);
+            }
             translate([(C_R2+C_R1)/2,0,0])
             cylinder(d=DD,h=100);
         }
@@ -242,7 +248,7 @@ module cover() {
 
 
 BOARD_W=4;
-mode="preview";
+mode="wheel";
 socialDistancing=8;
 if(mode=="preview") {
     difference() {
