@@ -56,9 +56,9 @@ def partMap = [
 	'dxf_car1':	['def'],
 	'dxf_car2':	['def'],
 	'geocaching_box1':	['holder','full','magnet-test','simple'],
-	'activity_board_1':	['def'],
-	'dimmer_bottom':	['def'],
-	'dimmer_top':		['def'],
+//	'activity_board_1':	['def'],
+//	'dimmer_bottom':	['def'],
+//	'dimmer_top':		['def'],
 	'box_wheel':		['frame','wheel','w1'],
 	'bb_maoam_dispenser':	['cover','wheel','driveGear','driveGearCover'],
 		]
