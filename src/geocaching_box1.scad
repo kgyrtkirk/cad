@@ -16,7 +16,7 @@ MAGNET_H=2.5;
 
 S=9;
 
-module container() {
+module container(magnets=true) {
 
 translate([0,0,W])
 thread("PCO-1881-ext",turns=2);
@@ -57,6 +57,7 @@ intersection() {
     cylinder(d=D+2*W,h=3*L,center=true);
 }
 
+if(magnets)
 translate([0,0,-L+S]/2)
 rotate(180)
 t()
@@ -76,10 +77,13 @@ ZS=-2;
 }
 
 }
-mode="full";
+mode="simple";
 
 if(mode=="full") {
     container();
+}
+if(mode=="simple") {
+    container(false);
 }
 
 if(mode=="magnet-test"){
