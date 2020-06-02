@@ -6,13 +6,24 @@ module atLeftWall(x) {
 
 
 
-    WALL_THICK=50;
-    WALL_H=2630;
-    HW_H=1000;
-    HW_WIDTH=2000;
-    FWL_WIDTH=600;
-    BACK_WALL_WIDTH=2000;
-    RIGHT_WALL_WIDTH=3000;
+WALL_THICK=70;          //*
+WALL_H=1695+915;        //* w/o laminate
+HW_H=1235;              //* w/o laminate
+HW_WIDTH=2075-30;       //*
+FWL_WIDTH=600;          //*
+BACK_WALL_WIDTH=1915;   //*
+
+RIGHT_WALL_P1=135+1755+42+18; //*?
+RIGHT_WALL_D1=0;
+RIGHT_WALL_P2=605;
+RIGHT_WALL_D2=330;
+RIGHT_WALL_P3=660+480+420+40;
+RIGHT_WALL_D3=50;
+
+
+RIGHT_WALL_WIDTH=RIGHT_WALL_P1+RIGHT_WALL_P2+RIGHT_WALL_P3;
+
+
 
 module atRightCorner() {
     translate([0,BACK_WALL_WIDTH,0])
@@ -34,9 +45,11 @@ module walls() {
         wall(WIDTH,HW_H);
     }
     module radiator() {
+        // FIXME: romatic-width?
+        D=30;
       for(i=[0:5])
-      translate([50*i,0,0])
-        cylinder($fn=4,d=50,h=500);
+      translate([50*i,-D/2,200])
+        cylinder($fn=4,d=D,h=600);
     }
 
     rotate(0) {
@@ -47,13 +60,22 @@ module walls() {
     }
     
     
-    translate([80,800,0])
+    // gazcso
+    translate([50,0,700])
+    rotate(-90,[1,0,0])
+    cylinder(d=25,h=BACK_WALL_WIDTH);
+    // gazelzaro
+    translate([50,255,700])
+    sphere(d=70);
+    
+    
+    translate([60,800,0])
     rotate(90)
     radiator();
     
-    window_pos=[0,800,800];
-    window_w=700;
-    window_h=1000;
+    window_pos=[0,460,885];
+    window_w=970;
+    window_h=1510;
     window_b=40;
     difference() {
         rotate(-90)
@@ -62,8 +84,15 @@ module walls() {
             cube([200,window_w,window_h]);
         }
     }
+    
+%    translate([0,460+window_w,920]){
+        cube([window_w,40,1]);
+    }
+    
     translate(window_pos) {
-        cube([window_b,window_w,10]);
+        color([1,0,0])
+        mirror([0,0,1])
+        cube([window_b,window_w,45]);
     }
     
     translate([50,1800,0])
@@ -96,7 +125,7 @@ module bBox(spec,e) {
     
     width=getProp(spec,"WIDTH");
     depth=getProp(spec,"DEPTH");;
-    height=600;
+    height=800+80+30;
     inner_w=width-2*W;
     
 //    backplaneCenter=[0,depth-3,height/2+W-INSET]
@@ -149,9 +178,9 @@ module bBox(spec,e) {
 
 mode="preview";
 
-L1W=200;    L1X=0;
+L1W=100;    L1X=0;
 L2W=600;    L2X=L1X+L1W;
-L3W=200;    L3X=L2X+L2W;
+L3W=100;    L3X=L2X+L2W;
 L4W=800;    L4X=L3X+L3W;
 L5W=600;    L5X=L4X+L4W;
 L6W=600;    L6X=L5X+L5W;
