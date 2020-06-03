@@ -61,6 +61,7 @@ def partMap = [
 //	'dimmer_top':		['def'],
 	'box_wheel':		['frame','wheel','w1'],
 	'bb_maoam_dispenser':	['cover','wheel','driveGear','driveGearCover'],
+	'inserta_knock-in_drill':	['def'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
@@ -68,9 +69,10 @@ def partMap = [
 //}
 
 def projMap = [
-	'matchbox_container':	['floor'],
-	'esp-gen-3':		['project'],
-	'kitchen':		['p1'],
+	'matchbox_container':		['floor'],
+	'esp-gen-3':			['project'],
+//	'kitchen':			['p1'],
+	'inserta_knock-in_drill':	['project'],
 	]
 
 task allScad() {}
