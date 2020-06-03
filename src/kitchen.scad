@@ -13,6 +13,8 @@ HW_WIDTH=2075-30;       //*
 FWL_WIDTH=600;          //*
 BACK_WALL_WIDTH=1915;   //*
 
+LEFT_WALL_WIDTH=HW_WIDTH+FWL_WIDTH;
+
 RIGHT_WALL_P1=135+1755+42+18; //*?
 RIGHT_WALL_D1=0;
 RIGHT_WALL_P2=605;
@@ -27,13 +29,16 @@ RIGHT_WALL_WIDTH=RIGHT_WALL_P1+RIGHT_WALL_P2+RIGHT_WALL_P3;
 
 module atRightCorner() {
     translate([0,BACK_WALL_WIDTH,0])
+
+    mirror([1,0,0])
     rotate(180)
         children();
 }
 
-module walls() {
+module walls(part="A") {
     
     module wall(WIDTH,HEIGHT) {
+        color([.3,.7,.7])
         translate([-WIDTH,-WALL_THICK,0])
         cube([WIDTH,WALL_THICK,HEIGHT]);
     }
@@ -52,6 +57,7 @@ module walls() {
         cylinder($fn=4,d=D,h=600);
     }
 
+    if(part=="L" || part=="A")
     rotate(0) {
         translate([HW_WIDTH+FWL_WIDTH,0,0])
         halfWall(HW_WIDTH);
@@ -77,6 +83,7 @@ module walls() {
     window_w=970;
     window_h=1510;
     window_b=40;
+    if(part=="B" || part=="A")
     difference() {
         rotate(-90)
         fullWall(BACK_WALL_WIDTH);
@@ -98,8 +105,15 @@ module walls() {
     translate([50,1800,0])
         cylinder(d=50,h=WALL_H);
     
-    atRightCorner()
-    fullWall(RIGHT_WALL_WIDTH);
+    if(part=="R" || part=="A")
+    atRightCorner() {
+        
+        mirror([1,0,0])
+        fullWall(RIGHT_WALL_WIDTH);
+        translate([RIGHT_WALL_P1,RIGHT_WALL_D2,0])
+        mirror([1,0,0])
+        fullWall(RIGHT_WALL_P2);
+    }
     
     
 }
@@ -112,7 +126,6 @@ function getProp(props,k)= (props[0][0] == k) ? props[0][1] : (props == undef ?
     undef : getProp(sublist(props,1), k)
     );
 
-//walls();
 W=19;
 
 INSET=10;
@@ -176,23 +189,34 @@ module bBox(spec,e) {
 
 //echo(concat([[1,2]],[[3,4]]));
 
-mode="preview";
-
-L1W=100;    L1X=0;
+L1W=80;    L1X=0;
 L2W=600;    L2X=L1X+L1W;
-L3W=100;    L3X=L2X+L2W;
-L4W=800;    L4X=L3X+L3W;
+L3W=208;    L3X=L2X+L2W;
+L4W=600;    L4X=L3X+L3W;
 L5W=600;    L5X=L4X+L4W;
 L6W=600;    L6X=L5X+L5W;
 
-R1W=200;    R1X=-R1W;
-R2W=600;    R2X=R1X-R2W;
-R3W=600;    R3X=R2X-R3W;
-R4W=600;    R4X=R3X-R4W;
+LEFT_PART_WIDTH=L1W+L2W+L3W+L4W+L5W+L6W;
+echo(LEFT_PART_WIDTH);
+echo(LEFT_WALL_WIDTH);
+echo(LEFT_WALL_WIDTH-LEFT_PART_WIDTH);
 
 
+//2670
+R1W=150;    R1X=0;//-R1W;
+R2W=600;    R2X=R1X+R1W;
+R3W=600;    R3X=R2X+R2W;
+R4W=600;    R4X=R3X+R3W;
+
+
+R_P1_REMAIN=RIGHT_WALL_P1- (R1W+R2W+R3W+R4W);
+echo ("P1_REMAIN",R_P1_REMAIN);
+if(R_P1_REMAIN<0 ) {
+    error();
+}
 module part(partName,partMode) {
-    leftDefs=[prop("DEPTH",400)];
+    
+    leftDefs=[prop("DEPTH",392)];
     if(partName == "L6") {
         bBox(concat(leftDefs,[prop("WIDTH",L6W)]),partMode);
     }
@@ -207,6 +231,9 @@ module part(partName,partMode) {
     }
     if(partName == "L2") {
         bBox(concat([prop("DEPTH",600),prop("WIDTH",L2W)],leftDefs),partMode);
+    }
+    if(partName == "L1") {
+        bBox(concat([prop("DEPTH",600),prop("WIDTH",L1W)],leftDefs),partMode);
     }
     
     rDefs=[prop("DEPTH",600)];
@@ -226,10 +253,7 @@ module part(partName,partMode) {
     
 }
 
-
-if(mode=="preview") {
-    walls();
-    
+module previewL() {
     translate([L1X,0,0])
     part("L1","A");
     translate([L2X,0,0])
@@ -242,21 +266,41 @@ if(mode=="preview") {
     part("L5","A");
     translate([L6X,0,0])
     part("L6","A");
-    
+}
+
+module previewR() {
     
     atRightCorner() {
-    translate([R1X,0,0])
-    part("R1","A");
-    translate([R2X,0,0])
-    part("R2","A");
-    translate([R3X,0,0])
-    part("R3","A");
-    translate([R4X,0,0])
-    part("R4","A");
-
+        translate([R1X,0,0])
+        part("R1","A");
+        translate([R2X,0,0])
+        part("R2","A");
+        translate([R3X,0,0])
+        part("R3","A");
+        translate([R4X,0,0])
+        part("R4","A");
     }
+}
+
+
+mode="previewL";
+
+if(mode=="preview") {
+    walls("A");
     
-    
+    previewL();
+    previewR();
+}
+
+if(mode=="previewL") {
+    walls("L");
+    walls("B");
+    previewL();
+}
+if(mode=="previewR") {
+    walls("R");
+    walls("B");
+    previewR();
 }
 
 //mode="pB";
