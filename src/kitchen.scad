@@ -4,8 +4,6 @@ module atLeftWall(x) {
     translate();
 }
 
-
-
 WALL_THICK=70;          //*
 WALL_H=1695+915;        //* w/o laminate
 HW_H=1235;              //* w/o laminate
@@ -22,10 +20,7 @@ RIGHT_WALL_D2=330;
 RIGHT_WALL_P3=660+480+420+40;
 RIGHT_WALL_D3=50;
 
-
 RIGHT_WALL_WIDTH=RIGHT_WALL_P1+RIGHT_WALL_P2+RIGHT_WALL_P3;
-
-
 
 module atRightCorner() {
     translate([0,BACK_WALL_WIDTH,0])
@@ -52,9 +47,9 @@ module walls(part="A") {
     module radiator() {
         // FIXME: romatic-width?
         D=30;
-      for(i=[0:5])
-      translate([50*i,-D/2,200])
-        cylinder($fn=4,d=D,h=600);
+        for(i=[0:5])
+        translate([50*i,-D/2,200])
+            cylinder($fn=4,d=D,h=600);
     }
 
     if(part=="L" || part=="A")
@@ -64,8 +59,7 @@ module walls(part="A") {
         translate([FWL_WIDTH,0,0])
         fullWall(FWL_WIDTH);
     }
-    
-    
+
     // gazcso
     translate([50,0,700])
     rotate(-90,[1,0,0])
