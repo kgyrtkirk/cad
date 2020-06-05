@@ -114,11 +114,7 @@ module walls(part="A") {
 
 
 
-function prop(k,v)=[k,v];
-function sublist(l,start)=start<len(l) ? [for(i=[start:len(l)-1])  l[i]] : undef;
-function getProp(props,k)= (props[0][0] == k) ? props[0][1] : (props == undef ? 
-    undef : getProp(sublist(props,1), k)
-    );
+use <kitchen_box.scad>
 
 W=19;
 
@@ -208,6 +204,7 @@ echo ("P1_REMAIN",R_P1_REMAIN);
 if(R_P1_REMAIN<0 ) {
     error();
 }
+
 module part(partName,partMode) {
     
     leftDefs=[prop("DEPTH",392)];
