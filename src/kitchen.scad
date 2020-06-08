@@ -123,63 +123,9 @@ BACKSET=10;
 BACKPLANE_W=1.6;
 BACKPLANE_NUT_W=2;
 
-
-module bBox(spec,e) {
-    
-    width=getProp(spec,"WIDTH");
-    depth=getProp(spec,"DEPTH");;
-    height=800+80+30;
-    inner_w=width-2*W;
-    
-//    backplaneCenter=[0,depth-3,height/2+W-INSET]
-    
-    sidePos=-[width/2-W/2,-depth/2,-height/2];
-    
-    module element(piece) {
-        
-        difference() {
-            union() {
-                if(piece=="R" || piece=="A")
-                translate(sidePos)
-                cube([W,depth,height],center=true);
-                if(piece=="L" || piece=="A")
-                mirror([1,0,0])
-                translate(sidePos)
-                cube([W,depth,height],center=true);
-                if(piece=="B" || piece=="A")
-                translate([0,depth/2,W/2])
-                cube([inner_w,depth,W],center=true);
-            }
-            translate([0,depth-BACKSET,height/2+W-INSET])
-            cube([inner_w+INSET*2,3,height],center=true);
-            translate([0,depth/2,300])
-            rotate(90,[0,1,0])
-            cylinder(d=depth/2,h=1000,center=true);
-        }
-    }
-    
-    if(e=="L") 
-        rotate(90,[0,1,0])
-        translate(sidePos)
-        element(e);
-    if(e=="R") 
-        rotate(-90,[0,1,0])
-        translate(-sidePos)
-        element(e);
-    if(e=="B")
-        translate([0,0,-W/2])
-        element(e);
-    if(e=="A")
-        translate([width/2,0*depth,0])
-        element(e);
- //   element(e);
-    
-}
-
-
 //echo(concat([[1,2]],[[3,4]]));
 
-L1W=80;    L1X=0;
+L1W=80;     L1X=0;
 L2W=600;    L2X=L1X+L1W;
 L3W=208;    L3X=L2X+L2W;
 L4W=600;    L4X=L3X+L3W;
@@ -207,15 +153,24 @@ if(R_P1_REMAIN<0 ) {
 
 module part(partName,partMode) {
     
-    leftDefs=[prop("DEPTH",392)];
+    $drawerState="CLOSED";
+    leftMaximera=[125,125,800-250];
+    
+    leftDefs=[prop("DEPTH",392),prop("HEIGHT",800),];
     if(partName == "L6") {
-        bBox(concat(leftDefs,[prop("WIDTH",L6W)]),partMode);
+        bBox(concat(leftDefs,[prop("WIDTH",L6W)]),partMode) {
+            maximera(leftMaximera);
+        }
     }
     if(partName == "L5") {
-        bBox(concat(leftDefs,[prop("WIDTH",L5W)]),partMode);
+        bBox(concat(leftDefs,[prop("WIDTH",L5W)]),partMode) {
+            maximera(leftMaximera);
+        }
     }
     if(partName == "L4") {
-        bBox(concat(leftDefs,[prop("WIDTH",L4W)]),partMode);
+        bBox(concat(leftDefs,[prop("WIDTH",L4W)]),partMode) {
+            maximera(leftMaximera);
+        }
     }
     if(partName == "L3") {
         bBox(concat(leftDefs,[prop("WIDTH",L3W)]),partMode);

@@ -74,7 +74,7 @@ module bBox(spec,e) {
         element(e)
             children();
     if(e=="A")
-//        translate([width/2,0*depth,0])
+        translate([$width/2,0*$depth,0])
         element(e)
             children();
  //   element(e);
@@ -135,9 +135,9 @@ module z() {
 D60=590;
 D37=366;
 
-$drawerState="OPEN";
 mode="A";
 bBox([prop("WIDTH",600),prop("HEIGHT",800),prop("DEPTH",D37)],mode) {
+    $drawerState="OPEN";
     sizes=[125,125,550];
     maximera(sizes);
 }
