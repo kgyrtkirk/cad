@@ -25,6 +25,7 @@ module bBox(spec,e) {
     
     sidePos=-[width/2-W/2,-depth/2,-height/2];
     
+    
     module element(piece) {
         
         difference() {
@@ -40,6 +41,9 @@ module bBox(spec,e) {
                 translate([0,depth/2,W/2])
                 cube([inner_w,depth,W],center=true);
                 
+  //              hull()
+                translate([0,depth,height])
+                    children(1);
             }
             
             
@@ -47,6 +51,7 @@ module bBox(spec,e) {
             cube([inner_w+INSET*2,3,height],center=true);
 
             symX([width/2,depth,height])
+                
                 children(0);
             
         }
@@ -68,8 +73,10 @@ module bBox(spec,e) {
             children();
     if(e=="A")
 //        translate([width/2,0*depth,0])
-        element(e)
-            children();
+        element(e) {
+            children(0);
+            children(1);
+        }
  //   element(e);
     
 }
@@ -80,7 +87,7 @@ function prefix(s,p)=(len(p)==0 || p==undef)?[]:concat([s+p[0]], prefix(s+p[0],s
 //function prefix(s,p)=(len(p)==0 || p==undef)?[]:concat([s+p[0]], [prefix(s+p[0],sublist(p,1))] );
 //function prefix(s,p)=(p.length==0)?[]:concat([s+p[0]],prefix(s+p[0],p[1:]));
 
-module maximera(sizes,mode) {
+module maximera(width,sizes,type,mode) {
     HOLE_D=5;
     C0=[    20,
             32,
@@ -89,31 +96,37 @@ module maximera(sizes,mode) {
     ];
     
     C1=prefix(0,C0);
-/*    
-    //C1=prefix(0,C0);
-    A=-32/(778-834);
-    C1=[0,390, 778, 834] *A;
-//    echo(-32/(778-834));
-    echo(C1/32);
-    echo(((828-385)*A)/32);
-    
-    C2=[0,63,443]*32/63;
-    echo("C2",C2);
-    C3=[0,55,387,387]*32/55;
-    echo(C3);
-    echo(C0);
-*/  
     
     x=prefix(0,[for(i=sizes) abs(i)]);
-    for(i=sizes) {
-        
-        // holes
-        for(x=C1)
-            translate([0,-x,-i]) {
-            rotate(90,[0,1,0])
-            cylinder(d=HOLE_D,h=100,center=true);
+    for(i=[0:len(sizes)-1]) {
+        off=x[i];
+        size=sizes[i];
+//        echo(off);
+    // holes
+        if(type=="H") {
+            for(x=C1)
+                translate([0,-x,-off+50]) {
+                rotate(90,[0,1,0])
+                cylinder(d=HOLE_D,h=100,center=true);
+            }
+        }else{
+            o_y=(type=="X" ? 0 : 500);
+            color([0,1,0])
+            translate([0,o_y,0]) {
+                hull()
+                symX([width/2,0,0])
+                translate([-W/4-2,W/2+1,-off+size-size/2])
+                cube([W/2,W,size-4],center=true);
+
+                D=500;
+                hull()
+                symX([width/2-2*W,-D/2,-off+size/2])
+                cube([W/2,D,size/2],center=true);
+            }
+            
+//            cube(100);
+            // front
         }
-        // front
         
         
     }
@@ -122,6 +135,10 @@ module z() {
     children();
 }
 
-bBox([prop("WIDTH",600),prop("DEPTH",600)],"A")
-z()
-    maximera([50]);
+mode="A";
+bBox([prop("WIDTH",600),prop("DEPTH",590)],mode) {
+    sizes=[100,200];
+    maximera(600,sizes,"H",mode);
+    maximera(600,sizes,"S",mode);
+}
+
