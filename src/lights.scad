@@ -48,11 +48,19 @@ module worm(part) {
             [ 1,4,0],
         ]),[sqrt(3)/2,1,1]*2/3*DOOR_D);
     echo(points);
+
+    points1=sx(uu([
+            [ 1,0,0],
+            [-1,1,0],
+            [ 1,2,0],
+            [-1,3,0],
+            [ 1,4,0],
+        ]),[sqrt(3)/2+.0,1,1]*2/3*DOOR_D);
     
     
     module w() {
         difference() {
-            hullPairs(points) {
+            hullPairs(points1) {
                 cylinder(d=WW,center=true);
             }
             for(p=points) {
@@ -65,29 +73,15 @@ module worm(part) {
     }
     
     if(part>=0) {
-        p1=points[1];
-        p0=points[0];
-        d=p1-p0;
-       
-        rotate(-atan2(d[1],d[0]))
-        translate(-p0) {
-            difference() {
-            intersection() {
-                w();
-                hull()
-                for(p=[points[0],points[1]]) {
-                    translate(p)
-                    cylinder(d=WW,h=100,center=true);
-                }
-            }
-                hull()
-                for(p=[points[2],points[1]]) {
-                    translate(p)
-                    cylinder(d=WW,h=100,center=true);
-                }
-            }
-        }
         
+        y0=(part==0)?-1000:points[0][1];
+        y1=points[1][1];
+        intersection() {
+            w();
+            
+            translate([0,y0+(y1-y0)/2,0])
+            cube([HALL_WIDTH,y1-y0,100],center=true);
+        }
         
     }else{
         w();    
@@ -97,7 +91,7 @@ module worm(part) {
 }
 
 //translate([0,DOOR1_X+DOOR_W/2-DOOR_D*6/3,0])
-worm(1);
+worm(-1);
 
 
 
