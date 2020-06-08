@@ -16,14 +16,15 @@ BACKPLANE_NUT_W=2;
 
 module bBox(spec,e) {
     
-    width=getProp(spec,"WIDTH");
-    depth=getProp(spec,"DEPTH");;
-    height=800;
-    inner_w=width-2*W;
+    $width=getProp(spec,"WIDTH");
+    $depth=getProp(spec,"DEPTH");;
+    $height=800;
+    
+    $inner_w=$width-2*W;
     
 //    backplaneCenter=[0,depth-3,height/2+W-INSET]
     
-    sidePos=-[width/2-W/2,-depth/2,-height/2];
+    sidePos=-[$width/2-W/2,-$depth/2,-$height/2];
     
     
     module element(piece) {
@@ -32,25 +33,25 @@ module bBox(spec,e) {
             union() {
                 if(piece=="R" || piece=="A")
                 translate(sidePos)
-                cube([W,depth,height],center=true);
+                cube([W,$depth,$height],center=true);
                 if(piece=="L" || piece=="A")
                 mirror([1,0,0])
                 translate(sidePos)
-                cube([W,depth,height],center=true);
+                cube([W,$depth,$height],center=true);
                 if(piece=="B" || piece=="A")
-                translate([0,depth/2,W/2])
-                cube([inner_w,depth,W],center=true);
+                translate([0,$depth/2,W/2])
+                cube([$inner_w,$depth,W],center=true);
                 
   //              hull()
-                translate([0,depth,height])
+                translate([0,$depth,$height])
                     children(1);
             }
             
             
-            translate([0,BACKSET,height/2+W-INSET])
-            cube([inner_w+INSET*2,3,height],center=true);
+            translate([0,BACKSET,$height/2+W-INSET])
+            cube([$inner_w+INSET*2,3,$height],center=true);
 
-            symX([width/2,depth,height])
+            symX([$width/2,$depth,$height])
                 
                 children(0);
             
