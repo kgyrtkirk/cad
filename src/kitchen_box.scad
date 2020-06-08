@@ -17,8 +17,8 @@ BACKPLANE_NUT_W=2;
 module bBox(spec,e) {
     
     $width=getProp(spec,"WIDTH");
-    $depth=getProp(spec,"DEPTH");;
-    $height=800;
+    $depth=getProp(spec,"DEPTH");
+    $height=getProp(spec,"HEIGHT");
     
     $inner_w=$width-2*W;
     
@@ -106,18 +106,19 @@ module maximera(sizes) {
                 cylinder(d=HOLE_D,h=100,center=true);
             }
         }else{
-            D=500;
-            o_y=($drawerState=="CLOSED" ? 0 : 500);
-            color([0,1,0])
+            D=$depth-40;
+            o_y=($drawerState=="CLOSED" ? 0 : D-50);
             translate([0,o_y,0]) {
+            color([0,1,0])
                 hull()
                 symX([$width/2,0,0])
                 translate([-W/4-2,W/2+1,-off+size-size/2])
                 cube([W/2,W,size-4],center=true);
 
+            color([1,0,0])
                 hull()
                 symX([$width/2-2*W,-D/2,-off+size/2])
-                cube([W/2,D,size/2],center=true);
+                cube([W/2,D,size-10],center=true);
             }
             
 //            cube(100);
@@ -131,10 +132,13 @@ module z() {
     children();
 }
 
-$drawerState="CLOSED";
+D60=590;
+D37=366;
+
+$drawerState="OPEN";
 mode="A";
-bBox([prop("WIDTH",600),prop("DEPTH",590)],mode) {
-    sizes=[125,200,400];
+bBox([prop("WIDTH",600),prop("HEIGHT",800),prop("DEPTH",D37)],mode) {
+    sizes=[125,125,550];
     maximera(sizes);
 }
 
