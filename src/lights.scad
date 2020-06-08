@@ -21,8 +21,6 @@ module wall() {
     cube([40,DOOR_W,1]);
 }
 
-wall();
-
 module hullPairs(pos){
     for(i=[0:len(pos)-2]){
         hull() {
@@ -41,31 +39,23 @@ function sx(li,s)=[for(i=li) [i[0]*s[0],i[1]*s[1],i[2]*s[2]]];
 function uu(li) = [for(p=li) [p[0]*pow((1+p[1])/len(li),0),p[1],p[2]]];
 module worm(part) {
     points=sx(uu([
-            [ 1,0,0],
+//            [ 1,0,0],
             [-1,1,0],
             [ 1,2,0],
             [-1,3,0],
             [ 1,4,0],
-        ]),[sqrt(3)/2,1,1]*2/3*DOOR_D);
+        ]),[.5,1,1]*DOOR_D);
     echo(points);
 
-    points1=sx(uu([
-            [ 1,0,0],
-            [-1,1,0],
-            [ 1,2,0],
-            [-1,3,0],
-            [ 1,4,0],
-        ]),[sqrt(3)/2+.0,1,1]*2/3*DOOR_D);
-    
     
     module w() {
         difference() {
-            hullPairs(points1) {
+            hullPairs(points) {
                 cylinder(d=WW,center=true);
             }
             for(p=points) {
                 translate(p) {
-                cylinder(d=57,h=100,center=true);
+                cylinder(d=60,h=100,center=true);
                 cylinder(d=88,h=100);
                 }
             }
@@ -74,8 +64,16 @@ module worm(part) {
     
     if(part>=0) {
         
+        
         y0=(part==0)?-1000:points[0][1];
         y1=points[1][1];
+        d=points[1]-points[0];
+        
+        
+        a=atan2(d[0],d[1]);
+        
+        rotate(a)
+        translate(-points[0])
         intersection() {
             w();
             
@@ -90,21 +88,22 @@ module worm(part) {
     
 }
 
-//translate([0,DOOR1_X+DOOR_W/2-DOOR_D*6/3,0])
-worm(-1);
+mode="p0";
+
+if(mode=="preview"){
+    wall();
+    translate([0,DOOR1_X+DOOR_W/2-DOOR_D*9/3,0])
+    worm(-1);
+}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+if(mode=="p0"){
+    projection()
+    worm(0);
+}
+if(mode=="p1"){
+    projection()
+    worm(1);
+}
 
 
