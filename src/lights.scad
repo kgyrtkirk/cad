@@ -55,7 +55,7 @@ module worm(part) {
             }
             for(p=points) {
                 translate(p) {
-                cylinder(d=60,h=100,center=true);
+                cylinder(d=70,h=100,center=true);
                 cylinder(d=88,h=100);
                 }
             }
@@ -67,7 +67,9 @@ module worm(part) {
         
         y0=(part==0)?-1000:points[0][1];
         y1=points[1][1];
+        
         d=points[1]-points[0];
+        echo(norm(d));
         
         
         a=atan2(d[0],d[1]);
