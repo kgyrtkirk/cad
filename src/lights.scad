@@ -39,11 +39,11 @@ function sx(li,s)=[for(i=li) [i[0]*s[0],i[1]*s[1],i[2]*s[2]]];
 function uu(li) = [for(p=li) [p[0]*pow((1+p[1])/len(li),0),p[1],p[2]]];
 module worm(part) {
     points=sx(uu([
-//            [ 1,0,0],
             [-1,1,0],
             [ 1,2,0],
             [-1,3,0],
             [ 1,4,0],
+            [-1,5,0],
         ]),[.5,1,1]*DOOR_D);
     echo(points);
 
@@ -57,7 +57,12 @@ module worm(part) {
                 translate(p) {
                 cylinder(d=70,h=100,center=true);
                 cylinder(d=88,h=100);
-                }
+                } 
+            }
+            for(i=[0:len(points)-2:len(points)-2]) {
+                p=(points[i]+points[i+1])/2;
+                translate(p)
+                cylinder(d=44,h=100,center=true);
             }
         }
     }
@@ -90,7 +95,7 @@ module worm(part) {
     
 }
 
-mode="p0";
+mode="pr";
 
 if(mode=="preview"){
     wall();
@@ -106,6 +111,15 @@ if(mode=="p0"){
 if(mode=="p1"){
     projection()
     worm(1);
+}
+
+
+if(mode=="pr"){
+    projection() {
+    wall();
+    translate([0,DOOR1_X+DOOR_W/2-DOOR_D*9/3,0])
+    worm(-1);
+    }
 }
 
 

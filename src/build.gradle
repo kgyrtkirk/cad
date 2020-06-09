@@ -73,7 +73,7 @@ def projMap = [
 	'esp-gen-3':			['project'],
 //	'kitchen':			['p1'],
 	'inserta_knock-in_drill':	['project'],
-	'lights':			['p0','p1'],
+	'lights':			['p0','p1','pr'],
 	]
 
 task allScad() {}
