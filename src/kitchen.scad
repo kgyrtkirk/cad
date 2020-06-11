@@ -20,6 +20,26 @@ RIGHT_WALL_D2=330;
 RIGHT_WALL_P3=660+480+420+40;
 RIGHT_WALL_D3=50;
 
+
+function prefix(s,p)=(len(p)==0 || p==undef)?[]:concat([s+p[0]], prefix(s+p[0],sublist(p,1)) );
+
+RIGHT_WALL_PROFILE=prefix([0,0],[
+    [0,0],
+    [135+1755+42+18,0], //*?
+    [0,330],
+    [605,0],
+    [0,-330+50],
+    [660+480+420+40,0],
+    [0,-10],
+    [-(660+480+420+40),0],
+    [0,-50],
+]);
+
+echo(RIGHT_WALL_PROFILE);
+
+//atRightCorner() 
+//polygon(RIGHT_WALL_PROFILE);
+
 RIGHT_WALL_WIDTH=RIGHT_WALL_P1+RIGHT_WALL_P2+RIGHT_WALL_P3;
 
 module atRightCorner() {
@@ -102,6 +122,11 @@ module walls(part="A") {
     if(part=="R" || part=="A")
     atRightCorner() {
         
+        
+//        atRightCorner() 
+        linear_extrude(WALL_H)
+        polygon(RIGHT_WALL_PROFILE);
+        
         mirror([1,0,0])
         fullWall(RIGHT_WALL_WIDTH);
         translate([RIGHT_WALL_P1,RIGHT_WALL_D2,0])
@@ -143,7 +168,6 @@ R1W=150;    R1X=0;//-R1W;
 R2W=600;    R2X=R1X+R1W;
 R3W=600;    R3X=R2X+R2W;
 R4W=600;    R4X=R3X+R3W;
-
 
 R_P1_REMAIN=RIGHT_WALL_P1- (R1W+R2W+R3W+R4W);
 echo ("P1_REMAIN",R_P1_REMAIN);
@@ -225,11 +249,13 @@ module previewR() {
         part("R3","A");
         translate([R4X,0,0])
         part("R4","A");
+        
+        
     }
 }
 
 
-mode="previewL";
+mode="previewR";
 
 if(mode=="preview") {
     walls("A");
