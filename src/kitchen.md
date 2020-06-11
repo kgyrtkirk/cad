@@ -18,3 +18,6 @@ vasalat:
 toloajto
 	https://butorkellek.eu/butorszerelvenyek/toloajto-szerelvenyek/toloajto-sinek?page=3#content
 	http://www.erfa.hu/fuggeszto-vasalat&page=9
+
+mikro:
+	* figyelni a melysegere; a 370-esbe kell befernie
