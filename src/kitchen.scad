@@ -124,14 +124,13 @@ module walls(part="A") {
         
         
 //        atRightCorner() 
+        
+        color([.3,.7,.7])
         linear_extrude(WALL_H)
         polygon(RIGHT_WALL_PROFILE);
         
         mirror([1,0,0])
         fullWall(RIGHT_WALL_WIDTH);
-        translate([RIGHT_WALL_P1,RIGHT_WALL_D2,0])
-        mirror([1,0,0])
-        fullWall(RIGHT_WALL_P2);
     }
     
     
@@ -164,7 +163,7 @@ echo(LEFT_WALL_WIDTH-LEFT_PART_WIDTH);
 
 
 //2670
-R1W=150;    R1X=0;//-R1W;
+R1W=150-18;    R1X=0;//-R1W;
 R2W=600;    R2X=R1X+R1W;
 R3W=600;    R3X=R2X+R2W;
 R4W=600;    R4X=R3X+R3W;
@@ -212,13 +211,26 @@ module part(partName,partMode) {
         bBox(concat([prop("DEPTH",600),prop("WIDTH",R1W)],leftDefs),partMode);
     }
     if(partName == "R2") {
-        bBox(concat([prop("DEPTH",600),prop("WIDTH",R2W)],leftDefs),partMode);
+        bBox(concat([prop("DEPTH",600),prop("WIDTH",R2W)],leftDefs),partMode) {
+            maximera(leftMaximera);
+        }
     }
     if(partName == "R3") {
-        bBox(concat([prop("DEPTH",600),prop("WIDTH",R3W)],leftDefs),partMode);
+        // mosogatogep bosch;
+        // https://euronics.hu/termekek/bosch-smv46mx01e-beepitheto-mosogatogep/p/222189
+        // * borderless
+        // * magassag: 815~875
+        // * front panel 655-675
+        // also takaro?
+        if(false)
+        bBox(concat([prop("DEPTH",600),prop("WIDTH",R3W)],leftDefs),partMode) {
+            maximera([800]);
+        }
     }
     if(partName == "R4") {
-        bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode);
+        bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode) {
+            maximera([125,800-125]);
+        }   
     }
     
 }
