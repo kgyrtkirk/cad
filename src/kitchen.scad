@@ -23,7 +23,7 @@ RIGHT_WALL_D3=50;
 
 function prefix(s,p)=(len(p)==0 || p==undef)?[]:concat([s+p[0]], prefix(s+p[0],sublist(p,1)) );
 
-RIGHT_WALL_PROFILE=prefix([0,0],[
+RIGHT_WALL_DELTA=[
     [0,0],
     [135+1755+42+18,0], //*?
     [0,330],
@@ -33,7 +33,9 @@ RIGHT_WALL_PROFILE=prefix([0,0],[
     [0,-10],
     [-(660+480+420+40),0],
     [0,-50],
-]);
+];
+
+RIGHT_WALL_PROFILE=prefix([0,0],RIGHT_WALL_DELTA);
 
 echo(RIGHT_WALL_PROFILE);
 
@@ -122,7 +124,6 @@ module walls(part="A") {
     if(part=="R" || part=="A")
     atRightCorner() {
         
-        
 //        atRightCorner() 
         
         color([.3,.7,.7])
@@ -167,6 +168,16 @@ R1W=150-18;    R1X=0;//-R1W;
 R2W=600;    R2X=R1X+R1W;
 R3W=600;    R3X=R2X+R2W;
 R4W=600;    R4X=R3X+R3W;
+R4W=600;    R4X=R3X+R3W;
+
+R_W=[0,150-18,600,600,600,650];
+R_X=prefix(0,R_W);
+R_Q=50;     // toloajto hely
+//R_D=[]
+
+
+Z_WIDTH=[0,600,600,400];
+ZX=prefix(0,Z_WIDTH);
 
 R_P1_REMAIN=RIGHT_WALL_P1- (R1W+R2W+R3W+R4W);
 echo ("P1_REMAIN",R_P1_REMAIN);
@@ -222,6 +233,7 @@ module part(partName,partMode) {
         // * magassag: 815~875
         // * front panel 655-675
         // also takaro?
+        
         if(false)
         bBox(concat([prop("DEPTH",600),prop("WIDTH",R3W)],leftDefs),partMode) {
             maximera([800]);
@@ -232,7 +244,51 @@ module part(partName,partMode) {
             maximera([125,800-125]);
         }   
     }
+    if(partName == "R5") {
+        bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode) {
+            maximera([125,800-125]);
+        }   
+    }
     
+    if(partName == "R6") {
+        R_DEPTH=600;
+        $depth=R_DEPTH-RIGHT_WALL_PROFILE[2]-W;
+        $width=RIGHT_WALL_DELTA[3][0]+W;
+        bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode) {
+            maximera([125,800-125]);
+        }   
+    }
+
+    if(partName == "P_L") {
+        echo(RIGHT_WALL_PROFILE[2]);
+        $width=RIGHT_WALL_PROFILE[2][1];
+        $height=WALL_H; // FIXME
+        plain();
+    }
+    if(partName == "P_D") {
+        $width=RIGHT_WALL_DELTA[3][0]+W;
+        $height=WALL_H; // FIXME fullH?
+        plain(); // FIXME more parts
+    }
+    if(partName == "P_R") {
+        //R_Q;
+        $width=600;
+        $height=WALL_H; // FIXME
+        plain();
+    }
+    
+    if(partName == "Z2") {
+        R_DEPTH=Z_WIDTH[2];
+        $depth=R_DEPTH-RIGHT_WALL_PROFILE[2]-W;
+        $width=RIGHT_WALL_DELTA[3][0]+W;
+        bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode) {
+            maximera([125,800-125]);
+        }   
+    }
+}
+
+module plain() {
+        cube([$width,W,$height]);
 }
 
 module previewL() {
@@ -250,6 +306,8 @@ module previewL() {
     part("L6","A");
 }
 
+function v3(v2) = [v2[0],v2[1],0];
+
 module previewR() {
     
     atRightCorner() {
@@ -261,6 +319,37 @@ module previewR() {
         part("R3","A");
         translate([R4X,0,0])
         part("R4","A");
+        
+        translate(v3(RIGHT_WALL_PROFILE[1]))
+//        translate([R_X[4],0,0])
+//        mirror([1,0,0])
+        rotate(90)
+        part("P_L","A");
+
+        translate(v3(RIGHT_WALL_PROFILE[2]-[W,0]))
+        part("P_D","A");
+
+        translate([RIGHT_WALL_PROFILE[3][0],R_Q,0])
+        rotate(-90)
+        mirror([1,0,0])
+        part("P_R","A");
+        
+        
+        translate([RIGHT_WALL_PROFILE[3][0]+W,R_Q,0]) {
+            translate([ZX[0],0,0])
+            part("Z1","A");
+            translate([ZX[1],0,0])
+            part("Z2","A");
+            translate([ZX[2],0,0])
+            part("Z3","A");
+
+            
+            
+        }
+        
+        
+//        translate([R_X[4],0,0])
+//        part("R5","A");
         
         
     }
