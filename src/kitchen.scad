@@ -168,7 +168,6 @@ R1W=150-18;    R1X=0;//-R1W;
 R2W=600;    R2X=R1X+R1W;
 R3W=600;    R3X=R2X+R2W;
 R4W=600;    R4X=R3X+R3W;
-R4W=600;    R4X=R3X+R3W;
 
 R_W=[0,150-18,600,600,600,650];
 R_X=prefix(0,R_W);
@@ -191,63 +190,75 @@ module part(partName,partMode) {
     leftMaximera=[125,125,800-250];
     
     leftDefs=[prop("DEPTH",392),prop("HEIGHT",800),];
-    if(partName == "L6") {
-        bBox(concat(leftDefs,[prop("WIDTH",L6W)]),partMode) {
-            maximera(leftMaximera);
+    if(true) {
+        $depth=392;
+        $height=800;
+        if(partName == "L6") {
+            $width=L6W;
+            bBox(concat(leftDefs,[prop("WIDTH",L6W)]),partMode) {
+                maximera(leftMaximera);
+            }
+        }
+        if(partName == "L5") {
+            bBox(concat(leftDefs,[prop("WIDTH",L5W)]),partMode) {
+                maximera(leftMaximera);
+            }
+        }
+        if(partName == "L4") {
+            bBox(concat(leftDefs,[prop("WIDTH",L4W)]),partMode) {
+                maximera(leftMaximera);
+            }
+        }
+        if(partName == "L3") {
+            bBox(concat(leftDefs,[prop("WIDTH",L3W)]),partMode);
         }
     }
-    if(partName == "L5") {
-        bBox(concat(leftDefs,[prop("WIDTH",L5W)]),partMode) {
-            maximera(leftMaximera);
+    
+    if(true) {
+        $depth=600;
+        $height=800;
+        if(partName == "L2") {
+            bBox(concat([prop("DEPTH",600),prop("WIDTH",L2W)],leftDefs),partMode);
         }
-    }
-    if(partName == "L4") {
-        bBox(concat(leftDefs,[prop("WIDTH",L4W)]),partMode) {
-            maximera(leftMaximera);
+        if(partName == "L1") {
+            bBox(concat([prop("DEPTH",600),prop("WIDTH",L1W)],leftDefs),partMode);
         }
-    }
-    if(partName == "L3") {
-        bBox(concat(leftDefs,[prop("WIDTH",L3W)]),partMode);
-    }
-    if(partName == "L2") {
-        bBox(concat([prop("DEPTH",600),prop("WIDTH",L2W)],leftDefs),partMode);
-    }
-    if(partName == "L1") {
-        bBox(concat([prop("DEPTH",600),prop("WIDTH",L1W)],leftDefs),partMode);
     }
     
     rDefs=[prop("DEPTH",600)];
     
-    if(partName == "R1") {
-        bBox(concat([prop("DEPTH",600),prop("WIDTH",R1W)],leftDefs),partMode);
-    }
-    if(partName == "R2") {
-        bBox(concat([prop("DEPTH",600),prop("WIDTH",R2W)],leftDefs),partMode) {
-            maximera(leftMaximera);
+    if(true) {
+        if(partName == "R1") {
+            bBox(concat([prop("DEPTH",600),prop("WIDTH",R1W)],leftDefs),partMode);
         }
-    }
-    if(partName == "R3") {
-        // mosogatogep bosch;
-        // https://euronics.hu/termekek/bosch-smv46mx01e-beepitheto-mosogatogep/p/222189
-        // * borderless
-        // * magassag: 815~875
-        // * front panel 655-675
-        // also takaro?
-        
-        if(false)
-        bBox(concat([prop("DEPTH",600),prop("WIDTH",R3W)],leftDefs),partMode) {
-            maximera([800]);
+        if(partName == "R2") {
+            bBox(concat([prop("DEPTH",600),prop("WIDTH",R2W)],leftDefs),partMode) {
+                maximera(leftMaximera);
+            }
         }
-    }
-    if(partName == "R4") {
-        bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode) {
-            maximera([125,800-125]);
-        }   
-    }
-    if(partName == "R5") {
-        bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode) {
-            maximera([125,800-125]);
-        }   
+        if(partName == "R3") {
+            // mosogatogep bosch;
+            // https://euronics.hu/termekek/bosch-smv46mx01e-beepitheto-mosogatogep/p/222189
+            // * borderless
+            // * magassag: 815~875
+            // * front panel 655-675
+            // also takaro?
+            
+            if(false)
+            bBox(concat([prop("DEPTH",600),prop("WIDTH",R3W)],leftDefs),partMode) {
+                maximera([800]);
+            }
+        }
+        if(partName == "R4") {
+            bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode) {
+                maximera([125,800-125]);
+            }   
+        }
+        if(partName == "R5") {
+            bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode) {
+                maximera([125,800-125]);
+            }   
+        }
     }
     
     if(partName == "R6") {
