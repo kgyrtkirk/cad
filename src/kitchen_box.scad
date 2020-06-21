@@ -14,11 +14,7 @@ BACKSET=10;
 BACKPLANE_W=1.6;
 BACKPLANE_NUT_W=2;
 
-module bBox(spec,e) {
-    
-    $width=getProp(spec,"WIDTH");
-    $depth=getProp(spec,"DEPTH");
-    $height=getProp(spec,"HEIGHT");
+module bBox(e) {
     
     $inner_w=$width-2*W;
     
@@ -136,7 +132,7 @@ D60=590;
 D37=366;
 
 mode="A";
-bBox([prop("WIDTH",600),prop("HEIGHT",800),prop("DEPTH",D37)],mode) {
+bBox($width=600,$height=800,$depth=D37,mode) {
     $drawerState="OPEN";
     sizes=[125,125,550];
     maximera(sizes);

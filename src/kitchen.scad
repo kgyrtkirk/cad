@@ -141,7 +141,7 @@ module walls(part="A") {
 
 use <kitchen_box.scad>
 
-W=19;
+W=18;
 
 INSET=10;
 BACKSET=10;
@@ -169,7 +169,7 @@ R2W=600;    R2X=R1X+R1W;
 R3W=600;    R3X=R2X+R2W;
 R4W=600;    R4X=R3X+R3W;
 
-R_W=[0,150-18,600,600,600,650];
+R_W=[0,150-18,600,600,600,RIGHT_WALL_DELTA[3][0]+W];
 R_X=prefix(0,R_W);
 R_Q=50;     // toloajto hely
 //R_D=[]
@@ -177,12 +177,18 @@ R_Q=50;     // toloajto hely
 
 Z_WIDTH=[0,600,600,400];
 ZX=prefix(0,Z_WIDTH);
+R_DEPTH=600;
 
 R_P1_REMAIN=RIGHT_WALL_P1- (R1W+R2W+R3W+R4W);
 echo ("P1_REMAIN",R_P1_REMAIN);
 if(R_P1_REMAIN<0 ) {
     error();
 }
+
+FULL_H=2560; // FIXME: critical value
+SYSTEM_H=2500; // FIXME: critical value
+echo("SYS_H",SYSTEM_H);
+echo("WALL_H",WALL_H);
 
 module part(partName,partMode) {
     
@@ -215,24 +221,27 @@ module part(partName,partMode) {
     }
     
     if(true) {
-        $depth=600;
+        $depth=R_DEPTH;
         $height=800;
         if(partName == "L2") {
-            bBox(concat([prop("DEPTH",600),prop("WIDTH",L2W)],leftDefs),partMode);
+            bBox($width=L2W,partMode);
         }
         if(partName == "L1") {
-            bBox(concat([prop("DEPTH",600),prop("WIDTH",L1W)],leftDefs),partMode);
+            bBox($width=L1W,partMode);
         }
     }
     
     rDefs=[prop("DEPTH",600)];
     
     if(true) {
+        $depth=600;
+        $height=800;
+        
         if(partName == "R1") {
-            bBox(concat([prop("DEPTH",600),prop("WIDTH",R1W)],leftDefs),partMode);
+            bBox($width=R1W,partMode);
         }
         if(partName == "R2") {
-            bBox(concat([prop("DEPTH",600),prop("WIDTH",R2W)],leftDefs),partMode) {
+            bBox($width=R2W,partMode) {
                 maximera(leftMaximera);
             }
         }
@@ -245,24 +254,26 @@ module part(partName,partMode) {
             // also takaro?
             
             if(false)
-            bBox(concat([prop("DEPTH",600),prop("WIDTH",R3W)],leftDefs),partMode) {
+            bBox($width=R3W,partMode) {
                 maximera([800]);
             }
         }
         if(partName == "R4") {
-            bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode) {
+            bBox($width=R4W,partMode) {
                 maximera([125,800-125]);
             }   
         }
+
+        
         if(partName == "R5") {
-            bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode) {
+            $depth=R_DEPTH-RIGHT_WALL_DELTA[2][1]-W;
+            bBox($width=R_W[5],partMode) {
                 maximera([125,800-125]);
             }   
         }
     }
     
     if(partName == "R6") {
-        R_DEPTH=600;
         $depth=R_DEPTH-RIGHT_WALL_PROFILE[2]-W;
         $width=RIGHT_WALL_DELTA[3][0]+W;
         bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode) {
@@ -273,27 +284,37 @@ module part(partName,partMode) {
     if(partName == "P_L") {
         echo(RIGHT_WALL_PROFILE[2]);
         $width=RIGHT_WALL_PROFILE[2][1];
-        $height=WALL_H; // FIXME
+        $height=SYSTEM_H;
         plain();
     }
     if(partName == "P_D") {
         $width=RIGHT_WALL_DELTA[3][0]+W;
-        $height=WALL_H; // FIXME fullH?
+        $height=SYSTEM_H;
         plain(); // FIXME more parts
     }
     if(partName == "P_R") {
         //R_Q;
-        $width=600;
-        $height=WALL_H; // FIXME
+        $width=R_DEPTH-R_Q;
+        $height=SYSTEM_H;
         plain();
     }
     
     if(partName == "Z2") {
-        R_DEPTH=Z_WIDTH[2];
-        $depth=R_DEPTH-RIGHT_WALL_PROFILE[2]-W;
-        $width=RIGHT_WALL_DELTA[3][0]+W;
-        bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode) {
-            maximera([125,800-125]);
+        $depth=R_DEPTH-R_Q;
+        $width=Z_WIDTH[2];
+        $height=SYSTEM_H;
+        // 150+6cm max belathato
+        bBox(partMode) {
+            maximera([-1000,150,150,150,150,150,150,150,150,150,150]);
+        }   
+    }
+    if(partName == "Z3") {
+        $depth=R_DEPTH-R_Q;
+        $width=Z_WIDTH[3];
+        $height=SYSTEM_H;
+        // 150+6cm max belathato
+        bBox(partMode) {
+            maximera([-1000,150,150,150,150,150,150,150,150,150,150]);
         }   
     }
 }
@@ -353,16 +374,10 @@ module previewR() {
             part("Z2","A");
             translate([ZX[2],0,0])
             part("Z3","A");
-
-            
-            
         }
         
-        
-//        translate([R_X[4],0,0])
-//        part("R5","A");
-        
-        
+        translate([R_X[4],RIGHT_WALL_DELTA[2][1]+W,0])
+        part("R5","A");
     }
 }
 

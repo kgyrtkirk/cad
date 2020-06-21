@@ -34,3 +34,7 @@ lab?
 	https://dekorshop.superwebaruhaz.hu/mx-allithato-butorlab-80-mm-t486500
 	metod:	70-80
 	
+
+
+9MIP12118T LAKÁSELOSZTÓ FKIV.1×18 MODUL+ÁTL. AJTÓ+SÍN
+12 3
