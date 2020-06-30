@@ -13,13 +13,6 @@ BACK_WALL_WIDTH=1915;   //*
 
 LEFT_WALL_WIDTH=HW_WIDTH+FWL_WIDTH;
 
-RIGHT_WALL_P1=135+1755+42+18; //*?
-RIGHT_WALL_D1=0;
-RIGHT_WALL_P2=605;
-RIGHT_WALL_D2=330;
-RIGHT_WALL_P3=660+480+420+40;
-RIGHT_WALL_D3=50;
-
 
 function prefix(s,p)=(len(p)==0 || p==undef)?[]:concat([s+p[0]], prefix(s+p[0],sublist(p,1)) );
 
@@ -41,8 +34,6 @@ echo(RIGHT_WALL_PROFILE);
 
 //atRightCorner() 
 //polygon(RIGHT_WALL_PROFILE);
-
-RIGHT_WALL_WIDTH=RIGHT_WALL_P1+RIGHT_WALL_P2+RIGHT_WALL_P3;
 
 module atRightCorner() {
     translate([0,BACK_WALL_WIDTH,0])
@@ -129,15 +120,8 @@ module walls(part="A") {
         color([.3,.7,.7])
         linear_extrude(WALL_H)
         polygon(RIGHT_WALL_PROFILE);
-        
-        mirror([1,0,0])
-        fullWall(RIGHT_WALL_WIDTH);
     }
-    
-    
 }
-
-
 
 use <kitchen_box.scad>
 
@@ -147,8 +131,6 @@ INSET=10;
 BACKSET=10;
 BACKPLANE_W=1.6;
 BACKPLANE_NUT_W=2;
-
-//echo(concat([[1,2]],[[3,4]]));
 
 L1W=80;     L1X=0;
 L2W=600;    L2X=L1X+L1W;
@@ -179,14 +161,8 @@ Z_WIDTH=[0,600,600,400];
 ZX=prefix(0,Z_WIDTH);
 R_DEPTH=600;
 
-R_P1_REMAIN=RIGHT_WALL_P1- (R1W+R2W+R3W+R4W);
-echo ("P1_REMAIN",R_P1_REMAIN);
-if(R_P1_REMAIN<0 ) {
-    error();
-}
-
-FULL_H=2560; // FIXME: critical value
-SYSTEM_H=2500; // FIXME: critical value
+FULL_H=2560;    // FIXME: critical value
+SYSTEM_H=2500;  // FIXME: critical value
 echo("SYS_H",SYSTEM_H);
 echo("WALL_H",WALL_H);
 
@@ -238,7 +214,7 @@ module part(partName,partMode) {
         $height=800;
         
         if(partName == "R1") {
-            bBox($width=R1W,partMode);
+         //   bBox($width=R1W,partMode);
         }
         if(partName == "R2") {
             bBox($width=R2W,partMode) {
