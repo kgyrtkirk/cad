@@ -144,6 +144,16 @@ echo(LEFT_PART_WIDTH);
 echo(LEFT_WALL_WIDTH);
 echo(LEFT_WALL_WIDTH-LEFT_PART_WIDTH);
 
+M60W=564+W;
+
+D37=366;
+D60=590; //?
+
+
+L_W=[80+W,M60W,D60-D37,M60W,W,M60W,W,M60W];
+
+L_X=prefix(0,L_W);
+
 
 //2670
 R1W=150-18;    R1X=0;//-R1W;
@@ -151,11 +161,10 @@ R2W=600;    R2X=R1X+R1W;
 R3W=600;    R3X=R2X+R2W;
 R4W=600;    R4X=R3X+R3W;
 
-R_W=[0,150-18,600,600,600,RIGHT_WALL_DELTA[3][0]+W];
+R_W=[0,150-18,M60W,600+W,M60W,W,RIGHT_WALL_DELTA[3][0]+W];
 R_X=prefix(0,R_W);
 R_Q=50;     // toloajto hely
 //R_D=[]
-
 
 Z_WIDTH=[0,600,600,400];
 ZX=prefix(0,Z_WIDTH);
@@ -166,205 +175,186 @@ SYSTEM_H=2500;  // FIXME: critical value
 echo("SYS_H",SYSTEM_H);
 echo("WALL_H",WALL_H);
 
-module part(partName,partMode) {
-    
-    $drawerState="CLOSED";
-    leftMaximera=[125,125,800-250];
-    
-    leftDefs=[prop("DEPTH",392),prop("HEIGHT",800),];
-    if(true) {
-        $depth=392;
-        $height=800;
-        if(partName == "L6") {
-            $width=L6W;
-            bBox(concat(leftDefs,[prop("WIDTH",L6W)]),partMode) {
-                maximera(leftMaximera);
-            }
-        }
-        if(partName == "L5") {
-            bBox(concat(leftDefs,[prop("WIDTH",L5W)]),partMode) {
-                maximera(leftMaximera);
-            }
-        }
-        if(partName == "L4") {
-            bBox(concat(leftDefs,[prop("WIDTH",L4W)]),partMode) {
-                maximera(leftMaximera);
-            }
-        }
-        if(partName == "L3") {
-            bBox(concat(leftDefs,[prop("WIDTH",L3W)]),partMode);
-        }
-    }
-    
-    if(true) {
-        $depth=R_DEPTH;
-        $height=800;
-        if(partName == "L2") {
-            bBox($width=L2W,partMode);
-        }
-        if(partName == "L1") {
-            bBox($width=L1W,partMode);
-        }
-    }
-    
-    rDefs=[prop("DEPTH",600)];
-    
-    if(true) {
-        $depth=600;
-        $height=800;
-        
-        if(partName == "R1") {
-         //   bBox($width=R1W,partMode);
-        }
-        if(partName == "R2") {
-            bBox($width=R2W,partMode) {
-                maximera(leftMaximera);
-            }
-        }
-        if(partName == "R3") {
-            // mosogatogep bosch;
-            // https://euronics.hu/termekek/bosch-smv46mx01e-beepitheto-mosogatogep/p/222189
-            // * borderless
-            // * magassag: 815~875
-            // * front panel 655-675
-            // also takaro?
-            
-            if(false)
-            bBox($width=R3W,partMode) {
-                maximera([800]);
-            }
-        }
-        if(partName == "R4") {
-            bBox($width=R4W,partMode) {
-                maximera([125,800-125]);
-            }   
-        }
-
-        
-        if(partName == "R5") {
-            $depth=R_DEPTH-RIGHT_WALL_DELTA[2][1]-W;
-            bBox($width=R_W[5],partMode) {
-                maximera([125,800-125]);
-            }   
-        }
-    }
-    
-    if(partName == "R6") {
-        $depth=R_DEPTH-RIGHT_WALL_PROFILE[2]-W;
-        $width=RIGHT_WALL_DELTA[3][0]+W;
-        bBox(concat([prop("DEPTH",600),prop("WIDTH",R4W)],leftDefs),partMode) {
-            maximera([125,800-125]);
-        }   
-    }
-
-    if(partName == "P_L") {
-        echo(RIGHT_WALL_PROFILE[2]);
-        $width=RIGHT_WALL_PROFILE[2][1];
-        $height=SYSTEM_H;
-        plain();
-    }
-    if(partName == "P_D") {
-        $width=RIGHT_WALL_DELTA[3][0]+W;
-        $height=SYSTEM_H;
-        plain(); // FIXME more parts
-    }
-    if(partName == "P_R") {
-        //R_Q;
-        $width=R_DEPTH-R_Q;
-        $height=SYSTEM_H;
-        plain();
-    }
-    
-    if(partName == "Z2") {
-        $depth=R_DEPTH-R_Q;
-        $width=Z_WIDTH[2];
-        $height=SYSTEM_H;
-        // 150+6cm max belathato
-        bBox(partMode) {
-            maximera([-1000,150,150,150,150,150,150,150,150,150,150]);
-        }   
-    }
-    if(partName == "Z3") {
-        $depth=R_DEPTH-R_Q;
-        $width=Z_WIDTH[3];
-        $height=SYSTEM_H;
-        // 150+6cm max belathato
-        bBox(partMode) {
-            maximera([-1000,150,150,150,150,150,150,150,150,150,150]);
-        }   
-    }
-}
+function v3(v2) = [v2[0],v2[1],0];
 
 module plain() {
         cube([$width,W,$height]);
 }
 
-module previewL() {
-    translate([L1X,0,0])
-    part("L1","A");
-    translate([L2X,0,0])
-    part("L2","A");
-    translate([L3X,0,0])
-    part("L3","A");
-    translate([L4X,0,0])
-    part("L4","A");
-    translate([L5X,0,0])
-    part("L5","A");
-    translate([L6X,0,0])
-    part("L6","A");
+MICRO_H=380;
+module microwave() {
+    
+        
 }
 
-function v3(v2) = [v2[0],v2[1],0];
+
+module baseL(x,w) {
+    positiveAt([x,0,0]+IBEAM_Z) {
+        $width=100;
+        $height=100;
+//        rotate(-90,[1,0,0])
+        cube([w,D37,W]);
+//        plain();
+    }
+}
+
+module posNeg() {
+    difference() {
+        union(){
+        $positive=true;
+        children();
+        }
+        union(){
+        $positive=false;
+        children();
+        }
+    }
+}
+IBEAM_Z=[0,0,60];
+
+module positiveAt(p) {
+    if($positive) {
+        translate(p)
+            children();
+    }
+}
+
+module smallI(x) {
+    // FIXME: move to separate bottom
+    positiveAt([x,0,0]+IBEAM_Z+[0,0,W]) {
+        $width=D37;
+        $height=800-W;
+        cube([W,$width,$height]);
+    }
+}
+module bigI(x) {
+    $width=D60;
+    $height=800;
+    translate([x,0,0]+IBEAM_Z)
+    cube([W,$width,$height]);
+}
+
+use <kitchen_box.scad>
+
+module previewL() {
+    posNeg() {
+        baseL(L_X[2],L_X[5]-L_X[2]+W);
+        for(i=[2:len(L_X)-1])
+        smallI(L_X[i]);
+        bigI(L_X[1]);
+        bigI(L_X[0]);
+        
+        m60([L_X[4],0,860],[125],$thinL=1,$thinR=0);
+        m60([L_X[6],0,860],[125],$thinL=1,$thinR=0);
+        
+    }
+}
 
 module previewR() {
-    
-    atRightCorner() {
-        translate([R1X,0,0])
-        part("R1","A");
-        translate([R2X,0,0])
-        part("R2","A");
-        translate([R3X,0,0])
-        part("R3","A");
-        translate([R4X,0,0])
-        part("R4","A");
-        
-        translate(v3(RIGHT_WALL_PROFILE[1]))
-//        translate([R_X[4],0,0])
-//        mirror([1,0,0])
-        rotate(90)
-        part("P_L","A");
-
-        translate(v3(RIGHT_WALL_PROFILE[2]-[W,0]))
-        part("P_D","A");
-
-        translate([RIGHT_WALL_PROFILE[3][0],R_Q,0])
-        rotate(-90)
-        mirror([1,0,0])
-        part("P_R","A");
-        
-        
-        translate([RIGHT_WALL_PROFILE[3][0]+W,R_Q,0]) {
-            translate([ZX[0],0,0])
-            part("Z1","A");
-            translate([ZX[1],0,0])
-            part("Z2","A");
-            translate([ZX[2],0,0])
-            part("Z3","A");
-        }
-        
-        translate([R_X[4],RIGHT_WALL_DELTA[2][1]+W,0])
-        part("R5","A");
+    atRightCorner()
+    posNeg() {
+        for(i=[1:len(R_X)-1]) 
+        bigI(R_X[i]);
     }
 }
 
 
-mode="previewR";
+
+module mPiece() {
+    
+    
+    module sinkCut() {
+        hull()
+        symX([400/2,0,0])
+        symY([0,400/2,0])
+        cylinder(d=50,h=WALL_H,center=true);
+    }
+    module mPiece1(L,W) {
+            hull() {
+                cube([L,10,M_H]);
+                translate([0,W-M_H/2,M_H/2])
+                rotate(90,[0,1,0])
+                cylinder(d=M_H,h=L);
+            }
+    }
+    module mPiece2() {
+        K=500;
+        S=300;
+        translate([0,-S,0])
+        mPiece1(K,S);
+    }
+    M_H=30;
+    R_D=700;
+    L_D37=370+35;
+    L_D60=600+35;
+    B_D=200;
+    color([0,0,1])
+    translate([0,0,880])
+    if($positive) {
+        atRightCorner() {
+           mPiece1(R_X[6],R_D); 
+        }
+        mPiece1(L_X[7],L_D37); 
+        mPiece1(L_X[1],L_D60); 
+        
+        
+        translate([L_X[1],L_D60,0])
+        rotate(-45)
+        mPiece2();
+
+        ID=50;
+        translate([-ID,0,0])
+        mirror([1,0,0])
+        rotate(90)
+        mPiece1(BACK_WALL_WIDTH,200); 
+        
+        
+    } else {
+        atRightCorner() {
+            translate([1,0,0]) // FIXME: remove this
+            linear_extrude(WALL_H,center=true)
+            polygon(RIGHT_WALL_PROFILE);
+            
+            translate([(R_X[3]+R_X[4])/2,R_D/2,0])
+            sinkCut();
+        }
+        
+        translate([(L_X[1]+L_X[0])/2,L_D60/2,0])
+        sinkCut();
+        
+        window_p=460;
+        window_w=960;
+        
+        WINDOW_PROFILE=prefix([0,-400],[[0,0],[0,400],[window_p,0],[0,-200],[window_w,0],[0,200],
+            [2000,0],[0,-400]]
+        );
+        echo(WINDOW_PROFILE);
+
+        rotate(-90)
+        mirror([1,0,0])
+        linear_extrude(WALL_H,center=true)
+        polygon(WINDOW_PROFILE);
+        
+        
+    }
+    
+
+}
+
+module previewM() {
+!    posNeg() {
+        mPiece();
+    }
+}
+
+mode="mPiece";
 
 if(mode=="preview") {
     walls("A");
     
     previewL();
     previewR();
+    previewM();
 }
 
 if(mode=="previewL") {
@@ -375,7 +365,6 @@ if(mode=="previewL") {
 if(mode=="previewR") {
     walls("R");
     walls("B");
-    previewR();
 }
 
 //mode="pB";
@@ -397,4 +386,9 @@ if(mode=="projtest") {
 }
 
 
+if(mode=="mPiece") {
 
+    projection()
+    posNeg()
+    mPiece();
+}

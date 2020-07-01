@@ -124,6 +124,65 @@ module maximera(sizes) {
         
     }
 }
+
+
+module m60(pos,sizes) {
+    $width=600;
+    $depth=366;
+    $drawerState="CLOSED";
+    translate(pos)
+    translate([$width/2,$depth,0])
+    m60_0(sizes);
+}
+module m60_0(sizes) {
+    HOLE_D=5;
+    C0=[    20,
+            32,
+            224,
+            224
+    ];
+    
+    C1=prefix(0,C0);
+    
+    x=prefix(0,[for(i=sizes) abs(i)]);
+    for(i=[0:len(sizes)-1]) {
+        off=x[i];
+        size=sizes[i];
+        
+        if(!$positive) {
+            for(x=C1)
+                translate([0,-x,-off+50]) {
+                rotate(90,[0,1,0])
+                cylinder(d=HOLE_D,h=100,center=true);
+            }
+        }else{
+            D=$depth-40;
+            o_y=($drawerState=="CLOSED" ? 0 : D-50);
+            translate([0,o_y,0]) {
+            color([0,1,0])
+                hull() {
+                    OFF_L=$thinL? W/2:0;
+                    OFF_R=$thinR? W/2:0;
+                    symX([$width/2,0,0])
+                    translate([-W/4-2,W/2+1,-off+size-size/2])
+                    cube([W/2,W,size-4],center=true);
+                }
+
+            color([1,0,0])
+                hull()
+                symX([$width/2-2*W,-D/2,-off+size/2])
+                cube([W/2,D,size-10],center=true);
+            }
+            
+//            cube(100);
+            // front
+        }
+        
+        
+    }
+}
+
+
 module z() {
     children();
 }
