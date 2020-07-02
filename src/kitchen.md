@@ -22,12 +22,15 @@ toloajto
 mikro:
 	* figyelni a melysegere; a 370-esbe kell befernie
 
-mosogato:
+mosogatogep:
 	smx
 	https://euronics.hu/termekek/haztartasi-nagygepek/beepitheto-gepek/beepitheto-mosogatogep/c/advancedsearch/51000?filterText=&facetCode_brand_brand_41=brand%3Abrand_41&q=
 
 	https://www.bosch-home.com/hu/termekek-lista/mosogatas/beepitheto-mosogatogepek/60-cm-szeles-beepitheto-mosogatogepek?f_brand_value_class_mo=brand_value_class_bvc_ser4&f_bestecksystem_mo=bestecksystem_bestecksystem_drawer&f_inst_type_mo=inst_type_inst_type_full_integrated
 	SMV46LX50E ~ 160e
+
+mosogato:
+	https://blancoshop.hu/termekek/granit-mosogatok/granit-1-medence-csepegtetos/blanco-zia-5-s-silgranit-mosogatotal
 
 lab?
 	75~100
@@ -38,3 +41,4 @@ lab?
 
 9MIP12118T LAKÁSELOSZTÓ FKIV.1×18 MODUL+ÁTL. AJTÓ+SÍN
 12 3
+

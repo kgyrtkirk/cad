@@ -1,4 +1,5 @@
 use <syms.scad>
+$machines=true;
 
 module atLeftWall(x) {
     translate();
@@ -9,7 +10,7 @@ WALL_H=1695+915;        //* w/o laminate
 HW_H=1235;              //* w/o laminate
 HW_WIDTH=2075-30;       //*
 FWL_WIDTH=600;          //*
-BACK_WALL_WIDTH=1915;   //*
+BACK_WALL_WIDTH=1915;   //* FIXME: csempe benne van?
 
 LEFT_WALL_WIDTH=HW_WIDTH+FWL_WIDTH;
 
@@ -149,6 +150,7 @@ M60W=564+W;
 D37=366;
 D60=590; //?
 
+R_D=700; // right under depth
 
 L_W=[80+W,M60W,D60-D37,M60W,W,M60W,W,M60W];
 
@@ -259,23 +261,88 @@ module previewR() {
 }
 
 
+module roundedCutShape(w,h,d,r) {
+        hull()
+        symX([(w-2*r)/2,0,0])
+        symY([0,(h-2*r)/2,0])
+        cylinder(r=r,h=d,center=true);
+}
+
+
+
+M_H=30;
+
+module blancoZia5s() {
+    
+    if($positive){
+        if($machines) {
+        }
+        translate([-860/2,0,M_H]) { 
+            difference() {
+                mainBowlPos=[860/2-15-390/2,0,-190/2+5];
+                union() {
+                    roundedCutShape(860,500,11,15);
+                    translate(mainBowlPos)
+                    roundedCutShape(390,450,190,15);
+                }
+                translate([0,0,6])
+                roundedCutShape(860-2*15,500-2*25,10,15);
+                    translate(mainBowlPos)
+                    roundedCutShape(390-5,450-5,190-5,15);
+            }
+        }
+    }else{
+        // there is a +2,-1 tolerance
+        translate([-860/2,0,M_H/2])
+        roundedCutShape(840,480,M_H+1,15);
+    }
+}
+
+module fozoLap() {
+    if($positive) {
+        if($machines) {
+            translate([0,0,M_H])
+            roundedCutShape(595,510,M_H+1,5);
+            roundedCutShape(595,510,M_H+1,5);
+            roundedCutShape(20,480+2*55,M_H*3,5);
+        }
+    }else{
+        translate([0,0,M_H/2])
+        roundedCutShape(560,480,M_H+1,M_H*2);
+    }
+        
+
+}
+
+
+module mAssembly() {
+    translate([0,0,880])
+    posNeg() {
+        mPiece();
+        atRightCorner()
+        translate([R_X[4]-300+15+390/2+W,R_D/2,0])
+        blancoZia5s();
+
+        translate([(L_X[1]+L_X[0])/2,600/2,0])
+        fozoLap();
+
+    }
+}
+
 
 module mPiece() {
     
-    
-    module sinkCut() {
-        hull()
-        symX([400/2,0,0])
-        symY([0,400/2,0])
-        cylinder(d=50,h=WALL_H,center=true);
-    }
     module mPiece1(L,W) {
+        if(false) {
             hull() {
                 cube([L,10,M_H]);
                 translate([0,W-M_H/2,M_H/2])
                 rotate(90,[0,1,0])
                 cylinder(d=M_H,h=L);
             }
+        }else{
+            cube([L,W,M_H]);
+        }
     }
     module mPiece2() {
         K=500;
@@ -284,12 +351,10 @@ module mPiece() {
         mPiece1(K,S);
     }
     M_H=30;
-    R_D=700;
     L_D37=370+35;
     L_D60=600+35;
     B_D=200;
     color([0,0,1])
-    translate([0,0,880])
     if($positive) {
         atRightCorner() {
            mPiece1(R_X[6],R_D); 
@@ -308,21 +373,17 @@ module mPiece() {
         rotate(90)
         mPiece1(BACK_WALL_WIDTH,200); 
         
-        
     } else {
         atRightCorner() {
             translate([1,0,0]) // FIXME: remove this
             linear_extrude(WALL_H,center=true)
             polygon(RIGHT_WALL_PROFILE);
             
-            translate([(R_X[3]+R_X[4])/2,R_D/2,0])
-            sinkCut();
         }
         
-        translate([(L_X[1]+L_X[0])/2,L_D60/2,0])
-        sinkCut();
         
-        window_p=460;
+        
+        window_p=460; // FIXME: dup
         window_w=960;
         
         WINDOW_PROFILE=prefix([0,-400],[[0,0],[0,400],[window_p,0],[0,-200],[window_w,0],[0,200],
@@ -342,12 +403,10 @@ module mPiece() {
 }
 
 module previewM() {
-!    posNeg() {
-        mPiece();
-    }
+    mAssembly();
 }
 
-mode="mPiece";
+mode="preview";
 
 if(mode=="preview") {
     walls("A");
@@ -387,7 +446,6 @@ if(mode=="projtest") {
 
 
 if(mode=="mPiece") {
-
     projection()
     posNeg()
     mPiece();
