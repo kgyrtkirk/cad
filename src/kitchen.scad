@@ -19,7 +19,8 @@ function prefix(s,p)=(len(p)==0 || p==undef)?[]:concat([s+p[0]], prefix(s+p[0],s
 
 RIGHT_WALL_DELTA=[
     [0,0],
-    [135+1755+42+18,0], //*?
+    [1925+18,0], //*?
+//    [135+1755+42+18,0], //*?
     [0,330],
     [605,0],
     [0,-330+50],
@@ -150,7 +151,11 @@ M60W=564+W;
 D37=366;
 D60=590; //?
 
-R_D=700; // right under depth
+
+MAXIMERA_D60_MIN_DEPTH=590-30;
+
+SLIDE_LOSS=50;
+R_D=MAXIMERA_D60_MIN_DEPTH+SLIDE_LOSS; // right under depth
 
 L_W=[80+W,M60W,D60-D37,M60W,W,M60W,W,M60W];
 
@@ -165,6 +170,7 @@ R4W=600;    R4X=R3X+R3W;
 
 R_W=[0,150-18,M60W,600+W,M60W,W,RIGHT_WALL_DELTA[3][0]+W];
 R_X=prefix(0,R_W);
+echo("R_X",R_X);
 R_Q=50;     // toloajto hely
 //R_D=[]
 
@@ -229,11 +235,15 @@ module smallI(x) {
         cube([W,$width,$height]);
     }
 }
-module bigI(x) {
-    $width=D60;
+
+module Ibeam(x,depth){
+    $width=depth;
     $height=800;
     translate([x,0,0]+IBEAM_Z)
     cube([W,$width,$height]);
+}
+module bigI(x) {
+    Ibeam(x,D60);
 }
 
 use <kitchen_box.scad>
@@ -256,7 +266,8 @@ module previewR() {
     atRightCorner()
     posNeg() {
         for(i=[1:len(R_X)-1]) 
-        bigI(R_X[i]);
+            Ibeam(R_X[i], R_D);
+//        bigI(R_X[i]);
     }
 }
 
@@ -272,33 +283,58 @@ module roundedCutShape(w,h,d,r) {
 
 M_H=30;
 
-module blancoZia5s() {
+module blancoSona6s() {
+    
+    A_W=1000;
+    A_H=500;
+    
+    M1_W=165;
+    M1_H=255;
+    M2_W=350;
+    M2_H=420;
+    
+    EDGE_X=40;
+    EDGE_Y=40;
+    
+    M1_X=40+540-M1_W/2;
+    M2_X=40+350-M2_W/2;
     
     if($positive){
         if($machines) {
-        }
-        translate([-860/2,0,M_H]) { 
-            difference() {
-                mainBowlPos=[860/2-15-390/2,0,-190/2+5];
-                union() {
-                    roundedCutShape(860,500,11,15);
+            translate([0,0,M_H]) 
+            { 
+                difference() {
+                    mainBowlPos=[-M2_X,0,-190/2+5];
+                    secBowlPos=[-M1_X,0,-100/2+5];
+                    union() {
+                        translate([-A_W/2,0,0])
+                        roundedCutShape(A_W,A_H,11,15);
+                        translate(mainBowlPos)
+                        roundedCutShape(M2_W,M2_H,190,15);
+                        translate(secBowlPos)
+                        roundedCutShape(M1_W,M1_H,100,15);
+                    }
+                    translate([-A_W/2,0,0])
+                    translate([0,0,6])
+                    roundedCutShape(A_W-2*EDGE_X,A_H-2*EDGE_Y,11,15);
+    //                roundedCutShape(860-2*15,500-2*25,10,15);
                     translate(mainBowlPos)
-                    roundedCutShape(390,450,190,15);
+                    roundedCutShape(M2_W-5,M2_H-5,190-5,15);
+                    translate(secBowlPos)
+                    roundedCutShape(M1_W-5,M1_H-5,100-5,15);
                 }
-                translate([0,0,6])
-                roundedCutShape(860-2*15,500-2*25,10,15);
-                    translate(mainBowlPos)
-                    roundedCutShape(390-5,450-5,190-5,15);
             }
         }
     }else{
         // there is a +2,-1 tolerance
-        translate([-860/2,0,M_H/2])
-        roundedCutShape(840,480,M_H+1,15);
+        translate([-A_W/2,0,M_H/2]) 
+//        translate([-860/2,0,M_H/2])
+        roundedCutShape(980,480,M_H+1,15);
     }
 }
 
 module fozoLap() {
+    // amica hga6220
     if($positive) {
         if($machines) {
             translate([0,0,M_H])
@@ -316,12 +352,12 @@ module fozoLap() {
 
 
 module mAssembly() {
-    translate([0,0,880])
+    translate([0,0,860])
     posNeg() {
         mPiece();
         atRightCorner()
-        translate([R_X[4]-300+15+390/2+W,R_D/2,0])
-        blancoZia5s();
+        translate([R_X[4]+0,R_D/2,0])
+        blancoSona6s();
 
         translate([(L_X[1]+L_X[0])/2,600/2,0])
         fozoLap();
@@ -406,7 +442,7 @@ module previewM() {
     mAssembly();
 }
 
-mode="preview";
+mode="previewR";
 
 if(mode=="preview") {
     walls("A");
@@ -424,6 +460,8 @@ if(mode=="previewL") {
 if(mode=="previewR") {
     walls("R");
     walls("B");
+    previewR();
+    previewM();
 }
 
 //mode="pB";
