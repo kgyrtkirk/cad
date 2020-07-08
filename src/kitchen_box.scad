@@ -128,12 +128,40 @@ module maximera(sizes) {
 
 module m60(pos,sizes) {
     $width=600;
-    $depth=366;
     $drawerState="CLOSED";
     translate(pos)
     translate([$width/2,$depth,0])
     m60_0(sizes);
 }
+
+FRONT_SP=2;
+
+
+module m60a(size) {
+    m60([0,0,0],[size]);
+    $depth=D37;
+    
+    translate([0,0,-size])
+    children();
+}
+
+module m60b(size) {
+    m60([0,0,0],[size]);
+    $depth=D60;
+    
+    translate([0,0,-size])
+    children();
+}
+
+module m60b(size) {
+    m60([0,0,0],[size]);
+    
+    translate([0,0,-size])
+    children();
+}
+
+
+
 module m60_0(sizes) {
     HOLE_D=5;
     C0=[    20,
@@ -151,6 +179,7 @@ module m60_0(sizes) {
         
         if(!$positive) {
             for(x=C1)
+                symX([$width/2,0,0])
                 translate([0,-x,-off+50]) {
                 rotate(90,[0,1,0])
                 cylinder(d=HOLE_D,h=100,center=true);
@@ -159,15 +188,21 @@ module m60_0(sizes) {
             D=$depth-40;
             o_y=($drawerState=="CLOSED" ? 0 : D-50);
             translate([0,o_y,0]) {
-            color([0,1,0])
+            color([0,1,0]) {
+//                translate([-W/4-2,W/2+1,-off+size-size/2])
+                translate([0,W/2+1,-off+size/2])
+                cube([$width-FRONT_SP,W,size-FRONT_SP],center=true);
+                if(false)
                 hull() {
-                    OFF_L=$thinL? W/2:0;
-                    OFF_R=$thinR? W/2:0;
+                    OFF_L=0;//$thinL? W/2:0;
+                    OFF_R=0;//$thinR? W/2:0;
                     symX([$width/2,0,0])
                     translate([-W/4-2,W/2+1,-off+size-size/2])
                     cube([W/2,W,size-4],center=true);
                 }
+            }
 
+            if($machines)
             color([1,0,0])
                 hull()
                 symX([$width/2-2*W,-D/2,-off+size/2])

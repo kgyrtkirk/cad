@@ -82,8 +82,7 @@ module walls(part="A") {
     // gazelzaro
     translate([50,255,700])
     sphere(d=70);
-    
-    
+
     translate([60,800,0])
     rotate(90)
     radiator();
@@ -118,6 +117,15 @@ module walls(part="A") {
     atRightCorner() {
         
 //        atRightCorner() 
+//    at
+//    9,34
+//    11 117
+        
+        translate([90,340,0])
+        cylinder(d=30,h=WALL_H);
+        
+        translate([110,50,1170])
+        sphere(d=70);
         
         color([.3,.7,.7])
         linear_extrude(WALL_H)
@@ -146,7 +154,9 @@ echo(LEFT_PART_WIDTH);
 echo(LEFT_WALL_WIDTH);
 echo(LEFT_WALL_WIDTH-LEFT_PART_WIDTH);
 
-M60W=564+W;
+M60I=564;
+M60W=M60I+W;
+
 
 D37=366;
 D60=590; //?
@@ -157,7 +167,7 @@ MAXIMERA_D60_MIN_DEPTH=590-30;
 SLIDE_LOSS=50;
 R_D=MAXIMERA_D60_MIN_DEPTH+SLIDE_LOSS; // right under depth
 
-L_W=[80+W,M60W,D60-D37,M60W,W,M60W,W,M60W];
+L_W=[80+W,M60W,W,D60-D37,W,M60W,W,M60W,W,M60W];
 
 L_X=prefix(0,L_W);
 
@@ -168,7 +178,7 @@ R2W=600;    R2X=R1X+R1W;
 R3W=600;    R3X=R2X+R2W;
 R4W=600;    R4X=R3X+R3W;
 
-R_W=[0,150-18,M60W,600+W,M60W,W,RIGHT_WALL_DELTA[3][0]+W];
+R_W=[0,150-W-W/2,M60W,600+W,M60W,W,RIGHT_WALL_DELTA[3][0],W,W,M60W,W,M60W];
 R_X=prefix(0,R_W);
 echo("R_X",R_X);
 R_Q=50;     // toloajto hely
@@ -189,19 +199,28 @@ module plain() {
         cube([$width,W,$height]);
 }
 
-MICRO_H=380;
-module microwave() {
-    
-        
+module baseX(x,w) {
+    echo("BASEX_W",w);
+    positiveAt([x,0,0]) {
+    $width=100;
+    $height=100;
+        color([.5,.5,1]) {
+            hull() {
+                cube([.01,D60,W]);
+                translate([w,0,0])
+                cube([.01,D37,W]);
+            }
+        }
+    }
+
 }
-
-
-module baseL(x,w) {
-    positiveAt([x,0,0]+IBEAM_Z) {
+module baseL(x,w,$depth=D37) {
+    positiveAt([x,0,0]) {
         $width=100;
         $height=100;
 //        rotate(-90,[1,0,0])
-        cube([w,D37,W]);
+        color([.5,.5,1])
+        cube([w,$depth,W]);
 //        plain();
     }
 }
@@ -229,45 +248,235 @@ module positiveAt(p) {
 
 module smallI(x) {
     // FIXME: move to separate bottom
-    positiveAt([x,0,0]+IBEAM_Z+[0,0,W]) {
+    positiveAt([x,0,0]) {
         $width=D37;
-        $height=800-W;
+        $height=800;
         cube([W,$width,$height]);
     }
+}
+
+
+module hbeam(width,depth) {
+    translate([W,0,0])
+    cube([width,depth,W]);
 }
 
 module Ibeam(x,depth){
     $width=depth;
     $height=800;
-    translate([x,0,0]+IBEAM_Z)
+    translate([x,0,0])
     cube([W,$width,$height]);
 }
+
+module baseI(x,depth,height){
+    $width=depth;
+    $height=height;
+    translate([x,0,0])
+    cube([W,$width,$height]);
+}
+
+
 module bigI(x) {
     Ibeam(x,D60);
 }
 
+
+
 use <kitchen_box.scad>
 
-module previewL() {
+module vent() {
+    if($positive) {
+        
+    }else{
+        roundedCutShape(520,280,2*W+1,5);
+//        cube([520,280,2*W+1],center=true);
+    }
+}
+
+module doors(w,h,d) {
+    FRONT_SP=2;
+    
+    cL=[w/4,W/2,h/2];
+    cR=cL+[w/2,0,0];
+    translate([0,d,0])
+    if($positive) {
+        color([0,1,1]){
+        translate(cL)
+        cube([w/2-FRONT_SP,W,h-FRONT_SP],center=true);
+        translate(cR)
+        cube([w/2-FRONT_SP,W,h-FRONT_SP],center=true);
+        }
+    }else{
+        
+    }
+}
+
+module doors2(w,h,d) {
+    
+    translate([0,0,-h])
+        doors(w,h,d);
+    
+    translate([0,0,-h])
+        children();
+    
+}
+
+module previewLU() {
+    
+    POS_Y=1650;
+    
+    WIDTH=L_X[1];
+    D45=450;
+    SH=SYSTEM_H-POS_Y;
     posNeg() {
-        baseL(L_X[2],L_X[5]-L_X[2]+W);
-        for(i=[2:len(L_X)-1])
+        translate([0,0,POS_Y]) {
+            
+            baseL(W,WIDTH,D45);
+            translate([0,0,SH-W])
+            baseL(W,WIDTH,D45);
+
+            baseI(0,D45,SH);
+            baseI(L_X[1]+W,D45,SH);
+
+            translate([(L_X[0]+L_X[1])/2,D45/2,0])
+            vent();
+            
+            doors(WIDTH+2*W,SH,D45);
+        }
+    }
+    
+}
+module previewL() {
+    translate(IBEAM_Z)
+    posNeg() {
+        baseL(L_X[4]+W,M60I);
+        baseL(L_X[6]+W,M60I);
+        baseL(L_X[8]+W,M60I);
+        for(i=[3:len(L_X)-1])
         smallI(L_X[i]);
         bigI(L_X[1]);
         bigI(L_X[0]);
+        bigI(L_X[2]);
         
-        m60([L_X[4],0,860],[125],$thinL=1,$thinR=0);
-        m60([L_X[6],0,860],[125],$thinL=1,$thinR=0);
+        translate([L_X[8],0,800])
+            m60a(125)
+            m60a(125)
+            m60a(550)
+        ;
+        
+        translate([L_X[6],0,800])
+            m60a(125)
+            m60a(125)
+            m60a(550)
+        ;
+
+        translate([L_X[4],0,800])
+            microWave()
+            m60a(800-460)
+        ;
+
+        translate([L_X[0],0,800])
+            oven()
+            m60b(200)
+        ;
+
+        if(false) // FIXME: 45 deg door?
+        translate([L_X[2],D60,0])
+        rotate(-45)
+        cube([(D60-D37)*sqrt(2),W,800]);
+
+        baseX(L_X[2]+W,D60-D37-W);
+        translate([0,0,400])
+        baseX(L_X[2]+W,D60-D37-W);
+
+        baseL(L_X[0]+W,M60I,$depth=D60);
+
+        
+//        m60([L_X[4],0,860],[125,125,550]);
+  //      m60([L_X[6],0,860],[125]);
         
     }
 }
 
 module previewR() {
+    
+    WALL_IX=330;
     atRightCorner()
+    translate(IBEAM_Z)
     posNeg() {
-        for(i=[1:len(R_X)-1]) 
+        for(i=[1:4]) 
             Ibeam(R_X[i], R_D);
-//        bigI(R_X[i]);
+        
+        // IX box
+        translate([0,WALL_IX+W,0]) {
+            for(i=[5:6]) 
+                Ibeam(R_X[i], R_D-WALL_IX-W);
+            baseL(R_X[5]+W, R_X[6]-R_X[5]-W,R_D-WALL_IX-W);
+        }
+        baseL(R_X[1]+W,M60I,R_D);
+        baseL(R_X[3]+W,M60I,R_D);
+        
+        
+            translate(-IBEAM_Z) {
+                baseI(R_X[5],WALL_IX,SYSTEM_H+IBEAM_Z[2]);
+                baseI(R_X[7],R_D,SYSTEM_H+IBEAM_Z[2]);
+            }
+        
+            {
+                    $depth=R_D; 
+            translate([R_X[1],0,800])
+                m60b(200)
+                m60b(200)
+                m60b(400)
+            ;
+            translate([R_X[3],0,800])
+                m60b(800)
+            ;
+
+            }
+        R_D2=R_D-SLIDE_LOSS;
+        translate([0,SLIDE_LOSS,0]) {
+            baseI(R_X[10],R_D2,SYSTEM_H);
+            baseI(R_X[11],R_D2,SYSTEM_H);
+            
+            OVER_FRIDGE_Z=1600-IBEAM_Z[2];
+            OVER_FRIDGE_H=SYSTEM_H-OVER_FRIDGE_Z;
+            translate([0,0,OVER_FRIDGE_Z]) {
+                baseI(R_X[8],R_D2,OVER_FRIDGE_H);
+                baseI(R_X[9],R_D2,OVER_FRIDGE_H);
+                
+                baseL(R_X[8]+W,M60I,R_D2);
+                translate([0,0,OVER_FRIDGE_H-W])
+                baseL(R_X[8]+W,M60I,R_D2);
+                translate([0,0,OVER_FRIDGE_H/2-W/2])
+                baseL(R_X[8]+W,M60I,R_D2);
+            }
+            baseL(R_X[10]+W,M60I,R_D2);
+
+                    $depth=R_D2; 
+            
+            translate([R_X[5],0,0])
+                doors(R_X[6]-R_X[5]+W,800,R_D2);
+            ;
+            translate([R_X[7]+W,0,SYSTEM_H])
+                doors2(600,SYSTEM_H-OVER_FRIDGE_Z,R_D2);
+            ;
+
+            
+            PEEK_H=1400;
+            translate([R_X[9]+W,0,SYSTEM_H])
+                doors2(600,SYSTEM_H-PEEK_H,R_D2)
+                m60b(150)
+                m60b(150)
+                m60b(150)
+                m60b(150)
+                m60b(150)
+                m60b(150)
+                m60b(200)
+                m60b(300)
+            ;
+        }
+        
     }
 }
 
@@ -303,6 +512,8 @@ module blancoSona6s() {
         if($machines) {
             translate([0,0,M_H]) 
             { 
+                translate([38,0,0])
+            sphere(10);
                 difference() {
                     mainBowlPos=[-M2_X,0,-190/2+5];
                     secBowlPos=[-M1_X,0,-100/2+5];
@@ -333,6 +544,34 @@ module blancoSona6s() {
     }
 }
 
+
+module oven() {
+    F_H=600;
+    SP_BACK=50;
+    translate([0,SP_BACK,-F_H-W+3])
+    hbeam(M60I,D60-SP_BACK);
+    translate([0,0,-F_H])
+    children();
+}
+
+module microWave() {
+    // heinner microwave
+    // HMW-23BIXBK
+    F_H=443; //brut:458
+    F_W=560;// brut:595
+    
+    E_H=460;
+    SP_BACK=50;
+    
+    
+    translate([0,SP_BACK,-E_H])
+    hbeam(M60I,D37-SP_BACK);
+    
+    translate([0,0,-E_H])
+    children();
+    
+}
+
 module fozoLap() {
     // amica hga6220
     if($positive) {
@@ -346,21 +585,35 @@ module fozoLap() {
         translate([0,0,M_H/2])
         roundedCutShape(560,480,M_H+1,M_H*2);
     }
-        
-
 }
 
+
+module cornerCutOut() {
+    C_W=R_X[1]+W;
+    
+    if($positive) {
+    }else{
+        
+    roundedCutShape(2*C_W,450*2,M_H*3,5);
+    }
+}
 
 module mAssembly() {
     translate([0,0,860])
     posNeg() {
         mPiece();
+
+        atRightCorner()
+        cornerCutOut();
+
         atRightCorner()
         translate([R_X[4]+0,R_D/2,0])
         blancoSona6s();
 
-        translate([(L_X[1]+L_X[0])/2,600/2,0])
+        translate([(L_X[1]+L_X[0]+W)/2,600/2,0])
         fozoLap();
+        
+        
 
     }
 }
@@ -387,42 +640,53 @@ module mPiece() {
         mPiece1(K,S);
     }
     M_H=30;
-    L_D37=370+35;
-    L_D60=600+35;
+    OVERHANG=35;
+    L_D37=D37+OVERHANG;
+    L_D60=D60+OVERHANG;
     B_D=200;
     color([0,0,1])
     if($positive) {
+        
         atRightCorner() {
-           mPiece1(R_X[6],R_D); 
+           mPiece1(R_X[6]+W,R_D+OVERHANG); 
         }
-        mPiece1(L_X[7],L_D37); 
-        mPiece1(L_X[1],L_D60); 
+        mPiece1(L_X[9]+OVERHANG,L_D37); 
+        mPiece1(L_X[2],L_D60); 
         
-        
-        translate([L_X[1],L_D60,0])
+/*        translate([L_X[1],L_D60,0])
         rotate(-45)
-        mPiece2();
+        mPiece2();*/
+        R=60;
+        hull() {
+        translate([L_X[2],L_D60-R,0])
+        cylinder(r=R,h=M_H);
+        translate([L_X[3],L_D37-R,0])
+        cylinder(r=R,h=M_H);
+        translate([L_X[2],L_D37-R,0])
+        cylinder(r=R,h=M_H);
+        }
+        
 
         ID=50;
         translate([-ID,0,0])
         mirror([1,0,0])
         rotate(90)
-        mPiece1(BACK_WALL_WIDTH,200); 
+        mPiece1(BACK_WALL_WIDTH,ID+L_X[0]); 
         
     } else {
         atRightCorner() {
-            translate([1,0,0]) // FIXME: remove this
+//            symX([-W-3,+W+3,0]) // FIXME: remove this
+            for(p=[ [0,0,0], /*[-W-3,+W+3,0]*/ ])
+                translate(p)
             linear_extrude(WALL_H,center=true)
             polygon(RIGHT_WALL_PROFILE);
             
         }
         
-        
-        
         window_p=460; // FIXME: dup
         window_w=960;
         
-        WINDOW_PROFILE=prefix([0,-400],[[0,0],[0,400],[window_p,0],[0,-200],[window_w,0],[0,200],
+        WINDOW_PROFILE=prefix([0,-400],[[0,0],[0,400],[window_p,0],[0,-200],[   window_w,0],[0,200],
             [2000,0],[0,-400]]
         );
         echo(WINDOW_PROFILE);
@@ -456,6 +720,10 @@ if(mode=="previewL") {
     walls("L");
     walls("B");
     previewL();
+    previewM();
+    previewLU();
+    
+
 }
 if(mode=="previewR") {
     walls("R");
