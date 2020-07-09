@@ -398,6 +398,14 @@ module previewL() {
     }
 }
 
+module fridge() {
+    if($positive) {
+        if($machines) {
+            cube([600,600,180]);
+        }
+    }
+}
+
 module previewR() {
     
     WALL_IX=330;
@@ -417,10 +425,13 @@ module previewR() {
         baseL(R_X[3]+W,M60I,R_D);
         
         
-            translate(-IBEAM_Z) {
-                baseI(R_X[5],WALL_IX,SYSTEM_H+IBEAM_Z[2]);
-                baseI(R_X[7],R_D,SYSTEM_H+IBEAM_Z[2]);
-            }
+        translate(-IBEAM_Z) {
+            baseI(R_X[5],WALL_IX,SYSTEM_H+IBEAM_Z[2]);
+            baseI(R_X[7],R_D,SYSTEM_H+IBEAM_Z[2]);
+            
+            translate(R_X[6])
+            fridge();
+        }
         
             {
                     $depth=R_D; 
