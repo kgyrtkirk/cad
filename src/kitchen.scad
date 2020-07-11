@@ -740,7 +740,7 @@ module previewM() {
     mAssembly();
 }
 
-mode="previewR";
+mode="projtest";
 
 if(mode=="preview") {
     walls("A");
@@ -789,4 +789,8 @@ if(mode=="mPiece") {
     projection()
     posNeg()
     mPiece();
+}
+
+if(mode=="test") {
+    
 }

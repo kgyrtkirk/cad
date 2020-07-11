@@ -1,0 +1,41 @@
+plugins {
+//  id "io.freefair.lombok" version "3.2.1"
+}
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+
+eclipse {
+    classpath {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+repositories { mavenCentral() }
+
+
+dependencies{
+	compile group: 'eu.printingin3d.javascad', name: 'javascad', version: '0.9.2.2'
+
+	compile 'com.google.guava:guava:23.0'
+	compile 'org.slf4j:slf4j-api:1.7.25'
+	compile 'org.slf4j:slf4j-log4j12:1.7.25'
+	compile 'info.picocli:picocli:3.9.5'
+	testCompile 'junit:junit:4.12'
+
+// https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-parser
+compile group: 'org.apache.xmlgraphics', name: 'batik-parser', version: '1.13'
+
+//  compile 'org.projectlombok:lombok:1.18.4'
+
+// https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-all
+//compile group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.13', ext: 'pom'
+compile group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.13'
+// https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-xml
+compile group: 'org.apache.xmlgraphics', name: 'batik-xml', version: '1.13'
+compile group: 'org.apache.xmlgraphics', name: 'batik-dom', version: '1.13'
+compile group: 'org.apache.xmlgraphics', name: 'batik-svg-dom', version: '1.13'
+
+}
+
