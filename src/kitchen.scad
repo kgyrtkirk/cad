@@ -178,7 +178,7 @@ R2W=600;    R2X=R1X+R1W;
 R3W=600;    R3X=R2X+R2W;
 R4W=600;    R4X=R3X+R3W;
 
-R_W=[0,150-W-W/2,M60W,600+W,M60W,W,RIGHT_WALL_DELTA[3][0],W,W,M60W,W,M60W];
+R_W=[0,150-W-W/2-5,M60W,600+W+5,M60W,W,RIGHT_WALL_DELTA[3][0],W,W,M60W,W,M60W];
 R_X=prefix(0,R_W);
 echo("R_X",R_X);
 R_Q=50;     // toloajto hely
@@ -398,16 +398,36 @@ module previewL() {
     }
 }
 
-module fridge() {
+module dishwasher() {
+//  SMS46KI04E 
+    W=600;
+    D=600;
+    H=845;
     if($positive) {
         if($machines) {
-            cube([600,600,180]);
+            color([1,0,0])
+            cube([W,D,H]);
+        }
+    }
+}
+
+module fridge() {
+    //AEG S63300KDX0
+    W=595;
+    D=658;
+    H=1540;
+    if($positive) {
+        if($machines) {
+            translate([2.5,0,0])
+            color([1,0,0])
+            cube([W,D,H]);
         }
     }
 }
 
 module previewR() {
     
+    // a kozepso oszlopos szar netto melysege
     WALL_IX=330;
     atRightCorner()
     translate(IBEAM_Z)
@@ -429,7 +449,10 @@ module previewR() {
             baseI(R_X[5],WALL_IX,SYSTEM_H+IBEAM_Z[2]);
             baseI(R_X[7],R_D,SYSTEM_H+IBEAM_Z[2]);
             
-            translate(R_X[6])
+            
+            translate([R_X[2]+W,0,0])
+            dishwasher();
+            translate([R_X[7]+W,0,0])
             fridge();
         }
         
