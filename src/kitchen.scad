@@ -1,6 +1,4 @@
 use <syms.scad>
-//$fronts=true;
-$machines=false;
 
 module atLeftWall(x) {
     translate();
@@ -250,6 +248,8 @@ module posNeg() {
         }
     }
 }
+
+
 IBEAM_Z=[0,0,60];
 
 module positiveAt(p) {
@@ -260,13 +260,13 @@ module positiveAt(p) {
 }
 
 module IbeamX(name, x, depth, height=800) {
-    ppp(str("YZ_",name))
+    ppp(str("P-YZ_",name))
         baseI(x,depth,height);
 }
 
 
 module hbeam(name,width,depth) {
-    ppp(name)
+    ppp(str("P-XY",name))
         translate([W,0,0])
         cube([width,depth,W]);
 }
@@ -284,7 +284,6 @@ module baseI(x,depth,height){
     translate([x,0,0])
     cube([W,$width,$height]);
 }
-
 
 
 use <kitchen_box.scad>
@@ -359,9 +358,9 @@ module previewL() {
         baseL2("U3",L_X[8]+W,M60I);
         for(i=[3:len(L_X)-1])
         IbeamX(str("LI",i),L_X[i],D37);
-        IbeamX("LA0",L_X[0],D60);
-        IbeamX("LA1",L_X[1],D60);
-        IbeamX("LA2",L_X[2],D60);
+        IbeamX("LJ0",L_X[0],D60);
+        IbeamX("LJ1",L_X[1],D60);
+        IbeamX("LJ2",L_X[2],D60);
         
         translate([L_X[8],0,800])
             m60a(125)
@@ -385,12 +384,6 @@ module previewL() {
             m60b(200)
         ;
         
-
-        if(false) // FIXME: 45 deg door?
-        translate([L_X[2],D60,0])
-        rotate(-45)
-        cube([(D60-D37)*sqrt(2),W,800]);
-
         baseX("X1",L_X[2]+W,D60-D37-W);
         translate([0,0,400])
         baseX("X2",L_X[2]+W,D60-D37-W);
@@ -653,8 +646,6 @@ module mAssembly() {
         translate([(L_X[1]+L_X[0]+W)/2,600/2,0])
         fozoLap();
         
-        
-
     }
 }
 
@@ -747,7 +738,8 @@ module previewM() {
 }
 
 //mode="previewL";
-mode="part-YZ_LI9";
+mode="P-YZ_LI9";
+mode="F-A_125";
 
 if(mode=="preview") {
     walls("A");
@@ -760,8 +752,38 @@ if(mode=="preview") {
 $part=undef;
 function defined(a) = a != undef;
 
-if(mode == "part-YZ_LI9"){
-    $part="YZ_LI9";
+module orient() {
+    if(mode[2]=="X" && mode[3] =="Y") {
+        children();
+    } else if(mode[2]=="X" && mode[3] =="Z") {
+        rotate(99,[0,1,0])
+        children();
+    } else if(mode[2]=="Y" && mode[3] =="Z") {
+        rotate(90,[0,1,0])
+        children();
+    } else {
+        error("x");
+    }
+
+}
+
+
+function substr(data, i, length=0) = (length == 0) ? _substr(data, i, len(data)) : _substr(data, i, length+i);
+function _substr(str, i, j, out="") = (i==j) ? out : str(str[i], _substr(str, i+1, j, out));
+
+if(mode[0] == "F" && mode[1]=="-") {
+    $fronts=true;
+    $machines=false;
+    echo(mode);
+    size=toInt(substr(mode,4));
+    projection()
+    rotate(90,[1,0,0])
+    m60a(size);
+}
+
+if(mode[0] == "P" && mode[1]=="-") {
+    
+    $part=mode;//substr(mode,2);
     
     projection(false)
     rotate(90,[0,1,0])
@@ -812,3 +834,4 @@ if(mode=="mPiece") {
 if(mode=="test") {
     
 }
+

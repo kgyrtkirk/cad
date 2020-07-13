@@ -131,39 +131,50 @@ module m60(pos,sizes) {
     $drawerState="CLOSED";
     translate(pos)
     translate([$width/2,$depth,0])
+    posNeg()
     m60_0(sizes);
 }
 
 FRONT_SP=2;
 
 
+module posNeg() {
+    difference() {
+        union(){
+        $positive=true;
+        children();
+        }
+        union(){
+        $positive=false;
+        children();
+        }
+    }
+}
+
+
 module m60a(size) {
-    m60([0,0,0],[size]);
+    echo(str("F-A_",size));
     $depth=D37;
+    m60([0,0,0],[size]);
     
     translate([0,0,-size])
     children();
 }
 
 module m60b(size) {
-    m60([0,0,0],[size]);
+    echo(str("F-A_",size));
     $depth=D60;
-    
-    translate([0,0,-size])
-    children();
-}
-
-module m60b(size) {
     m60([0,0,0],[size]);
     
     translate([0,0,-size])
     children();
 }
-
-
 
 module m60_0(sizes) {
     HOLE_D=5;
+    HANDLE_HW=160;
+    HANDLE_Y=125/2;
+    
     C0=[    20,
             32,
             224,
@@ -177,36 +188,72 @@ module m60_0(sizes) {
         off=x[i];
         size=sizes[i];
         
+            D=$depth-40;
+        o_y=($drawerState=="CLOSED" ? 0 : D-50);
+        translate([0,0,-off])
         if(!$positive) {
             for(x=C1)
                 symX([$width/2,0,0])
-                translate([0,-x,-off+50]) {
+                translate([0,-x,50]) {
                 rotate(90,[0,1,0])
                 cylinder(d=HOLE_D,h=100,center=true);
-            }
+                    
+                }
+            translate([0,o_y,0]) 
+                rotate(90,[1,0,0]) {
+                    dx=(3-FRONT_SP)/2;
+                    H1=dx+39;
+                    H2=dx+58;
+                    H3=dx+117;
+                    H4=dx+136;
+                    J=533/2;
+                    D=5;
+                    
+                    symX([J,H1,0])
+                    cylinder($fn=16,d=D,h=3*W,center=true);
+                    symX([J,H2,0])
+                    cylinder($fn=16,d=D,h=3*W,center=true);
+                    
+                    if(size>200) {
+                        symX([J,H3,0])
+                        cylinder($fn=16,d=D,h=3*W,center=true);
+                        symX([J,H4,0])
+                        cylinder($fn=16,d=D,h=3*W,center=true);
+                    }
+                    
+                    //x
+                    symX([HANDLE_HW/2,size-HANDLE_Y,0])
+                    cylinder($fn=16,d=D,h=3*W,center=true);
+                    
+                }
         }else{
-            D=$depth-40;
-            o_y=($drawerState=="CLOSED" ? 0 : D-50);
             if($fronts)
             translate([0,o_y,0]) {
             color([0,1,0]) {
 //                translate([-W/4-2,W/2+1,-off+size-size/2])
-                translate([0,W/2+1,-off+size/2])
+                translate([0,W/2+1,size/2])
                 cube([$width-FRONT_SP,W,size-FRONT_SP],center=true);
                 if(false)
                 hull() {
                     OFF_L=0;//$thinL? W/2:0;
                     OFF_R=0;//$thinR? W/2:0;
                     symX([$width/2,0,0])
-                    translate([-W/4-2,W/2+1,-off+size-size/2])
+                    translate([-W/4-2,W/2+1,size-size/2])
                     cube([W/2,W,size-4],center=true);
                 }
+                
+            }
+            if($machines)
+            color([1,0,0])
+            hull()
+            symX([HANDLE_HW/2,W+W,size-HANDLE_Y]) {
+                cylinder($fn=16,d=3,h=W,center=true);
             }
 
             if($machines)
             color([1,0,0])
                 hull()
-                symX([$width/2-2*W,-D/2,-off+size/2])
+                symX([$width/2-2*W,-D/2,size/2])
                 cube([W/2,D,size-10],center=true);
             }
             
@@ -228,8 +275,12 @@ D37=366;
 
 mode="A";
 bBox($width=600,$height=800,$depth=D37,mode) {
-    $drawerState="OPEN";
-    sizes=[125,125,550];
-    maximera(sizes);
+$fronts=true;
+$machines=true;
+
+    $drawerState="CLOSED";
+    sizes=[125];
+    posNeg()
+    m60([-$width/2,-$depth,0],[125,125,800-250]);
 }
 
