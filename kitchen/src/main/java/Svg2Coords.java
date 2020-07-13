@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
+import org.apache.batik.anim.dom.SVGOMPathElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
@@ -43,7 +44,10 @@ public class Svg2Coords {
     for (int iPathNode = 0; iPathNode < pathNodeCount; iPathNode++) {
       MetaPostPath mpp = new MetaPostPath(pathNodes.item(iPathNode));
       String code = mpp.toCode();
-      //      System.out.println(code);
+
+      PX px = new PX();
+      px.visit((SVGOMPathElement) pathNodes.item(iPathNode));
+
     }
   }
 
