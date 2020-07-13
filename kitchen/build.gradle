@@ -30,12 +30,14 @@ compile group: 'org.apache.xmlgraphics', name: 'batik-parser', version: '1.13'
 //  compile 'org.projectlombok:lombok:1.18.4'
 
 // https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-all
-//compile group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.13', ext: 'pom'
-compile group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.13'
 // https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-xml
 compile group: 'org.apache.xmlgraphics', name: 'batik-xml', version: '1.13'
 compile group: 'org.apache.xmlgraphics', name: 'batik-dom', version: '1.13'
 compile group: 'org.apache.xmlgraphics', name: 'batik-svg-dom', version: '1.13'
+compile group: 'org.apache.xmlgraphics', name: 'batik-anim', version: '1.13'
+compile group: 'org.apache.xmlgraphics', name: 'batik-bridge', version: '1.13'
+
+//compile group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.13'
 
 }
 
