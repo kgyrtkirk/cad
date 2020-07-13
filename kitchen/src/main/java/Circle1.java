@@ -43,7 +43,7 @@ class Circle1 {
   private boolean isSame(double d, double r2) {
     double delta = Math.abs(d - r2);
 
-    return (delta < .0001);
+    return (delta < .0005);
   }
 
 }

@@ -5,7 +5,7 @@ import org.apache.batik.dom.svg.AbstractSVGPathSegList.SVGPathSegMovetoLinetoIte
 import org.apache.batik.ext.awt.geom.Polygon2D;
 import org.w3c.dom.svg.SVGPathSegList;
 
-class PX {
+class PathProcessor {
 
   Polygon2D poly = new Polygon2D();
 
@@ -14,11 +14,7 @@ class PX {
     int pathObjects = pathList.getNumberOfItems();
 
     for (int i = 0; i < pathObjects; i++) {
-
       SVGItem item = (SVGItem) pathList.getItem(i);
-
-      String format = String.format("%s%n", item.getValueAsString());
-      //      System.out.println(format);
       process(item);
     }
   }

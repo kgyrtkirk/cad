@@ -41,11 +41,9 @@ public class Svg2Coords {
     NodeList pathNodes = getPathElements();
     int pathNodeCount = pathNodes.getLength();
 
-    for (int iPathNode = 0; iPathNode < pathNodeCount; iPathNode++) {
-      MetaPostPath mpp = new MetaPostPath(pathNodes.item(iPathNode));
-      String code = mpp.toCode();
+    PathProcessor px = new PathProcessor();
 
-      PX px = new PX();
+    for (int iPathNode = 0; iPathNode < pathNodeCount; iPathNode++) {
       px.visit((SVGOMPathElement) pathNodes.item(iPathNode));
 
     }

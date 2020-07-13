@@ -187,6 +187,7 @@ module m60_0(sizes) {
         }else{
             D=$depth-40;
             o_y=($drawerState=="CLOSED" ? 0 : D-50);
+            if($fronts)
             translate([0,o_y,0]) {
             color([0,1,0]) {
 //                translate([-W/4-2,W/2+1,-off+size-size/2])

@@ -1,5 +1,6 @@
 use <syms.scad>
-$machines=true;
+//$fronts=true;
+$machines=false;
 
 module atLeftWall(x) {
     translate();
@@ -199,20 +200,32 @@ module plain() {
         cube([$width,W,$height]);
 }
 
-module baseX(x,w) {
-    echo("BASEX_W",w);
-    positiveAt([x,0,0]) {
-    $width=100;
-    $height=100;
-        color([.5,.5,1]) {
-            hull() {
-                cube([.01,D60,W]);
-                translate([w,0,0])
-                cube([.01,D37,W]);
+module baseX(name,x,w) {
+    ppp(name)
+        positiveAt([x,0,0]) {
+        $width=100;
+        $height=100;
+            color([.5,.5,1]) {
+                hull() {
+                    cube([.01,D60,W]);
+                    translate([w,0,0])
+                    cube([.01,D37,W]);
+                }
             }
         }
-    }
 
+}
+
+module ppp(name) {
+    echo(name);
+    if($positive)
+    if($part==undef || $part==name) 
+        children();
+}
+
+module baseL2(name, x,w,$depth=D37) {
+    ppp(name) 
+        baseL(x,w,$depth);
 }
 module baseL(x,w,$depth=D37) {
     positiveAt([x,0,0]) {
@@ -246,19 +259,16 @@ module positiveAt(p) {
     }
 }
 
-module smallI(x) {
-    // FIXME: move to separate bottom
-    positiveAt([x,0,0]) {
-        $width=D37;
-        $height=800;
-        cube([W,$width,$height]);
-    }
+module IbeamX(name, x, depth, height=800) {
+    ppp(str("YZ_",name))
+        baseI(x,depth,height);
 }
 
 
-module hbeam(width,depth) {
-    translate([W,0,0])
-    cube([width,depth,W]);
+module hbeam(name,width,depth) {
+    ppp(name)
+        translate([W,0,0])
+        cube([width,depth,W]);
 }
 
 module Ibeam(x,depth){
@@ -273,11 +283,6 @@ module baseI(x,depth,height){
     $height=height;
     translate([x,0,0])
     cube([W,$width,$height]);
-}
-
-
-module bigI(x) {
-    Ibeam(x,D60);
 }
 
 
@@ -349,14 +354,14 @@ module previewLU() {
 module previewL() {
     translate(IBEAM_Z)
     posNeg() {
-        baseL(L_X[4]+W,M60I);
-        baseL(L_X[6]+W,M60I);
-        baseL(L_X[8]+W,M60I);
+        baseL2("U1",L_X[4]+W,M60I);
+        baseL2("U2",L_X[6]+W,M60I);
+        baseL2("U3",L_X[8]+W,M60I);
         for(i=[3:len(L_X)-1])
-        smallI(L_X[i]);
-        bigI(L_X[1]);
-        bigI(L_X[0]);
-        bigI(L_X[2]);
+        IbeamX(str("LI",i),L_X[i],D37);
+        IbeamX("LA0",L_X[0],D60);
+        IbeamX("LA1",L_X[1],D60);
+        IbeamX("LA2",L_X[2],D60);
         
         translate([L_X[8],0,800])
             m60a(125)
@@ -379,17 +384,18 @@ module previewL() {
             oven()
             m60b(200)
         ;
+        
 
         if(false) // FIXME: 45 deg door?
         translate([L_X[2],D60,0])
         rotate(-45)
         cube([(D60-D37)*sqrt(2),W,800]);
 
-        baseX(L_X[2]+W,D60-D37-W);
+        baseX("X1",L_X[2]+W,D60-D37-W);
         translate([0,0,400])
-        baseX(L_X[2]+W,D60-D37-W);
+        baseX("X2",L_X[2]+W,D60-D37-W);
 
-        baseL(L_X[0]+W,M60I,$depth=D60);
+        baseL2("U0",L_X[0]+W,M60I,$depth=D60);
 
         
 //        m60([L_X[4],0,860],[125,125,550]);
@@ -433,12 +439,12 @@ module previewR() {
     translate(IBEAM_Z)
     posNeg() {
         for(i=[1:4]) 
-            Ibeam(R_X[i], R_D);
+            IbeamX(str("RC",i),R_X[i], R_D);
         
         // IX box
         translate([0,WALL_IX+W,0]) {
             for(i=[5:6]) 
-                Ibeam(R_X[i], R_D-WALL_IX-W);
+                IbeamX(str("RD",i),R_X[i], R_D-WALL_IX-W);
             baseL(R_X[5]+W, R_X[6]-R_X[5]-W,R_D-WALL_IX-W);
         }
         baseL(R_X[1]+W,M60I,R_D);
@@ -583,7 +589,7 @@ module oven() {
     F_H=600;
     SP_BACK=50;
     translate([0,SP_BACK,-F_H-W+3])
-    hbeam(M60I,D60-SP_BACK);
+    hbeam("OVEN_H",M60I,D60-SP_BACK);
     translate([0,0,-F_H])
     children();
 }
@@ -599,7 +605,7 @@ module microWave() {
     
     
     translate([0,SP_BACK,-E_H])
-    hbeam(M60I,D37-SP_BACK);
+    hbeam("MICRO_H",M60I,D37-SP_BACK);
     
     translate([0,0,-E_H])
     children();
@@ -740,7 +746,8 @@ module previewM() {
     mAssembly();
 }
 
-mode="projtest";
+//mode="previewL";
+mode="part-YZ_LI9";
 
 if(mode=="preview") {
     walls("A");
@@ -748,6 +755,17 @@ if(mode=="preview") {
     previewL();
     previewR();
     previewM();
+}
+
+$part=undef;
+function defined(a) = a != undef;
+
+if(mode == "part-YZ_LI9"){
+    $part="YZ_LI9";
+    
+    projection(false)
+    rotate(90,[0,1,0])
+    previewL();
 }
 
 if(mode=="previewL") {
