@@ -1,6 +1,6 @@
 use <syms.scad>
 
-$fronts=true;
+$fronts=false;
 $machines=true;
 
 module atLeftWall(x) {
@@ -17,12 +17,14 @@ BACK_WALL_WIDTH=1915;   //* FIXME: csempe benne van?
 LEFT_WALL_WIDTH=HW_WIDTH+FWL_WIDTH;
 
 
+FUGGO_KIMARAS=10;
+
 function prefix(s,p)=(len(p)==0 || p==undef)?[]:concat([s+p[0]], prefix(s+p[0],sublist(p,1)) );
 
 RIGHT_WALL_DELTA=[
     [0,0],
 //    [1925+18,0], //*?
-    [1925,0],
+    [1925+18+FUGGO_KIMARAS,0], // right now there is +11
 //    [135+1755+42+18,0], //*?
     [0,330],
     [605,0],
@@ -181,7 +183,9 @@ R2W=600;    R2X=R1X+R1W;
 R3W=600;    R3X=R2X+R2W;
 R4W=600;    R4X=R3X+R3W;
 
-R_W=[0,150-W-W/2-5,M60W,600+W+5,M60W,W,RIGHT_WALL_DELTA[3][0],W,W,M60W,W,M60W];
+R_W=[0,150-W-W/2-5-8,M60W,600+W+5,M60W,W,W,RIGHT_WALL_DELTA[3][0],W,W,M60W,W,M60W];
+echo("RW1",R_W[1]);
+
 R_X=prefix(0,R_W);
 echo("R_X",R_X);
 R_Q=50;     // toloajto hely
@@ -441,7 +445,7 @@ module previewR() {
         
         // IX box
         translate([0,WALL_IX+W,0]) {
-            for(i=[5:6]) 
+            for(i=[5]) 
                 IbeamX(str("RD",i),R_X[i], R_D-WALL_IX-W);
             baseL(R_X[5]+W, R_X[6]-R_X[5]-W,R_D-WALL_IX-W);
         }
@@ -450,14 +454,12 @@ module previewR() {
         
         
         translate(-IBEAM_Z) {
-            baseI(R_X[5],WALL_IX,SYSTEM_H+IBEAM_Z[2]);
-            baseI(R_X[7],R_D,SYSTEM_H+IBEAM_Z[2]);
+            baseI(R_X[6],WALL_IX,SYSTEM_H+IBEAM_Z[2]);
+            baseI(R_X[8],R_D,SYSTEM_H+IBEAM_Z[2]);
             
             
             translate([R_X[2]+W,0,0])
             dishwasher();
-            translate([R_X[7]+W,0,0])
-            fridge();
         }
         
             {
@@ -472,37 +474,42 @@ module previewR() {
             ;
 
             }
+            
+            translate([R_X[5],0,0])
+                doors(R_X[7]-R_X[5]+W,800,R_D);
+            ;
+            
         R_D2=R_D-SLIDE_LOSS;
         translate([0,SLIDE_LOSS,0]) {
-            baseI(R_X[10],R_D2,SYSTEM_H);
+            translate(-IBEAM_Z) 
+            translate([R_X[8]+W,0,0])
+            fridge();
             baseI(R_X[11],R_D2,SYSTEM_H);
+            baseI(R_X[12],R_D2,SYSTEM_H);
             
             OVER_FRIDGE_Z=1600-IBEAM_Z[2];
             OVER_FRIDGE_H=SYSTEM_H-OVER_FRIDGE_Z;
             translate([0,0,OVER_FRIDGE_Z]) {
-                baseI(R_X[8],R_D2,OVER_FRIDGE_H);
                 baseI(R_X[9],R_D2,OVER_FRIDGE_H);
+                baseI(R_X[10],R_D2,OVER_FRIDGE_H);
                 
-                baseL(R_X[8]+W,M60I,R_D2);
+                baseL(R_X[9]+W,M60I,R_D2);
                 translate([0,0,OVER_FRIDGE_H-W])
-                baseL(R_X[8]+W,M60I,R_D2);
+                baseL(R_X[9]+W,M60I,R_D2);
                 translate([0,0,OVER_FRIDGE_H/2-W/2])
-                baseL(R_X[8]+W,M60I,R_D2);
+                baseL(R_X[9]+W,M60I,R_D2);
             }
             baseL(R_X[10]+W,M60I,R_D2);
 
                     $depth=R_D2; 
             
-            translate([R_X[5],0,0])
-                doors(R_X[6]-R_X[5]+W,800,R_D2);
-            ;
-            translate([R_X[7]+W,0,SYSTEM_H])
+            translate([R_X[8]+W,0,SYSTEM_H])
                 doors2(600,SYSTEM_H-OVER_FRIDGE_Z,R_D2);
             ;
 
             
             PEEK_H=1400;
-            translate([R_X[9]+W,0,SYSTEM_H])
+            translate([R_X[10]+W,0,SYSTEM_H])
                 doors2(600,SYSTEM_H-PEEK_H,R_D2)
                 m60b(150)
                 m60b(150)
@@ -535,6 +542,7 @@ module blancoSona6s() {
     A_W=1000;
     A_H=500;
     
+    
     M1_W=165;
     M1_H=255;
     M2_W=350;
@@ -545,23 +553,31 @@ module blancoSona6s() {
     
     M1_X=40+540-M1_W/2;
     M2_X=40+350-M2_W/2;
+
+    mainBowlPos=[-M2_X,0,-190/2+5];
+    secBowlPos=[-M1_X,0,-100/2+5];
     
+    
+    // bowl dist: around 545 use 550
+    q=(M1_X-M2_X)+(M1_W+M2_W)/2;
+//    assert(q==550,str("q is ",q))    ;
+
     if($positive){
         if($machines) {
             translate([0,0,M_H]) 
             { 
                 translate([38,0,0])
-            sphere(10);
+                sphere(10);
                 difference() {
-                    mainBowlPos=[-M2_X,0,-190/2+5];
-                    secBowlPos=[-M1_X,0,-100/2+5];
                     union() {
                         translate([-A_W/2,0,0])
                         roundedCutShape(A_W,A_H,11,15);
                         translate(mainBowlPos)
                         roundedCutShape(M2_W,M2_H,190,15);
                         translate(secBowlPos)
-                        roundedCutShape(M1_W,M1_H,100,15);
+                        roundedCutShape(M1_W+10,M1_H,100,15);
+                        translate(secBowlPos-[0,0,M1_H/2])
+                        cylinder(d=159,h=318,center=true);
                     }
                     translate([-A_W/2,0,0])
                     translate([0,0,6])
@@ -570,7 +586,8 @@ module blancoSona6s() {
                     translate(mainBowlPos)
                     roundedCutShape(M2_W-5,M2_H-5,190-5,15);
                     translate(secBowlPos)
-                    roundedCutShape(M1_W-5,M1_H-5,100-5,15);
+                        roundedCutShape(M1_W-5,M1_H-5,100-5,15);
+
                 }
             }
         }
@@ -579,6 +596,10 @@ module blancoSona6s() {
         translate([-A_W/2,0,M_H/2]) 
 //        translate([-860/2,0,M_H/2])
         roundedCutShape(980,480,M_H+1,15);
+
+        translate(secBowlPos)
+            roundedCutShape(M1_W,M1_H,100,15);
+
     }
 }
 
@@ -645,7 +666,7 @@ module mAssembly() {
         cornerCutOut();
 
         atRightCorner()
-        translate([R_X[4]+0,R_D/2,0])
+        translate([R_X[4]+W,R_D/2,0])
         blancoSona6s();
 
         translate([(L_X[1]+L_X[0]+W)/2,600/2,0])
@@ -684,7 +705,7 @@ module mPiece() {
     if($positive) {
         
         atRightCorner() {
-           mPiece1(R_X[6]+W,R_D+OVERHANG); 
+           mPiece1(R_X[7]+W,R_D+OVERHANG); 
         }
         mPiece1(L_X[9]+OVERHANG,L_D37); 
         mPiece1(L_X[2],L_D60); 
