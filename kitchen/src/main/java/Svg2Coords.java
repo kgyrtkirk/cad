@@ -127,6 +127,7 @@ public class Svg2Coords {
    * @throws IOException Error reading the SVG file.
    */
   public static void main(String args[]) throws IOException {
+    System.out.println(args[0]);
     URI uri = new File(args[0]).toURI();
     Svg2Coords converter = new Svg2Coords(uri.toString());
     converter.run();

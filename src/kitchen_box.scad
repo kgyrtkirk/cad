@@ -131,7 +131,7 @@ module m60(pos,sizes) {
     $drawerState="CLOSED";
     translate(pos)
     translate([$width/2,$depth,0])
-    posNeg()
+//    posNeg()
     m60_0(sizes);
 }
 
@@ -141,15 +141,26 @@ FRONT_SP=2;
 module posNeg() {
     difference() {
         union(){
-        $positive=true;
-        children();
+            $positive=true;
+            children();
         }
         union(){
-        $positive=false;
-        children();
+            $positive=false;
+            children();
         }
     }
 }
+
+
+module m60i(size) {
+    echo(str("F-A_",size));
+    $depth=D37;
+    m60(    $internal=true, $fronts=false,[0,0,0],[size]);
+
+    translate([0,0,0])
+    children();
+}
+
 
 
 module m60a(size) {
@@ -172,7 +183,7 @@ module m60b(size) {
 
 module m60_0(sizes) {
     HOLE_D=5;
-    HANDLE_HW=160;
+    HANDLE_HW=128;
     HANDLE_Y=125/2;
     
     C0=[    20,
@@ -191,6 +202,7 @@ module m60_0(sizes) {
             D=$depth-40;
         o_y=($drawerState=="CLOSED" ? 0 : D-50);
         translate([0,0,-off])
+        
         if(!$positive) {
             for(x=C1)
                 symX([$width/2,0,0])
@@ -199,6 +211,7 @@ module m60_0(sizes) {
                 cylinder(d=HOLE_D,h=100,center=true);
                     
                 }
+                if(!$internal)
             translate([0,o_y,0]) 
                 rotate(90,[1,0,0]) {
                     dx=(3-FRONT_SP)/2;

@@ -2,8 +2,8 @@ import org.apache.batik.ext.awt.geom.Polygon2D;
 
 class Circle1 {
 
-  float x;
-  float y;
+  double x;
+  double y;
   double r;
 
   public Circle1(Polygon2D poly) {
@@ -18,8 +18,8 @@ class Circle1 {
     y = (sumY / n);
 
     for (int i = 0; i < n; i++) {
-      float dx = x - poly.xpoints[i];
-      float dy = y - poly.ypoints[i];
+      double dx = x - poly.xpoints[i];
+      double dy = y - poly.ypoints[i];
       double d = Math.sqrt(dx * dx + dy * dy);
       if (i == 0) {
         r = d;
@@ -37,13 +37,20 @@ class Circle1 {
 
   @Override
   public String toString() {
-    return String.format("Circle  %.3f  %.3f %.3f", x, y, r);
+    //    return String.format("Circle  %.2f  %.2f %.1f", x, y, 2 * r);
+    return String.format("X%.2f Y%.2f", x, y, 2 * r);
   }
 
   private boolean isSame(double d, double r2) {
     double delta = Math.abs(d - r2);
 
     return (delta < .0005);
+  }
+
+  public void translate(double d, double e) {
+    x += d;
+    y += e;
+
   }
 
 }

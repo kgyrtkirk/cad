@@ -1,5 +1,8 @@
 use <syms.scad>
 
+$fronts=true;
+$machines=true;
+
 module atLeftWall(x) {
     translate();
 }
@@ -18,7 +21,8 @@ function prefix(s,p)=(len(p)==0 || p==undef)?[]:concat([s+p[0]], prefix(s+p[0],s
 
 RIGHT_WALL_DELTA=[
     [0,0],
-    [1925+18,0], //*?
+//    [1925+18,0], //*?
+    [1925,0],
 //    [135+1755+42+18,0], //*?
     [0,330],
     [605,0],
@@ -222,7 +226,7 @@ module ppp(name) {
 }
 
 module baseL2(name, x,w,$depth=D37) {
-    ppp(name) 
+    ppp(str("P-XY_",name))
         baseL(x,w,$depth);
 }
 module baseL(x,w,$depth=D37) {
@@ -363,8 +367,9 @@ module previewL() {
         IbeamX("LJ2",L_X[2],D60);
         
         translate([L_X[8],0,800])
-            m60a(125)
-            m60a(125)
+            m60i(125)
+            m60a(250)
+            m60i(250)
             m60a(550)
         ;
         
@@ -456,7 +461,7 @@ module previewR() {
         }
         
             {
-                    $depth=R_D; 
+                $depth=R_D; 
             translate([R_X[1],0,800])
                 m60b(200)
                 m60b(200)
@@ -737,9 +742,11 @@ module previewM() {
     mAssembly();
 }
 
-//mode="previewL";
-mode="P-YZ_LI9";
-mode="F-A_125";
+mode="previewR";
+//mode="P-YZ_LI9";
+//mode="F-A_125";
+//mode="P-XY_U3";
+
 
 if(mode=="preview") {
     walls("A");
@@ -752,13 +759,14 @@ if(mode=="preview") {
 $part=undef;
 function defined(a) = a != undef;
 
-module orient() {
+module orient(mode) {
     if(mode[2]=="X" && mode[3] =="Y") {
         children();
     } else if(mode[2]=="X" && mode[3] =="Z") {
         rotate(99,[0,1,0])
         children();
     } else if(mode[2]=="Y" && mode[3] =="Z") {
+        rotate(180,[0,0,1])
         rotate(90,[0,1,0])
         children();
     } else {
@@ -771,6 +779,7 @@ module orient() {
 function substr(data, i, length=0) = (length == 0) ? _substr(data, i, len(data)) : _substr(data, i, length+i);
 function _substr(str, i, j, out="") = (i==j) ? out : str(str[i], _substr(str, i+1, j, out));
 
+
 if(mode[0] == "F" && mode[1]=="-") {
     $fronts=true;
     $machines=false;
@@ -778,15 +787,19 @@ if(mode[0] == "F" && mode[1]=="-") {
     size=toInt(substr(mode,4));
     projection()
     rotate(90,[1,0,0])
+    posNeg()
     m60a(size);
 }
 
 if(mode[0] == "P" && mode[1]=="-") {
+    $fronts=false;
+    $machines=false;
     
     $part=mode;//substr(mode,2);
     
     projection(false)
-    rotate(90,[0,1,0])
+    orient(mode)
+//    rotate(90,[0,1,0])
     previewL();
 }
 

@@ -8,6 +8,7 @@ import org.w3c.dom.svg.SVGPathSegList;
 class PathProcessor {
 
   Polygon2D poly = new Polygon2D();
+  private Rect1 baseRect;
 
   public void visit(SVGOMPathElement pathElement) {
     SVGPathSegList pathList = pathElement.getNormalizedPathSegList();
@@ -33,11 +34,17 @@ class PathProcessor {
 
     case 4:
       Rect1 r = new Rect1(poly);
+      if (baseRect == null)
+        baseRect = r;
+      //      r.translate(-baseRect.x, -baseRect.y);
       System.out.println(r);
       break;
 
     default:
       Circle1 c = new Circle1(poly);
+      c.translate(-baseRect.x, -baseRect.y);
+      c.y = baseRect.h - c.y;
+      c.x = baseRect.w - c.x;
       System.out.println(c);
       break;
 

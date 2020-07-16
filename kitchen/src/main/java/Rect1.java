@@ -21,4 +21,9 @@ class Rect1 {
     return String.format("rect %.3f %.3f %.3f %.3f", x, y, w, h);
   }
 
+  public void translate(double d, double e) {
+    x += d;
+    y += e;
+  }
+
 }
