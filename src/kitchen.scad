@@ -98,7 +98,7 @@ module walls(part="A") {
     radiator();
     
     window_pos=[0,460,885];
-    window_w=970;
+    window_w=985;
     window_h=1510;
     window_b=40;
     if(part=="B" || part=="A")
@@ -644,16 +644,20 @@ module microWave() {
 
 module fozoLap() {
     // amica hga6220
+    S_W=590;
+    S_D=520;
+    $machines=true;
     if($positive) {
         if($machines) {
             translate([0,0,M_H])
-            roundedCutShape(595,510,M_H+1,5);
-            roundedCutShape(595,510,M_H+1,5);
-            roundedCutShape(20,480+2*55,M_H*3,5);
+            roundedCutShape(S_W,S_D,M_H+1,5);
+            roundedCutShape(S_W,S_D,M_H+1,5);
+            color([.5,.5,1])
+            roundedCutShape(20,480+2*60,M_H*3,5);
         }
     }else{
         translate([0,0,M_H/2])
-        roundedCutShape(560,480,M_H+1,M_H*2);
+        roundedCutShape(560,490,M_H+1,M_H);
     }
 }
 
@@ -680,7 +684,7 @@ module mAssembly() {
         translate([R_X[4]+W,R_D/2,0])
         blancoSona6s();
 
-        translate([(L_X[1]+L_X[0]+W)/2,600/2,0])
+        translate([(L_X[1]+L_X[0]+W)/2,600/2+10+10,0])
         fozoLap();
         
     }
@@ -743,21 +747,31 @@ module mPiece() {
         
     } else {
         atRightCorner() {
-//            symX([-W-3,+W+3,0]) // FIXME: remove this
+            if(false)
             for(p=[ [0,0,0], /*[-W-3,+W+3,0]*/ ])
                 translate(p)
             linear_extrude(WALL_H,center=true)
             polygon(RIGHT_WALL_PROFILE);
             
-            translate([R_X[6],0,-100])
-            cube([W+660,WALL_IX+W,200]);
+            translate([R_X[6],-W,-100])
+            cube([W+660,WALL_IX+W+W,200]);
             
         }
         
         window_p=460; // FIXME: dup
-        window_w=960;
+        window_w=950;
+        window_g=80;
+        window_s=(985-950)/2;
         
-        WINDOW_PROFILE=prefix([0,-400],[[0,0],[0,400],[window_p,0],[0,-200],[   window_w,0],[0,200],
+        WINDOW_PROFILE=prefix([0,-400],
+        [
+            [0,0],[0,400],
+            [window_p,0],
+            [window_s,-window_g],
+            [0,-200],
+            [   window_w,0],
+            [0,200],
+            [window_s,window_g],
             [2000,0],[0,-400]]
         );
         echo(WINDOW_PROFILE);
