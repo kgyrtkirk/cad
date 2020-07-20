@@ -1,7 +1,7 @@
 use <syms.scad>
 
 $fronts=false;
-$machines=true;
+$machines=false;
 
 module atLeftWall(x) {
     translate();
@@ -14,8 +14,11 @@ HW_WIDTH=2075-30;       //*
 FWL_WIDTH=600;          //*
 BACK_WALL_WIDTH=1915;   //* FIXME: csempe benne van?
 
-LEFT_WALL_WIDTH=HW_WIDTH+FWL_WIDTH;
+// a kozepso oszlopos szar netto melysege
+WALL_IX=330;
 
+
+LEFT_WALL_WIDTH=HW_WIDTH+FWL_WIDTH;
 
 FUGGO_KIMARAS=10;
 
@@ -27,7 +30,7 @@ RIGHT_WALL_DELTA=[
     [1925+18+FUGGO_KIMARAS,0], // right now there is +11
 //    [135+1755+42+18,0], //*?
     [0,330],
-    [605,0],
+    [625-18-FUGGO_KIMARAS,0],
     [0,-330+50],
     [660+480+420+40,0],
     [0,-10],
@@ -36,6 +39,8 @@ RIGHT_WALL_DELTA=[
 ];
 
 RIGHT_WALL_PROFILE=prefix([0,0],RIGHT_WALL_DELTA);
+
+GAZELZARO_POS=[50,255,700];
 
 echo(RIGHT_WALL_PROFILE);
 
@@ -85,7 +90,7 @@ module walls(part="A") {
     rotate(-90,[1,0,0])
     cylinder(d=25,h=BACK_WALL_WIDTH);
     // gazelzaro
-    translate([50,255,700])
+    translate(GAZELZARO_POS)
     sphere(d=70);
 
     translate([60,800,0])
@@ -183,7 +188,7 @@ R2W=600;    R2X=R1X+R1W;
 R3W=600;    R3X=R2X+R2W;
 R4W=600;    R4X=R3X+R3W;
 
-R_W=[0,150-W-W/2-5-8,M60W,600+W+5,M60W,W,W,RIGHT_WALL_DELTA[3][0],W,W,M60W,W,M60W];
+R_W=[0,150-W-W/2-5-8,M60W,600+W+5,M60W,W+2,W,RIGHT_WALL_DELTA[3][0],W,W,M60W,W,M60W];
 echo("RW1",R_W[1]);
 
 R_X=prefix(0,R_W);
@@ -312,6 +317,7 @@ module doors(w,h,d) {
     cR=cL+[w/2,0,0];
     translate([0,d,0])
     if($positive) {
+        if($fronts)
         color([0,1,1]){
         translate(cL)
         cube([w/2-FRONT_SP,W,h-FRONT_SP],center=true);
@@ -361,6 +367,13 @@ module previewLU() {
 module previewL() {
     translate(IBEAM_Z)
     posNeg() {
+        
+        if(!$positive) {
+            translate(GAZELZARO_POS-IBEAM_Z)
+            rotate(90,[0,1,0])
+            cylinder(d=102,h=1000,center=true);
+        }
+        
         baseL2("U1",L_X[4]+W,M60I);
         baseL2("U2",L_X[6]+W,M60I);
         baseL2("U3",L_X[8]+W,M60I);
@@ -435,8 +448,6 @@ module fridge() {
 
 module previewR() {
     
-    // a kozepso oszlopos szar netto melysege
-    WALL_IX=330;
     atRightCorner()
     translate(IBEAM_Z)
     posNeg() {
@@ -476,7 +487,7 @@ module previewR() {
             }
             
             translate([R_X[5],0,0])
-                doors(R_X[7]-R_X[5]+W,800,R_D);
+                doors(R_X[8]-R_X[5],800,R_D);
             ;
             
         R_D2=R_D-SLIDE_LOSS;
@@ -738,6 +749,9 @@ module mPiece() {
             linear_extrude(WALL_H,center=true)
             polygon(RIGHT_WALL_PROFILE);
             
+            translate([R_X[6],0,-100])
+            cube([W+660,WALL_IX+W,200]);
+            
         }
         
         window_p=460; // FIXME: dup
@@ -763,7 +777,7 @@ module previewM() {
     mAssembly();
 }
 
-mode="previewR";
+mode="previewL";
 //mode="P-YZ_LI9";
 //mode="F-A_125";
 //mode="P-XY_U3";
