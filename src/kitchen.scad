@@ -1,7 +1,7 @@
 use <syms.scad>
 
 $fronts=false;
-$machines=false;
+$machines=true;
 
 module atLeftWall(x) {
     translate();
@@ -10,8 +10,8 @@ module atLeftWall(x) {
 WALL_THICK=70;          //*
 WALL_H=1695+915;        //* w/o laminate
 HW_H=1235;              //* w/o laminate
-HW_WIDTH=2075-30;       //*
-FWL_WIDTH=600;          //*
+HW_WIDTH=2075-30+12;       //*
+FWL_WIDTH=600+100;          //*
 BACK_WALL_WIDTH=1915;   //* FIXME: csempe benne van?
 
 // a kozepso oszlopos szar netto melysege
@@ -343,7 +343,7 @@ module previewLU() {
     
     POS_Y=1650;
     
-    WIDTH=L_X[1];
+    WIDTH=L_X[1]-W;
     D45=450;
     SH=SYSTEM_H-POS_Y;
     posNeg() {
@@ -354,7 +354,7 @@ module previewLU() {
             baseL(W,WIDTH,D45);
 
             baseI(0,D45,SH);
-            baseI(L_X[1]+W,D45,SH);
+            baseI(WIDTH+W,D45,SH);
 
             translate([(L_X[0]+L_X[1])/2,D45/2,0])
             vent();
@@ -646,7 +646,6 @@ module fozoLap() {
     // amica hga6220
     S_W=590;
     S_D=520;
-    $machines=true;
     if($positive) {
         if($machines) {
             translate([0,0,M_H])
@@ -681,7 +680,7 @@ module mAssembly() {
         cornerCutOut();
 
         atRightCorner()
-        translate([R_X[4]+W,R_D/2,0])
+        translate([R_X[4]+W,R_D60/2+15,0])
         blancoSona6s();
 
         translate([(L_X[1]+L_X[0]+W)/2,600/2+10+10,0])
@@ -689,6 +688,11 @@ module mAssembly() {
         
     }
 }
+
+    OVERHANG=35;
+    L_D37=D37+OVERHANG;
+    L_D60=D60+OVERHANG;
+    R_D60=R_D+OVERHANG;
 
 
 module mPiece() {
@@ -712,15 +716,12 @@ module mPiece() {
         mPiece1(K,S);
     }
     M_H=30;
-    OVERHANG=35;
-    L_D37=D37+OVERHANG;
-    L_D60=D60+OVERHANG;
     B_D=200;
     color([0,0,1])
     if($positive) {
         
         atRightCorner() {
-           mPiece1(R_X[7]+W,R_D+OVERHANG); 
+           mPiece1(R_X[7]+W,R_D60); 
         }
         mPiece1(L_X[9]+OVERHANG,L_D37); 
         mPiece1(L_X[2],L_D60); 
@@ -791,6 +792,30 @@ module previewM() {
     mAssembly();
 }
 
+module previewLT() {
+//    HW_WIDTH=2075-30+12;       //*
+//  FWL_WIDTH=600+100;          //*
+    X1=FWL_WIDTH;
+    X2=X1+HW_WIDTH;
+
+    Q=450;
+    S=100;
+    translate([0,0,HW_H]) {
+        hull() {
+            translate([X2,-WALL_THICK/2,0])
+            cylinder(h=M_H,d=Q);
+            translate([X1+Q/2,-WALL_THICK/2,0])
+            cylinder(h=M_H,d=Q);
+        }
+        translate([0,-WALL_THICK-S,0])
+        cube([1000,S,M_H]);
+            
+//            translate([0,-WALL_THICK-Q,0])
+  //          roundedCutShape(3*FWL_WIDTH,Q-S,2*M_H+1,200);
+    }
+}
+
+
 mode="previewL";
 //mode="P-YZ_LI9";
 //mode="F-A_125";
@@ -858,6 +883,7 @@ if(mode=="previewL") {
     previewL();
     previewM();
     previewLU();
+    previewLT();
     
 
 }
@@ -892,6 +918,8 @@ if(mode=="mPiece") {
     posNeg()
     mPiece();
 }
+
+
 
 if(mode=="test") {
     
