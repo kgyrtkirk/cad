@@ -1,6 +1,6 @@
 use <syms.scad>
 
-$fronts=false;
+$fronts=true;
 $machines=true;
 
 module atLeftWall(x) {
@@ -816,7 +816,7 @@ module previewLT() {
 }
 
 
-mode="previewL";
+mode="preview";
 //mode="P-YZ_LI9";
 //mode="F-A_125";
 //mode="P-XY_U3";
@@ -828,6 +828,8 @@ if(mode=="preview") {
     previewL();
     previewR();
     previewM();
+    previewLU();
+    previewLT();
 }
 
 $part=undef;
