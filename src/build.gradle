@@ -71,7 +71,8 @@ def partMap = [
 def projMap = [
 	'matchbox_container':		['floor'],
 	'esp-gen-3':			['project'],
-	'kitchen':			['mPiece','projtest','P-YZ_LI9','P-YZ_LI8','P-XY_U3','F-A_250','F-A_550'],
+	'kitchen':			['mPiece', 'mFuszer', 'mFelso',
+						'projtest','P-YZ_LI9','P-YZ_LI8','P-XY_U3','F-A_250','F-A_550'],
 	'inserta_knock-in_drill':	['project'],
 	'lights':			['p0','p1','pr'],
 	]

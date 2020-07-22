@@ -11,12 +11,11 @@ WALL_THICK=70;          //*
 WALL_H=1695+915;        //* w/o laminate
 HW_H=1235;              //* w/o laminate
 HW_WIDTH=2075-30+12;       //*
-FWL_WIDTH=600+100;          //*
+FWL_WIDTH=600+110;          //*
 BACK_WALL_WIDTH=1915;   //* FIXME: csempe benne van?
 
 // a kozepso oszlopos szar netto melysege
-WALL_IX=330;
-
+WALL_IX=330;            // FIXME ez jo?
 
 LEFT_WALL_WIDTH=HW_WIDTH+FWL_WIDTH;
 
@@ -71,7 +70,7 @@ module walls(part="A") {
     }
     module radiator() {
         // FIXME: romatic-width?
-        D=30;
+        D=85;
         for(i=[0:5])
         translate([50*i,-D/2,200])
             cylinder($fn=4,d=D,h=600);
@@ -93,7 +92,7 @@ module walls(part="A") {
     translate(GAZELZARO_POS)
     sphere(d=70);
 
-    translate([60,800,0])
+    translate([15,800,0])
     rotate(90)
     radiator();
     
@@ -177,7 +176,7 @@ MAXIMERA_D60_MIN_DEPTH=590-30;
 SLIDE_LOSS=50;
 R_D=MAXIMERA_D60_MIN_DEPTH+SLIDE_LOSS; // right under depth
 
-L_W=[80+W,M60W,W,D60-D37,W,M60W,W,M60W,W,M60W];
+L_W=[110,M60W,W,D60-D37,W,M60W,W,M60W,W,M60W];
 
 L_X=prefix(0,L_W);
 
@@ -446,6 +445,70 @@ module fridge() {
     }
 }
 
+
+F_DELTA=[ R_X[1]+W,M60W+5,W,M60W,W,M60W,W ];
+
+F_X=prefix(0,F_DELTA);
+
+//F_X=[R_X[1]+W];
+
+FUSZER_Q=200;      //  fuszerpolc mag
+FUSZER_P=D37-FUSZER_Q;    //  fuszerpolc melyseg
+//FUSZER_L=F_X[3]-F_X[0]-W;
+FUSZER_L=1150;
+
+
+module fuszerPolc(){
+//        translate([0,250,0])
+        if($positive) {
+                intersection() {
+                    cube([FUSZER_L,FUSZER_P,M_H]);
+                    hull() {
+                        R=FUSZER_P/2;
+                        cube([FUSZER_L/2,FUSZER_P*3,M_H*3],center=true);
+                        translate([FUSZER_L-R,FUSZER_P-R,0])
+                        cylinder(r=R,h=M_H*3,center=true);
+                        translate([FUSZER_L-R,0,0])
+                        cube([R,FUSZER_P-R,M_H]);
+                    }
+                }
+        }
+}
+
+module previewRU() {
+    
+    Z0=IBEAM_Z[2] + 800 + M_H;
+    Z1=Z0+400;
+    Z2=Z1+FUSZER_Q;
+    atRightCorner()
+    posNeg() {
+        translate([0,0,Z0]) {
+            HH=SYSTEM_H-Z0; // FIXME: system_h misalignment
+            IbeamX("K1",F_X[0], D37,HH);
+        }
+        if(false)
+        translate([0,0,Z1]) {
+            HH=SYSTEM_H-Z1;
+            IbeamX("K3",F_X[3], D37,HH);
+            if(!$positive) {
+                translate([F_X[3]-.5,FUSZER_P,0])
+                rotate(-45,[1,0,0])
+                cube([W+1,1000,1000]);
+            }
+        }
+        translate([0,0,Z2]) {
+            HH=SYSTEM_H-Z2;
+            IbeamX("K3",F_X[3], D37,HH);
+            IbeamX("K2",F_X[1], D37,HH);
+            IbeamX("K2",F_X[2], D37,HH);
+            IbeamX("K3",F_X[4], D37,HH);
+            IbeamX("K3",F_X[5], D37,HH);
+        }
+        translate([F_X[0]+W,0,Z1]) {
+            fuszerPolc();
+        }
+    }
+}
 module previewR() {
     
     atRightCorner()
@@ -662,12 +725,11 @@ module fozoLap() {
 
 
 module cornerCutOut() {
-    C_W=R_X[1]+W;
+    C_W=R_X[1];
     
     if($positive) {
     }else{
-        
-    roundedCutShape(2*C_W,450*2,M_H*3,5);
+        roundedCutShape(2*C_W,D37*2,M_H*3,5);
     }
 }
 
@@ -747,7 +809,7 @@ module mPiece() {
         mPiece1(BACK_WALL_WIDTH,ID+L_X[0]); 
         
     } else {
-        atRightCorner() {
+       atRightCorner() {
             if(false)
             for(p=[ [0,0,0], /*[-W-3,+W+3,0]*/ ])
                 translate(p)
@@ -797,26 +859,37 @@ module previewLT() {
 //  FWL_WIDTH=600+100;          //*
     X1=FWL_WIDTH;
     X2=X1+HW_WIDTH;
+    
+    echo(X1);
+    echo(X2);
+    echo("x",X2-(X1+Q/2));
 
     Q=450;
     S=100;
+    if($positive) {
     translate([0,0,HW_H]) {
-        hull() {
-            translate([X2,-WALL_THICK/2,0])
-            cylinder(h=M_H,d=Q);
-            translate([X1+Q/2,-WALL_THICK/2,0])
-            cylinder(h=M_H,d=Q);
+            hull() {
+                translate([X2,-WALL_THICK/2,0])
+                cylinder(h=M_H,d=Q);
+                translate([X1+Q/2,-WALL_THICK/2,0])
+                cylinder(h=M_H,d=Q);
+            }
+            translate([0,-WALL_THICK-S,0])
+            cube([1000,S,M_H]);
+                
+    //            translate([0,-WALL_THICK-Q,0])
+      //          roundedCutShape(3*FWL_WIDTH,Q-S,2*M_H+1,200);
         }
-        translate([0,-WALL_THICK-S,0])
-        cube([1000,S,M_H]);
-            
-//            translate([0,-WALL_THICK-Q,0])
-  //          roundedCutShape(3*FWL_WIDTH,Q-S,2*M_H+1,200);
+    }else {
+        hull()
+            for(x=[X1+Q/2,X2])
+            translate([x,-WALL_THICK/2+Q/2-60,0])
+            cube([.1,13.1,2000]);
     }
 }
 
 
-mode="preview";
+mode="previewR";
 //mode="P-YZ_LI9";
 //mode="F-A_125";
 //mode="P-XY_U3";
@@ -893,17 +966,9 @@ if(mode=="previewR") {
     walls("R");
     walls("B");
     previewR();
+    previewRU();
     previewM();
 }
-
-//mode="pB";
-if(mode=="pB") {
-    projection(cut=true)
-        bBox([
-            prop("WIDTH",598),
-        ],"B");
-}
-
 
 if(mode=="projtest") {
     projection() {
@@ -916,14 +981,24 @@ if(mode=="projtest") {
 
 
 if(mode=="mPiece") {
+    $machines=false;
+    projection()
+    mAssembly();
+}
+
+if(mode=="mFuszer") {
+    projection()
+    atRightCorner()
+    posNeg()
+    fuszerPolc();
+}
+if(mode=="mFelso") {
     projection()
     posNeg()
-    mPiece();
+    previewLT();
 }
 
-
-
-if(mode=="test") {
-    
-}
+echo("rx0",R_X[1]);
+echo("lx0",L_X[0]);
+echo("lx0",FUSZER_P);
 
