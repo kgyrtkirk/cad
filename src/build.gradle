@@ -75,10 +75,12 @@ def projMap = [
 						'projtest','P-YZ_LI9','P-YZ_LI8','P-XY_U3','F-A_250','F-A_550'],
 	'inserta_knock-in_drill':	['project'],
 	'lights':			['p0','p1','pr'],
+	'ikea_bridge':			['def'],
 	]
 
 task allScad() {}
 task allPdf() {}
+task allDxf() {}
 
 partMap.each { inputName,modes ->
 	modes.each { mode ->
@@ -102,6 +104,7 @@ projMap.each { inputName,modes ->
 		def outputName="${inputName}@${mode}"
 		def sFile=new File(outputDir,"${outputName}.svg")
 		def oFile=new File(outputDir,"${outputName}.pdf")
+		def oFile2=new File(outputDir,"${outputName}.png")
 		def t=task("scad_${outputName}",type:Exec) {
 			def inputFile=file("${inputName}.scad")
 			inputs.file inputFile
@@ -114,9 +117,19 @@ projMap.each { inputName,modes ->
 			outputs.file oFile
 			commandLine "inkscape","--without-gui","--export-pdf=$oFile",sFile
 		}
+		def t3=task("inkscape_${outputName}_png",type:Exec) {
+			dependsOn t
+			inputs.file sFile
+			outputs.file oFile2
+			commandLine "inkscape","--without-gui","--export-png=$oFile2",sFile
+		}
+
 
 		allScad.dependsOn(t2)
+		allScad.dependsOn(t3)
 		allPdf.dependsOn(t2)
+		allPdf.dependsOn(t3)
+//		allDxf.dependsOn(t3)
 	}
 }
 
