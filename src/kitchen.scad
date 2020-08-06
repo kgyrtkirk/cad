@@ -15,7 +15,7 @@ FWL_WIDTH=600+110;          //*
 BACK_WALL_WIDTH=1915;   //* FIXME: csempe benne van?
 
 // a kozepso oszlopos szar netto melysege
-WALL_IX=330;            // FIXME ez jo?
+WALL_IX=335;            // FIXME ez jo?
 
 LEFT_WALL_WIDTH=HW_WIDTH+FWL_WIDTH;
 
@@ -28,9 +28,9 @@ RIGHT_WALL_DELTA=[
 //    [1925+18,0], //*?
     [1925+18+FUGGO_KIMARAS,0], // right now there is +11
 //    [135+1755+42+18,0], //*?
-    [0,330],
+    [0,WALL_IX],
     [625-18-FUGGO_KIMARAS,0],
-    [0,-330+50],
+    [0,-WALL_IX+50],
     [660+480+420+40,0],
     [0,-10],
     [-(660+480+420+40),0],
@@ -392,13 +392,20 @@ module previewL() {
         translate([L_X[6],0,800])
             m60a(125)
             m60a(125)
-            m60a(550)
+            m60a(200)
+            m60a(350)
         ;
 
         translate([L_X[4],0,800])
             microWave()
             m60a(800-460)
         ;
+        if($machines && $positive) {
+            // kestarto
+            KESTARTO_DIM=[400,5,40];
+            translate([(L_X[0]+L_X[1])/2,KESTARTO_DIM[1]/2,1200])
+            cube(KESTARTO_DIM,center=true);
+        }
 
         translate([L_X[0],0,800])
             oven()
@@ -503,6 +510,14 @@ module previewRU() {
             IbeamX("K2",F_X[2], D37,HH);
             IbeamX("K3",F_X[4], D37,HH);
             IbeamX("K3",F_X[5], D37,HH);
+
+            translate([F_X[0],0,0])
+            doors(F_X[1]+W-F_X[0],HH,D37);
+            translate([F_X[2],0,0])
+            doors(F_X[3]+W-F_X[2],HH,D37);
+            translate([F_X[4],0,0])
+            doors(F_X[5]+W-F_X[4],HH,D37);
+
         }
         translate([F_X[0]+W,0,Z1]) {
             fuszerPolc();
@@ -528,7 +543,8 @@ module previewR() {
         
         
         translate(-IBEAM_Z) {
-            baseI(R_X[6],WALL_IX,SYSTEM_H+IBEAM_Z[2]);
+            
+//            baseI(R_X[6],WALL_IX,SYSTEM_H+IBEAM_Z[2]);
             baseI(R_X[8],R_D,SYSTEM_H+IBEAM_Z[2]);
             
             
@@ -816,8 +832,8 @@ module mPiece() {
             linear_extrude(WALL_H,center=true)
             polygon(RIGHT_WALL_PROFILE);
             
-            translate([R_X[6],-W,-100])
-            cube([W+660,WALL_IX+W+W,200]);
+            translate([R_X[6]+W/2,-W/2,-100])
+            cube([W+660,WALL_IX+W,200]);
             
         }
         
@@ -889,7 +905,7 @@ module previewLT() {
 }
 
 
-mode="previewR";
+mode="preview";
 //mode="P-YZ_LI9";
 //mode="F-A_125";
 //mode="P-XY_U3";
@@ -902,6 +918,7 @@ if(mode=="preview") {
     previewR();
     previewM();
     previewLU();
+    posNeg()
     previewLT();
 }
 
@@ -958,6 +975,7 @@ if(mode=="previewL") {
     previewL();
     previewM();
     previewLU();
+    posNeg()
     previewLT();
     
 
