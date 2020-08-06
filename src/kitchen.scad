@@ -1,5 +1,7 @@
 use <syms.scad>
 
+MUNKALAP_SP=3;
+
 $fronts=true;
 $machines=true;
 
@@ -818,7 +820,7 @@ module mPiece() {
         }
         
 
-        ID=50;
+        ID=80;
         translate([-ID,0,0])
         mirror([1,0,0])
         rotate(90)
@@ -847,14 +849,15 @@ module mPiece() {
             [0,0],[0,400],
             [window_p,0],
             [window_s,-window_g],
-            [0,-200],
+  //          [0,-200],
             [   window_w,0],
-            [0,200],
+//          [0,200],
             [window_s,window_g],
             [2000,0],[0,-400]]
         );
         echo(WINDOW_PROFILE);
 
+        translate([MUNKALAP_SP,0,0])
         rotate(-90)
         mirror([1,0,0])
         linear_extrude(WALL_H,center=true)
