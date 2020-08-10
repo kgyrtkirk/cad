@@ -1,6 +1,6 @@
 use <syms.scad>
 
-MUNKALAP_SP=3;
+MUNKALAP_SP=6;
 
 $fronts=true;
 $machines=true;
@@ -14,7 +14,7 @@ WALL_H=1695+915;        //* w/o laminate
 HW_H=1235;              //* w/o laminate
 HW_WIDTH=2075-30+12;       //*
 FWL_WIDTH=600+110;          //*
-BACK_WALL_WIDTH=1915;   //* FIXME: csempe benne van?
+BACK_WALL_WIDTH=1940;   //* 
 
 // a kozepso oszlopos szar netto melysege
 WALL_IX=335;            // FIXME ez jo?
@@ -73,6 +73,7 @@ module walls(part="A") {
     module radiator() {
         // FIXME: romatic-width?
         D=85;
+        if(false)
         for(i=[0:5])
         translate([50*i,-D/2,200])
             cylinder($fn=4,d=D,h=600);
@@ -820,7 +821,7 @@ module mPiece() {
         }
         
 
-        ID=80;
+        ID=90;
         translate([-ID,0,0])
         mirror([1,0,0])
         rotate(90)
@@ -841,23 +842,25 @@ module mPiece() {
         
         window_p=460; // FIXME: dup
         window_w=950;
-        window_g=80;
+        window_g1=80;
+        window_g2=90;
         window_s=(985-950)/2;
         
         WINDOW_PROFILE=prefix([0,-400],
         [
             [0,0],[0,400],
             [window_p,0],
-            [window_s,-window_g],
+            [window_s,-window_g1],
   //          [0,-200],
-            [   window_w,0],
+            [   window_w,-(window_g2-window_g1)],
 //          [0,200],
-            [window_s,window_g],
+            [window_s,window_g2],
             [2000,0],[0,-400]]
         );
         echo(WINDOW_PROFILE);
 
-        translate([MUNKALAP_SP,0,0])
+        for(x=[MUNKALAP_SP/2,-MUNKALAP_SP/2])
+        translate([MUNKALAP_SP,x,0])
         rotate(-90)
         mirror([1,0,0])
         linear_extrude(WALL_H,center=true)
