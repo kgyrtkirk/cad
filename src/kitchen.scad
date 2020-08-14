@@ -186,7 +186,7 @@ MAXIMERA_D60_MIN_DEPTH=590-30;
 SLIDE_LOSS=50;
 R_D=MAXIMERA_D60_MIN_DEPTH+SLIDE_LOSS; // right under depth
 
-L_W=[110,M60W,W,D60-D37,W,M60W,W,M60W,W,M60W];
+L_W=[110,M60W,W,D60-D37+W,W,M60W,W,M60W,W,M60W];
 
 L_X=prefix(0,L_W);
 
@@ -434,9 +434,15 @@ module previewL() {
             m60b(200)
         ;
         
-        baseX("X1",L_X[2]+W,D60-D37-W);
+        baseX("X1",L_X[2]+W,D60-D37);
         translate([0,0,400])
-        baseX("X2",L_X[2]+W,D60-D37-W);
+        baseX("X2",L_X[2]+W,D60-D37);
+        
+        
+        translate([L_X[2],D60,0])
+        rotate(-45,[0,0,1])
+        translate([W/4,0,0])
+        doors((D60-D37)*sqrt(2),800,W,cnt=1);
 
         baseL2("U0",L_X[0]+W,M60I,$depth=D60);
 
@@ -893,9 +899,9 @@ module mPiece() {
         mPiece2();*/
         R=60;
         hull() {
-        translate([L_X[2],L_D60-R,0])
+        translate([L_X[2]+W/2,L_D60-R,0])
         cylinder(r=R,h=M_H);
-        translate([L_X[3],L_D37-R,0])
+        translate([L_X[3]-W/2,L_D37-R,0])
         cylinder(r=R,h=M_H);
         translate([L_X[2],L_D37-R,0])
         cylinder(r=R,h=M_H);
@@ -992,7 +998,7 @@ module previewLT() {
 }
 
 
-mode="preview";
+mode="previewL";
 //mode="P-YZ_LI9";
 //mode="F-A_125";
 //mode="P-XY_U3";
