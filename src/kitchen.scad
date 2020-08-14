@@ -679,10 +679,13 @@ module previewR() {
             ;
 
             
-            PEEK_H=1400;
+//            PEEK_H=1400;
+            PEEK_H=SYSTEM_H-OVER_FRIDGE_H;
+            echo("PEEK_H",PEEK_H);
             translate([R_X[10]+W,0,SYSTEM_H])
                 doors2(600,SYSTEM_H-PEEK_H,R_D2)
-                m60b(150)
+//                m60b(140)
+                m60b(150+140)
                 m60b(150)
                 m60b(150)
                 m60b(150)
