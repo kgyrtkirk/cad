@@ -181,6 +181,26 @@ module m60b(size) {
     children();
 }
 
+module m60c(size) {
+    echo(str("F-A_",size));
+    $depth=$boxDepth;
+    m60([0,0,0],[size]);
+    translate([0,0,-size])
+    children();
+}
+
+
+module m60ic(size) {
+    echo(str("F-A_",size));
+    $depth=$boxDepth;
+    m60(    $internal=true, $fronts=false,[0,0,0],[size]);
+
+    translate([0,0,0])
+    children();
+}
+
+
+
 module m60_0(sizes) {
     HOLE_D=5;
     HANDLE_HW=128;

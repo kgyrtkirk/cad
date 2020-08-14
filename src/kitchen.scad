@@ -16,9 +16,9 @@ module atLeftWall(x) {
 }
 
 WALL_THICK=70;          //*
-WALL_H=1695+915;        //* w/o laminate
+WALL_H=2610;//; 1695+915;        //* w/o laminate
 HW_H=1235;              //* w/o laminate
-HW_WIDTH=2075-30+12;       //*
+HW_WIDTH=2075-30+12+20;       //*
 FWL_WIDTH=600+110;          //*
 BACK_WALL_WIDTH=1940;   //* 
 
@@ -328,6 +328,7 @@ module vent() {
 module doors(w,h,d,cnt=2) {
     FRONT_SP=3;
     
+    
     cL=[w/4,W/2,h/2];
     cR=cL+[w/2,0,0];
     translate([0,d,0])
@@ -336,13 +337,20 @@ module doors(w,h,d,cnt=2) {
             
         color([0,1,1]){
             if(cnt==2) {
+                ww=w/2-FRONT_SP;
+                hh=h-FRONT_SP;
                 translate(cL)
-                cube([w/2-FRONT_SP,W,h-FRONT_SP],center=true);
+                cube([ww,W,hh],center=true);
                 translate(cR)
-                cube([w/2-FRONT_SP,W,h-FRONT_SP],center=true);
+                cube([ww,W,hh],center=true);
+                echo("__DOOR: ",ww,hh);
+                echo("__DOOR: ",ww,hh);
             }else{
+                ww=w-FRONT_SP;
+                hh=h-FRONT_SP;
                 translate((cL+cR)/2)
-                cube([w-FRONT_SP,W,h-FRONT_SP],center=true);
+                cube([ww,W,hh],center=true);
+                echo("__DOOR: ",ww,hh);
             }
         }
     }else{
@@ -350,10 +358,10 @@ module doors(w,h,d,cnt=2) {
     }
 }
 
-module doors2(w,h,d) {
+module doors2(w,h,d,cnt=2) {
     
     translate([0,0,-h])
-        doors(w,h,d);
+        doors(w,h,d,cnt);
     
     translate([0,0,-h])
         children();
@@ -638,14 +646,14 @@ module previewR() {
         }
         
             {
-                $depth=R_D; 
+            $boxDepth=R_D; 
             translate([R_X[1],0,MAIN_H])
-                m60b(250)
+                m60c(250)
                 m60i(250)
-                m60b(550)
+                m60c(550)
             ;
             translate([R_X[3],0,MAIN_H])
-                m60b(MAIN_H)
+                m60c(MAIN_H)
             ;
 
             }
@@ -676,9 +684,10 @@ module previewR() {
                 translate([0,0,OVER_FRIDGE_H/2-W/2])
                 baseL(R_X[9]+W,M60I,R_D2);
             }
-            baseL(R_X[10]+W,M60I,R_D2);
+            baseL(R_X[11]+W,M60I,R_D2);
 
-                    $depth=R_D2; 
+            $depth=R_D2; 
+            $boxDepth=R_D2;
             
             translate([R_X[8]+W,0,SYSTEM_H])
                 doors2(600,SYSTEM_H-OVER_FRIDGE_Z,R_D2);
@@ -691,15 +700,19 @@ module previewR() {
             translate([R_X[10]+W,0,SYSTEM_H])
                 doors2(600,SYSTEM_H-PEEK_H,R_D2)
 //                m60b(140)
-                m60b(150+140)
-                m60b(150)
-                m60b(150)
-                m60b(150)
-                m60b(150)
-                m60b(150)
-                m60b(200)
-                m60b(300)
+                m60c(150+140)
+                m60c(150)
+                m60c(150)
+                m60c(150)
+                m60c(150)
+                m60c(150)
+                m60c(200)
+                m60c(300)
             ;
+            
+            translate([R_X[10]+W,1,PEEK_H])
+                doors2(600,PEEK_H,R_D2,cnt=1);
+            
         }
         
     }
@@ -973,7 +986,7 @@ module previewLT() {
     echo(X2);
     echo("x",X2-(X1+Q/2));
 
-    Q=450;
+    Q=350;
     S=100;
     if($positive) {
     translate([0,0,HW_H]) {
@@ -983,8 +996,8 @@ module previewLT() {
                 translate([X1+Q/2,-WALL_THICK/2,0])
                 cylinder(h=M_H,d=Q);
             }
-            translate([0,-WALL_THICK-S,0])
-            cube([1000,S,M_H]);
+//            translate([0,-WALL_THICK-S,0])
+  //          cube([1000,S,M_H]);
                 
     //            translate([0,-WALL_THICK-Q,0])
       //          roundedCutShape(3*FWL_WIDTH,Q-S,2*M_H+1,200);
@@ -998,7 +1011,7 @@ module previewLT() {
 }
 
 
-mode="previewL";
+mode="preview";
 //mode="P-YZ_LI9";
 //mode="F-A_125";
 //mode="P-XY_U3";
