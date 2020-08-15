@@ -325,7 +325,7 @@ module vent() {
     }
 }
 
-module doors(w,h,d,cnt=2) {
+module doors(w,h,d,cnt=2,clipD=50,clipU=50) {
     FRONT_SP=3;
     
     
@@ -355,13 +355,31 @@ module doors(w,h,d,cnt=2) {
         }
     }else{
         
+            C0=[    20,
+                    32,
+            ];
+            
+            C1=prefix(0,C0);
+        
+        HOLE_D=5;
+        for(y=[clipD,h-clipU])
+        translate([w/2,0,0])
+            for(x=C1)
+                symX([w/2-W/2,0,0])
+                translate([0,-x,y]) {
+                rotate(90,[0,1,0])
+                cylinder(d=HOLE_D,h=W+.1,center=true);
+                    
+                }
+        
+        
     }
 }
 
-module doors2(w,h,d,cnt=2) {
+module doors2(w,h,d,cnt=2,clipD=50,clipU=50) {
     
     translate([0,0,-h])
-        doors(w,h,d,cnt);
+        doors(w,h,d,cnt,clipD,clipU);
     
     translate([0,0,-h])
         children();
@@ -697,6 +715,7 @@ module previewR() {
 //            PEEK_H=1400;
             PEEK_H=SYSTEM_H-OVER_FRIDGE_H;
             echo("PEEK_H",PEEK_H);
+            
             translate([R_X[10]+W,0,SYSTEM_H])
                 doors2(600,SYSTEM_H-PEEK_H,R_D2)
 //                m60b(140)
@@ -710,8 +729,8 @@ module previewR() {
                 m60c(300)
             ;
             
-            translate([R_X[10]+W,1,PEEK_H])
-                doors2(600,PEEK_H,R_D2,cnt=1);
+            translate([R_X[10]+W,0,PEEK_H])
+                doors2(600,PEEK_H,R_D2,cnt=1,clipD=250);
             
         }
         

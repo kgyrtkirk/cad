@@ -42,3 +42,36 @@ lab?
 9MIP12118T LAKÁSELOSZTÓ FKIV.1×18 MODUL+ÁTL. AJTÓ+SÍN
 12 3
 
+
+elolapok:
+m60i
+	125	11
+	250	1
+	200	1
+m60a
+	250	11
+	550	11
+	340	1
+	200	1
+	800	1
+
+doors
+	314x800	2
+
+
+fiokok
+	d37
+		a	4
+		k	2
+		m	3
+	d60
+		a	2		5
+		k	1		1
+		m	1		2
+		d		1
+	
+pantok
+	110	3	14
+	
+
+
