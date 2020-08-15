@@ -325,9 +325,17 @@ module vent() {
     }
 }
 
-module doors(w,h,d,cnt=2,clipD=50,clipU=50) {
-    FRONT_SP=3;
+module doors(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
     
+    module cube1(dim,glass) {
+        difference() {
+            E=2*80;
+            cube(dim,center=true);
+            if(glass)
+            cube(dim+[-E,1,-E],center=true);
+        }
+    }
+    FRONT_SP=2;
     
     cL=[w/4,W/2,h/2];
     cR=cL+[w/2,0,0];
@@ -340,17 +348,17 @@ module doors(w,h,d,cnt=2,clipD=50,clipU=50) {
                 ww=w/2-FRONT_SP;
                 hh=h-FRONT_SP;
                 translate(cL)
-                cube([ww,W,hh],center=true);
+                cube1([ww,W,hh],glass);
                 translate(cR)
-                cube([ww,W,hh],center=true);
-                echo("__DOOR: ",ww,hh);
-                echo("__DOOR: ",ww,hh);
+                cube1([ww,W,hh],glass);
+                echo("__DOOR: ",name,ww,hh);
+                echo("__DOOR: ",name,ww,hh);
             }else{
                 ww=w-FRONT_SP;
                 hh=h-FRONT_SP;
                 translate((cL+cR)/2)
-                cube([ww,W,hh],center=true);
-                echo("__DOOR: ",ww,hh);
+                cube1([ww,W,hh],glass);
+                echo("__DOOR: ",name,ww,hh);
             }
         }
     }else{
@@ -362,7 +370,8 @@ module doors(w,h,d,cnt=2,clipD=50,clipU=50) {
             C1=prefix(0,C0);
         
         HOLE_D=5;
-        for(y=[clipD,h-clipU])
+        for(y0 =clips) {
+            y=(y0<0) ? y0+h  : y0;
         translate([w/2,0,0])
             for(x=C1)
                 symX([w/2-W/2,0,0])
@@ -371,15 +380,16 @@ module doors(w,h,d,cnt=2,clipD=50,clipU=50) {
                 cylinder(d=HOLE_D,h=W+.1,center=true);
                     
                 }
+            }
         
         
     }
 }
 
-module doors2(w,h,d,cnt=2,clipD=50,clipU=50) {
+module doors2(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
     
     translate([0,0,-h])
-        doors(w,h,d,cnt,clipD,clipU);
+        doors(name,w,h,d,cnt,clips,glass);
     
     translate([0,0,-h])
         children();
@@ -392,7 +402,7 @@ module previewLU() {
     
     WIDTH=L_X[1]-W;
     D45=450;
-    SH=SYSTEM_H-POS_Y;
+    SH=FULL_H-POS_Y;
     posNeg() {
         translate([0,0,POS_Y]) {
             
@@ -406,7 +416,7 @@ module previewLU() {
             translate([(L_X[0]+L_X[1])/2,D45/2,0])
             vent();
             
-            doors(WIDTH+2*W,SH,D45);
+            doors("LU",WIDTH+2*W,SH,D45,cnt=1);
         }
     }
     
@@ -467,8 +477,8 @@ module previewL() {
         
         translate([L_X[2],D60,0])
         rotate(-45,[0,0,1])
-        translate([W/4,0,0])
-        doors((D60-D37)*sqrt(2),800,W,cnt=1);
+        translate([W/4+4,0,0])
+        doors("LD_DIAG",(D60-D37)*sqrt(2)+5,800,W,cnt=1);
 
         baseL2("U0",L_X[0]+W,M60I,$depth=D60);
 
@@ -563,11 +573,11 @@ module previewRU() {
             translate([0,W,z*(height-W)/3])
         cBeam("CB_P",[[0,loss-W],[depth-loss,depth-W],[width-W-W,depth-W]]);
         translate([depth-loss+W,0,0])
-        doors(width-(depth-loss)-W,height,depth,cnt=1);
+        doors("CUP_1",width-(depth-loss)-W,height,depth,cnt=1,glass=true);
 
         rotate(45,[0,0,1])
         translate([loss-6,0,0])
-        doors((depth-loss)*sqrt(2),height,loss/2,cnt=1);
+        doors("CUP_2",(depth-loss)*sqrt(2),height,loss/2,cnt=1,glass=true);
     }
     
     OO_H=100;   //  IX box cover
@@ -603,11 +613,11 @@ module previewRU() {
             IbeamX("K3",F_X[5], DRU,HH);
 
             translate([F_X[0],0,0])
-            doors(F_X[1]+W-F_X[0],HH,DRU);
+            doors("F1",F_X[1]+W-F_X[0],HH,DRU);
             translate([F_X[2],0,0])
-            doors(F_X[3]+W-F_X[2],HH,DRU);
+            doors("F3",F_X[3]+W-F_X[2],HH,DRU,glass=true);
             translate([F_X[4],0,0])
-            doors(F_X[5]+W-F_X[4],HH,DRU);
+            doors("F5",F_X[5]+W-F_X[4],HH,DRU,glass=true);
 
         }
         translate([F_X[0]+W,0,Z1]) {
@@ -677,7 +687,7 @@ module previewR() {
             }
             
             translate([R_X[5],0,0])
-                doors(R_X[8]-R_X[5],MAIN_H,R_D);
+                doors("R8",R_X[8]-R_X[5],MAIN_H,R_D);
             ;
             
             echo("DDDDDDDDDDDDDD",R_X[8]-R_X[5]);
@@ -707,8 +717,8 @@ module previewR() {
             $depth=R_D2; 
             $boxDepth=R_D2;
             
-            translate([R_X[8]+W,0,SYSTEM_H])
-                doors2(600,SYSTEM_H-OVER_FRIDGE_Z,R_D2);
+            translate([R_X[9],0,SYSTEM_H])
+                doors2("R9U",600,SYSTEM_H-OVER_FRIDGE_Z,R_D2);
             ;
 
             
@@ -717,7 +727,7 @@ module previewR() {
             echo("PEEK_H",PEEK_H);
             
             translate([R_X[10]+W,0,SYSTEM_H])
-                doors2(600,SYSTEM_H-PEEK_H,R_D2)
+                doors2("R10U",600,SYSTEM_H-PEEK_H,R_D2)
 //                m60b(140)
                 m60c(150+140)
                 m60c(150)
@@ -730,7 +740,7 @@ module previewR() {
             ;
             
             translate([R_X[10]+W,0,PEEK_H])
-                doors2(600,PEEK_H,R_D2,cnt=1,clipD=250);
+                doors2("R10D",600,PEEK_H,R_D2,cnt=1,clips=[250,925,-50]);
             
         }
         
@@ -1146,3 +1156,4 @@ echo("rx0",R_X[1]);
 echo("lx0",L_X[0]);
 echo("lx0",FUSZER_P);
 
+echo(DRU-WALL_IX);
