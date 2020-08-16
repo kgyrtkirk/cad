@@ -3,7 +3,7 @@ use <syms.scad>
 MUNKALAP_SP=6;
 MAIN_H=800;
 IBEAM_Z=[0,0,60];
-$openDoors=true;
+$openDoors=false;
 
 $fronts=true;
 $machines=true;
@@ -246,9 +246,9 @@ module ppp(name) {
         children();
 }
 
-module baseL2(name, x,w,$depth=D37) {
+module baseL2(name, x,w,depth=1000) {
     ppp(str("P-XY_",name))
-        baseL(x,w,$depth);
+        baseL(x,w,depth);
 }
 module baseL(x,w,$depth=D37) {
     positiveAt([x,0,0]) {
@@ -434,9 +434,9 @@ module previewL() {
             cylinder(d=102,h=1000,center=true);
         }
         
-        baseL2("U1",L_X[4]+W,M60I);
-        baseL2("U2",L_X[6]+W,M60I);
-        baseL2("U3",L_X[8]+W,M60I);
+        baseL2("U1",L_X[4]+W,M60I,D37);
+        baseL2("U2",L_X[6]+W,M60I,D37);
+        baseL2("U3",L_X[8]+W,M60I,D37);
         for(i=[3:len(L_X)-1])
         IbeamX(str("LI",i),L_X[i],D37);
         IbeamX("LJ0",L_X[0],D60);
@@ -483,7 +483,7 @@ module previewL() {
         translate([W/4+4,0,0])
         doors("LD_DIAG",(D60-D37)*sqrt(2)+5,800,W,cnt=1);
 
-        baseL2("U0",L_X[0]+W,M60I,$depth=D60);
+        baseL2("U0",L_X[0]+W,M60I,depth=D60);
 
         
 //        m60([L_X[4],0,860],[125,125,550]);
@@ -593,9 +593,12 @@ module previewRU() {
     
     atRightCorner()
     posNeg() {
-        translate([0,0,Z0]) {
-            HH=SYSTEM_H-Z0+IBEAM_Z[2]; // FIXME: system_h misalignment
-            IbeamX("K1",F_X[0], DRU,HH);
+        color("blue")
+        translate([0,0,Z0])
+            IbeamX("K1_L",F_X[0], DRU,Z2-Z0);
+        translate([0,0,Z2]) {
+            HH=SYSTEM_H-Z2+IBEAM_Z[2];
+            IbeamX("K1_H",F_X[0], DRU,HH);
         }
         if(false)
         translate([0,0,Z1]) {
@@ -621,6 +624,15 @@ module previewRU() {
             doors("F3",F_X[3]+W-F_X[2],HH,DRU,glass=true);
             translate([F_X[4],0,0])
             doors("F5",F_X[5]+W-F_X[4],HH,DRU,glass=true);
+
+            for(y=[0,200,400,700,HH-W])
+            translate([0,100,y]) {
+            baseL2("F1",F_X[0]+W,F_X[1]-F_X[0]-W,DRU);
+            baseL2("F3",F_X[2]+W,F_X[3]-F_X[2]-W,DRU);
+            baseL2("F5",F_X[4]+W,F_X[5]-F_X[4]-W,DRU);
+            }
+            
+
 
         }
         translate([F_X[0]+W,0,Z1]) {
