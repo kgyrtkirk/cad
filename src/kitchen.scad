@@ -3,6 +3,7 @@ use <syms.scad>
 MUNKALAP_SP=6;
 MAIN_H=800;
 IBEAM_Z=[0,0,60];
+$openDoors=true;
 
 $fronts=true;
 $machines=true;
@@ -347,6 +348,7 @@ module doors(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
             if(cnt==2) {
                 ww=w/2-FRONT_SP;
                 hh=h-FRONT_SP;
+                rotate($openDoors?90:0)
                 translate(cL)
                 cube1([ww,W,hh],glass);
                 translate(cR)
@@ -356,6 +358,7 @@ module doors(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
             }else{
                 ww=w-FRONT_SP;
                 hh=h-FRONT_SP;
+                rotate($openDoors?90:0)
                 translate((cL+cR)/2)
                 cube1([ww,W,hh],glass);
                 echo("__DOOR: ",name,ww,hh);
@@ -1156,4 +1159,6 @@ echo("rx0",R_X[1]);
 echo("lx0",L_X[0]);
 echo("lx0",FUSZER_P);
 
-echo(DRU-WALL_IX);
+echo("loss",DRU-WALL_IX);
+echo("loss",(DRU-WALL_IX-W));
+echo("loss",(DRU-WALL_IX-W)*sqrt(2));
