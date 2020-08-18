@@ -444,17 +444,14 @@ module previewL() {
         IbeamX("LJ2",L_X[2],D60);
         
         translate([L_X[8],0,MAIN_H])
-            m60i(125)
-            m60a(250)
-            m60i(250)
-            m60a(550)
+            m60a(150)
+            doors2("S1",600,650,D37)
+
         ;
         
         translate([L_X[6],0,MAIN_H])
-            m60i(125)
-            m60a(250)
-            m60i(200)
-                m60a(550)
+            m60a(150)
+            doors2("S2",600,650,D37)
         ;
 
         translate([L_X[4],0,MAIN_H])
@@ -1055,7 +1052,7 @@ module previewLT() {
 }
 
 
-mode="preview";
+mode="previewL";
 //mode="P-YZ_LI9";
 //mode="F-A_125";
 //mode="P-XY_U3";
