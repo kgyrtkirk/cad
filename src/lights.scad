@@ -7,7 +7,7 @@ HALL_HEIGHT=26;
 DOOR1_X=1160;
 DOOR2_X=HALL_LENGTH-1000;
     DOOR_D=DOOR2_X-DOOR1_X;
-DOOR_W=800;
+DOOR_W=740;
 
 module wall() {
     symX([HALL_WIDTH/2,0,0]) {
@@ -115,6 +115,10 @@ if(mode=="p1"){
 
 
 if(mode=="pr"){
+
+    translate([DOOR_D*3/2/2,0,0])
+    cube([10,3000,10]);
+    
     projection() {
     wall();
     translate([0,DOOR1_X+DOOR_W/2-DOOR_D*9/3,0])
@@ -123,3 +127,6 @@ if(mode=="pr"){
 }
 
 
+echo(DOOR_D);
+DOOR_K=DOOR_D*3/2;
+echo((HALL_WIDTH-DOOR_K)/2);

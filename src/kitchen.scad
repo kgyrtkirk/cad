@@ -1174,3 +1174,7 @@ echo("lx0",FUSZER_P);
 echo("loss",DRU-WALL_IX);
 echo("loss",(DRU-WALL_IX-W));
 echo("loss",(DRU-WALL_IX-W)*sqrt(2));
+
+
+echo("HWW",HW_WIDTH+FWL_WIDTH);
+echo("HWW",FWL_WIDTH);
