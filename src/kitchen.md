@@ -75,3 +75,9 @@ pantok
 	
 
 
+
+
+*** modosit
+	R8 szelesseg
+	CUP_1
+	CUP_2

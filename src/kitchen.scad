@@ -3,7 +3,7 @@ use <syms.scad>
 MUNKALAP_SP=6;
 MAIN_H=800;
 IBEAM_Z=[0,0,60];
-$openDoors=false;
+$openDoors=true;
 
 $fronts=true;
 $machines=true;
@@ -182,7 +182,7 @@ D37=366;
 D60=590; //?
 
 
-MAXIMERA_D60_MIN_DEPTH=590-30;
+MAXIMERA_D60_MIN_DEPTH=590-20;
 
 SLIDE_LOSS=50;
 R_D=MAXIMERA_D60_MIN_DEPTH+SLIDE_LOSS; // right under depth
@@ -224,7 +224,7 @@ module plain() {
 }
 
 module baseX(name,x,w) {
-    ppp(name)
+    ppp(name,str(w))
         positiveAt([x,0,0]) {
         $width=100;
         $height=100;
@@ -239,15 +239,15 @@ module baseX(name,x,w) {
 
 }
 
-module ppp(name) {
-    echo(name);
+module ppp(name,dims="") {
+    echo(name,dims);
     if($positive)
     if($part==undef || $part==name) 
         children();
 }
 
 module baseL2(name, x,w,depth=1000) {
-    ppp(str("P-XY_",name))
+    ppp(str("P-XY_",name),str(w,"x",depth))
         baseL(x,w,depth);
 }
 module baseL(x,w,$depth=D37) {
@@ -284,18 +284,18 @@ module positiveAt(p) {
 }
 
 module IbeamX(name, x, depth, height=MAIN_H) {
-    ppp(str("P-YZ_",name))
+    ppp(str("P-YZ_",name),str(depth,"x",height))
         baseI(x,depth,height);
 }
 module IbeamY(name, x, depth, height=MAIN_H) {
-    ppp(str("P-YZ_",name))
+    ppp(str("P-YZ_",name),str(depth,"x",height))
         translate([x,0,0])
         cube([depth,W,height]);
 }
 
 
 module hbeam(name,width,depth) {
-    ppp(str("P-XY",name))
+    ppp(str("P-XY",name),str(depth,"x",width))
         translate([W,0,0])
         cube([width,depth,W]);
 }
@@ -409,12 +409,12 @@ module previewLU() {
     posNeg() {
         translate([0,0,POS_Y]) {
             
-            baseL(W,WIDTH,D45);
+            baseL2("BF_1",W,WIDTH,D45);
             translate([0,0,SH-W])
-            baseL(W,WIDTH,D45);
+            baseL2("BF_2",W,WIDTH,D45);
 
-            baseI(0,D45,SH);
-            baseI(WIDTH+W,D45,SH);
+            IbeamX("BI_1",0,D45,SH);
+            IbeamX("BI_2",WIDTH+W,D45,SH);
 
             translate([(L_X[0]+L_X[1])/2,D45/2,0])
             vent();
@@ -549,7 +549,7 @@ module fuszerPolc(){
 module previewRU() {
     
     module cBeam(name,xarr) {
-        ppp(name) {
+        ppp(name,xarr) {
             positiveAt([W,0,0]) {
             color([.5,.5,1]) {
                 hull() {
@@ -565,8 +565,11 @@ module previewRU() {
     }
 
     module cupBoard(depth,height,width,loss) {
+        color([1,1,0])
         IbeamX("CB_LEFT",0,loss,height);
+        color([1,1,0])
         IbeamX("CB_RIGHT",width-W,depth,height);
+//        translate([0,0,100])
         IbeamY("CB_BACK",W,width-2*W,height);
         
         for(z=[0:3])
@@ -595,7 +598,7 @@ module previewRU() {
             IbeamX("K1_L",F_X[0], DRU,Z2-Z0);
         translate([0,0,Z2]) {
             HH=SYSTEM_H-Z2+IBEAM_Z[2];
-            IbeamX("K1_H",F_X[0], DRU,HH);
+            IbeamX("W",F_X[0], DRU,HH);
         }
         if(false)
         translate([0,0,Z1]) {
@@ -609,11 +612,11 @@ module previewRU() {
         }
         translate([0,0,Z2]) {
             HH=SYSTEM_H-Z2+IBEAM_Z[2];
-            IbeamX("K3",F_X[3], DRU,HH);
-            IbeamX("K2",F_X[1], DRU,HH);
-            IbeamX("K2",F_X[2], DRU,HH);
-            IbeamX("K3",F_X[4], DRU,HH);
-            IbeamX("K3",F_X[5], DRU,HH);
+            IbeamX("W",F_X[3], DRU,HH);
+            IbeamX("W",F_X[1], DRU,HH);
+            IbeamX("W",F_X[2], DRU,HH);
+            IbeamX("W",F_X[4], DRU,HH);
+            IbeamX("W",F_X[5], DRU,HH);
 
             translate([F_X[0],0,0])
             doors("F1",F_X[1]+W-F_X[0],HH,DRU);
@@ -624,9 +627,9 @@ module previewRU() {
 
             for(y=[0,200,400,700,HH-W])
             translate([0,100,y]) {
-            baseL2("F1",F_X[0]+W,F_X[1]-F_X[0]-W,DRU);
-            baseL2("F3",F_X[2]+W,F_X[3]-F_X[2]-W,DRU);
-            baseL2("F5",F_X[4]+W,F_X[5]-F_X[4]-W,DRU);
+            baseL2("WU1",F_X[0]+W,F_X[1]-F_X[0]-W,DRU);
+            baseL2("WU3",F_X[2]+W,F_X[3]-F_X[2]-W,DRU);
+            baseL2("WU5",F_X[4]+W,F_X[5]-F_X[4]-W,DRU);
             }
             
 
@@ -640,15 +643,15 @@ module previewRU() {
         IbeamX("IY-6",R_X[6],WALL_IX,SYSTEM_H-M_H_TOP+IBEAM_Z[2]);
         
         translate([0,WALL_IX,Z0])
-        IbeamY("IY-6",R_X[6],R_X[7]-R_X[5],OO_H);
+        IbeamY("IR-1",R_X[6],R_X[8]-R_X[5],OO_H);
 
         translate([1.5,WALL_IX,Z3+1.5])
-        IbeamY("IY-6",R_X[6],R_X[7]-R_X[5]-3,Z2-Z3-3);
+        IbeamY("IR-2",R_X[6],R_X[8]-R_X[5]-3,Z2-Z3-3);
         
         
         
         translate([R_X[6],WALL_IX,Z2])
-        cupBoard(depth=R_D-WALL_IX,height=SYSTEM_H-Z2+IBEAM_Z[2],width=R_X[7]-R_X[5],loss=DRU-WALL_IX);
+        cupBoard(depth=R_D-WALL_IX,height=SYSTEM_H-Z2+IBEAM_Z[2],width=R_X[8]-R_X[5],loss=DRU-WALL_IX);
         
         
     }
@@ -662,13 +665,22 @@ module previewR() {
             IbeamX(str("RC",i),R_X[i], R_D);
         
         // IX box
+        
+        
         translate([0,WALL_IX+W,0]) {
-            for(i=[5]) 
+            for(i=[5,8]) 
                 IbeamX(str("RD",i),R_X[i], R_D-WALL_IX-W);
-            baseL(R_X[5]+W, R_X[6]-R_X[5]-W,R_D-WALL_IX-W);
+            
+            for(z=[0,300,600]) 
+                translate([0,0,z])
+            baseL2("RU",R_X[5]+W, R_X[8]-R_X[5]-W,R_D-WALL_IX-W);
+            width=R_X[9]-R_X[5]+2*W;
+            color([1,1,0])
+        translate([0,-W,0]) 
+            IbeamY("R_BACK",R_X[5],width-2*W,MAIN_H);
         }
-        baseL(R_X[1]+W,M60I,R_D);
-        baseL(R_X[3]+W,M60I,R_D);
+        baseL2("RCU",R_X[1]+W,M60I,R_D);
+        baseL2("RCU",R_X[3]+W,M60I,R_D);
         
 
         
@@ -677,8 +689,7 @@ module previewR() {
             IbeamX("IX-5",R_X[5],WALL_IX,853);
             IbeamX("IX-6",R_X[6],WALL_IX,853);
 
-//            baseI(R_X[6],WALL_IX,SYSTEM_H+IBEAM_Z[2]);
-            baseI(R_X[8],R_D,SYSTEM_H+IBEAM_Z[2]);
+            IbeamX("RX8",R_X[8],WALL_IX,SYSTEM_H+IBEAM_Z[2]);
             
             
             translate([R_X[2]+W,0,0])
@@ -699,7 +710,7 @@ module previewR() {
             }
             
             translate([R_X[5],0,0])
-                doors("R8",R_X[8]-R_X[5],MAIN_H,R_D);
+                doors("R8",R_X[9]-R_X[5],MAIN_H,R_D);
             ;
             
             echo("DDDDDDDDDDDDDD",R_X[8]-R_X[5]);
@@ -709,22 +720,37 @@ module previewR() {
             translate(-IBEAM_Z) 
             translate([R_X[8]+W,0,0])
             fridge();
-            baseI(R_X[11],R_D2,SYSTEM_H);
-            baseI(R_X[12],R_D2,SYSTEM_H);
             
             OVER_FRIDGE_Z=1600-IBEAM_Z[2];
             OVER_FRIDGE_H=SYSTEM_H-OVER_FRIDGE_Z;
+
+            IbeamX("RX11L",R_X[11],R_D2,SYSTEM_H-OVER_FRIDGE_H);
+            IbeamX("RX11L",R_X[12],R_D2,SYSTEM_H-OVER_FRIDGE_H);
+
             translate([0,0,OVER_FRIDGE_Z]) {
-                baseI(R_X[9],R_D2,OVER_FRIDGE_H);
-                baseI(R_X[10],R_D2,OVER_FRIDGE_H);
+                IbeamX("RX11U",R_X[11],R_D2,OVER_FRIDGE_H);
+                IbeamX("RX11U",R_X[12],R_D2,OVER_FRIDGE_H);
+
+                IbeamX("RX9",R_X[9],R_D2,OVER_FRIDGE_H);
+                IbeamX("RX9",R_X[10],R_D2,OVER_FRIDGE_H);
                 
-                baseL(R_X[9]+W,M60I,R_D2);
-                translate([0,0,OVER_FRIDGE_H-W])
-                baseL(R_X[9]+W,M60I,R_D2);
-                translate([0,0,OVER_FRIDGE_H/2-W/2])
-                baseL(R_X[9]+W,M60I,R_D2);
+                
+                
+                for(xx=[9,11]) {
+                for(z=[0,OVER_FRIDGE_H-W]) {
+                    translate([0,0,z])
+                    baseL2("RU9",R_X[xx]+W,M60I,R_D2);
+                }
+                for(z=[200,500]) {
+                    translate([0,0,z])
+                    baseL2("RP9",R_X[xx]+W,M60I,R_D2-10);
+                }
+                }
             }
-            baseL(R_X[11]+W,M60I,R_D2);
+            
+            baseL2("RU9",R_X[11]+W,M60I,R_D2);
+            translate([0,0,OVER_FRIDGE_Z-W])
+            baseL2("RU9",R_X[11]+W,M60I,R_D2);
 
             $depth=R_D2; 
             $boxDepth=R_D2;
@@ -943,7 +969,7 @@ module mPiece() {
     if($positive) {
         
         atRightCorner() {
-           mPiece1(R_X[7]+W,R_D60); 
+           mPiece1(R_X[8]+W,R_D60); 
         }
         mPiece1(L_X[9]+OVERHANG,L_D37); 
         mPiece1(L_X[2],L_D60); 
@@ -1052,7 +1078,7 @@ module previewLT() {
 }
 
 
-mode="previewL";
+mode="preview";
 //mode="P-YZ_LI9";
 //mode="F-A_125";
 //mode="P-XY_U3";
