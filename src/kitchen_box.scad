@@ -207,12 +207,16 @@ module m60_0(sizes) {
     HANDLE_Y=125/2;
     
     C0=[    20,
-            32,
-            224,
+            17,
+            32-17,
+            224-32,
+            17,
+            32-17,
             224
     ];
     
     C1=prefix(0,C0);
+    echo("C1",C1);
     
     x=prefix(0,[for(i=sizes) abs(i)]);
     for(i=[0:len(sizes)-1]) {
@@ -313,7 +317,7 @@ $machines=true;
 
     $drawerState="CLOSED";
     sizes=[125];
-    posNeg()
+//    posNeg()
     m60([-$width/2,-$depth,0],[125,125,800-250]);
 }
 

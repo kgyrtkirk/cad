@@ -11,7 +11,7 @@ SP=.4;
 C=[43,70,L];
 
 
-mode="main";
+mode="addon";
 if(mode=="main") {
     difference() {
         translate([-K,-K,-H])
