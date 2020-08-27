@@ -1004,8 +1004,13 @@ module mPiece() {
             
             translate([R_X[6]+W/2,-W/2,-100])
             cube([W+660,WALL_IX+W,200]);
+//            translate([R_X[6]+W/2,-W/2,-100])
+            translate([R_X[6]/2+W/2,0,0])
+            cube([R_X[6]+W/2,2*MUNKALAP_SP,200],center=true);
             
         }
+        translate([L_X[9]/2,0,0])
+        cube([L_X[9]*2,2*MUNKALAP_SP,200],center=true);
         
         window_p=460; // FIXME: dup
         window_w=950;
@@ -1078,12 +1083,16 @@ module previewLT() {
 }
 
 
-mode="preview";
+mode="previewM";
 //mode="P-YZ_LI9";
 //mode="F-A_125";
 //mode="P-XY_U3";
 
 
+if(mode=="previewM") {
+    walls("A");
+    previewM();
+}
 if(mode=="preview") {
     walls("A");
     

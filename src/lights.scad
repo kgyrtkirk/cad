@@ -116,8 +116,8 @@ if(mode=="p1"){
 
 if(mode=="pr"){
 
-    translate([DOOR_D*3/2/2,0,0])
-    cube([10,3000,10]);
+//    translate([DOOR_D*3/2/2,0,0])
+//    cube([10,3000,10]);
     
     projection() {
     wall();
