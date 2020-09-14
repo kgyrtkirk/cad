@@ -6,7 +6,7 @@ IBEAM_Z=[0,0,60];
 $openDoors=true;
 
 $fronts=true;
-$machines=true;
+$machines=false;
 
 M_H=30;
 
@@ -19,7 +19,7 @@ module atLeftWall(x) {
 WALL_THICK=70;          //*
 WALL_H=2610;//; 1695+915;        //* w/o laminate
 HW_H=1235;              //* w/o laminate
-HW_WIDTH=2075-30+12+20;       //*
+HW_WIDTH=2075-30+12+20+8;       //*
 FWL_WIDTH=600+110;          //*
 BACK_WALL_WIDTH=1940;   //* 
 
@@ -865,6 +865,7 @@ module blancoSona6s() {
 
 
 module oven() {
+    // EOD6p71X
     F_H=600;
     SP_BACK=50;
     translate([0,SP_BACK,-F_H-W+3])
@@ -937,7 +938,7 @@ module mAssembly() {
     }
 }
 
-    OVERHANG=35;
+    OVERHANG=35+10;
     L_D37=D37+OVERHANG;
     L_D60=D60+OVERHANG;
     R_D60=R_D+OVERHANG;
@@ -1083,7 +1084,7 @@ module previewLT() {
 }
 
 
-mode="previewM";
+mode="previewL";
 //mode="P-YZ_LI9";
 //mode="F-A_125";
 //mode="P-XY_U3";
@@ -1148,8 +1149,8 @@ if(mode[0] == "P" && mode[1]=="-") {
     
     projection(false)
     orient(mode)
-//    rotate(90,[0,1,0])
-    previewL();
+//    rotate(90,[0,1,0]) 
+        previewL();
 }
 
 if(mode=="previewL") {

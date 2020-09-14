@@ -61,7 +61,9 @@ def partMap = [
 //	'dimmer_top':		['def'],
 	'box_wheel':		['frame','wheel','w1'],
 	'bb_maoam_dispenser':	['cover','wheel','driveGear','driveGearCover'],
-	'inserta_knock-in_drill':	['def'],
+	'inserta_knock-in_drill':	['def','mount'],
+	'axilo-scaffold': ['def'],
+	'camar801': ['def'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
@@ -72,9 +74,17 @@ def projMap = [
 	'matchbox_container':		['floor'],
 	'esp-gen-3':			['project'],
 	'kitchen':			['mPiece', 'mFuszer', 'mFelso',
-						'projtest','P-YZ_LI9','P-YZ_LI8','P-XY_U3','F-A_250','F-A_550'],
+						'projtest','P-YZ_LI9','P-YZ_LI8','P-XY_U3','F-A_250','F-A_550',
+						'P-YZ_LI5',
+						'P-YZ_LI3',
+						'P-YZ_LI2',
+						'P-YZ_LI1',
+						'P-YZ_RC1',
+						'P-YZ_RC3',
+						],
 	'inserta_knock-in_drill':	['project'],
 	'lights':			['p0','p1','pr'],
+	'lights2':			['main'],
 	'ikea_bridge':			['def'],
 	]
 
