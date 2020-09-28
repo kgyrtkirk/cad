@@ -64,6 +64,7 @@ def partMap = [
 	'inserta_knock-in_drill':	['def','mount'],
 	'axilo-scaffold': ['def'],
 	'camar801': ['def'],
+	'kitchen_handle_drill':	['def'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
@@ -81,6 +82,7 @@ def projMap = [
 						'P-YZ_LI1',
 						'P-YZ_RC1',
 						'P-YZ_RC3',
+						'P-XY_BF_1',
 						],
 	'inserta_knock-in_drill':	['project'],
 	'lights':			['p0','p1','pr'],

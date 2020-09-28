@@ -1084,7 +1084,7 @@ module previewLT() {
 }
 
 
-mode="previewL";
+mode="preview";
 //mode="P-YZ_LI9";
 //mode="F-A_125";
 //mode="P-XY_U3";
@@ -1150,7 +1150,7 @@ if(mode[0] == "P" && mode[1]=="-") {
     projection(false)
     orient(mode)
 //    rotate(90,[0,1,0]) 
-        previewL();
+        previewLU();
 }
 
 if(mode=="previewL") {
