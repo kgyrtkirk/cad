@@ -3,7 +3,7 @@ use <syms.scad>
 MUNKALAP_SP=6;
 MAIN_H=800;
 IBEAM_Z=[0,0,60];
-$openDoors=true;
+$openDoors=false;
 
 $fronts=true;
 $machines=false;
@@ -200,7 +200,7 @@ R2W=600;    R2X=R1X+R1W;
 R3W=600;    R3X=R2X+R2W;
 R4W=600;    R4X=R3X+R3W;
 
-R_W=[0,150-W-W/2-5-8,M60W,600+W+5,M60W,W+2,W,RIGHT_WALL_DELTA[3][0],W,W,M60W,W,M60W];
+R_W=[0,150-W-W/2-5-8,M60W,600+W+5,M60W,W+2,W,RIGHT_WALL_DELTA[3][0],W,W,M60W+5,W,M60W,380];
 echo("RW1",R_W[1]);
 
 R_X=prefix(0,R_W);
@@ -737,21 +737,33 @@ module previewR() {
                 
                 
                 for(xx=[9,11]) {
+                    w=R_X[xx+1]-R_X[xx]-W;
                 for(z=[0,OVER_FRIDGE_H-W]) {
                     translate([0,0,z])
-                    baseL2("RU9",R_X[xx]+W,M60I,R_D2);
+                    baseL2("RU9",R_X[xx]+W,w,R_D2);
                 }
                 for(z=[200,500]) {
                     translate([0,0,z])
-                    baseL2("RP9",R_X[xx]+W,M60I,R_D2-10);
+                    baseL2("RP9",R_X[xx]+W,w,R_D2-10);
                 }
                 }
             }
             
-            baseL2("RU9",R_X[11]+W,M60I,R_D2);
+            baseL2("RU11",R_X[11]+W,M60I,R_D2);
             translate([0,0,OVER_FRIDGE_Z-W])
-            baseL2("RU9",R_X[11]+W,M60I,R_D2);
+            baseL2("RU11",R_X[11]+W,M60I,R_D2);
 
+
+
+            EW=R_X[13]-R_X[12];
+
+            IbeamY("RX13",R_X[12]+W,EW,SYSTEM_H);
+
+            for(a=[0:.2:1])
+            translate([R_X[12],W,a*(SYSTEM_H-W)])
+//            vegPolc("VEG",[[0,R_D2],[EW,R_D2-EW]]);
+            vegPolc2("VEG",[[0,R_D2],[EW,R_D2-EW-W]]);
+            
             $depth=R_D2; 
             $boxDepth=R_D2;
             
@@ -786,6 +798,44 @@ module previewR() {
     }
 }
 
+
+    module vegPolc(name,xarr) {
+        ppp(name,xarr) {
+            positiveAt([W,0,0]) {
+            color([.5,.5,1]) {
+                hull() {
+                    for(x=xarr) {
+                        translate([x[0],0,0])
+                        cube([.01,x[1],W]);
+                    }
+                }
+            }
+        }
+
+        }
+    }
+    module vegPolc2(name,xarr) {
+        ppp(name,xarr) {
+            positiveAt([W,0,0]) {
+            color([.5,.5,1]) {
+                r=xarr[1][0];
+                t=xarr[1][1];
+                p=[ [0,0],
+                    for (a=[0:5:90]) [ sin(a)*r, cos(a)*r +t ],
+                    [r,0],
+                    ];
+                    
+                    linear_extrude(height=W)
+                    polygon(p);
+                
+  //              translate([0,xarr[1][1],0])
+//                cylinder(r=xarr[1][0],h=W);
+            }
+        }
+
+        }
+    }
+    
 
 module roundedCutShape(w,h,d,r) {
         hull()
