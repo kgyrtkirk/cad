@@ -13,13 +13,14 @@ module hullLine() {
     }
 }
 
-module hullPairs(pos){
+module hullPairs(pos,close=true){
     for(i=[0:len(pos)-2]){
         hull() {
             translate(pos[i+0]) children();
             translate(pos[i+1]) children();
         }
     }
+    if(close)
     hull() {
         translate(pos[0]) children();
         translate(pos[len(pos)-1]) children();
@@ -32,7 +33,8 @@ module hullPairs(pos){
 function p(x,y) = [x+y/2,y*sqrt(3)/2];
 
 W=19;
-WW=150;
+WW=170;
+S=700;
 
 DLAMP=70;
 
@@ -113,7 +115,32 @@ tap();
 
 }
 
-mode="preview";
+module kitchenLamp0() {
+            hullPairs(points,false)
+          cylinder(d=WW*2/sqrt(3),h=W,$fn=9);
+
+}
+module kitchenLamp(points,convexHull) {
+    difference() {
+        if(convexHull) {
+    hull()
+    for(p=points)
+        translate(p)
+          cylinder(d=WW*2/sqrt(3),h=W,$fn=9);
+}else{
+        hullPairs(points,false)
+          cylinder(d=WW*2/sqrt(3),h=W,$fn=9);
+    }
+    
+    for(p=points)
+        translate(p)
+        cylinder(d=90,center=true,h=100);
+
+    }
+
+}
+
+mode="bath";
 
 module osszehuzo() {
 //    https://www.shop.butoralkatreszbolt.hu/egyeb/135-lap-osszehuzo-vasalat-10013302100.html
@@ -142,6 +169,79 @@ if(mode=="main") {
     projection()
     mainPart();
 }
+if(mode=="kitchen") {
+    
+    kp0=    [ p(0,0) ,
+            p(0,1),
+            p(1,1),
+            p(2,1),
+            p(3,0),
+            p(4,-1),
+            p(5,-1),
+            p(6,-1),
+            p(6,0),
+    ]*WW*2;
+
+
+    kp1=[ p(0,0) ,
+            p(0,1),
+            p(1,0),
+//            p(1,1),
+//            p(2,-1),
+            p(2,0),
+            p(2,1),
+            p(3,0),
+    ]*WW*2;
+
+    kp2=[ p(0,0) ,
+            p(0,1),
+            p(1,0),
+//            p(1,1),
+            p(2,-1),
+            p(2,0),
+            p(2,1),
+            p(3,0),
+    ]*WW*2;
+    kp3=[ p(0,0) ,
+            p(1,-1),
+            p(1,0),
+//            p(1,1),
+            p(2,0),
+            p(2,1),
+            p(3,0),
+    ]*WW*2;
+
+
+
+
+    projection()
+    kitchenLamp(kp0,false);
+    
+}
+
+if(mode=="hall") {
+    el=[ p(0,0) ,
+            p(1,-1),
+            p(1,0),
+//            p(1,1),
+            p(2,0),
+//        p(3,0),
+          p(2,-1),
+    ]*S;
+
+    projection()
+    kitchenLamp(el,false);
+}
+
+if(mode=="bath") {
+    el=[ p(0,0) ,
+         p(1,0),
+    ]*S;
+
+    projection()
+    kitchenLamp(el,false);
+}
+
 
 total_w=5*WW;
 

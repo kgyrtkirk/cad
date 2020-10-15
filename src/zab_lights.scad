@@ -10,6 +10,7 @@ function xi(b) = b?1:0;
 
 
 
+
 module atLampPos() {
     children();
     for(i=[0:6]) {
@@ -42,6 +43,25 @@ module mainLamp() {
     }
 }
 
+
+module hullPairs(pos){
+    for(i=[0:len(pos)-2]){
+        hull() {
+            translate(pos[i+0]) children();
+            translate(pos[i+1]) children();
+        }
+    }
+    hull() {
+        translate(pos[0]) children();
+        translate(pos[len(pos)-1]) children();
+    }
+    
+}
+
+module kitchenLamp() {
+    
+}
+
 module room() {
     H=2;
     A=[5250,3240,H];
@@ -69,4 +89,6 @@ room();
 rotate(90)
 mainLamp();
 
+translate([-1000,2500,0])
+kitchenLamp();
 
