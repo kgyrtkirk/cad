@@ -3,7 +3,7 @@ use <syms.scad>
 MUNKALAP_SP=6;
 MAIN_H=800;
 IBEAM_Z=[0,0,60];
-$openDoors=false;
+$openDoors=true;
 
 $fronts=true;
 $machines=false;
@@ -724,27 +724,30 @@ module previewR() {
             OVER_FRIDGE_Z=1600-IBEAM_Z[2];
             OVER_FRIDGE_H=SYSTEM_H-OVER_FRIDGE_Z;
 
-            IbeamX("RX11L",R_X[11],R_D2,SYSTEM_H-OVER_FRIDGE_H);
-            IbeamX("RX11L",R_X[12],R_D2,SYSTEM_H-OVER_FRIDGE_H);
+            IbeamX("RX11L",R_X[11],R_D2,SYSTEM_H-OVER_FRIDGE_H+2);
+            IbeamX("RX11L",R_X[12],R_D2,SYSTEM_H-OVER_FRIDGE_H+2);
+            IbeamY("RX13L",R_X[12]+W,EW,SYSTEM_H-OVER_FRIDGE_H+2);
 
             translate([0,0,OVER_FRIDGE_Z]) {
+
                 IbeamX("RX11U",R_X[11],R_D2,OVER_FRIDGE_H);
                 IbeamX("RX11U",R_X[12],R_D2,OVER_FRIDGE_H);
 
                 IbeamX("RX9",R_X[9],R_D2,OVER_FRIDGE_H);
                 IbeamX("RX9",R_X[10],R_D2,OVER_FRIDGE_H);
                 
+                IbeamY("RX13U",R_X[12]+W,EW,OVER_FRIDGE_H);
                 
                 
                 for(xx=[9,11]) {
                     w=R_X[xx+1]-R_X[xx]-W;
                 for(z=[0,OVER_FRIDGE_H-W]) {
                     translate([0,0,z])
-                    baseL2("RU9",R_X[xx]+W,w,R_D2);
+                    baseL2(str("RU",xx),R_X[xx]+W,w,R_D2);
                 }
                 for(z=[200,500]) {
                     translate([0,0,z])
-                    baseL2("RP9",R_X[xx]+W,w,R_D2-10);
+                    baseL2(str("RP",xx),R_X[xx]+W,w,R_D2-10);
                 }
                 }
             }
@@ -757,12 +760,13 @@ module previewR() {
 
             EW=R_X[13]-R_X[12];
 
-            IbeamY("RX13",R_X[12]+W,EW,SYSTEM_H);
 
-            for(a=[0:.2:1])
+            for(a=[0:.2:1]) {
+                echo("pVEG",a*(SYSTEM_H-W));
             translate([R_X[12],W,a*(SYSTEM_H-W)])
 //            vegPolc("VEG",[[0,R_D2],[EW,R_D2-EW]]);
-            vegPolc2("VEG",[[0,R_D2],[EW,R_D2-EW-W]]);
+            vegPolc2("VEG",[[0,R_D2-W],[EW,R_D2-EW-W]]);
+            }
             
             $depth=R_D2; 
             $boxDepth=R_D2;
@@ -773,7 +777,7 @@ module previewR() {
 
             
 //            PEEK_H=1400;
-            PEEK_H=SYSTEM_H-OVER_FRIDGE_H;
+            PEEK_H=SYSTEM_H-OVER_FRIDGE_H+2;
             echo("PEEK_H",PEEK_H);
             
             translate([R_X[10]+W,0,SYSTEM_H])
@@ -790,7 +794,9 @@ module previewR() {
             ;
             
             translate([R_X[10]+W,0,PEEK_H])
-                doors2("R10D",600,PEEK_H,R_D2,cnt=1,clips=[250,925,-50]);
+                doors2("R10D1",600,PEEK_H-800,R_D2,cnt=1,clips=[250,925,-50]);
+            translate([R_X[10]+W,0,800])
+                doors2("R10D2",600,800,R_D2,cnt=1,clips=[250,925,-50]);
             
         }
         

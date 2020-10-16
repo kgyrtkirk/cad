@@ -1,52 +1,14 @@
-use <hulls.scad>;
+use <furniture.scad>
+
 ROOM_X=4460;
 ROOM_Y=1355;
 ROOM_Z=2020+730;
 ROOM_WALL=50;
 
 W=18;
+$W=18;
 M60I=564;
 M60W=M60I+W;
-
-function sublist(l,start)=start<len(l) ? [for(i=[start:len(l)-1])  l[i]] : undef;
-function prefix(s,p)=(len(p)==0 || p==undef)?[]:concat([s+p[0]], prefix(s+p[0],sublist(p,1)) );
-
-module posNeg() {
-    difference() {
-        union(){
-        $positive=true;
-        children();
-        }
-        union(){
-        $positive=false;
-        children();
-        }
-    }
-}
-
-module ppp(name,dims="") {
-    echo(name,dims);
-    if($positive)
-    if($part==undef || $part==name) 
-        children();
-}
-
-
-module eXY(name, dX, dY) {
-    ppp(str("P-XY_",name),str(dX,"x",dY))
-        cube([dX,dY,W]);
-}
-
-module eYZ(name, dY, dZ) {
-    ppp(str("P-YZ_",name),str(dY,"x",dZ))
-        cube([W,dY,dZ]);
-}
-module eXZ(name, dX, dZ) {
-    ppp(str("P-XZ_",name),str(dX,"x",dZ))
-        cube([dX,W,dZ]);
-}
-
-
 
 module room(cut) {
     R=[ROOM_X,ROOM_Y,ROOM_Z];
@@ -154,8 +116,9 @@ module partsR() {
         mirror([1,0,0])
             cabinet("R",450,[0,450+W,350+W,300+W,300+W,300+W,400+W]);
 
-    cabinet("S1",450,[0,280+W,280+W,280+W]);
-    translate([600,0,0])
+//    cabinet("S1",300,[0,280+W,280+W,280+W]);
+    for(x=[0:600:1800])
+    translate([x,0,0])
     cabinet("S2",300,[0,280+W,280+W,280+W]);
 }
 
