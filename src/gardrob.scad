@@ -102,6 +102,9 @@ module cabinet(name,D,heights) {
     eXY(name,M60I,D);
 }
 
+module s2() {
+    cabinet("S2",300,[0,280+W,280+W,280+W]);
+}
 
 module partsL() {
     for(x=[0:600:1200])
@@ -109,6 +112,11 @@ module partsL() {
         mirror([1,0,0])
         mirror([0,1,0])
             cabinet("L",450,[0,450+W,350+W,300+W,300+W,300+W,400+W]);
+    for(x=[-600])
+        translate([ROOM_X-x-1600,ROOM_Y,0])
+        mirror([1,0,0])
+        mirror([0,1,0])
+            s2();
 
 }
 module partsR() {
@@ -119,7 +127,11 @@ module partsR() {
 //    cabinet("S1",300,[0,280+W,280+W,280+W]);
     for(x=[0:600:1800])
     translate([x,0,0])
-    cabinet("S2",300,[0,280+W,280+W,280+W]);
+    s2();
+    
+    for(z=[1200:300:2100])
+    translate([0,0,z])
+    eXY("PP",1200,250);
 }
 
 

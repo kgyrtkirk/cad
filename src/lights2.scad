@@ -140,7 +140,7 @@ module kitchenLamp(points,convexHull) {
 
 }
 
-mode="bath";
+mode="kitchen";
 
 module osszehuzo() {
 //    https://www.shop.butoralkatreszbolt.hu/egyeb/135-lap-osszehuzo-vasalat-10013302100.html
@@ -190,7 +190,7 @@ if(mode=="kitchen") {
 //            p(2,-1),
             p(2,0),
             p(2,1),
-            p(3,0),
+//            p(3,0),
     ]*WW*2;
 
     kp2=[ p(0,0) ,
@@ -239,7 +239,7 @@ if(mode=="bath") {
     ]*S;
 
     projection()
-    kitchenLamp(el,false);
+    kitchenLamp(el,true);
 }
 
 
