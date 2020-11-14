@@ -111,7 +111,7 @@ module partsL() {
         translate([ROOM_X-x-1600,ROOM_Y,0])
         mirror([1,0,0])
         mirror([0,1,0])
-            cabinet("L",450,[0,450+W,350+W,300+W,300+W,300+W,400+W]);
+            cabinet("L",400,[0,450+W,350+W,300+W,300+W,300+W,400+W]);
     for(x=[-600])
         translate([ROOM_X-x-1600,ROOM_Y,0])
         mirror([1,0,0])
@@ -122,7 +122,7 @@ module partsL() {
 module partsR() {
     translate([ROOM_X-700,0,0])
         mirror([1,0,0])
-            cabinet("R",450,[0,450+W,350+W,300+W,300+W,300+W,400+W]);
+            cabinet("R",400,[0,450+W,350+W,300+W,300+W,300+W,400+W]);
 
 //    cabinet("S1",300,[0,280+W,280+W,280+W]);
     for(x=[0:600:1800])
@@ -152,7 +152,7 @@ if(mode=="previewR") {
 
 
 if(mode=="preview") {
-    room();
+    room("Z");
     posNeg() {
         partsL();
         partsR();
