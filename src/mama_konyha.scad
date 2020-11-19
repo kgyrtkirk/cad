@@ -6,7 +6,7 @@ use <kitchen_box.scad>
 $fronts=true;
 $machines=true;
 $internal=true;
-$openDoors=true;
+$openDoors=false;
 $drawerState="CLOSED";
 
 W=18;
@@ -31,6 +31,8 @@ D37=300;
     
 FOOT_H=60;
 
+ROOM_Y2A=1840;
+ROOM_Y2B=ROOM_Y2A+1600;
 module room(cut) {
     
     module walls() {
@@ -39,10 +41,16 @@ module room(cut) {
         p=[ [ROOM_X,ROOM_Y1,0]+[1,-1,0]*Q,
             [ROOM_X,0,0]+[1,-1,0]*Q,
             [0,0,0]+[-1,-1,0]*Q,
-            [0,ROOM_Y2,0]+[-1,1,0]*Q,];
+            [0,ROOM_Y2,0]+[-1,-1,0]*Q,];
         hullPairs(p,false)
         translate([0,0,H/2])
             cube([D_W,D_W,H],center=true);
+        
+        hull()
+        for(y=[ROOM_Y2A,ROOM_Y2B-D_W])
+        translate([0,y,0]+[-1,1,0]*Q)
+        translate([0,0,H/2])
+        cube([D_W,D_W,H],center=true);
     }
     
     module windowCut() {
@@ -73,13 +81,26 @@ module room(cut) {
             sphere(d=25,$fn=6);
     }
     module oven() {
-        translate([890,0,0])
+//        translate([890,0,0])
+        translate([X[4],0,0])
         color([1,1,0])
         cube([590,600,850]);
     }
+    module fridge() {
+        translate([0,0,0])
+        color([1,0,1])
+        cube([595,620,1550]);
+        
+    }
+    module micro() {
+        translate([X[3],0,860])
+        color([1,0,1])
+        cube([490,340,270]);
+    }
     module dishwasher() {
-        translate([890,0,0])
-        color([1,1,0])
+//        translate([890,0,0])
+        translate([X[2],0,0])
+        color([1,0,1])
         cube([600,600,850]);
     }
     
@@ -87,7 +108,12 @@ module room(cut) {
         union() {
             walls();
             gasLine();
-            oven();
+            if($machines) {
+                oven();
+                dishwasher();
+                fridge();
+                micro();
+            }
         }
         windowCut();
         
@@ -114,15 +140,13 @@ module cabinet1(name,D,heights) {
 }
 
 
-DEPTH_R=600;
+DEPTH_R=570;
 
 D_X=[360,600,605,800,600,350,600];
 D_Y=[0,650,1050];
 
 X=prefix(ROOM_X,-D_X);
 Y=prefix(600-D_Y[0],D_Y);
-
-FOOT_H=60;
 
 module partsR() {
     
@@ -162,6 +186,14 @@ module onLeftWall() {
         children();
 }
 
+module onRightWall(off=ROOM_Y2A) {
+    
+    translate([0,off,0])
+    rotate(-90)
+    mirror([1,0,0])
+        children();
+}
+
 module partsL() {
     onLeftWall() {
         translate([Y[0],0,FOOT_H])
@@ -190,7 +222,7 @@ module partsU() {
     translate([X[i],0,VIEW_H])
     cabinet(str("cabu",i),D_X[i],H,D_TOP)
         cTop()
-        doors("dd",H)
+        doors("dd",cnt=(i==0||i==5)?1:2,H)
     ;
     
 
@@ -204,6 +236,49 @@ module partsU() {
 
 }
 
+module partsRR() {
+    DD=570;
+    
+        translate([0,0,FOOT_H])
+    onRightWall(ROOM_Y2A+100) {
+        cabinet("RR1",600,800,DD)
+            cBeams()
+            maximera1(150)
+            maximera1(150)
+            maximera1(150)
+            maximera1(350)
+        ;
+        translate([600,0,0])
+        cabinet("RR2",800,800,DD)
+            cBeams()
+            maximera1(150)
+            doors("dd",650,glass=true)
+        ;
+    }
+
+}
+
+
+module munkalap() {
+    MD=635;
+    H=FOOT_H+800;
+    WALL_DIST=15;//FIXME
+    
+    
+    if($positive) {
+        translate([X[3],WALL_DIST,H])
+        cube([ROOM_X-WALL_DIST-X[3],MD,30]);
+
+        translate([X[5],WALL_DIST,H])
+        cube([D_X[5],MD,30]);
+
+        translate([X[0],Y[0],H])
+        cube([D_X[0]-WALL_DIST,MD,30]);
+        
+        
+    }
+    
+}
 
 
 $part=undef;
@@ -228,8 +303,16 @@ if(mode=="preview") {
         partsL();
         partsR();
         partsU();
+        munkalap();
+        partsRR();
     }
+    
 }
 
 
 
+echo("X",X);
+
+// 27cm felso polc
+
+// Sonoma tolgy A18/SZ
