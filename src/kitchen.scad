@@ -1206,7 +1206,8 @@ if(mode[0] == "P" && mode[1]=="-") {
     projection(false)
     orient(mode)
 //    rotate(90,[0,1,0]) 
-        previewLU();
+        previewR();
+//        previewLU();
 }
 
 if(mode=="previewL") {
