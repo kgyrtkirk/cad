@@ -143,6 +143,41 @@ module cBeams() {
     children();
 }
 
+module partitionBeams(x,fullH) {
+    
+    beamH=$h-2*$W - fullH;
+    BACK_WIDTH=4;
+
+    
+    D=100;
+    translate([x-D/2,D,-$W])
+    eXY(str($name,"partC",x),D,$d-BACK_WIDTH-2*D);
+    
+    translate([x-$W,0,-$h+$W]) {
+        translate([0,BACK_WIDTH,0])
+        eYZ(str($name,"partA",x),$d-BACK_WIDTH,fullH);
+
+        translate([0,0,fullH]) 
+        color([0,0,1]) {
+            translate([0,0,0])
+            eYZ(str($name,"partB",x),D,beamH);
+            
+            translate([0,$d-D,0])
+            eYZ(str($name,"partB",x),D,beamH);
+        }
+    }
+    
+    $oldw=$w;
+    {
+        $w=x;
+        children(0);
+    }
+    translate([x,0,0]) {
+        $w=$oldw-x;
+        children(1);
+    }
+}
+
 module cTop() {
     W=$W;
     translate([W,0,-W])

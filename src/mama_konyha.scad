@@ -117,10 +117,13 @@ module room(cut) {
         }
         windowCut();
         
+
         if(cut=="Z") {
-    //        translate([0,0,300])
-//            translate(-2*Q)
-  //          cube(R+4*Q);
+            R=2*ROOM_X;
+            Q=300;
+        translate([0,0,300])
+            translate([-300,-300,0])
+            cube(R+4*Q);
         }
     }
 }
@@ -150,17 +153,13 @@ Y=prefix(DEPTH_R+W-D_Y[0],D_Y);
 
 module partsR() {
     
-    translate([X[0],0,FOOT_H])
-    cabinet("C1",D_X[0],800,DEPTH_R)
-        cBeams()
-    ;
-    
     translate([X[1],0,FOOT_H])
-    cabinet("C2",D_X[1],800,DEPTH_R)
+    cabinet("C1",D_X[0]+D_X[1],800,DEPTH_R)
         cBeams()
-        maximera1(800)
-    ;
-    
+        partitionBeams(600,100) {
+            maximera1(800);
+            cube(1);
+        }
     
     translate([X[3],0,FOOT_H])
     cabinet("C3",D_X[3],800,DEPTH_R)
@@ -299,7 +298,7 @@ module munkalap() {
 
 
 $part=undef;
-mode="preview";
+mode="previewR";
 
 if(mode=="previewL") {
     room("Z");
