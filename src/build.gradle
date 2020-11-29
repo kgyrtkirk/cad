@@ -51,7 +51,7 @@ def partMap = [
 	'baby_lock':		['89','91','70'],
 	'baby_lock2':		['main','aux'],
 	'baby_lock3':		['main'],
-	'maximera_front_drill': ['main','addon'],
+	'maximera_front_drill': ['main','addon','off5'],
 	'can_cap':		['75500','86000','54300','102000'],
 	'dxf_car1':	['def'],
 	'dxf_car2':	['def'],
