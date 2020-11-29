@@ -6,7 +6,7 @@ use <kitchen_box.scad>
 $fronts=true;
 $machines=true;
 $internal=true;
-$openDoors=false;
+$openDoors=true;
 $drawerState="CLOSED";
 
 W=18;
@@ -140,40 +140,42 @@ module cabinet1(name,D,heights) {
 }
 
 
-DEPTH_R=570;
+DEPTH_R=550;
 
 D_X=[360,600,605,800,600,350,600];
 D_Y=[0,650,1050];
 
 X=prefix(ROOM_X,-D_X);
-Y=prefix(600-D_Y[0],D_Y);
+Y=prefix(DEPTH_R+W-D_Y[0],D_Y);
 
 module partsR() {
     
     translate([X[0],0,FOOT_H])
-    cabinet("x1",D_X[0],800,DEPTH_R)
+    cabinet("C1",D_X[0],800,DEPTH_R)
         cBeams()
     ;
     
     translate([X[1],0,FOOT_H])
-    cabinet("x2",D_X[1],800,DEPTH_R)
+    cabinet("C2",D_X[1],800,DEPTH_R)
         cBeams()
         maximera1(800)
     ;
     
     
     translate([X[3],0,FOOT_H])
-    cabinet("x3",D_X[3],800,DEPTH_R)
+    cabinet("C3",D_X[3],800,DEPTH_R)
         cBeams()
         maximera1(150)
+        shelf(300)
         doors("S1",650,cnt=2)
     
     ;
     translate([X[5],0,FOOT_H])
-    cabinet("x5",D_X[5],800,DEPTH_R)
+    cabinet("C5",D_X[5],800,DEPTH_R)
         cBeams()
+        shelf(300)
+        shelf(700)
         doors("S1",800,cnt=1)
-    
     ;
 
 }
@@ -199,11 +201,19 @@ module partsL() {
         translate([Y[0],0,FOOT_H])
         cabinet("L1",D_Y[1],800,D_L)
             cBeams()
+            shelf(300)
+            shelf(500)
             doors("l1",800)
             ;
         translate([Y[1],0,FOOT_H])
         cabinet("L2",D_Y[2],SYSTEM_H,D_L)
             cTop()
+            shelf(1000)
+            shelf(500)
+            shelf(1350)
+            shelf(1650)
+            shelf(1650+300)
+            shelf(1650+600)
             doors("l2",1000,glass=true)
             doors("l2",650,glass=true)
             doors("l2",800)
@@ -220,8 +230,11 @@ module partsU() {
     H2=SYSTEM_H-VIEW2_H;
     for(i=[0,1,4,5,6])
     translate([X[i],0,VIEW_H])
-    cabinet(str("cabu",i),D_X[i],H,D_TOP)
+    cabinet(str("U",i),D_X[i],H,D_TOP)
         cTop()
+            shelf(300)
+            shelf(500)
+            shelf(700)
         doors("dd",cnt=(i==0||i==5)?1:2,H)
     ;
     
@@ -229,8 +242,11 @@ module partsU() {
 
     for(i=[2,3])
     translate([X[i],0,VIEW2_H])
-    cabinet(str("cabu",i),D_X[i],H2,D_TOP)
+    cabinet(str("U",i),D_X[i],H2,D_TOP)
         cTop()
+            shelf(300)
+            shelf(500)
+            shelf(700)
         doors("dd",H2,glass=true)
     ;
 
@@ -241,7 +257,7 @@ module partsRR() {
     
         translate([0,0,FOOT_H])
     onRightWall(ROOM_Y2A+100) {
-        cabinet("RR1",600,800,DD)
+        cabinet("R1",600,800,DD)
             cBeams()
             maximera1(150)
             maximera1(150)
@@ -249,9 +265,10 @@ module partsRR() {
             maximera1(350)
         ;
         translate([600,0,0])
-        cabinet("RR2",800,800,DD)
+        cabinet("R2",800,800,DD)
             cBeams()
             maximera1(150)
+            shelf(300)
             doors("dd",650,glass=true)
         ;
     }
@@ -303,7 +320,7 @@ if(mode=="preview") {
         partsL();
         partsR();
         partsU();
-        munkalap();
+//        munkalap();
         partsRR();
     }
     

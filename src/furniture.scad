@@ -18,7 +18,8 @@ module posNeg() {
 }
 
 module ppp(name,dims="") {
-    echo(name,dims);
+    if($positive)
+        echo(name,dims);
     if($positive)
     if($part==undef || $part==name) 
         children();
@@ -108,7 +109,7 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
 module doors(name,h,cnt=2,clips=[50,-50],glass=false) {
     
     translate([0,0,-h])
-        doors0(name,$w,h,$d,cnt,clips,glass);
+        doors0(str($name,name),$w,h,$d,cnt,clips,glass);
     
     translate([0,0,-h])
         children();
@@ -136,9 +137,9 @@ module cabinet(name,w,h,d) {
 module cBeams() {
     W=$W;
     translate([W,0,-W])
-    eXY(str($name,"cb"),$w-2*W,100);
+    eXY(str($name,"-beam"),$w-2*W,100);
     translate([W,$d-100,-W])
-    eXY(str($name,"cb"),$w-2*W,100);
+    eXY(str($name,"-beam"),$w-2*W,100);
     children();
 }
 
@@ -167,7 +168,7 @@ module m60_0(sizes) {
     ];
     
     C1=prefix(0,C0);
-    echo("C1",C1);
+//    echo("C1",C1);
     
     x=prefix(0,[for(i=sizes) abs(i)]);
     for(i=[0:len(sizes)-1]) {
@@ -249,6 +250,16 @@ module m60_0(sizes) {
     }
 }
 
+module shelf(h) {
+    SHELF_INSET=12;
+    
+    color([0,1,1])
+    translate([$W,-SHELF_INSET,-h])
+    eXY(str($name,"-Shelf"),$w-2*$W,$d-SHELF_INSET);
+    
+    //    translate([0,0,-h])
+    children();
+}
 
 module maximera1(h) {
     assert(len(search($w,[600,800]))>0,str("not supported maximera width:",$w));
