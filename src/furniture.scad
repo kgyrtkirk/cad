@@ -36,7 +36,7 @@ module eYZ(name, dY, dZ) {
         cube([$W,dY,dZ]);
 }
 module eXZ(name, dX, dZ) {
-    ppp(str(name,"XZ"),str(dX,"x",dZ))
+    ppp(str(name,"XZ"),str(dZ,"x",dX))
         cube([dX,$W,dZ]);
 }
 
@@ -59,6 +59,8 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
     cR=cL+[w/2,0,0];
     translate([0,d,0])
     if($positive) {
+        
+        doorLabel=glass?"__GLASSDOOR: ":"__DOOR: ";
         if($fronts)
             
         color([0,1,1]){
@@ -70,15 +72,15 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
                 cube1([ww,W,hh],glass);
                 translate(cR)
                 cube1([ww,W,hh],glass);
-                echo("__DOOR: ",name,ww,hh);
-                echo("__DOOR: ",name,ww,hh);
+                echo(doorLabel,name,ww,hh);
+                echo(doorLabel,name,ww,hh);
             }else{
                 ww=w-FRONT_SP;
                 hh=h-FRONT_SP;
                 rotate($openDoors?90:0)
                 translate((cL+cR)/2)
                 cube1([ww,W,hh],glass);
-                echo("__DOOR: ",name,ww,hh);
+                echo(doorLabel,name,ww,hh);
             }
         }
     }else{
@@ -129,6 +131,10 @@ module cabinet(name,w,h,d) {
     
     translate([$W,0,0])
     eXY(name,w-2*$W,d);
+    
+    if($positive) {
+        echo(str(name,"-back"),str(h-15,"x",w-15));
+    }
     
     translate([0,0,$h])
     children();
@@ -299,6 +305,11 @@ module shelf(h) {
 module maximera1(h) {
     assert(len(search($w,[600,800]))>0,str("not supported maximera width:",$w));
 //    cube(1000);
+    
+    if($positive)
+    echo("__DOOR ","maximera",$w-2,h-2);
+
+    
     translate([$w/2,$d,0])
     m60_0([h]);
     translate([0,0,-h])

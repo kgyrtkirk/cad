@@ -143,13 +143,13 @@ module cabinet1(name,D,heights) {
 }
 
 
-DEPTH_R=550;
+DEPTH_R=560;
 
 D_X=[360,600,605,800,600,350,600];
 D_Y=[0,650,1050];
 
 X=prefix(ROOM_X,-D_X);
-Y=prefix(DEPTH_R+W-D_Y[0],D_Y);
+Y=prefix(DEPTH_R+20+W-D_Y[0],D_Y);
 
 module partsR() {
     
@@ -298,7 +298,7 @@ module munkalap() {
 
 
 $part=undef;
-mode="previewR";
+mode="preview";
 
 if(mode=="previewL") {
     room("Z");
