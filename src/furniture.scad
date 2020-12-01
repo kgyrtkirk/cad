@@ -156,6 +156,7 @@ module partitionBeams(x,fullH) {
 
     
     D=100;
+    if(beamH>0)
     translate([x-D/2,D,-$W])
     eXY(str($name,"partC",x),D,$d-BACK_WIDTH-2*D);
     
@@ -165,9 +166,11 @@ module partitionBeams(x,fullH) {
 
         translate([0,0,fullH]) 
         color([0,0,1]) {
+            if(beamH>0)
             translate([0,0,0])
             eYZ(str($name,"partB",x),D,beamH);
             
+            if(beamH>0)
             translate([0,$d-D,0])
             eYZ(str($name,"partB",x),D,beamH);
         }
@@ -178,9 +181,19 @@ module partitionBeams(x,fullH) {
         $w=x;
         children(0);
     }
-    translate([x,0,0]) {
-        $w=$oldw-x;
+    translate([x-$W,0,0]) {
+        $w=$oldw-x+$W;
         children(1);
+    }
+}
+
+
+module             slideDoors() {
+
+    $oldd=$d;
+    {
+        $d=$oldd-$W;
+        children();
     }
 }
 

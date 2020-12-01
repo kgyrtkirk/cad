@@ -33,6 +33,11 @@ FOOT_H=60;
 
 ROOM_Y2A=1840;
 ROOM_Y2B=ROOM_Y2A+1600;
+
+ROOM_Y3A=ROOM_Y2B+800;
+ROOM_Y3B=ROOM_Y3A+2000;
+ROOM_X3B=330;
+
 module room(cut) {
     
     module walls() {
@@ -51,6 +56,13 @@ module room(cut) {
         translate([0,y,0]+[-1,1,0]*Q)
         translate([0,0,H/2])
         cube([D_W,D_W,H],center=true);
+
+        hull()
+        for(y=[ROOM_Y3A,ROOM_Y3B-D_W])
+        translate([0,y,0]+[-1,1,0]*Q)
+        translate([0,0,H/2])
+        cube([D_W,D_W,H],center=true);
+
     }
     
     module windowCut() {
@@ -274,6 +286,39 @@ module partsRR() {
 
 }
 
+module partsT() {
+    
+    DD=330;
+    
+    H=710;
+    S=(H-W)/3;
+    
+//    translate([0,0,FOOT_H])
+    onRightWall(ROOM_Y3A) {
+        cabinet("T2",1800,H,DD)
+            cTop()
+//            maximera1(150)
+            slideDoors() {
+                partitionBeams(600,$h-2*W) {
+                    shelf(W+1*S)
+                    shelf(W+2*S);
+                    partitionBeams(600,$h-2*W) {
+//                        translate([0,100,0])
+                        shelf(W+1*S)
+                        shelf(W+2*S);
+  //                      translate([0,100,0])
+                        shelf(W+1*S)
+                        shelf(W+2*S);
+                    }
+               }
+           }
+            
+//            sliders("dd",650,glass=true)
+        ;
+    }
+    
+}
+
 
 module munkalap() {
     MD=635;
@@ -321,6 +366,7 @@ if(mode=="preview") {
         partsU();
 //        munkalap();
         partsRR();
+        partsT();
     }
     
 }
