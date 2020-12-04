@@ -304,11 +304,11 @@ module m60_0(sizes) {
     }
 }
 
-module shelf(h) {
-    SHELF_INSET=12;
+    
+module shelf(h,SHELF_INSET=12) {
     
     color([0,1,1])
-    translate([$W,-SHELF_INSET,-h])
+    translate([$W,0,-h])
     eXY(str($name,"-Shelf"),$w-2*$W,$d-SHELF_INSET);
     
     //    translate([0,0,-h])

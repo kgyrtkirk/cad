@@ -1,4 +1,5 @@
 use <furniture.scad>
+use <hulls.scad>
 
 ROOM_X=4460;
 ROOM_Y=1355;
@@ -90,9 +91,12 @@ module room(cut) {
     
 }
 
-module cabinet(name,D,heights) {
+module cabinet0(name,D,heights) {
+    
+
     Z=prefix(0,heights);
     H=Z[len(Z)-1]+W;
+if(false) {
     eYZ(name,D,H);
     translate([M60W,0,0])
     eYZ(name,D,H);
@@ -100,10 +104,20 @@ module cabinet(name,D,heights) {
     for(z=Z)
     translate([W,0,z])
     eXY(name,M60I,D);
+}else{
+    cabinet(name,600,H,D)
+//        cTop()
+        for(z=Z)
+            if(z<H-W)
+            shelf(z-W,0);
+        
+}
+
+
 }
 
 module s2() {
-    cabinet("S2",300,[0,280+W,280+W,280+W]);
+    cabinet0("S2",350,[0,280+W,280+W,280+W]);
 }
 
 module partsL() {
@@ -111,7 +125,7 @@ module partsL() {
         translate([ROOM_X-x-1600,ROOM_Y,0])
         mirror([1,0,0])
         mirror([0,1,0])
-            cabinet("L",400,[0,450+W,350+W,300+W,300+W,300+W,400+W]);
+            cabinet0("L",450,[0,450+W,350+W,300+W,300+W,300+W,400+W]);
     for(x=[-600])
         translate([ROOM_X-x-1600,ROOM_Y,0])
         mirror([1,0,0])
@@ -122,7 +136,7 @@ module partsL() {
 module partsR() {
     translate([ROOM_X-700,0,0])
         mirror([1,0,0])
-            cabinet("R",400,[0,450+W,350+W,300+W,300+W,300+W,400+W]);
+            cabinet0("R",400,[0,450+W,350+W,300+W,300+W,300+W,400+W]);
 
 //    cabinet("S1",300,[0,280+W,280+W,280+W]);
     for(x=[0:600:1800])
@@ -155,7 +169,7 @@ if(mode=="preview") {
     room("Z");
     posNeg() {
         partsL();
-        partsR();
+//        partsR();
     }
 }
 
