@@ -43,6 +43,12 @@ module eXZ(name, dX, dZ) {
 
 use <syms.scad>
 
+module hinges(name,ww,hh) {
+    assert(ww<600,str("wider door hinge count calc missing"," ",name," ",ww));
+
+    echo("__HINGE",name,2);
+}
+
 module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
     W=$W;
     module cube1(dim,glass) {
@@ -61,12 +67,15 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
     if($positive) {
         
         doorLabel=glass?"__GLASSDOOR: ":"__DOOR: ";
+        
         if($fronts)
             
         color([0,1,1]){
             if(cnt==2) {
                 ww=w/2-FRONT_SP;
                 hh=h-FRONT_SP;
+                hinges(name,ww,hh);
+                hinges(name,ww,hh);
                 rotate($openDoors?90:0)
                 translate(cL)
                 cube1([ww,W,hh],glass);
@@ -77,6 +86,7 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
             }else{
                 ww=w-FRONT_SP;
                 hh=h-FRONT_SP;
+                hinges(name,ww,hh);
                 rotate($openDoors?90:0)
                 translate((cL+cR)/2)
                 cube1([ww,W,hh],glass);

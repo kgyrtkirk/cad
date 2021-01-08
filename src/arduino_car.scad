@@ -237,7 +237,7 @@ function    eP(a,b,alpha) = [
 ];
 
 
-module m1(W00=PLATE_WIDTH2) {
+module m1(W00=PLATE_WIDTH2,c=true) {
     W0=W00/2;
     W1=PLATE_WIDTH/2;
     H=PLATE_DEPTH/2;
@@ -254,10 +254,14 @@ module m1(W00=PLATE_WIDTH2) {
     ];
         $fn=32;
     OQ=4;
+        if(c) {
     offset(r=OQ)
     offset(r=-2*OQ)
     offset(r=OQ)
+    polygon(points); 
+        }else {
     polygon(points);
+        }
 }
 
 module servo_mount() {
@@ -312,6 +316,8 @@ module topPlate0() {
             union() {
                 //cube( [PLATE_WIDTH2, PLATE_DEPTH, SW],center=true);
                 linear_extrude(height=SW)m1();
+#                translate([0,0,10])
+                linear_extrude(height=SW)m1(c=false);
                 translate([0,50,0])
                 rotate(180)
                 arduinoStand(true);

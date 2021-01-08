@@ -66,6 +66,9 @@ def partMap = [
 	'camar801': ['def'],
 	'ikea_hanger': ['main','step'],
 	'kitchen_handle_drill':	['def'],
+	'run_light_case':['def'],
+	'kinga_rajz_kulcst':['def'],
+'pir_hole_cover':['upper'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->

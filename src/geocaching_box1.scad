@@ -13,10 +13,11 @@ L=IL+W;
 
 MAGNET_D=5.8+.4;
 MAGNET_H=2.5;
+$magnets=false;
 
 S=9;
 
-module container(magnets=true) {
+module container() {
 
 translate([0,0,W])
 thread("PCO-1881-ext",turns=2);
@@ -30,6 +31,18 @@ difference() {
 rotate(180,[1,0,0])
 translate([0,0,L-S]){
     cylinder(d1=D,d2=DI,h=W);
+}
+
+if($hanger) {
+    K=D-3*W;
+    O=K*2;
+rotate(180,[1,0,0])
+    hull() {
+        translate([0,0,L-S+W+O/4])
+            cube([K,2*W,O/2],center=true);
+        translate([0,0,L-S+W+O])
+            cube([K/2,2*W,.1],center=true);
+    }
 }
 
 
@@ -57,7 +70,7 @@ intersection() {
     cylinder(d=D+2*W,h=3*L,center=true);
 }
 
-if(magnets)
+if($magnets)
 translate([0,0,-L+S]/2)
 rotate(180)
 t()
@@ -77,18 +90,21 @@ ZS=-2;
 }
 
 }
-mode="simple";
+mode="hanger";
 
 if(mode=="full") {
-    container();
+    container($magnets=true);
 }
 if(mode=="simple") {
-    container(false);
+    container();
+}
+if(mode=="hanger") {
+    container($hanger=true);
 }
 
 if(mode=="magnet-test"){
     intersection() {
-        container();
+        container($magnets=true);
         translate([-D/2,0,-L/2-S+2])
         cube(15,center=true);
     }
