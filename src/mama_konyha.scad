@@ -325,17 +325,30 @@ module munkalap() {
     H=FOOT_H+800;
     WALL_DIST=15;//FIXME
     
+    module mPiece(dims) {
+        if($positive) {
+            cube(dims);
+        }
+        echo("MLAP",dims);
+    }
     
-    if($positive) {
-        translate([X[3],WALL_DIST,H])
-        cube([ROOM_X-WALL_DIST-X[3],MD,30]);
+    
+    translate([X[3],WALL_DIST,H])
+    mPiece([ROOM_X-WALL_DIST-X[3],MD,30]);
+    
+    translate([X[5],WALL_DIST,H])
+    mPiece([D_X[5],MD,30]);
 
-        translate([X[5],WALL_DIST,H])
-        cube([D_X[5],MD,30]);
+    Q=D_X[0]-WALL_DIST;
+    translate([X[0],Y[0],H])
+    rotate(90)
+    translate([0,-Q,0])
+    mPiece([MD,Q,30]);
+//    mPiece([D_X[0]-WALL_DIST,MD,30]);
 
-        translate([X[0],Y[0],H])
-        cube([D_X[0]-WALL_DIST,MD,30]);
-        
+    onRightWall(ROOM_Y2A+100) {
+        translate([0,0,H])
+        mPiece([800+600,MD,30]);
         
     }
     
@@ -364,7 +377,7 @@ if(mode=="preview") {
         partsL();
         partsR();
         partsU();
-//        munkalap();
+        munkalap();
         partsRR();
         partsT();
     }
@@ -378,3 +391,5 @@ echo("X",X);
 // 27cm felso polc
 
 // Sonoma tolgy A18/SZ
+// 7 6 5 12
+// r
