@@ -14,7 +14,7 @@ L=IL+W;
 MAGNET_D=5.8+.4;
 MAGNET_H=2.5;
 $magnets=false;
-
+$hanger=false;
 S=9;
 
 module container() {
@@ -34,14 +34,41 @@ translate([0,0,L-S]){
 }
 
 if($hanger) {
-    K=D-3*W;
-    O=K*2;
+    K=(D-3*W)/2;
+    J=K-2*W;
+    O=K*4;
+    I=2*W;
+    
+    A=O-4*W;
+    B=8*W;
 rotate(180,[1,0,0])
-    hull() {
+    //hull() 
+    {
+        points=[    [K,0],  [-K,0],
+                    [-K,O],   [K,O],
+                    [K,B],
+                    [I,B],
+                    [J,A],
+                    [-J,A], 
+                    [-I,0], 
+    //                    [J,A],
+//                        [J,-5],
+                        ];
+        translate([0,0,L-S+W]){
+            cylinder(d1=DI,d2=J,h=W);
+        }
+        translate([0,0,L-S+W])
+        rotate(90,[1,0,0])
+            translate([0,0,-2*W])
+                linear_extrude(4*W)
+                    polygon(points);
+//            cube([K,2*W,O/2],center=true);
+        /*
         translate([0,0,L-S+W+O/4])
             cube([K,2*W,O/2],center=true);
         translate([0,0,L-S+W+O])
             cube([K/2,2*W,.1],center=true);
+        */
     }
 }
 
@@ -90,7 +117,7 @@ ZS=-2;
 }
 
 }
-mode="hanger";
+mode="hanger-preview";
 
 if(mode=="full") {
     container($magnets=true);
@@ -102,6 +129,16 @@ if(mode=="hanger") {
     container($hanger=true);
 }
 
+if(mode=="hanger-preview") {
+    difference() {
+        container($hanger=true);
+        S=300;
+        translate([0,0,-S/2])
+        cube([S,S,S]);
+    }
+}
+
+
 if(mode=="magnet-test"){
     intersection() {
         container($magnets=true);
@@ -111,7 +148,11 @@ if(mode=="magnet-test"){
 }
 
 if(mode=="holder") {
-	cylinder(d=DI-W,h=15);
+    difference() {
+        $fn=64;
+        cylinder(d=DI-W,h=10);
+        cylinder(d=DI-W-W,h=150,center=true);
+    }
 }
 
 //cube();

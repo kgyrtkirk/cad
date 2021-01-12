@@ -336,7 +336,11 @@ module munkalap() {
         translate([X[0],Y[0],H])
         cube([D_X[0]-WALL_DIST,MD,30]);
         
-        
+        color([1,0,0])
+        translate([X[1],150,H])
+            cube([780,435,100]
+        );
+      
     }
     
 }
@@ -364,7 +368,7 @@ if(mode=="preview") {
         partsL();
         partsR();
         partsU();
-//        munkalap();
+        munkalap();
         partsRR();
         partsT();
     }

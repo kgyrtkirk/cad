@@ -55,7 +55,7 @@ def partMap = [
 	'can_cap':		['75500','86000','54300','102000'],
 	'dxf_car1':	['def'],
 	'dxf_car2':	['def'],
-	'geocaching_box1':	['holder','full','magnet-test','simple'],
+	'geocaching_box1':	['holder','full','magnet-test','simple','hanger'],
 //	'activity_board_1':	['def'],
 //	'dimmer_bottom':	['def'],
 //	'dimmer_top':		['def'],
