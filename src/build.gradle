@@ -64,7 +64,7 @@ def partMap = [
 	'inserta_knock-in_drill':	['def','mount'],
 	'axilo-scaffold': ['def'],
 	'camar801': ['def'],
-	'ikea_hanger': ['main','step'],
+	'ikea_hanger': ['main','step','diff_marker'],
 	'kitchen_handle_drill':	['def'],
 	'run_light_case':['def'],
 	'kinga_rajz_kulcst':['def'],
