@@ -128,18 +128,27 @@ module doors(name,h,cnt=2,clips=[50,-50],glass=false) {
     
 }
 
+module space(h) {
+    translate([0,0,-h])
+        children();
+}
 
-module cabinet(name,w,h,d) {
+module cabinet(name,w,h,d,foot=0) {
     $name=name;
     $w=w;
-    $h=h;
+    $h=h+foot;
     $d=d;
     
-    eYZ(name,d,h);
+    eYZ(name,d,h+foot);
     translate([w-$W,0,0])
-    eYZ(name,d,h);
+    eYZ(name,d,h+foot);
     
-    translate([$W,0,0])
+    if(foot>0) {
+        translate([0,d-2*$W,0])
+        eXZ(name,w,foot);
+    }
+    
+    translate([$W,0,foot])
     eXY(name,w-2*$W,d);
     
     if($positive) {
@@ -157,6 +166,26 @@ module cBeams() {
     translate([W,$d-100,-W])
     eXY(str($name,"-beam"),$w-2*W,100);
     children();
+}
+module partition2(x,h) {
+
+    BACK_WIDTH=4;
+
+        translate([x-$W,0,-h+$W])
+        translate([0,BACK_WIDTH,0])
+        eYZ(str($name,"partA",x),$d-BACK_WIDTH,h-$W);
+
+    $oldw=$w;
+    {
+        $w=x;
+        children(0);
+    }
+    translate([x-$W,0,0]) {
+        $w=$oldw-x+$W;
+        children(1);
+    }
+
+    
 }
 
 module partitionBeams(x,fullH) {
@@ -315,13 +344,15 @@ module m60_0(sizes) {
 }
 
     
-module shelf(h,SHELF_INSET=12) {
+module shelf(h,SHELF_INSET=12,external=false) {
+    
+    depth=$d-(external?0:SHELF_INSET);
     
     color([0,1,1])
     translate([$W,0,-h])
-    eXY(str($name,"-Shelf"),$w-2*$W,$d-SHELF_INSET);
+    eXY(str($name,"-S",external?"-EX":"-IN"),$w-2*$W,depth);
     
-    //    translate([0,0,-h])
+    translate([0,0,external?-h:0])
     children();
 }
 
