@@ -16,6 +16,7 @@ module ccornerCab() {
     C_D=400;
     cabinet("CC",C_W,C_H,C_D,foot=50)
         cTop()
+        
         shelf(300,external=true)
         shelf(300,external=true)
 //        shelf(300)
@@ -23,8 +24,8 @@ module ccornerCab() {
         partition2(500,C_H-300-300) {
         shelf(200,external=true)
         shelf(300,external=true);
-        shelf(200,external=true)
-        doors("DOOR",cnt=2,C_H-600)
+        shelf(300,external=false)
+        doors("DOOR",cnt=2,C_H-600+$W)
             
             ;
         }
@@ -34,5 +35,27 @@ module ccornerCab() {
 
 }
 
-posNeg()
-ccornerCab();
+    
+module cXY() {
+    
+    eXY();
+}
+
+
+module shelves() {
+    
+}
+
+
+mode="shelves";
+
+if(mode=="cab") {
+    posNeg()
+    ccornerCab();
+}
+
+if(mode=="shelves") {
+    posNeg()
+    shelves();
+    
+}
