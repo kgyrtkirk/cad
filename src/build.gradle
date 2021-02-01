@@ -31,7 +31,7 @@ def partMap = [
 	'smadapt':	['def'],
 	'train_car':		['body','attach','wheel','bodyp','spacer'],
 	'playdoh_tanka_extrusion_shapes':	['b0','rot3','spagetti','predator','lines','star','tube'],
-	'battery_shell':	['def'],
+	'battery_shell':	['def','block'],
 	'hole_adapter':		['m44','m36'],
 	'stand':		['stand'],
 	'esp-gen-3':		['top', 'bottom'],
@@ -74,6 +74,7 @@ def partMap = [
 	'sound16_mount':		['simple'],
 	'rc522_mount':		['simple'],
 	'run_light_case2':['def'],
+	'penhold4_2017update':	['def'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
