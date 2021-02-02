@@ -217,7 +217,7 @@ module partsL() {
             doors("l1",800)
             ;
         translate([Y[1],0,FOOT_H])
-        cabinet("L2",D_Y[2],SYSTEM_H,D_L)
+                cabinet("L2",D_Y[2],SYSTEM_H,D_L)
             cTop()
             shelf(1000)
             shelf(500)
@@ -397,3 +397,9 @@ echo("X",X);
 // Sonoma tolgy A18/SZ
 // 7 6 5 12
 // r
+
+
+// maximera 80x60xkicsi x2
+// maximera 60x60xmagas x2
+// maximera 60x60xkicsi x3
+

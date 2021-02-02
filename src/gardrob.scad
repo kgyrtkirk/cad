@@ -95,6 +95,7 @@ module cabinet0(name,D,heights) {
     
 
     Z=prefix(0,heights);
+    echo(Z);
     H=Z[len(Z)-1]+W;
 if(false) {
     eYZ(name,D,H);
