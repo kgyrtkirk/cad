@@ -47,7 +47,7 @@ module shelves() {
 }
 
 
-mode="shelves";
+mode="cab";
 
 if(mode=="cab") {
     posNeg()
