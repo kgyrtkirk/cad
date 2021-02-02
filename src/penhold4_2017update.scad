@@ -2,13 +2,13 @@
 
 
 
-holder_radius = 46;
+holder_radius = 44;
 holder_thickness = 1.2;
 W=1.2;
 holder_height = 30;
 tube_bottom_thickness = 1;
-pen_count = 16;
-pen_radius = 4.5;
+pen_count = 12;
+pen_radius = 11/2;
 pen_length = 150;
 rotx = 30;
 rotz = -60;
