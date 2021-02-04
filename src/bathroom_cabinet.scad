@@ -32,9 +32,18 @@ module cabinet() {
     for(z=[0,C_H-$W])
     translate([$W,0,z])
     eXY("A",C_W,C_D);
-
     
+    translate([0,0,C_H])
+    doors($w=C_W+2*$W,"DOOR",cnt=2,C_H);
 }
+
+$fronts=true;
+$machines=true;
+$internal=true;
+$openDoors=false;
+$drawerState="CLOSED";
+
+$part=undef;
 
 posNeg() {
     cabinet();

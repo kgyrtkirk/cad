@@ -99,7 +99,7 @@ def projMap = [
 						],
 	'inserta_knock-in_drill':	['project'],
 	'lights':			['p0','p1','pr'],
-	'lights2':			['main'],
+	'lights2':			['main','kitchen'],
 	'ikea_bridge':			['def'],
 	]
 

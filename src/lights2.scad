@@ -126,7 +126,7 @@ module kitchenLamp(points,convexHull) {
     hull()
     for(p=points)
         translate(p)
-          cylinder(d=WW*2/sqrt(3),h=W,$fn=9);
+          cylinder(d=WW*2/sqrt(3),h=W);
 }else{
         hullPairs(points,false)
           cylinder(d=WW*2/sqrt(3),h=W,$fn=9);
@@ -134,13 +134,13 @@ module kitchenLamp(points,convexHull) {
     
     for(p=points)
         translate(p)
-        cylinder(d=90,center=true,h=100);
+        cylinder(d=80,center=true,h=100);
 
     }
 
 }
 
-mode="kitchen";
+mode="hall";
 
 module osszehuzo() {
 //    https://www.shop.butoralkatreszbolt.hu/egyeb/135-lap-osszehuzo-vasalat-10013302100.html
@@ -186,7 +186,7 @@ if(mode=="kitchen") {
     kp1=[ p(0,0) ,
             p(0,1),
             p(1,0),
-//            p(1,1),
+            p(1,1),
 //            p(2,-1),
             p(2,0),
             p(2,1),
@@ -215,7 +215,7 @@ if(mode=="kitchen") {
 
 
     projection()
-    kitchenLamp(kp0,false);
+    kitchenLamp(kp1,true);
     
 }
 

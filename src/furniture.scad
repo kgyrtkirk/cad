@@ -152,7 +152,12 @@ module cabinet(name,w,h,d,foot=0) {
     eXY(name,w-2*$W,d);
     
     if($positive) {
-        echo(str(name,"-back"),str(h-15,"x",w-15));
+        bw=w-15;
+        bh=h-15;
+        color([1,0,0])
+        translate([7.5,3,foot+7.5])
+        cube([bw,1,bh]);
+        echo(str(name,"-back"),str(bh,"x",bw));
     }
     
     translate([0,0,$h])
@@ -185,7 +190,11 @@ module partition2(x,h) {
         children(1);
     }
 
-    
+    if($children > 2) {
+        $w=$oldw;
+        translate([0,0,-h])
+        children(2);
+    }
 }
 
 module partitionBeams(x,fullH) {
@@ -345,12 +354,14 @@ module m60_0(sizes) {
 
     
 module shelf(h,SHELF_INSET=12,external=false) {
+
+    BACK_WIDTH=4;
     
-    depth=$d-(external?0:SHELF_INSET);
-    
+    depth=$d-BACK_WIDTH-(external?0:SHELF_INSET);
+    w=$w-2*$W;
     color([0,1,1])
-    translate([$W,0,-h])
-    eXY(str($name,"-S",external?"-EX":"-IN"),$w-2*$W,depth);
+    translate([$W,BACK_WIDTH,-h])
+    eXY(str($name,"-S",external?"-EX":"-IN",w),w,depth);
     
     translate([0,0,external?-h:0])
     children();
