@@ -144,8 +144,8 @@ module cabinet(name,w,h,d,foot=0) {
     eYZ(name,d,h+foot);
     
     if(foot>0) {
-        translate([0,d-2*$W,0])
-        eXZ(name,w,foot);
+        translate([$W,d-2*$W,0])
+        eXZ(name,w-2*$W,foot);
     }
     
     translate([$W,0,foot])
