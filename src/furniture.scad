@@ -176,6 +176,7 @@ module partition2(x,h) {
 
     BACK_WIDTH=4;
 
+        translate([0,100,0])
         translate([x-$W,0,-h+$W])
         translate([0,BACK_WIDTH,0])
         eYZ(str($name,"partA",x),$d-BACK_WIDTH,h-$W);
@@ -382,4 +383,39 @@ module maximera1(h) {
 }
 
 
+module hanger(h) {
 
+    BACK_WIDTH=4;
+    
+    depth=$d-BACK_WIDTH;
+    
+    if($machines) {
+        color([0,1,0])
+        translate([0,depth/2,-h])
+            cube([$w,10,20]);
+    }
+    
+    children();
+}
+
+
+module drawer(h) {
+    
+    FRONT_SP=2;
+    
+    if($positive) {
+        
+        doorLabel="__DRAWER: ";
+       
+        if($fronts) {            
+            color([0,1,1]){
+                translate([$w/2,$d,-h/2])
+                cube([$w-FRONT_SP,$W,h-FRONT_SP],center=true);
+            }
+        }
+    }
+    
+    translate([0,0,-h])
+        children();
+    
+}
