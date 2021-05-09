@@ -40,6 +40,14 @@ module eXZ(name, dX, dZ) {
         cube([dX,$W,dZ]);
 }
 
+module eXY2(name, dX, dY, dY2=undef) {
+    dY2=dY2==undef ? dY:dY2;
+    ppp(str(name,"-XY"),str(dX,"x",dY))
+        linear_extrude($W)
+        polygon([[0,0],[dX,0],[dX,dY],[0,dY2]]);
+//        cube([dX,dY2,$W]);
+}
+
 
 use <syms.scad>
 
@@ -77,6 +85,7 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
                 hinges(name,ww,hh);
                 hinges(name,ww,hh);
                 rotate($openDoors?90:0)
+                translate($openDoors?[0,-W,0]:[0,0,0])
                 translate(cL)
                 cube1([ww,W,hh],glass);
                 translate(cR)
@@ -118,10 +127,11 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
     }
 }
 
-module doors(name,h,cnt=2,clips=[50,-50],glass=false) {
+module doors(name,h,cnt=2,clips=[50,-50],glass=false,spacing=0) {
     
-    translate([0,0,-h])
-        doors0(str($name,name),$w,h,$d,cnt,clips,glass);
+    
+    translate([spacing>0?spacing:0,0,-h])
+        doors0(str($name,name),$w-abs(spacing),h,$d,cnt,clips,glass);
     
     translate([0,0,-h])
         children();
@@ -176,10 +186,10 @@ module partition2(x,h) {
 
     BACK_WIDTH=4;
 
-        translate([0,100,0])
+//        translate([0,100,0])
         translate([x-$W,0,-h+$W])
         translate([0,BACK_WIDTH,0])
-        eYZ(str($name,"partA",x),$d-BACK_WIDTH,h-$W);
+        eYZ(str($name,"partA",x),$d-BACK_WIDTH,h-$W-$W);
 
     $oldw=$w;
     {

@@ -1,3 +1,8 @@
+
+// osszeszereles nehez
+// 
+
+
 use <hulls.scad>
 use <furniture.scad>
 use <kitchen_box.scad>
@@ -6,7 +11,7 @@ use <kitchen_box.scad>
 $fronts=true;
 $machines=true;
 $internal=true;
-$openDoors=true;
+$openDoors=false;
 $drawerState="CLOSED";
 
 $part=undef;
@@ -74,10 +79,9 @@ module cabinet1(name,D,heights) {
 }
 
 
-SYSTEM_H=2200;
+SYSTEM_H=2100;
 SYSTEM_W=4370;
-DEPTH=400;
-FOOT_H=60;
+FOOT_H=0;
 
 D_X=[1000,425,1850,425,650];
 D_Y=[0,650,1050];
@@ -87,9 +91,17 @@ X=prefix(0,-D_X);
 
 U_H=600;
 SU_H=SYSTEM_H-U_H;
+SV_H=SU_H-200;
 
-
+DEPTH=400;
 DEPTH_A=560;
+DEPTH_B=160;
+
+K=450; // ~agy feletti kis ajto szelesseg
+
+
+g1=true;
+g2=true;
 
 module partsA() {
 
@@ -106,6 +118,7 @@ module partsA() {
         
     ;
 
+    if(false)
     for(x=[1,3]) {
         translate([X[x],0,0])
         cabinet("n",D_X[x],SYSTEM_H-FOOT_H,DEPTH,foot=FOOT_H)
@@ -120,12 +133,84 @@ module partsA() {
             shelf(300,SHELF_INSET=0)
         ;
     }
-    translate([X[2],0,SU_H])
+    if(g1)
+    translate([X[2],0,SU_H]) {
         cabinet("n",D_X[2],U_H,DEPTH)
             cTop()
+            partition2(K,U_H){
+            shelf(U_H/2)
+                doors("DR",U_H,cnt=1,spacing=10);
+            partition2(D_X[2]-2*K+2*$W,U_H) {
+            shelf(U_H/2);
+            shelf(U_H/2)
+                doors("DL",U_H,cnt=1,spacing=-10);
+            }
+            }
+    
         ;
+    }
+    if(g1)
+    translate([X[2],0,SV_H]) {
+        translate([0,W,0])
+            eXY("H_U",D_X[2],DEPTH_B-W);
+        eXZ("H_B",D_X[2],SU_H-SV_H);
+    }
     
     
+    
+    module q(w) {
+        
+        module ferdeLap() {
+            translate([0,W,0])
+            eXY2("Q", D_X[1],DEPTH_A-W,DEPTH-W);
+        }
+        module ferdeLap2(d1) {
+            d=DEPTH_A-DEPTH;
+            z=d1-W;
+            translate([0,W,0])
+            eXY2("W", D_X[1],z+d,z);
+        }
+        module ferdeAjto() {
+            d=(DEPTH_A-DEPTH);
+            a=atan2(d,D_X[1]);
+            l=sqrt(d*d+D_X[1]*D_X[1]);
+            echo("dAngle",a);
+            rotate(a)
+            doors(
+//                $openDoors=false,
+                "B",
+                U_H,
+                $w=l,
+                $d=0,
+                $name="SD",
+                cnt=1);
+        }
+
+        
+        eXZ("Q", D_X[1],SYSTEM_H);
+        for(z=[0,400,1000,SU_H,SYSTEM_H-W])
+            translate([0,0,z])
+        ferdeLap2(DEPTH);
+        
+        translate([0,0,SV_H])
+        ferdeLap2(DEPTH_B);
+
+        translate([0,0,SU_H+U_H/2])
+        ferdeLap2(DEPTH-10);
+        
+        translate([0,W,SYSTEM_H])
+        translate([0,DEPTH-W,0])
+        ferdeAjto();
+    }
+    
+    if(g2)
+    translate([X[1],0,0])
+        q(D_X[1]);
+    if(g2)
+    translate([X[3],0,0])
+        mirror([1,0,0])
+        translate([-D_X[1],0,0])
+        q(D_X[1]);
     
 }
 
