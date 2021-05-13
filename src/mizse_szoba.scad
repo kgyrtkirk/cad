@@ -1,6 +1,11 @@
 
 // osszeszereles nehez
-// 
+// ajtok:
+//  A827-PS11-18
+//  A319-PS17-18
+// korpusz:
+//  A825-PS17-18
+
 
 
 use <hulls.scad>
