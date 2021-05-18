@@ -27,12 +27,12 @@ module ppp(name,dims="") {
 
 
 module eXY(name, dX, dY) {
-    ppp(str(name,"-XY"),str(dX,"x",dY))
+    ppp(str(name,"XY"),str(dX,"x",dY))
         cube([dX,dY,$W]);
 }
 
 module eYZ(name, dY, dZ) {
-    ppp(str(name,"-YZ"),str(dY,"x",dZ))
+    ppp(str(name,"YZ"),str(dY,"x",dZ))
         cube([$W,dY,dZ]);
 }
 module eXZ(name, dX, dZ) {
@@ -42,7 +42,7 @@ module eXZ(name, dX, dZ) {
 
 module eXY2(name, dX, dY, dY2=undef) {
     dY2=dY2==undef ? dY:dY2;
-    ppp(str(name,"-XY"),str(dX,"x",dY))
+    ppp(str(name,"XY"),str(dX,"x",dY))
         linear_extrude($W)
         polygon([[0,0],[dX,0],[dX,dY],[0,dY2]]);
 //        cube([dX,dY2,$W]);
@@ -411,6 +411,8 @@ module hanger(h) {
 
 module drawer(h) {
     
+    name=str($name,"d");
+    
     FRONT_SP=2;
 
     ww=$w-FRONT_SP;
@@ -441,19 +443,19 @@ module drawer(h) {
   //          eXZ("DF",ww,hh);
         }
         translate([qx,-$W,qz])
-        eXZ("DA",ix,iz);
+        eXZ(str(name,"A"),ix,iz);
         translate([qx,-id,qz])
-        eXZ("DA",ix,iz);
+        eXZ(str(name,"A"),ix,iz);
 
         translate([qx,-id+$W,qz])
-        eYZ("DB",id-2*$W,iz);
+        eYZ(str(name,"B"),id-2*$W,iz);
         translate([$w-$W-qx,-id+$W,qz])
-        eYZ("DB",id-2*$W,iz);
+        eYZ(str(name,"B"),id-2*$W,iz);
         
         color([1,0,0])
         translate([qx,-id,qz-3])
         cube([ix,id,3]);
-        echo(str(name,"-back"),str(ix,"x",id));
+        echo(str(name,"Fl"),str(ix,"x",id));
         
         
     }
