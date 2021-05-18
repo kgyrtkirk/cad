@@ -4,6 +4,7 @@ use <kitchen_box.scad>
 
 
 $fronts=true;
+
 $machines=true;
 $internal=true;
 $openDoors=true;
@@ -14,15 +15,17 @@ $part=undef;
 W=18;
 $W=18;
 
+A=1880+665;
+D_L=290;
+D_R=670;
+DOOR_H=2100;
+DOOR_W=1000;
+ROOM_H=1600+1020;
+WALL_THICK=100;
+
+
 module room(cut) {
-    A=3000;
-    D_L=290;
-    D_R=670;
-    DOOR_H=2100;
-    DOOR_W=1000;
     
-    ROOM_H=1600+1020;
-    WALL_THICK=100;
     
     module wall(WIDTH,HEIGHT) {
         color([.3,.7,.7])
@@ -32,6 +35,12 @@ module room(cut) {
     module wall2(WIDTH,HEIGHT) {
         translate([0,WALL_THICK,0])
         wall(WIDTH,HEIGHT);
+    }
+
+    module electric() {
+        color([1,0,0])
+        translate([-WALL_THICK,800,2300]) 
+        cube([100,300,300]);
     }
 
 
@@ -56,9 +65,8 @@ module room(cut) {
     difference() {
         union() {
             walls();
-//            gasLine();
+            electric();
         }
-  //      windowCut();
     }
 }
 
@@ -80,44 +88,25 @@ X=prefix(0,-D_X);
 U_H=600;
 SU_H=SYSTEM_H-U_H;
 
+UPPER_D_X=[800,800,800];
+
+UPPER_X=prefix(-100,-UPPER_D_X);
+
+
+
 
 DEPTH_A=560;
 
 module partsA() {
 
-    for(x=[0,4])
-    translate([X[x],0,0])
-    cabinet("n",D_X[x],SYSTEM_H-FOOT_H,DEPTH_A,foot=FOOT_H)
-        cTop()
-        shelf(300)
-        hanger(500)
-        doors("B",SYSTEM_H-FOOT_H-2*200)
-        shelf($W/2)
-        drawer(200)
-        drawer(200)
-        
-    ;
+    for(i=[0:2]) 
+        translate([UPPER_X[i],0,DOOR_H])
+        cabinet("C1",UPPER_D_X[i],U_H,D_R)
+            cBeams()
+            doors("U",U_H);
+    
+        ;        
 
-    for(x=[1,3]) {
-        translate([X[x],0,0])
-        cabinet("n",D_X[x],SYSTEM_H-FOOT_H,DEPTH,foot=FOOT_H)
-            cTop()
-                shelf(600)
-                doors("a",600)
-                doors("a",1000)
-            shelf($W/2,SHELF_INSET=0)
-            //maximera1(150)
-            //maximera1(150)
-            shelf(0,SHELF_INSET=0)
-            shelf(300,SHELF_INSET=0)
-        ;
-    }
-    translate([X[2],0,SU_H])
-        cabinet("n",D_X[2],U_H,DEPTH)
-            cTop()
-        ;
-    
-    
     
 }
 
@@ -126,4 +115,5 @@ room();
 posNeg()
 partsA();
 
-echo(X);
+echo(UPPER_X);
+echo(A);
