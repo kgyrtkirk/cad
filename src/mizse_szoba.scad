@@ -6,6 +6,13 @@
 // korpusz:
 //  A825-PS17-18
 
+// +45 rautodo
+// blum 79b9556 +30 ?
+// https://publications.blum.com/2020/catalogue/hu/129/
+
+// + lábak
+// + also takaro vackok
+// + also takarohoz pattintos
 
 
 use <hulls.scad>
@@ -16,8 +23,8 @@ use <kitchen_box.scad>
 $fronts=true;
 $machines=true;
 $internal=true;
-$openDoors=false;
-$drawerState="CLOSED";
+$openDoors=true;
+$drawerState="OPEN";
 
 $part=undef;
 
@@ -98,11 +105,14 @@ U_H=600;
 SU_H=SYSTEM_H-U_H;
 SV_H=SU_H-200;
 
-DEPTH=400;
+DEPTH=300;
 DEPTH_A=560;
 DEPTH_B=160;
 
 K=450; // ~agy feletti kis ajto szelesseg
+
+H1=400;
+H2=1000;
 
 
 g1=true;
@@ -165,17 +175,13 @@ module partsA() {
     
     module q(w) {
         
-        module ferdeLap() {
-            translate([0,W,0])
-            eXY2("Q", D_X[1],DEPTH_A-W,DEPTH-W);
+        module ferdeLap2(d1,c=0) {
+            d=DEPTH_A-DEPTH-c;
+            z=d1;
+            translate([W,c,0])
+            eXY2(concat("W",c), D_X[1]-W,z+d,z);
         }
-        module ferdeLap2(d1) {
-            d=DEPTH_A-DEPTH;
-            z=d1-W;
-            translate([0,W,0])
-            eXY2("W", D_X[1],z+d,z);
-        }
-        module ferdeAjto() {
+        module ferdeAjto(h=U_H) {
             d=(DEPTH_A-DEPTH);
             a=atan2(d,D_X[1]);
             l=sqrt(d*d+D_X[1]*D_X[1]);
@@ -183,8 +189,8 @@ module partsA() {
             rotate(a)
             doors(
 //                $openDoors=false,
-                "B",
-                U_H,
+                concat("B",h),
+                h,
                 $w=l,
                 $d=0,
                 $name="SD",
@@ -192,20 +198,34 @@ module partsA() {
         }
 
         
-        eXZ("Q", D_X[1],SYSTEM_H);
-        for(z=[0,400,1000,SU_H,SYSTEM_H-W])
+        eYZ("Q", DEPTH,SYSTEM_H);
+        
+//        eXZ("Q", D_X[1],SYSTEM_H);
+        for(z=[0,SYSTEM_H-W])
             translate([0,0,z])
         ferdeLap2(DEPTH);
+        for(z=[H1,H2,SU_H])
+            translate([0,0,z])
+        ferdeLap2(DEPTH,5);
         
-        translate([0,0,SV_H])
-        ferdeLap2(DEPTH_B);
+//        translate([0,0,SV_H])
+  //      ferdeLap2(DEPTH_B);
 
         translate([0,0,SU_H+U_H/2])
         ferdeLap2(DEPTH-10);
         
         translate([0,W,SYSTEM_H])
         translate([0,DEPTH-W,0])
-        ferdeAjto();
+        ferdeAjto(SYSTEM_H-H2);
+
+        translate([0,W,H1+W])
+        translate([0,DEPTH-W,0])
+        ferdeAjto(H1+W);
+
+//        translate([0,W,SU_H])
+  //      translate([0,DEPTH-W,0])
+    //    ferdeAjto(U_H);
+
     }
     
     if(g2)
@@ -223,3 +243,7 @@ posNeg()
 partsA();
 
 echo(X);
+
+echo("SU_H",SU_H);
+echo("SV_H",SV_H);
+echo("SYSTEM_H",SYSTEM_H);

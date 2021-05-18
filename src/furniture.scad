@@ -412,17 +412,50 @@ module hanger(h) {
 module drawer(h) {
     
     FRONT_SP=2;
+
+    ww=$w-FRONT_SP;
+    hh=h-FRONT_SP;
     
+    qx=$W+26/2;
+    qz=2*$W;
+    
+    ix=$w-2*qx;
+    iz=h-2*qz;
+    id=$d-10;
+    
+    o_y=($drawerState=="CLOSED" ? 0 : id-50);
+    
+    translate([0,$d+o_y,-h])
     if($positive) {
         
-        doorLabel="__DRAWER: ";
-       
+        echo("__FRONT", ww, hh);
+
         if($fronts) {            
             color([0,1,1]){
-                translate([$w/2,$d,-h/2])
-                cube([$w-FRONT_SP,$W,h-FRONT_SP],center=true);
+                translate([FRONT_SP/2,0,FRONT_SP/2])
+                eXZ("DF",ww,hh);
+//                translate([$w/2,$d,-h/2])
+  //                cube([ww,$W,hh],center=true);
             }
+//                translate([0,$d,-h+$W])
+  //          eXZ("DF",ww,hh);
         }
+        translate([qx,-$W,qz])
+        eXZ("DA",ix,iz);
+        translate([qx,-id,qz])
+        eXZ("DA",ix,iz);
+
+        translate([qx,-id+$W,qz])
+        eYZ("DB",id-2*$W,iz);
+        translate([$w-$W-qx,-id+$W,qz])
+        eYZ("DB",id-2*$W,iz);
+        
+        color([1,0,0])
+        translate([qx,-id,qz-3])
+        cube([ix,id,3]);
+        echo(str(name,"-back"),str(ix,"x",id));
+        
+        
     }
     
     translate([0,0,-h])
