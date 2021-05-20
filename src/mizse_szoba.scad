@@ -10,14 +10,24 @@
 // blum 79b9556 +30 ?
 // https://publications.blum.com/2020/catalogue/hu/129/
 
-// + lábak
+// + ~12 láb
 // + also takaro vackok
 // + also takarohoz pattintos
 
 // kuldeskor:
-// also/felso egyben
-// kozepso I -3mm melyseg
+// also/felso egyben +W szelesseg
+// kozepso I -3mm melyseg ; -2W magassag
 // bal/jobb hatlap nagyobb
+
+//ECHO: "M0XY", "914x560"
+//ECHO: "M0-back", "2085x935"
+//ECHO: "M0cbXY", "914x560"
+
+
+//ECHO: "M4XY", "614x560"
+//ECHO: "M4-back", "2085x635"
+//ECHO: "M4cbXY", "614x560"
+
 
 
 use <hulls.scad>
@@ -181,10 +191,11 @@ module partsA() {
     module q(w) {
         
         module ferdeLap2(d1,c=0) {
-            d=DEPTH_A-DEPTH-c;
-            z=d1;
+            d=DEPTH_A-DEPTH;
+            z=d1-c;
             translate([W,c,0])
-            eXY2(str("W",c), D_X[1]-W,z+d,z);
+            eXY2(str("Wf",c,"i",d1), D_X[1]-W,z+d,z);
+            echo(D_X[1]-W,z+d,z);
         }
         module ferdeAjto(h=U_H) {
             x=D_X[1]-$W;
@@ -196,7 +207,7 @@ module partsA() {
             rotate(a)
             doors(
 //                $openDoors=false,
-                concat("B",h),
+                str("B",h),
                 h,
                 $w=l,
                 $d=0,
@@ -211,15 +222,19 @@ module partsA() {
         for(z=[0,SYSTEM_H-W])
             translate([0,0,z])
         ferdeLap2(DEPTH);
-        for(z=[H1,H2,SU_H])
+        for(z=[H1,H2])
             translate([0,0,z])
-        ferdeLap2(DEPTH,5);
+        ferdeLap2(DEPTH,3);
         
 //        translate([0,0,SV_H])
   //      ferdeLap2(DEPTH_B);
 
-        translate([0,0,SU_H+U_H/2])
-        ferdeLap2(DEPTH-10);
+        for(z=[H1/2,SU_H,SU_H+U_H/2])
+        translate([0,0,z])
+        ferdeLap2(DEPTH,10);
+        
+        translate([0,0,(H1+H2)/2])
+        ferdeLap2(DEPTH/2,3);
         
         translate([0,W,SYSTEM_H])
         translate([0,DEPTH-W,0])

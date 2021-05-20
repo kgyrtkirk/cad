@@ -85,35 +85,73 @@ D_Y=[0,650,1050];
 X=prefix(0,-D_X);
 //Y=prefix(DEPTH_R+20+W-D_Y[0],D_Y);
 
-U_H=600;
+
+
+U_H=500;
 SU_H=SYSTEM_H-U_H;
 
-UPPER_D_X=[800,800,800];
+D_K=D_R-D_L;
+L=3*820;
+st=-A+L;
+DELTA_WIDTH=D_K+2*$W;
 
-UPPER_X=prefix(-100,-UPPER_D_X);
+UPPER_D_X=[820,820,820];
+LOWER_D_X=[L-900-DELTA_WIDTH,DELTA_WIDTH,900];
+
+UPPER_X=prefix(st,-UPPER_D_X);
+LOWER_X=prefix(st,-LOWER_D_X);
 
 
 
 
 DEPTH_A=560;
 
-module partsA() {
+module partsU() {
 
     for(i=[0:2]) 
         translate([UPPER_X[i],0,DOOR_H])
         cabinet("C1",UPPER_D_X[i],U_H,D_R)
             cBeams()
             doors("U",U_H);
-    
         ;        
 
     
 }
 
+module partsL() {
+    
+        translate([LOWER_X[0],0,0])
+        cabinet("A",LOWER_D_X[0],U_H,D_L)
+            cBeams()
+//            doors("U",U_H)
+    ;
+    ;
+        translate([LOWER_X[1],0,0])
+        cabinet("B",LOWER_D_X[1],U_H,D_L)
+            cBeams()
+//            doors("U",U_H)
+    ;
+    ;
+        translate([LOWER_X[2],0,0])
+        cabinet("C",LOWER_D_X[2],1000,D_R)
+            cBeams()
+            drawer(300)
+            drawer(300)
+            drawer(400)
+//            drawer(100)
+//            doors("U",U_H)
+    ;
+    ;
+}
+
+
+
 room();
 
-posNeg()
-partsA();
+posNeg() {
+    partsU();
+    partsL();
+}
 
 echo(UPPER_X);
 echo(A);
