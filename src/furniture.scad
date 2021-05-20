@@ -49,6 +49,15 @@ module eXY2(name, dX, dY, dY2=undef) {
 }
 
 
+module eXYp(name, dims) {
+    dY2=dY2==undef ? dY:dY2;
+    ppp(str(name,"-XY"),str(dX,"x",dY))
+        linear_extrude($W)
+        polygon([[0,0],[dX,0],[dX,dY],[0,dY2]]);
+//        cube([dX,dY2,$W]);
+}
+
+
 use <syms.scad>
 
 module hinges(name,ww,hh) {
@@ -173,6 +182,60 @@ module cabinet(name,w,h,d,foot=0) {
     translate([0,0,$h])
     children();
 }
+
+
+// width in dims are inner
+module cabinet2(name,w,h,dims) {
+    
+    $name=name;
+    $h=h;
+    
+    widths=[ for(x=dims) x[0] ];
+    depths=[ for(x=dims) x[1] ];
+    x=prefix(-$W,widths + [ for(i=widths) $W]);
+    n=len(x)-1;
+
+    echo(widths);
+    echo(depths);
+    echo(x);
+    echo(n);
+    
+
+    $w=w;   // FIXME
+    $d=d;   // FIXME
+    
+    eYZ(str(name,0),depths[0],h);
+    translate([x[n],0,0])
+    eYZ(str(name,n),depths[n],h);
+    
+    for(i=[0:n]) {
+        inner=(0<i && i<n);
+        off=inner?$W:0;
+        translate([x[i],0,off])
+        eYZ(str(name,i),depths[i],h-2*off);
+    }
+    
+    
+    
+    
+    if(false){ 
+    translate([$W,0,foot])
+    eXY(name,w-2*$W,d);
+    
+    if($positive) {
+        bw=w-15;
+        bh=h-15;
+        color([1,0,0])
+        translate([7.5,3,foot+7.5])
+        cube([bw,1,bh]);
+        echo(str(name,"-back"),str(bh,"x",bw));
+    }
+    
+    translate([0,0,$h])
+    children();
+}
+}
+
 
 module cBeams() {
     W=$W;
@@ -462,3 +525,28 @@ module drawer(h) {
         children();
     
 }
+
+
+mode="zigzag";
+
+
+if(mode=="zigzag") {
+    $W=18;
+//    module cabinet(name,w,h,d,foot=0) {
+    posNeg()
+    cabinet2( name = "C",
+        h= 400,
+        dims=[ [0,500] , [ 300,500 ] , [400,200] ]) {
+            
+        doors(name,300);
+        doors(name,200);
+        doors(name,300);
+            
+    }
+        
+        
+            
+        
+}
+
+
