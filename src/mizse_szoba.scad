@@ -5,6 +5,7 @@
 //  A319-PS17-18
 // korpusz:
 //  A825-PS17-18
+// 
 
 // +45 rautodo
 // blum 79b9556 +30 ?
@@ -39,7 +40,7 @@ $fronts=true;
 $machines=true;
 $internal=true;
 $openDoors=false;
-$drawerState="CLOSED";
+$drawerState="OPEN";
 
 $part=undef;
 
@@ -202,14 +203,14 @@ module partsA() {
             d=(DEPTH_A-DEPTH);
             a=atan2(d,x);
             l=sqrt(d*d+x*x);
-            echo("dAngle",a);
+            echo("dAngle",a,l,d,x);
             translate([$W,0,0])
             rotate(a)
             doors(
 //                $openDoors=false,
                 str("B",h),
                 h,
-                $w=l,
+                $w=l+2,
                 $d=0,
                 $name="SD",
                 cnt=1);

@@ -1,0 +1,133 @@
+Saved design '/home/kirk/projects/cad/src/mizse_szoba.scad'.
+Loaded design '/home/kirk/projects/cad/src/mizse_szoba.scad'.
+Compiling design (CSG Tree generation)...
+x ECHO: "M0YZ", "560x2100"
+x ECHO: "M4YZ", "560x2100"  // 555
+x ECHO: "M0YZ", "557x2064"
+x ECHO: "M4YZ", "557x2064"
+ECHO: "M0-S-IN914XY", "914x544"
+ECHO: "M0-S-IN914XY", "914x544"
+ECHO: "M0XY", "914x560"
+ECHO: "M0cbXY", "914x560"
+ECHO: "M0-back", "2085x935" 935+425
+ECHO: "M4-S-IN614XY", "614x544"
+ECHO: "M4-S-IN614XY", "614x544"
+ECHO: "M4-back", "2085x635" 2085x1060
+
+ECHO: "Wf3i300XY", "407x560"
+ECHO: "Wf3i300XY", "407x560"
+ECHO: "Wf3i300XY", "407x557"
+ECHO: "Wf3i300XY", "407x557"
+ECHO: "Wf10i300XY", "407x550"
+ECHO: "Wf10i300XY", "407x550"
+ECHO: "Wf3i150XY", "407x407"
+ECHO: "QYZ", "300x2100"
+ECHO: "M4XY", "614x560"
+ECHO: "M4cbXY", "614x560"   614+18+407
+
+ECHO: "CYZ", "300x700"
+ECHO: "CYZ", "300x700"
+ECHO: "CXY", "1814x300"
+ECHO: "CcbXY", "1814x300"
+ECHO: "C-back", "685x1835"
+
+ECHO: "C-S-IN464XY", "464x284"
+ECHO: "C-S-IN464XY", "464x284"
+ECHO: "CpartA500YZ", "296x664"
+ECHO: "CpartA886YZ", "296x664"
+ECHO: "C-S-IN850XY", "850x284"
+ECHO: "H_UXY", "1850x142"
+ECHO: "H_BXZ", "150x1850"
+ECHO: "M0dAXZ", "128x888"
+ECHO: "M0dBYZ", "514x128"
+ECHO: "M4dBYZ", "514x128"
+
+ECHO: "M4dAXZ", "128x588"
+ECHO: "M4dAXZ", "128x588"
+
+
+ECHO: "M4dFl", "588x550"
+ECHO: "M0dFl", "888x550"
+ECHO: "DFXZ", "198x648"
+ECHO: "DFXZ", "198x948"
+
+ECHO: "__DOOR: ", "M0B", 473, 1698
+ECHO: "__DOOR: ", "M0B", 473, 1698
+ECHO: "__DOOR: ", "M4B", 323, 1698
+ECHO: "__DOOR: ", "M4B", 323, 1698
+
+ECHO: "__DOOR: ", "CDR", 498, 698
+ECHO: "__DOOR: ", "CDL", 498, 698
+
+ECHO: "__DOOR: ", "SDB1100", 480.959, 1098  => +2
+ECHO: "__DOOR: ", "SDB418", 480.959, 416
+ECHO: "__DOOR: ", "SDB1100", 480.959, 1098
+ECHO: "__DOOR: ", "SDB418", 480.959, 416
+
+
+---------------------------------
+
+ECHO: "__HINGE", "CDR", 2
+ECHO: "__HINGE", "CDL", 2
+ECHO: "__HINGE", "M0B", 2
+ECHO: "__HINGE", "M0B", 2
+ECHO: "__FRONT", 948, 198
+ECHO: "__FRONT", 948, 198
+
+ECHO: "__HINGE", "M4B", 2
+ECHO: "__HINGE", "M4B", 2
+ECHO: "__FRONT", 648, 198
+ECHO: "__FRONT", 648, 198
+
+
+ECHO: 407, 560, 300
+ECHO: 407, 560, 300
+ECHO: 407, 557, 297
+ECHO: 407, 557, 297
+ECHO: "4", "407x550"
+ECHO: 407, 550, 290
+ECHO: 407, 550, 290
+ECHO: 407, 550, 290
+ECHO: 407, 407, 147
+ECHO: "dAngle", 32.5713
+ECHO: "__HINGE", "SDB1100", 2
+ECHO: "dAngle", 32.5713
+ECHO: "__HINGE", "SDB418", 2
+ECHO: 407, 407, 147
+ECHO: "dAngle", 32.5713
+ECHO: "__HINGE", "SDB1100", 2
+ECHO: "dAngle", 32.5713
+ECHO: "__HINGE", "SDB418", 2
+ECHO: 407, 560, 300
+ECHO: 407, 560, 300
+ECHO: 407, 557, 297
+ECHO: 407, 557, 297
+ECHO: 407, 550, 290
+ECHO: 407, 550, 290
+ECHO: 407, 550, 290
+ECHO: 407, 407, 147
+ECHO: "dAngle", 32.5713
+ECHO: "dAngle", 32.5713
+ECHO: 407, 560, 300
+ECHO: 407, 560, 300
+ECHO: 407, 557, 297
+ECHO: 407, 557, 297
+ECHO: 407, 550, 290
+ECHO: 407, 550, 290
+ECHO: 407, 550, 290
+ECHO: 407, 407, 147
+ECHO: "dAngle", 32.5713
+ECHO: "dAngle", 32.5713
+ECHO: [-950, -1375, -3225, -3650, -4300]
+ECHO: "SU_H", 1400
+ECHO: "SV_H", 1250
+ECHO: "SYSTEM_H", 2100
+Compiling design (CSG Products generation)...
+Geometries in cache: 39
+Geometry cache size in bytes: 27784
+CGAL Polyhedrons in cache: 0
+CGAL cache size in bytes: 0
+Compiling design (CSG Products normalization)...
+Normalized CSG tree has 142 elements
+Compile and preview finished.
+Total rendering time: 0 hours, 0 minutes, 0 seconds

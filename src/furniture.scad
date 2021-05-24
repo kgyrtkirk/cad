@@ -21,8 +21,9 @@ module ppp(name,dims="") {
     if($positive)
         echo(name,dims);
     if($positive)
-    if($part==undef || $part==name) 
+    if($part==undef || $part==name) {
         children();
+    }
 }
 
 
@@ -50,10 +51,10 @@ module eXY2(name, dX, dY, dY2=undef) {
 
 
 module eXYp(name, dims) {
-    dY2=dY2==undef ? dY:dY2;
-    ppp(str(name,"-XY"),str(dX,"x",dY))
+//    dY2=dY2==undef ? dY:dY2;
+    ppp(str(name,"-XY"))
         linear_extrude($W)
-        polygon([[0,0],[dX,0],[dX,dY],[0,dY2]]);
+        polygon(dims);
 //        cube([dX,dY2,$W]);
 }
 
@@ -201,8 +202,8 @@ module cabinet2(name,w,h,dims) {
     echo(n);
     
 
-    $w=w;   // FIXME
-    $d=d;   // FIXME
+//    $w=w;   // FIXME
+//    $d=d;   // FIXME
     
     eYZ(str(name,0),depths[0],h);
     translate([x[n],0,0])
@@ -215,9 +216,28 @@ module cabinet2(name,w,h,dims) {
         eYZ(str(name,i),depths[i],h-2*off);
     }
     
+    for(z=[0,h-$W])
+        translate([0,0,z])
+    eXYp(
+        str(name,"t"),
+            [
+                [$W,0],
+                for(i=[1:2*n]) 
+                    if(i%2 == 0)
+                        [x[i/2],depths[i/2]]
+                    else
+                        [x[i/2]+$W,depths[i/2]],
+                [x[n],0]
+            ]
+    );
     
-    
-    
+    for(idx=[1:n]) {
+        $d=depths[idx-1];
+        $w=widths[idx];
+        echo("C",idx);
+        translate([x[idx-1]+$W,0,0])
+        children(idx);
+    }
     if(false){ 
     translate([$W,0,foot])
     eXY(name,w-2*$W,d);
@@ -236,6 +256,21 @@ module cabinet2(name,w,h,dims) {
 }
 }
 
+
+module orient(mode) {
+    if(mode[2]=="X" && mode[3] =="Y") {
+        children();
+    } else if(mode[2]=="X" && mode[3] =="Z") {
+        rotate(99,[0,1,0])
+        children();
+    } else if(mode[2]=="Y" && mode[3] =="Z") {
+        rotate(180,[0,0,1])
+        rotate(90,[0,1,0])
+        children();
+    } else {
+        error("x");
+    }
+}
 
 module cBeams() {
     W=$W;
@@ -512,6 +547,7 @@ module drawer(h) {
 
         translate([qx,-id+$W,qz])
         eYZ(str(name,"B"),id-2*$W,iz);
+        color([0,1,0])
         translate([$w-$W-qx,-id+$W,qz])
         eYZ(str(name,"B"),id-2*$W,iz);
         
@@ -529,26 +565,48 @@ module drawer(h) {
 }
 
 
+//mode="zigzag";
+$W=18;
+$part=undef;
+$fronts=true;
+
+//mode="P-XY-Ct-XY";
 mode="zigzag";
 
+function substr(data, i, length=0) = (length == 0) ? _substr(data, i, len(data)) : _substr(data, i, length+i);
+function _substr(str, i, j, out="") = (i==j) ? out : str(str[i], _substr(str, i+1, j, out));
 
-if(mode=="zigzag") {
-    $W=18;
+//function substr(s,n)= [ for(i=[n:len(s)-1] ) s[i] ];
+
+if(mode[0] == "P" && mode[1]=="-") {
+    $fronts=false;
+    $machines=false;
+    
+    $part=substr(mode,5);
+//    $part=str([ for(i=[5:len(mode)-1] ) mode[i] ]);
+    
+    projection(false)
+    orient(mode)
+    zigzag();
+    echo(mode,$part);
+}
+
+module zigzag(){
 //    module cabinet(name,w,h,d,foot=0) {
     posNeg()
     cabinet2( name = "C",
         h= 400,
         dims=[ [0,500] , [ 300,500 ] , [400,200] ]) {
             
-        doors(name,300);
-        doors(name,200);
-        doors(name,300);
+        doors("D1",300);
+        doors("d2",200);
+        doors("D3",300);
             
     }
-        
-        
-            
-        
+}
+
+if(mode=="zigzag") {
+    zigzag();
 }
 
 

@@ -284,7 +284,7 @@ module positiveAt(p) {
 }
 
 module IbeamX(name, x, depth, height=MAIN_H) {
-    ppp(str("P-YZ_",name),str(depth,"x",height))
+    ppp(str("YZ_",name),str(depth,"x",height))
         baseI(x,depth,height);
 }
 module IbeamY(name, x, depth, height=MAIN_H) {
@@ -1164,26 +1164,6 @@ if(mode=="preview") {
 
 $part=undef;
 function defined(a) = a != undef;
-
-module orient(mode) {
-    if(mode[2]=="X" && mode[3] =="Y") {
-        children();
-    } else if(mode[2]=="X" && mode[3] =="Z") {
-        rotate(99,[0,1,0])
-        children();
-    } else if(mode[2]=="Y" && mode[3] =="Z") {
-        rotate(180,[0,0,1])
-        rotate(90,[0,1,0])
-        children();
-    } else {
-        error("x");
-    }
-
-}
-
-
-function substr(data, i, length=0) = (length == 0) ? _substr(data, i, len(data)) : _substr(data, i, length+i);
-function _substr(str, i, j, out="") = (i==j) ? out : str(str[i], _substr(str, i+1, j, out));
 
 
 if(mode[0] == "F" && mode[1]=="-") {
