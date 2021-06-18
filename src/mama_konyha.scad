@@ -165,7 +165,7 @@ Y=prefix(DEPTH_R+20+W-D_Y[0],D_Y);
 
 module partsR() {
     
-!    translate([X[1],0,FOOT_H])
+    translate([X[1],0,FOOT_H])
     cabinet("C1",D_X[0]+D_X[1],800,DEPTH_R)
         cBeams()
         partitionBeams(600,100) {
