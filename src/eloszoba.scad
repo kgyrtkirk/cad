@@ -120,6 +120,9 @@ module partsU() {
 
 module partsL() {
     
+    
+    if(false){
+    
         translate([LOWER_X[0],0,0])
         cabinet("A",LOWER_D_X[0],U_H,D_L)
             cBeams()
@@ -132,12 +135,26 @@ module partsL() {
 //            doors("U",U_H)
     ;
     ;
+    }
+        translate([LOWER_X[1],0,0])
+    cabinet2( name = "M",
+        h= U_H,
+        dims=[ [0,D_R] , [ DELTA_WIDTH,D_L] , [LOWER_D_X[0],D_L]]) {
+            
+        doors("D1",300);
+        doors("d2",200);
+        doors("D3",300);
+            
+    }
+    
+    
+    
         translate([LOWER_X[2],0,0])
-        cabinet("C",LOWER_D_X[2],1000,D_R)
+        cabinet("C",LOWER_D_X[2],900,D_R)
             cBeams()
             drawer(300)
             drawer(300)
-            drawer(400)
+            drawer(300)
 //            drawer(100)
 //            doors("U",U_H)
     ;
