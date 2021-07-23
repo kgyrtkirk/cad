@@ -52,7 +52,7 @@ def partMap = [
 	'baby_lock2':		['main','aux'],
 	'baby_lock3':		['main'],
 	'maximera_front_drill': ['main','addon','off5'],
-	'can_cap':		['75500','86000','54300','102000'],
+	'can_cap':		['75500','86000','55000','54300','102000'],
 	'dxf_car1':	['def'],
 	'dxf_car2':	['def'],
 	'geocaching_box1':	['holder','full','magnet-test','simple','hanger'],
@@ -72,9 +72,12 @@ def partMap = [
 	'Clips':['def'],
 	'dxf_stuff':['car3','car4','car5','frozen1','frozen2','icecream','grass1','grass2','cherry1','cherry2','tree1','tree2','tree3','tree4','house1','house2','house3','people1','people2','people3','people4'],
 	'sound16_mount':		['simple'],
-	'mounts':		['rc522','sound16','hourglass','dingdong','dingdong2'],
+	'mounts':		['rc522','sound16','hourglass','dingdong','dingdong2','keyb','speaker'],
 	'run_light_case2':	['def'],
+	'run_light_case3':	['def'],
 	'penhold4_2017update':	['def'],
+        'sofa_feet_plug':  ['def'],
+	'climate_end': ['def','main'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
@@ -84,7 +87,7 @@ def partMap = [
 def projMap = [
 	'matchbox_container':		['floor'],
 	'esp-gen-3':			['project'],
-	'kitchen':			['mPiece', 'mFuszer', 'mFelso',
+//	'kitchen':			['mPiece', 'mFuszer', 'mFelso',
 /*						'projtest','P-YZ_LI9','P-YZ_LI8','P-XY_U3','F-A_250','F-A_550',
 						'P-YZ_LI5',
 						'P-YZ_LI3',
@@ -92,11 +95,11 @@ def projMap = [
 						'P-YZ_LI1',
 						'P-YZ_RC1',
 						'P-YZ_RC3',
-						'P-XY_BF_1',*/
+						'P-XY_BF_1',
 						'P-YZ_RX11U',
 						'P-YZ_RX11L',
 						'P-YZ_RX13L',
-						],
+						],*/
 	'inserta_knock-in_drill':	['project'],
 	'lights':			['p0','p1','pr'],
 	'lights2':			['main','kitchen'],

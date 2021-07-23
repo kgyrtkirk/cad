@@ -4,7 +4,7 @@ W=1.6;
 $fn=32;
 Z=1.5+W;
 
-mode="dingdong2";
+mode="speaker";
 
 module hole_a(h,d=8) {
     cylinder($fn=16,d=d,h=h);
@@ -57,6 +57,13 @@ if(mode=="sound16") {
     mount(A,B,hole_pos,PCB_H=3.5);
 }
 
+if(mode=="keyb") {
+    A=135.2+.5;
+    B=21.8+.2;
+    hole_pos=[ [A/2+Z,0],-[A/2+Z,0] ];
+    mount(A,B,hole_pos,PCB_H=3.5);
+}
+
 if(mode=="rc522") {
     A=40;
     B=60;
@@ -88,17 +95,14 @@ if(mode=="dingdong") {
     }
 }
 
-if(mode=="dingdong2") {
+module speaker(    D=29.2,    H=10) {
     
-    A=27.5;
-    B=24;
+    A=D+1;//27.5;
     K=0;
     PCB_H=3.5;
     hole_pos=[  [A/2+Z,-K],-[A/2+Z,-K] ,
                  ];
     
-    H=10;
-    D=29.2;
     D1=D+2*W;
     D2=D;
     $fn=64;
@@ -137,4 +141,11 @@ if(mode=="dingdong2") {
         cube([6,100,PCB_H+W/3]);
     }
     
+}
+
+if(mode=="dingdong2") {
+    speaker();
+}
+if(mode=="speaker") {
+    speaker(D=41,H=5);
 }
