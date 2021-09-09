@@ -5,12 +5,13 @@ use <syms.scad>
 
 R=50;
 H=100;
-T=2000;
+T=360;
 
 function low(a) = pow(a,4);
+function low2(a) = pow(a,.5);
 
 function px(x,a) =
-                [low(x)*R*sin(a*T*(1-x)),low(x)*R*cos(a*T*(1-x)),pow(x,15)*H*x];
+                [low(x)*R*sin(a*T*low2(1-x)),low(x)*R*cos(a*T*low2(1-x)),pow(x,15)*H*x];
 
 
 
@@ -111,7 +112,7 @@ module fx() {
     
 
 
-mode="render";
+mode="def";
 if(mode=="def") {
 //$fn=16;
     
