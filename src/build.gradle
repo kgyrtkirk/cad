@@ -79,7 +79,8 @@ def partMap = [
         'sofa_feet_plug':  ['def'],
 	'climate_end': ['def','main'],
 	'wire_guide':['5','8','10'],
-	'bathroom_shelf':['render'],
+//	'bathroom_shelf':['render'],
+'drawing_shapes':['a6','a4','a3','a5','a360'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->

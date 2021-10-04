@@ -2,7 +2,7 @@ use <hulls.scad>
 use <kitchen_box.scad>
 
 function sublist(l,start)=start<len(l) ? [for(i=[start:len(l)-1])  l[i]] : undef;
-function prefix(s,p)=(len(p)==0 || p==undef)?[]:concat([s+p[0]], prefix(s+p[0],sublist(p,1)) );
+function prefix(s,p)=(p==undef || len(p)==0)?[]:concat([s+p[0]], prefix(s+p[0],sublist(p,1)) );
 
 module posNeg() {
     difference() {
@@ -83,7 +83,6 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
     cR=cL+[w/2,0,0];
     translate([0,d,0])
     if($positive) {
-        
         doorLabel=glass?"__GLASSDOOR: ":"__DOOR: ";
         
         if($fronts)
@@ -117,7 +116,6 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
             C0=[    20,
                     32,
             ];
-            
             C1=prefix(0,C0);
         
         HOLE_D=5;
@@ -132,8 +130,6 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
                     
                 }
             }
-        
-        
     }
 }
 
@@ -234,7 +230,6 @@ module cabinet2(name,w,h,dims) {
     for(idx=[1:n]) {
         $d=depths[idx-1];
         $w=widths[idx];
-        echo("C",idx);
         translate([x[idx-1]+$W,0,0])
         children(idx);
     }
@@ -377,10 +372,7 @@ module m60_0(sizes) {
             32-17,
             224
     ];
-    
     C1=prefix(0,C0);
-//    echo("C1",C1);
-    
     x=prefix(0,[for(i=sizes) abs(i)]);
     for(i=[0:len(sizes)-1]) {
         off=x[i];

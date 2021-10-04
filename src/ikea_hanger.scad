@@ -15,7 +15,7 @@ SP=.4;
 C=[X[0]+X[1],Y[1]+Y[0],H];
 W=18;
 
-mode="diff_marker";
+mode="cover";
 //mode="diff_marker";
 if(mode=="main") {
     difference() {
@@ -31,6 +31,17 @@ if(mode=="main") {
         }
     }
 }
+
+if(mode=="cover") {
+    
+    H1=9.5;
+    H2=35;
+    
+    
+    cube([35,52.5,]);
+    
+}
+
 
 if(mode=="step") {
     
