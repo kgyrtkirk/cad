@@ -36,7 +36,7 @@ function gen() {
 		args+=" -draw 'circle $p $q'"
 	done
 
-	args+=" -scale 30% out/s/${num}.${color}.png"
+	args+=" -scale 20% out/s/${num}.${color}.png"
 	eval $args
 }
 
@@ -48,16 +48,18 @@ done
 
 s=30
 
-for k in `seq 1 6`;do
-	montage `find out/s -type f |sort -R | head -n 16` -geometry +$s+$s out/a.$k.jpg
+for x in `seq 1 6`;do
+	echo "o$x"
+	for k in `seq 1 6`;do
+		montage `find out/s -type f |sort -R | head -n 16` -geometry +$s+$s out/a.$k.jpg
+	done
+	montage out/a.* -frame $s -geometry +$s+$s out/o$x.pdf
 done
 
 s=60
 
 montage out/s/* -geometry ${a}x${a}+$s+$s out/grid.pdf
-montage out/a.* -frame $s -geometry +$s+$s out/oo.jpg
-convert out/oo.jpg out/oo.pdf
 
 
 #  convert -size 100x60 xc:skyblue -fill white -stroke black \
- #         -draw "circle 50,30 40,10"          draw_circle.gif
+#         -draw "circle 50,30 40,10"          draw_circle.gif
