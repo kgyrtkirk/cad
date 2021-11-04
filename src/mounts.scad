@@ -4,7 +4,7 @@ W=1.6;
 $fn=32;
 Z=1.5+W;
 
-mode="speaker";
+mode="b22fix";
 
 module hole_a(h,d=8) {
     cylinder($fn=16,d=d,h=h);
@@ -69,6 +69,20 @@ if(mode=="rc522") {
     B=60;
     hole_pos=[ [A/2+Z,0],-[A/2+Z,0] ];
     mount(A,B,hole_pos,TP=5);
+}
+
+if(mode=="digitboard") {
+    A=86;
+    B=66;
+    hole_pos=[ [A/2+Z,0],-[A/2+Z,0] ];
+    mount(A,B,hole_pos);
+}
+
+if(mode=="melodyboard") {
+    A=56;
+    B=66;
+    hole_pos=[ [A/2+Z,0],-[A/2+Z,0] ];
+    mount(A,B,hole_pos);
 }
 
 if(mode=="hourglass") {
@@ -148,4 +162,26 @@ if(mode=="dingdong2") {
 }
 if(mode=="speaker") {
     speaker(D=41,H=5);
+}
+
+
+if(mode=="b22fix") {
+    i=5;
+    a=1;
+    d3=28;
+    d32=28-2*a;
+    d2=22;
+    d1=20.5;
+    $fn=64;
+    difference() {
+        union() {
+            cylinder(d1=d32,d2=d3,h=a);
+            cylinder(d=d2,h=10);
+        }
+        cylinder(d=d1,h=30,center=true);
+        translate([0,0,10+a]) {
+            cube([100,i,20],center=true);
+        }
+    }
+    
 }

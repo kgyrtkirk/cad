@@ -248,7 +248,7 @@ module cover() {
 
 
 BOARD_W=4;
-mode="wheel";
+mode="preview";
 socialDistancing=8;
 if(mode=="preview") {
     difference() {

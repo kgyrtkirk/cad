@@ -72,7 +72,7 @@ def partMap = [
 	'Clips':['def'],
 	'dxf_stuff':['car3','car4','car5','frozen1','frozen2','icecream','grass1','grass2','cherry1','cherry2','tree1','tree2','tree3','tree4','house1','house2','house3','people1','people2','people3','people4'],
 	'sound16_mount':		['simple'],
-	'mounts':		['rc522','sound16','hourglass','dingdong','dingdong2','keyb','speaker'],
+	'mounts':		['rc522','sound16','hourglass','dingdong','dingdong2','keyb','speaker','digitboard','melodyboard','b22fix'],
 	'run_light_case2':	['def'],
 	'run_light_case3':	['def'],
 	'penhold4_2017update':	['def'],
