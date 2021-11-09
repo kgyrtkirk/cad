@@ -5,3 +5,5 @@ src/*stl
 src/*svg
 src/*pdf
 bin
+build
+.gradle

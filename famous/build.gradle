@@ -1,0 +1,45 @@
+plugins {
+   id "de.undercouch.download" version "4.1.2"
+}
+apply plugin: "eclipse"
+
+task all() {
+}
+
+new File("images.csv").eachLine { line ->
+  def p = line.split("	")
+  if(p.length!=3) {
+    throw new RuntimeException("err:" + p)
+  }
+  def label = p[0]
+  def ext = p[2].replaceFirst(".*\\.","")
+  if(ext.size() > 4 ) {
+    throw new RuntimeException("invalid ext: " +ext)
+  }
+  def img=task("download_${label}",type: Download) {
+    src p[2]
+    dest new File(buildDir,"download/"+p[0]+"."+ext)
+    overwrite(false)
+    tempAndMove(true)
+  }
+  def qr=task("qr_${label}", type:Exec) {
+    def outFile=new File(buildDir,"qr/${label}.png")
+    commandLine 'qrencode','-o',outFile,'-m','1',p[1]
+    outputs.file(outFile)
+  }
+  def conv=task("conv_${label}", type:Exec) {
+    dependsOn img
+    dependsOn qr
+    def outFile=new File(buildDir,"conv/${label}.png")
+    outputs.file(outFile)
+    def cmd=['convert',img.outputs.files.singleFile]
+    cmd+=["-rotate","90<"]  // rotate to landscape
+    cmd+=['-gravity','center','-crop','3:2']
+    cmd+=['-resize','2500x2500']
+    cmd+=['(', qr.outputs.files.singleFile, '-scale','200%',')','-gravity','SouthEast','-geometry','+80+50','-composite']
+    // rotate to landscape
+    commandLine cmd+outFile
+  }
+  all.dependsOn conv
+}
+
