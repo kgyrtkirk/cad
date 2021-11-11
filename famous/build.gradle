@@ -1,10 +1,8 @@
 plugins {
    id "de.undercouch.download" version "4.1.2"
 }
-apply plugin: "eclipse"
 
-task all() {
-}
+def convTasks=[]
 
 new File("images.csv").eachLine { line ->
   def p = line.split("	")
@@ -34,12 +32,28 @@ new File("images.csv").eachLine { line ->
     outputs.file(outFile)
     def cmd=['convert',img.outputs.files.singleFile]
     cmd+=["-rotate","90<"]  // rotate to landscape
-    cmd+=['-gravity','center','-crop','3:2']
+    cmd+=['-gravity','center','-crop','3:2','+repage']
     cmd+=['-resize','2500x2500']
     cmd+=['(', qr.outputs.files.singleFile, '-scale','200%',')','-gravity','SouthEast','-geometry','+80+50','-composite']
-    // rotate to landscape
     commandLine cmd+outFile
   }
-  all.dependsOn conv
+  convTasks += conv
 }
 
+task all() {
+  dependsOn convTasks
+}
+
+/*
+task all(type:Exec) {
+  dependsOn convTasks
+  def inputs=dependsOn.collect { it.outputs.files.singleFile }
+  inputs.sort()
+  def outFile=new File(buildDir,"all.pdf")
+  def cmd=['convert']
+  cmd.addAll(inputs[0])
+  cmd+=outFile
+  println inputs.size()
+  commandLine cmd
+}
+*/
