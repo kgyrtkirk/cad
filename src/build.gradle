@@ -81,6 +81,7 @@ def partMap = [
 	'wire_guide':['5','8','10'],
 //	'bathroom_shelf':['render'],
 'drawing_shapes':['a6','a4','a3','a5','a360'],
+'babytaxi_steering_wheel':['def','preview'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
