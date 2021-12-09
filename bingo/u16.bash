@@ -38,6 +38,11 @@ function gen() {
 labels=( 🚀 🍒 🍕 🌙 🌟 🌂 🌣 🏠 🏀 🏁 🎥 🎤 🐌 🐝 👓 👻 💰 💡 📖 📎 📐 🖂 
 🖶 🗼 🌡 🍰 🍭 🚁 🚂 🚜 🛀 🚴 🛒 🛪 🛢 🛸 🛥 🚽 🛷 🥕 🥄 🤘 🌲 🌧 🌎 🍉 🎡 🎜 🎖 🎸 🎺 🎱 
 💊 💔 📞)
+
+#convert -background pink -font 'Symbola' -pointsize 60 -stroke black "label:`echo "${labels[@]}"|tr -d ' '`" out/preview.png
+#convert -background pink -font 'Monospace' -pointsize 60 -stroke black "label:`echo "${labels[@]}"|tr -d ' '`" out/preview.png
+#exit
+
 for((i=0;i<${#labels[@]};i++));do
 	gen $i "${labels[i]}"
 done
