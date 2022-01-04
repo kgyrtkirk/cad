@@ -84,6 +84,8 @@ def partMap = [
 'babytaxi_steering_wheel':['def','preview'],
 	'filament_holder':['def'],
 	'pipe_cup':['part'],
+	'seat_switch':['l','r'],
+	'hook':['def'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
