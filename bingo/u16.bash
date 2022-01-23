@@ -49,16 +49,21 @@ done
 
 
 s=30
+ss=60
 
+rm -rf out/doc out/page
+mkdir -p out/page out/doc
 for x in `seq 1 6`;do
 	echo "o$x"
 	for k in `seq 1 6`;do
-		montage `find out/s -type f |sort -R | head -n 16` -geometry +$s+$s out/a.$k.jpg
+		montage `find out/s -type f |sort -R | head -n 16` -geometry +$s+$s out/page/a.$k.jpg
 	done
-	montage out/a.* -frame $s -geometry +$s+$s out/o$x.pdf
+	montage out/page/a.* -frame $s -geometry +$ss+$ss out/doc/o$x.jpg
 done
 
 s=60
+
+convert out/doc/* out/all.pdf
 
 montage out/s/* -geometry ${a}x${a}+$s+$s out/grid.pdf
 

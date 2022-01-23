@@ -25,6 +25,7 @@ def partMap = [
 	'filament_roll_end':	['def'],
 	'nespresso-honeycomb':	['y1','y2','c1','c2'],
 	'toilet-hanger':	['def'],
+	'toilet-hanger-mizse':	['def'],
 	'toilet-storage':	['base','lid','full'],
 	'CarriageV3__AnetA8_E3Dv6_Mount_TNS': ['def'],
 	'wooden_train_trailer_car':['def'],
@@ -86,6 +87,7 @@ def partMap = [
 	'pipe_cup':['part'],
 	'seat_switch':['l','r'],
 	'hook':['def'],
+	'kx':['def'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
@@ -93,6 +95,7 @@ def partMap = [
 //}
 
 def projMap = [
+	'lanyok_galeria':		['proj'],
 	'matchbox_container':		['floor'],
 	'esp-gen-3':			['project'],
 //	'kitchen':			['mPiece', 'mFuszer', 'mFelso',

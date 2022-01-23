@@ -21,7 +21,7 @@ translate([-r,0,0])
 minkowski()
 {
 rotate(-A/2)
-rotate_extrude(angle=A,$fn=SS*10) {
+rotate_extrude(angle=A,$fn=SS*8) {
     W0=-2*W;
     translate([r,0])   {
         polygon([

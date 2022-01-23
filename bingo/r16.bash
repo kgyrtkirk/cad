@@ -53,12 +53,13 @@ for x in `seq 1 6`;do
 	for k in `seq 1 6`;do
 		montage `find out/s -type f |sort -R | head -n 16` -geometry +$s+$s out/a.$k.jpg
 	done
-	montage out/a.* -frame $s -geometry +$s+$s out/o$x.pdf
+	montage out/a.* -frame $s -geometry +$s+$s out/o$x.jpg
 done
 
 s=60
 
 montage out/s/* -geometry ${a}x${a}+$s+$s out/grid.pdf
+convert out/o*jpg out/all.pdf
 
 
 #  convert -size 100x60 xc:skyblue -fill white -stroke black \

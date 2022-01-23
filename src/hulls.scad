@@ -13,4 +13,12 @@ module hullPairs(pos,close=true){
     
 }
 
+module hullLine() {
+    for(o = [0:$children-2])  {
+        hull() {
+            children(o+0);
+            children(o+1);
+        }
+    }
+}
 
