@@ -1,10 +1,11 @@
 use <hulls.scad>
+use <syms.scad>
 use <furniture.scad>
 
 $fronts=true;
 $machines=true;
 $internal=true;
-$openDoors=true;
+$openDoors=false;
 $drawerState="CLOSED";
 
 $part=undef;
@@ -89,7 +90,44 @@ module hodaly(){
 }
 
 
-mode="cab";
+module aCab() {
+    C_H=1596-80;
+    
+    cabinet("CC",451,C_H,300,foot=80)
+        cTop()
+        
+        shelf(300,external=false)
+        shelf(600,external=false)
+        shelf(900,external=true)
+            doors("DOOR",cnt=2,C_H-900);
+}
+
+module bCab() {
+    C_W=755;
+    C_H=920-80;
+    cabinet("BCAB",C_W,C_H,380,foot=80)
+        cTop()
+        partition2(275+2*$W,C_H) {
+            shelf(C_H/3,external=false)
+            shelf(C_H*2/3,external=false);
+                doors("DOOR",cnt=1,C_H);
+        }
+}
+
+module dCab() {
+    C_W=515+2*$W;
+    C_H=665+80-20;
+    C_D=792-$W;
+    cabinet("DCAB",C_W,C_H,C_D,foot=20)
+        shelf(80,external=true)
+        doors("DOOR",cnt=1,155)
+//        drawer(155)
+        doors("DOOR",cnt=1,C_H-80-155);
+}
+
+
+
+mode="table30";
 
 if(mode=="cab") {
     posNeg()
@@ -99,6 +137,49 @@ if(mode=="cab") {
     translate([0,550,0])
     %cube([780,20,2000]);
 }
+
+if(mode=="cab30") {
+    scale(1/30)
+    posNeg()
+    ccornerCab();
+}
+
+if(mode=="a30") {
+    rotate(90,[1,0,0])
+    scale(1/30)
+    posNeg()
+    aCab();
+}
+
+if(mode=="b30") {
+    rotate(90,[1,0,0])
+    scale(1/30)
+    posNeg()
+    bCab();
+}
+
+if(mode=="d30") {
+    rotate(90,[1,0,0])
+    scale(1/30)
+    posNeg()
+    dCab();
+}
+
+if(mode=="table30") {
+    scale(1/30) {
+        A=550;
+        B=700;
+        H=525;
+        K=50;
+        O=K/2+30;
+        cube([A,B,$W],center=true);
+        symX([A/2-O,0,0])
+        symY([0,B/2-O,H/2])
+        cube([K,K,H],center=true);
+    }
+}
+
+
 
 if(mode=="shelves") {
     posNeg()

@@ -88,6 +88,8 @@ def partMap = [
 	'seat_switch':['l','r'],
 	'hook':['def'],
 	'kx':['def'],
+	'lanyok_szoba':['print'],
+	'gyerekszoba':['cab30','a30','b30','d30','table30'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->

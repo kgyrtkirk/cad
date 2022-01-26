@@ -558,11 +558,6 @@ module drawer(h) {
 
 
 //mode="zigzag";
-$W=18;
-$part=undef;
-$fronts=true;
-
-//mode="P-XY-Ct-XY";
 mode="zigzag";
 
 function substr(data, i, length=0) = (length == 0) ? _substr(data, i, len(data)) : _substr(data, i, length+i);
@@ -598,6 +593,11 @@ module zigzag(){
 }
 
 if(mode=="zigzag") {
+    $W=18;
+    $part=undef;
+    $fronts=true;
+
+//mode="P-XY-Ct-XY";
     zigzag();
 }
 
