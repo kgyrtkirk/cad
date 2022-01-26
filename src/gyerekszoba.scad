@@ -98,8 +98,8 @@ module aCab() {
         
         shelf(300,external=false)
         shelf(600,external=false)
-        shelf(900,external=true)
-            doors("DOOR",cnt=2,C_H-900);
+        shelf(900,external=true,alignTop=true)
+            doors("DOOR",cnt=1,C_H-900);
 }
 
 module bCab() {
@@ -117,17 +117,40 @@ module bCab() {
 module dCab() {
     C_W=515+2*$W;
     C_H=665+80-20;
-    C_D=792-$W;
+//    C_D=792-$W; //real
+    C_D=792-$W-2*$W;
     cabinet("DCAB",C_W,C_H,C_D,foot=20)
-        shelf(80,external=true)
+        shelf(80,external=true,alignTop=true)
         doors("DOOR",cnt=1,155)
 //        drawer(155)
         doors("DOOR",cnt=1,C_H-80-155);
 }
 
 
+    
+module bed() {
+    A=1800;
+    B=845;
+    
+    B2=B-4*$W;
+    H1=165+104;
+    H2=H1-$W-40;
+    
+    symX([(A)/2,-B/2,0])
+        eYZ("END",B,550);
+    symY([-A/2,B2/2,0])
+        eXZ("SIDE",A,H1);
+    ;
+    translate([-A/2,-B2/2,H2])
+    eXY("B",A,B2);
+    
+    translate([$W/2,-B2/2,0])
+    eYZ("I",B2,H2);
+    
+}
 
-mode="table30";
+
+mode="d30";
 
 if(mode=="cab") {
     posNeg()
@@ -177,6 +200,12 @@ if(mode=="table30") {
         symY([0,B/2-O,H/2])
         cube([K,K,H],center=true);
     }
+}
+
+if(mode=="bed30") {
+    scale(1/30)
+    posNeg()
+    bed();
 }
 
 

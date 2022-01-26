@@ -454,16 +454,17 @@ module m60_0(sizes) {
 }
 
     
-module shelf(h,SHELF_INSET=12,external=false) {
+module shelf(h,SHELF_INSET=12,external=false,alignTop=false) {
 
     BACK_WIDTH=4;
     
     depth=$d-BACK_WIDTH-(external?0:SHELF_INSET);
     w=$w-2*$W;
     color([0,1,1])
-    translate([$W,BACK_WIDTH,-h])
+    translate([$W,BACK_WIDTH,-h-(alignTop?$W:0)])
     eXY(str($name,"-S",external?"-EX":"-IN",w),w,depth);
     
+
     translate([0,0,external?-h:0])
     children();
 }
