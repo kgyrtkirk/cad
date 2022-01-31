@@ -115,8 +115,8 @@ module bunkBed() {
     mat();
     
     
-    translate([MAT_L+$W+$W,0,0])
-    cabinet("CAB",C_W,C_H,D-$W,foot=0)
+    translate([MAT_L+$W+$W,0,-0])
+    cabinet("CAB",C_W,C_H,D-$W,foot=0,extraHR=MAT_BOTTOM_SPACE,fullBack=true)
         cBeams()
         shelf(400,external=false,alignTop=true)
         doors("DOOR",cnt=1,400)
@@ -126,7 +126,7 @@ module bunkBed() {
         drawer(300)
     ;
     translate([C_W,0,C_H])
-    bedFrame("BED_U",MAT_L,MAT_W,MAT_BOTTOM_SPACE,MAT_SINK);
+    bedFrame("BED_U",MAT_L,MAT_W,MAT_BOTTOM_SPACE+$W+MAT_SINK,MAT_SINK);
 
 
 //    translate([0,0,200])
@@ -151,7 +151,8 @@ if(mode=="real") {
     difference() {
         posNeg()
         bunkBed();
-        
+      
+      translate([14500,0,0])  
         cube([5000,800,5000],center=true);
     }
 }

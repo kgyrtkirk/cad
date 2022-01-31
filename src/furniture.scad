@@ -149,35 +149,45 @@ module space(h) {
         children();
 }
 
-module cabinet(name,w,h,d,foot=0) {
+module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0) {
+    dBack=fullBack?$W:0;
+
     $name=name;
     $w=w;
     $h=h+foot;
-    $d=d;
-    
-    eYZ(name,d,h+foot);
-    translate([w-$W,0,0])
-    eYZ(name,d,h+foot);
-    
-    if(foot>0) {
-        translate([$W,d-2*$W,0])
-        eXZ(name,w-2*$W,foot);
+    $d=d-dBack;
+
+    if(fullBack) {
+        translate([0,0])
+        eXZ(str(name,"-Fback"),w,h);
+    }else {
+        if($positive) {
+            bw=w-15;
+            bh=h-15;
+            color([1,0,0])
+            translate([7.5,3,foot+7.5])
+            cube([bw,1,bh]);
+            echo(str(name,"-back"),str(bh,"x",bw));
+        }
     }
-    
-    translate([$W,0,foot])
-    eXY(name,w-2*$W,d);
-    
-    if($positive) {
-        bw=w-15;
-        bh=h-15;
-        color([1,0,0])
-        translate([7.5,3,foot+7.5])
-        cube([bw,1,bh]);
-        echo(str(name,"-back"),str(bh,"x",bw));
+
+    translate([0,dBack,0]) {
+        eYZ(name,$d,h+foot+extraHR);
+        translate([w-$W,0,0])
+        eYZ(name,$d,h+foot+extraHL);
+        
+        
+        if(foot>0) {
+            translate([$W,d-2*$W,0])
+            eXZ(name,w-2*$W,foot);
+        }
+        
+        translate([$W,0,foot])
+        eXY(name,w-2*$W,d);
+
+        translate([0,0,$h])
+        children();
     }
-    
-    translate([0,0,$h])
-    children();
 }
 
 
