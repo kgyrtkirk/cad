@@ -6,7 +6,6 @@ mode="real";
 
 $showParts=(mode!="print");
 
-
 printScale=1/30;
 
 printMM=1/printScale;
@@ -42,13 +41,18 @@ module door(w,h,iw,ih,frame) {
 }
 
 module radiator(width,height,depth,thx,thy,thh) {
+    module hanger() {
+        translate([-depth*2/3,width/4,0])
+        cube([depth,width/2,height/2]);
+    }
+    
+    
     if($positive) {
         if($showParts) {
             
             cube([depth,width,height]);
             
-            translate([-depth*2/3,width/4,0])
-            cube([depth,width/2,height/2]);
+            hanger();
             
             // thermo crap
             hull() {
@@ -65,8 +69,9 @@ module radiator(width,height,depth,thx,thy,thh) {
             cylinder(d=40,h=depth/2+thh);
         }
     } else {
-        translate([-depth*2/3,width/4,0])
-        cube([depth,width/2,height/2]);
+        if(!$showParts) {
+            hanger();
+        }
     }
 }
 
@@ -114,6 +119,9 @@ module wallOutlet2() {
     ePiece(100,60,50);
 }
 
+module customRadiator() {
+    radiator(605,600,100,-35,570,60);
+}
 
 module kidsRoom() {
     $roomHeight=2625;
@@ -148,7 +156,7 @@ module kidsRoom() {
         door(980,$roomHeight-450,800,2000,-30);
         
         translate([30,1043-605,200])
-        radiator(605,600,100,-35,570,60);
+        customRadiator();
         
         {
             // reality 22; for preview use bigger
@@ -189,8 +197,18 @@ module szonyeg() {
     cube([1500,2000,10]);
 }
 
-s=(mode=="print")?1/30:1;
 
-scale(s)
-posNeg()
-kidsRoom();
+if(mode=="print" || mode=="real") {
+    s=(mode=="print")?printScale:1;
+    scale(s)
+    posNeg()
+    kidsRoom();
+}
+
+if(mode=="radiator" ) {
+    scale(printScale)
+    rotate(-90,[0,1,0])
+    posNeg()
+    customRadiator();
+}
+

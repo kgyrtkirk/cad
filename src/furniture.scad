@@ -356,6 +356,19 @@ module cTop() {
     children();
 }
 
+module frame(name, w, l, h) {
+    eYZ(str(name,"-F"),w+2*$W,h);
+    
+    translate([l+$W,0,0])
+    eYZ(str(name,"-F"),w+2*$W,h);
+    
+    translate([$W,0,0])
+    eXZ(str(name,"-S"),l,h);
+    translate([$W,w+$W,0])
+    eXZ(str(name,"-S"),l,h);
+    
+    
+}
 
 module m60_0(sizes) {
     FRONT_SP=2;
