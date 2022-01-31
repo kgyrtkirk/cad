@@ -19,9 +19,11 @@ module bedFrame(name,l,w,h,sink,xh2=-1) {
     h2=(xh2<0)?h:xh2;
     q=h2-h;
     
+color([0,1,0    ])
     translate([0,0,-q])
     eYZ(str(name,"-F"),w+2*$W,h2);
     
+color([0,1,0    ])
     translate([0,0,-q])
     translate([l+$W,0,0])
     eYZ(str(name,"-F"),w+2*$W,h2);
@@ -45,8 +47,10 @@ module bedFrame(name,l,w,h,sink,xh2=-1) {
 }
 
 module mat() {
-    color([1,1,1,.3])
-    cube([1800,800,100]);
+    if($machines && $positive) {
+        color([1,1,1,.3])
+        cube([1800,800,100]);
+    }
 }
 
 module bedDrawer(width,depth,height) {
@@ -84,7 +88,7 @@ module bedDrawer(width,depth,height) {
 
 module bunkBed() {
     C_W=500;
-    C_H=1300;
+    C_H=1450;
     D=800+2*$W;
     
     MAT_L=1800;
@@ -93,14 +97,21 @@ module bunkBed() {
     
     MAT_SINK=40;
     MAT_BOTTOM_SPACE=20;
+    MAT_BOTTOM_SPACE_U=100;
+    
+    LADDER_WIDTH=400;
 //    MAT_BOTTOM_SPACE=MAT_D-MAT_SINK-$W;
     
 //    BL_TOP=50+$W+$W+100+200;
     BL_DRAWER=150;
     BL_TOP=BL_DRAWER+MAT_BOTTOM_SPACE+$W+MAT_D+$W+MAT_SINK;
+    
 
-    echo("sit-inh",BL_TOP);
 
+    echo("sit-inh",C_H-BL_TOP);
+    MAT_Z2=C_H+MAT_BOTTOM_SPACE_U+$W+MAT_D;
+    echo("sit-inh2",2626-MAT_Z2);
+    echo("MAT_Z2",MAT_Z2);
     
     translate([$W,($openDoors?D:0)+$W,0]) {
         bedDrawer(MAT_L/2,MAT_W,BL_DRAWER);
@@ -109,41 +120,90 @@ module bunkBed() {
         bedDrawer(MAT_L/2,MAT_W,BL_DRAWER);
     }
 
-    
-    translate([2450,0,0])
-    rotate(-90,[0,1,0])
-    mat();
-    
-    
     translate([MAT_L+$W+$W,0,-0])
-    cabinet("CAB",C_W,C_H,D-$W,foot=0,extraHR=MAT_BOTTOM_SPACE,fullBack=true)
+    cabinet("CAB",C_W,C_H,D-$W,foot=0,extraHR=MAT_BOTTOM_SPACE_U,fullBack=true)
         cBeams()
-        shelf(400,external=false,alignTop=true)
-        doors("DOOR",cnt=1,400)
+//        shelf(400,external=false,alignTop=true)
+  //      doors("DOOR",cnt=1,400)
+        drawer(150)
+        drawer(200)
+        drawer(200)
         drawer(200)
         drawer(200)
         drawer(200)
         drawer(300)
     ;
     translate([C_W,0,C_H])
-    bedFrame("BED_U",MAT_L,MAT_W,MAT_BOTTOM_SPACE+$W+MAT_SINK,MAT_SINK);
+    bedFrame("BED_U",MAT_L,MAT_W,MAT_BOTTOM_SPACE_U+$W+MAT_SINK,MAT_SINK);
 
 
 //    translate([0,0,200])
     translate([0,0,BL_DRAWER])
     bedFrame("BED_L",MAT_L,MAT_W,BL_TOP-BL_DRAWER,$W+MAT_D+MAT_SINK,BL_TOP);
     
-    translate([$W,0,BL_TOP-MAT_SINK])
-        mat();
-    translate([$W,0,BL_TOP-MAT_SINK-$W-MAT_D])
-        mat();
-   
     
+    color([0,0,1])
     translate([C_W,0,BL_TOP])
-    eXZ("Iback",400,C_H-BL_TOP);
-
+    eXZ("Iback",LADDER_WIDTH,C_H-BL_TOP);
+    
+    module ladder(w,h,n) {
+        step_w=w/2;
+        step_x=w/4;
+        step_h=h/(2*n-1);
+        step_dz=(h-step_h)/(n-1);
+        
+        echo("step_DZ",step_dz);
+        echo("step_H",step_h);
+        if($positive) {
+            difference() {
+                eXZ("ladder",w,h);
+                for(i=[0:n-1])
+                translate([step_x,-4*$W,step_dz*i])
+                cube([step_w,10*$W,step_h]);
+            }
+        }
+        for(i=[0:n-1]) {
+            translate([step_x,-$W,step_dz*i])
+            eXY("ladder-step",step_w,3*$W);
+        }
+        
+    }
+    
+    
     translate([C_W,D-$W,BL_TOP])
-    eXZ("Iback",400,C_H-BL_TOP);
+    ladder(LADDER_WIDTH,C_H-BL_TOP,4);
+    
+    
+    module bottomShelves(l,depth) {
+        translate([-depth,0,0])
+        eXY("botShelve1",l+depth,depth);
+    }
+
+    translate([C_W+LADDER_WIDTH,$W,BL_TOP]) {
+        OVERLAP=100;
+        L0=MAT_L+$W+$W-C_W-LADDER_WIDTH+OVERLAP;
+        
+        translate([-OVERLAP,0,600])
+        bottomShelves(L0,100);
+        translate([-OVERLAP,0,800])
+        bottomShelves(L0,150);
+        translate([-OVERLAP,0,1000])
+        bottomShelves(L0,200);
+    }
+
+/*    
+    translate([2450,0,0])
+    rotate(-90,[0,1,0])
+        mat();
+    */
+    translate([$W,$W,BL_TOP-MAT_SINK])
+        mat();
+    translate([$W,$W,BL_TOP-MAT_SINK-$W-MAT_D])
+        mat();
+    translate([$W+C_W,$W,C_H+MAT_BOTTOM_SPACE_U+$W])
+        mat();
+    
+    
 
 }
 
