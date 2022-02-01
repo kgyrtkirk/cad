@@ -556,6 +556,7 @@ module drawer(h) {
 //                translate([0,$d,-h+$W])
   //          eXZ("DF",ww,hh);
         }
+        if($drawerBoxes) {
         translate([qx,-$W,qz])
         eXZ(str(name,"A"),ix,iz);
         translate([qx,-id,qz])
@@ -571,6 +572,7 @@ module drawer(h) {
         translate([qx,-id,qz-3])
         cube([ix,id,3]);
         echo(str(name,"Fl"),str(ix,"x",id));
+        }
         
         
     }

@@ -4,9 +4,12 @@ use <furniture.scad>
 
 $fronts=true;
 $machines=true;
-$internal=true;
+$internal=false;
 $openDoors=false;
 $drawerState="CLOSED";
+$drawerBoxes=false;
+$cheat=false;
+
 
 $part=undef;
 
@@ -105,20 +108,26 @@ module bunkBed() {
 //    BL_TOP=50+$W+$W+100+200;
     BL_DRAWER=150;
     BL_TOP=BL_DRAWER+MAT_BOTTOM_SPACE+$W+MAT_D+$W+MAT_SINK;
-    
 
+    BH_TOP=C_H+MAT_BOTTOM_SPACE_U+$W+MAT_SINK;
 
     echo("sit-inh",C_H-BL_TOP);
     MAT_Z2=C_H+MAT_BOTTOM_SPACE_U+$W+MAT_D;
     echo("sit-inh2",2626-MAT_Z2);
     echo("MAT_Z2",MAT_Z2);
     
-    translate([$W,($openDoors?D:0)+$W,0]) {
-        bedDrawer(MAT_L/2,MAT_W,BL_DRAWER);
+    
+    if(true) {
+        OFF_Y=$cheat?0:$W;
+        BEDDRAWER_W=MAT_W+$W-OFF_Y;
+        
+    translate([$W,($openDoors?D:0)+OFF_Y,0]) {
+        bedDrawer(MAT_L/2,BEDDRAWER_W,BL_DRAWER);
     }
-    translate([MAT_L/2+$W,($openDoors?D:0)+$W,0]) {
-        bedDrawer(MAT_L/2,MAT_W,BL_DRAWER);
+    translate([MAT_L/2+$W,($openDoors?D:0)+OFF_Y,0]) {
+        bedDrawer(MAT_L/2,BEDDRAWER_W,BL_DRAWER);
     }
+}
 
     translate([MAT_L+$W+$W,0,-0])
     cabinet("CAB",C_W,C_H,D-$W,foot=0,extraHR=MAT_BOTTOM_SPACE_U,fullBack=true)
@@ -173,7 +182,6 @@ module bunkBed() {
     translate([C_W,D-$W,BL_TOP])
     ladder(LADDER_WIDTH,C_H-BL_TOP,4);
     
-    
     module bottomShelves(l,depth) {
         translate([-depth,0,0])
         eXY("botShelve1",l+depth,depth);
@@ -190,6 +198,58 @@ module bunkBed() {
         translate([-OVERLAP,0,1000])
         bottomShelves(L0,200);
     }
+    
+    module topRails() {
+        I_W=100;
+        I_H=150;
+        B_H=100;
+        //neessenekki
+        w=MAT_W+2*$W;
+        l=MAT_L+2*$W;
+        lw=LADDER_WIDTH;
+        X=MAT_L+$W;
+        Y=MAT_W+$W;
+
+
+        for(y=[w/3,w*2/3,w])
+        translate([0,y-I_W,0]) {
+            translate([X,0,0])
+            eYZ("BARR-I",I_W,I_H);
+            eYZ("BARR-I",I_W,I_H);
+        }
+
+        for(x=[0:(l-I_W)/5:l-I_W]) 
+        translate([x,0,0]) {
+            color([1,0,0])
+            eXZ("BARR-I",I_W,I_H);
+        }
+
+        for(x=[0:(l-I_W-lw)/4:l-I_W-lw]) 
+        translate([x+lw,Y,0]) {
+            eXZ("BARR-I",I_W,I_H);
+        }
+
+        translate([0,0,I_H]){
+            eXZ("BARR-B",l,B_H);
+
+            translate([lw,Y,0])
+            eXZ("BARR-F",l-lw,B_H);
+
+            translate([0,$W,0])
+            eYZ("BARR-SR",MAT_W+$W,B_H);
+
+            translate([X,$W,0])
+            eYZ("BARR-SL",MAT_W,B_H);
+
+        }
+        
+//        translate([lw,y,0])
+  //      eXZ("a",1000,1000);
+
+        
+    }
+    translate([C_W,0,BH_TOP])
+    topRails();
 
 /*    
     translate([2450,0,0])
@@ -218,6 +278,8 @@ if(mode=="real") {
 }
 
 if(mode=="s30") {
+    $machines=false;
+    $cheat=true;
     rotate(90,[1,0,0])
     scale(1/30)
     posNeg()
