@@ -7,7 +7,7 @@ $machines=true;
 $internal=false;
 $openDoors=false;
 $drawerState="CLOSED";
-$drawerBoxes=false;
+$drawerBoxes=true;
 $cheat=false;
 
 
@@ -22,14 +22,14 @@ module bedFrame(name,l,w,h,sink,xh2=-1) {
     h2=(xh2<0)?h:xh2;
     q=h2-h;
     
-color([0,1,0    ])
-    translate([0,0,-q])
-    eYZ(str(name,"-F"),w+2*$W,h2);
+    color([0,1,0    ])
+    translate([0,$W,-q])
+    eYZ(str(name,"-F"),w,h2);
     
-color([0,1,0    ])
-    translate([0,0,-q])
+    color([0,1,0    ])
+    translate([0,$W,-q])
     translate([l+$W,0,0])
-    eYZ(str(name,"-F"),w+2*$W,h2);
+    eYZ(str(name,"-F"),w,h2);
     
     if(xh2>0) {
         translate([0,0,-q])
@@ -38,10 +38,10 @@ color([0,1,0    ])
     }
     
 
-    translate([$W,0,0])
-    eXZ(str(name,"-S"),l,h);
-    translate([$W,w+$W,0])
-    eXZ(str(name,"-S"),l,h);
+    translate([0,0,0])
+    eXZ(str(name,"-S"),l+2*$W,h);
+    translate([0,w+$W,0])
+    eXZ(str(name,"-S"),l+2*$W,h);
     
     translate([$W,$W,h-$W-sink])
     eXY(str(name,"-BOT"),l,w);
@@ -121,16 +121,17 @@ module bunkBed() {
         OFF_Y=$cheat?0:$W;
         BEDDRAWER_W=MAT_W+$W-OFF_Y;
         
-    translate([$W,($openDoors?D:0)+OFF_Y,0]) {
-        bedDrawer(MAT_L/2,BEDDRAWER_W,BL_DRAWER);
+    translate([0,($openDoors?D:0)+OFF_Y,0]) {
+        bedDrawer(MAT_L/2+$W,BEDDRAWER_W,BL_DRAWER);
     }
     translate([MAT_L/2+$W,($openDoors?D:0)+OFF_Y,0]) {
-        bedDrawer(MAT_L/2,BEDDRAWER_W,BL_DRAWER);
+        bedDrawer(MAT_L/2+$W,BEDDRAWER_W,BL_DRAWER);
     }
 }
 
+    FOOT=10;
     translate([MAT_L+$W+$W,0,-0])
-    cabinet("CAB",C_W,C_H,D-$W,foot=0,extraHR=MAT_BOTTOM_SPACE_U,fullBack=true)
+    cabinet("CAB",C_W,C_H-FOOT,D-$W,foot=FOOT,extraHR=MAT_BOTTOM_SPACE_U,fullBack=true)
         cBeams()
 //        shelf(400,external=false,alignTop=true)
   //      doors("DOOR",cnt=1,400)
@@ -140,7 +141,7 @@ module bunkBed() {
         drawer(200)
         drawer(200)
         drawer(200)
-        drawer(300)
+        drawer(290)
     ;
     translate([C_W,0,C_H])
     bedFrame("BED_U",MAT_L,MAT_W,MAT_BOTTOM_SPACE_U+$W+MAT_SINK,MAT_SINK);

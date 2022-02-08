@@ -27,17 +27,60 @@ module ppp(name,dims="") {
 }
 
 
+module ppp2(name,dims="") {
+    if($positive)
+        echo(name,dims);
+    if($positive)
+    if($part==undef || $part==name) {
+        children();
+    }
+}
+
+
 module eXY(name, dX, dY) {
     ppp(str(name,"XY"),str(dX,"x",dY))
         cube([dX,dY,$W]);
 }
 
+module plain(name,w0,h0,closeL,closeR,closeU,closeD) {
+    a=2;
+    x = closeL ? a : 0;
+    y = closeD ? a : 0;
+    w = w0 - x - (closeR?2:0);
+    h = h0 - y - (closeU?2:0);
+    translate([x,y,0]) {
+        cube([w,h,$W]);
+        color([1,0,0]) {
+            if(closeL) {
+                translate([-a,0,0])
+                cube([a,h,$W]);
+            }
+            if(closeR) {
+                translate([w,0,0])
+                cube([a,h,$W]);
+            }
+            if(closeD) {
+                translate([0,-a,0])
+                cube([w,a,$W]);
+            }
+            if(closeU) {
+                translate([0,h,0])
+                cube([w,a,$W]);
+            }
+        }
+    }
+}
+
 module eYZ(name, dY, dZ) {
-    ppp(str(name,"YZ"),str(dY,"x",dZ))
+    ppp(str(name,"YZ"),str(dY,"x",dZ)){
+/*        rotate(90,[0,0,1])
+        rotate(90,[1,0,0])
+        plain(str(name,"YZ"),dY,dZ,true,true,true,true);*/
         cube([$W,dY,dZ]);
+    }
 }
 module eXZ(name, dX, dZ) {
-    ppp(str(name,"XZ"),str(dZ,"x",dX))
+    ppp2(str(name,"XZ"),str(dZ,"x",dX))
         cube([dX,$W,dZ]);
 }
 
@@ -158,8 +201,8 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0) {
     $d=d-dBack;
 
     if(fullBack) {
-        translate([0,0])
-        eXZ(str(name,"-Fback"),w,h);
+        translate([0,-100])
+        eXZ(str(name,"-Fback"),w,h+foot);
     }else {
         if($positive) {
             bw=w-15;
@@ -532,7 +575,7 @@ module drawer(h) {
     ww=$w-FRONT_SP;
     hh=h-FRONT_SP;
     
-    qx=$W+26/2;
+    qx=$W+12.7;
     qz=2*$W;
     
     ix=$w-2*qx;
@@ -622,6 +665,7 @@ if(mode=="zigzag") {
     $W=18;
     $part=undef;
     $fronts=true;
+    $openDoors=true;
 
 //mode="P-XY-Ct-XY";
     zigzag();

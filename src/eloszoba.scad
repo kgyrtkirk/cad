@@ -6,9 +6,9 @@ use <kitchen_box.scad>
 $fronts=true;
 
 $machines=true;
-$internal=true;
 $openDoors=true;
 $drawerState="CLOSED";
+$drawerBoxes=true;
 
 $part=undef;
 
