@@ -5,6 +5,13 @@ function sublist(l,start)=start<len(l) ? [for(i=[start:len(l)-1])  l[i]] : undef
 function prefix(s,p)=(p==undef || len(p)==0)?[]:concat([s+p[0]], prefix(s+p[0],sublist(p,1)) );
 
 module posNeg() {
+    $closeBack=false;
+    $closeFront=false;
+    $closeTop=false;
+    $closeBottom=false;
+    $closeLeft=false;
+    $closeRight=false;
+
     difference() {
         union(){
         $positive=true;
@@ -37,10 +44,6 @@ module ppp2(name,dims="") {
 }
 
 
-module eXY(name, dX, dY) {
-    ppp(str(name,"XY"),str(dX,"x",dY))
-        cube([dX,dY,$W]);
-}
 
 module plain(name,w0,h0,closeL,closeR,closeU,closeD) {
     a=2;
@@ -71,17 +74,28 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD) {
     }
 }
 
+function toBool(v)=(v==undef? false : v );
+
+module eXY(name, dX, dY) {
+    ppp2(str(name,"XY"),str(dX,"x",dY))
+    //    cube([dX,dY,$W]);
+      plain(str(name,"XY"),dX,dY,toBool($closeRight),toBool($closeLeft),toBool($closeFront),toBool($closeBack));
+}
+
 module eYZ(name, dY, dZ) {
-    ppp(str(name,"YZ"),str(dY,"x",dZ)){
-/*        rotate(90,[0,0,1])
+    ppp2(str(name,"YZ"),str(dY,"x",dZ)){
+        rotate(90,[0,0,1])
         rotate(90,[1,0,0])
-        plain(str(name,"YZ"),dY,dZ,true,true,true,true);*/
-        cube([$W,dY,dZ]);
+        plain(str(name,"YZ"),dY,dZ,toBool($closeBack),toBool($closeFront),toBool($closeTop),toBool($closeBottom));
+//        cube([$W,dY,dZ]);
     }
 }
 module eXZ(name, dX, dZ) {
     ppp2(str(name,"XZ"),str(dZ,"x",dX))
-        cube([dX,$W,dZ]);
+        translate([0,$W,0])
+        rotate(90,[1,0,0])
+        plain(str(name,"XZ"),dX,dZ,toBool($closeRight),toBool($closeLeft),toBool($closeTop),toBool($closeBottom));
+//        cube([dX,$W,dZ]);
 }
 
 module eXY2(name, dX, dY, dY2=undef) {
@@ -202,7 +216,8 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0) {
 
     if(fullBack) {
         translate([0,-100])
-        eXZ(str(name,"-Fback"),w,h+foot);
+        eXZ($closeLeft=true,$closeRight=true,$closeTop=true,$closeBottom=true,
+            str(name,"-Fback"),w,h+foot);
     }else {
         if($positive) {
             bw=w-15;
@@ -215,18 +230,23 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0) {
     }
 
     translate([0,dBack,0]) {
-        eYZ(name,$d,h+foot+extraHR);
-        translate([w-$W,0,0])
-        eYZ(name,$d,h+foot+extraHL);
-        
-        
-        if(foot>0) {
-            translate([$W,d-2*$W,0])
-            eXZ(name,w-2*$W,foot);
+        {
+            $closeTop=true;
+            $closeBottom=true;
+            $closeFront=true;
+            eYZ(name,$d,h+foot+extraHR);
+            translate([w-$W,0,0])
+            eYZ(name,$d,h+foot+extraHL);
+            
+            
+            if(foot>0) {
+                translate([$W,d-2*$W,0])
+                eXZ(name,w-2*$W,foot);
+            }
+            
+            translate([$W,0,foot])
+            eXY(name,w-2*$W,$d);
         }
-        
-        translate([$W,0,foot])
-        eXY(name,w-2*$W,d);
 
         translate([0,0,$h])
         children();
@@ -607,11 +627,11 @@ module drawer(h) {
 
         translate([qx,-id+$W,qz])
         eYZ(str(name,"B"),id-2*$W,iz);
-        color([0,1,0])
+//        color([0,1,0])
         translate([$w-$W-qx,-id+$W,qz])
         eYZ(str(name,"B"),id-2*$W,iz);
         
-        color([1,0,0])
+//        color([1,0,0])
         translate([qx,-id,qz-3])
         cube([ix,id,3]);
         echo(str(name,"Fl"),str(ix,"x",id));

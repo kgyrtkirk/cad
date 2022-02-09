@@ -6,7 +6,7 @@ $fronts=true;
 $machines=true;
 $internal=false;
 $openDoors=false;
-$drawerState="CLOSED";
+$drawerState="OPEN";
 $drawerBoxes=true;
 $cheat=false;
 
@@ -19,14 +19,16 @@ mode="real";
 
 
 module bedFrame(name,l,w,h,sink,xh2=-1) {
+    $closeTop=true;
+    $closeBottom=true;
+    $closeLeft=true;
+    $closeRight=true;
     h2=(xh2<0)?h:xh2;
     q=h2-h;
     
-    color([0,1,0    ])
     translate([0,$W,-q])
     eYZ(str(name,"-F"),w,h2);
     
-    color([0,1,0    ])
     translate([0,$W,-q])
     translate([l+$W,0,0])
     eYZ(str(name,"-F"),w,h2);
@@ -92,11 +94,12 @@ module bedDrawer(width,depth,height) {
 module bunkBed() {
     C_W=500;
     C_H=1450;
-    D=800+2*$W;
     
     MAT_L=1800;
-    MAT_W=800;
+    MAT_W=810;
     MAT_D=100;
+
+    D=MAT_W+2*$W;
     
     MAT_SINK=40;
     MAT_BOTTOM_SPACE=20;
@@ -164,7 +167,22 @@ module bunkBed() {
         
         echo("step_DZ",step_dz);
         echo("step_H",step_h);
+        
+        $closeLeft=true;
+        $closeRight=true;
+        
+        eXZ("L_SIDE",step_x,h);
+        translate([w-step_x,0,0])
+        eXZ("L_SIDE",step_x,h);
+
+        for(i=[1:n-1])
+        translate([step_x,0,step_dz*i-step_h])
+        eXZ($closeLeft=false, $closeRight=false,$closeBottom=true,
+            "L_CENT",step_w,step_h);
+
+        
         if($positive) {
+            if(false)
             difference() {
                 eXZ("ladder",w,h);
                 for(i=[0:n-1])
