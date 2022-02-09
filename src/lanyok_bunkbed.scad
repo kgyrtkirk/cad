@@ -19,10 +19,7 @@ mode="real";
 
 
 module bedFrame(name,l,w,h,sink,xh2=-1) {
-    $closeTop=true;
-    $closeBottom=true;
-    $closeLeft=true;
-    $closeRight=true;
+    $close="LROU";
     h2=(xh2<0)?h:xh2;
     q=h2-h;
     
@@ -168,19 +165,16 @@ module bunkBed() {
         echo("step_DZ",step_dz);
         echo("step_H",step_h);
         
-        $closeLeft=true;
-        $closeRight=true;
         
-        eXZ("L_SIDE",step_x,h);
+        eXZ("L_SIDE",step_x,h,$close="lRou");
         translate([w-step_x,0,0])
-        eXZ("L_SIDE",step_x,h);
+        eXZ("L_SIDE",step_x,h,$close="Lrou");
 
         for(i=[1:n-1])
         translate([step_x,0,step_dz*i-step_h])
-        eXZ($closeLeft=false, $closeRight=false,$closeBottom=true,
+        eXZ($close="lroU",
             "L_CENT",step_w,step_h);
 
-        
         if($positive) {
             if(false)
             difference() {

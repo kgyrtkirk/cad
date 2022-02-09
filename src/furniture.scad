@@ -5,6 +5,7 @@ function sublist(l,start)=start<len(l) ? [for(i=[start:len(l)-1])  l[i]] : undef
 function prefix(s,p)=(p==undef || len(p)==0)?[]:concat([s+p[0]], prefix(s+p[0],sublist(p,1)) );
 
 module posNeg() {
+    $close="";
     $closeBack=false;
     $closeFront=false;
     $closeTop=false;
@@ -47,28 +48,28 @@ module ppp2(name,dims="") {
 
 module plain(name,w0,h0,closeL,closeR,closeU,closeD) {
     a=2;
-    x = closeL ? a : 0;
-    y = closeD ? a : 0;
-    w = w0 - x - (closeR?2:0);
-    h = h0 - y - (closeU?2:0);
+    x = closeL;
+    y = closeD;
+    w = w0 - x - closeR;
+    h = h0 - y - closeU;
     translate([x,y,0]) {
         cube([w,h,$W]);
         color([1,0,0]) {
-            if(closeL) {
-                translate([-a,0,0])
-                cube([a,h,$W]);
+            if(closeL>0) {
+                translate([-closeL,0,0])
+                cube([closeL,h,$W]);
             }
-            if(closeR) {
+            if(closeR>0) {
                 translate([w,0,0])
-                cube([a,h,$W]);
+                cube([closeR,h,$W]);
             }
-            if(closeD) {
-                translate([0,-a,0])
-                cube([w,a,$W]);
+            if(closeD>0) {
+                translate([0,-closeD,0])
+                cube([w,closeD,$W]);
             }
-            if(closeU) {
+            if(closeU>0) {
                 translate([0,h,0])
-                cube([w,a,$W]);
+                cube([w,closeU,$W]);
             }
         }
     }
@@ -79,14 +80,31 @@ function toBool(v)=(v==undef? false : v );
 module eXY(name, dX, dY) {
     ppp2(str(name,"XY"),str(dX,"x",dY))
     //    cube([dX,dY,$W]);
-      plain(str(name,"XY"),dX,dY,toBool($closeRight),toBool($closeLeft),toBool($closeFront),toBool($closeBack));
+      plain(str(name,"XY"),dX,dY,cLookupR(),cLookupL(),cLookupF(),cLookupA());
+//      plain(str(name,"XY"),dX,dY,toBool($closeRight),toBool($closeLeft),toBool($closeFront),toBool($closeBack));
 }
+
+
+
+function cLookup(s,key,value) = len(search(key, s))>0 ? value : 0;
+
+function cLookup2(s,k1,v1,k2,v2) = cLookup(s,k1,v1) + cLookup(s,k2,v2);
+
+function cLookupX(s, k1, k2) = cLookup2(s,k1,.4,k2,2);
+
+function cLookupL() = cLookupX($close, "l", "L");
+function cLookupR() = cLookupX($close, "r", "R");
+function cLookupF() = cLookupX($close, "f", "F");
+function cLookupA() = cLookupX($close, "b", "B");
+function cLookupT() = cLookupX($close, "o", "O");
+function cLookupB() = cLookupX($close, "u", "U");
 
 module eYZ(name, dY, dZ) {
     ppp2(str(name,"YZ"),str(dY,"x",dZ)){
         rotate(90,[0,0,1])
         rotate(90,[1,0,0])
-        plain(str(name,"YZ"),dY,dZ,toBool($closeBack),toBool($closeFront),toBool($closeTop),toBool($closeBottom));
+        plain(str(name,"YZ"),dY,dZ,cLookupA(),cLookupF(),cLookupT(),cLookupB());
+//        plain(str(name,"YZ"),dY,dZ,toBool($closeBack),cLookupF(),toBool($closeTop),toBool($closeBottom));
 //        cube([$W,dY,dZ]);
     }
 }
@@ -94,7 +112,8 @@ module eXZ(name, dX, dZ) {
     ppp2(str(name,"XZ"),str(dZ,"x",dX))
         translate([0,$W,0])
         rotate(90,[1,0,0])
-        plain(str(name,"XZ"),dX,dZ,toBool($closeRight),toBool($closeLeft),toBool($closeTop),toBool($closeBottom));
+        plain(str(name,"XZ"),dX,dZ,cLookupR(),cLookupL(),cLookupT(),cLookupB());
+//        plain(str(name,"XZ"),dX,dZ,toBool($closeRight),toBool($closeLeft),toBool($closeTop),toBool($closeBottom));
 //        cube([dX,$W,dZ]);
 }
 
@@ -669,8 +688,9 @@ if(mode[0] == "P" && mode[1]=="-") {
 
 module zigzag(){
 //    module cabinet(name,w,h,d,foot=0) {
+    
     posNeg()
-    cabinet2( name = "C",
+    cabinet2( name = "C",    $closeFront=true,$closeLeft=true,$close="f",
         h= 400,
         dims=[ [0,500] , [ 300,500 ] , [400,200] ]) {
             
