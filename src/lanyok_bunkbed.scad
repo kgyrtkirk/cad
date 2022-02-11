@@ -5,7 +5,7 @@ use <furniture.scad>
 $fronts=true;
 $machines=true;
 $internal=false;
-$openDoors=true;
+$openDoors=false;
 $drawerState="CLOSED";
 $drawerBoxes=true;
 $cheat=false;
@@ -105,7 +105,7 @@ module bunkBed() {
     MAT_BOTTOM_SPACE=20;
     MAT_BOTTOM_SPACE_U=100;
     
-    LADDER_WIDTH=400;
+    LADDER_WIDTH=500;
 //    MAT_BOTTOM_SPACE=MAT_D-MAT_SINK-$W;
     
 //    BL_TOP=50+$W+$W+100+200;
@@ -134,21 +134,21 @@ module bunkBed() {
 
     FOOT=10;
     translate([MAT_L+$W+$W,0,-0])
-    cabinet("CAB",C_W,C_H-FOOT,D-$W,foot=FOOT,extraHR=MAT_BOTTOM_SPACE_U,fullBack=true)
-        cBeams()
+    cabinet("Cab",C_W,C_H-FOOT,D-$W,foot=FOOT,extraHR=MAT_BOTTOM_SPACE_U,fullBack=true)
+        cTop()
 //        shelf(400,external=false,alignTop=true)
   //      doors("DOOR",cnt=1,400)
         drawer(150)
         drawer(200)
-        drawer(200)
-        drawer(200)
-        drawer(200)
-        drawer(200)
+        drawer(200,true)
+        drawer(200,true)
+        drawer(200,true)
+        drawer(200,true)
         drawer(290)
     ;
     translate([C_W,0,C_H])
     bedFrame("BED_U",MAT_L,MAT_W,MAT_BOTTOM_SPACE_U+$W+MAT_SINK,MAT_SINK,
-        leftOversize=250,backOversize=250);
+        leftOversize=300,backOversize=300);
 
 
 //    translate([0,0,200])
@@ -208,8 +208,8 @@ module bunkBed() {
     }
     
     module topRails() {
-        I_W=100;
-        I_H=150;
+        I_W=120;
+        I_H=200;
         B_H=100;
 
         //neessenekki
@@ -225,7 +225,7 @@ module bunkBed() {
             if(false)
             translate([X,0,0])
             eYZ("BARR-I",I_W,I_H);
-            eYZ("BARR-I",I_W,I_H);
+            eYZ($front=true,$close="FBLRou","BARR-I",I_W,I_H);
         }
 
         if(false)
@@ -237,12 +237,15 @@ module bunkBed() {
 
         for(x=[0:(l-I_W-lw)/4:l-I_W-lw]) 
         translate([x+lw,Y,0]) {
-            eXZ("BARR-I",I_W,I_H);
+            $close="LRou";
+            eXZ($front=true,"BARR-I",I_W,I_H);
         }
 
         translate([0,0,I_H]){
             if(false)
             eXZ("BARR-B",l,B_H);
+
+            $close="FBLROU";
 
             translate([lw,Y,0])
             eXZ("BARR-F",l-lw,B_H);

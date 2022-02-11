@@ -294,7 +294,7 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0) {
             }
             
             translate([$W,0,foot])
-            eXY($close="F",name,w-2*$W,$d);
+            eXY($close="F",str(name,"Bot"),w-2*$W,$d);
         }
 
         translate([0,0,$h])
@@ -471,10 +471,15 @@ module             slideDoors() {
     }
 }
 
-module cTop() {
+module cTop(outer=false) {
     W=$W;
-    translate([W,0,-W])
-    eXY(str($name,"cb"),$w-2*W,$d);
+    if(!outer) {
+        translate([W,0,-W])
+        eXY(str($name,"Top"),$w-2*W,$d);
+    }else {
+//        translate([0,-W,-0])
+        eXY($close="LRF",str($name,"OuterTop"),$w,$d+W);
+    }
     children();
 }
 
@@ -635,9 +640,12 @@ module hanger(h) {
 }
 
 
-module drawer(h) {
+module drawer(h,withLock=false) {
+    // 90x60
+    LOCK_SP=5;
+    LOCKDIM=[90,30,60];
     
-    name=str($name,"d");
+    name=str($name,"D",h);
     
     FRONT_SP=2;
 
@@ -645,10 +653,10 @@ module drawer(h) {
     hh=h-FRONT_SP;
     
     qx=$W+12.7;
-    qz=2*$W;
+    qz=$W;
     
     ix=$w-2*qx;
-    iz=h-2*qz;
+    iz=h-(withLock?LOCKDIM[2]+LOCK_SP+$W:3*qz);  //  -4W
     id=$d-10;
     
     o_y=($drawerState=="CLOSED" ? 0 : id-50);
@@ -656,12 +664,17 @@ module drawer(h) {
     translate([0,$d+o_y,-h])
     if($positive) {
         
+        if($machines && withLock) {
+
+            translate([$W,-LOCKDIM[1],h-LOCKDIM[2]])
+            cube(LOCKDIM);
+        }
 
         if($fronts) {            
 //            color([0,1,1])
             {
                 translate([FRONT_SP/2,0,FRONT_SP/2])
-                eXZ($front=true,$close="OULR","DFRONT",ww,hh);
+                eXZ($front=true,$close="OULR",str("DF",h),ww,hh);
 //                translate([$w/2,$d,-h/2])
   //                cube([ww,$W,hh],center=true);
             }

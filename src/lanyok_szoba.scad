@@ -1,6 +1,7 @@
 use <hulls.scad>
 use <gyerekszoba.scad>
 use <furniture.scad>
+use <lanyok_bunkbed.scad>
 
 mode="real";
 
@@ -203,6 +204,18 @@ if(mode=="print" || mode=="real") {
     scale(s)
     posNeg()
     kidsRoom();
+}
+if(mode=="real") {
+        $roomHeight=2625;
+    $roomX=2541;
+    $roomY=4135;
+
+    posNeg() {
+//        rotate(180,[0,0,1])
+        translate([-200,0,0])
+        atCorner(2)
+        bunkBed();
+    }
 }
 
 if(mode=="radiator" ) {

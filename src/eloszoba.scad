@@ -16,8 +16,12 @@ W=18;
 $W=18;
 
 A=1880+665;
-D_L=290;
-D_R=670;
+ROOM_D_L=290;
+ROOM_D_R=670;
+
+D_L=ROOM_D_L-$W;
+D_R=ROOM_D_R-$W;
+
 DOOR_H=2100;
 DOOR_W=1000;
 ROOM_H=1600+1020;
@@ -25,6 +29,8 @@ WALL_THICK=100;
 
 
 module room(cut) {
+    D_L=undef;
+    D_R=undef;
     
     
     module wall(WIDTH,HEIGHT) {
@@ -52,12 +58,12 @@ module room(cut) {
     module walls() {
         wall(A,ROOM_H);
         rotate(-90)
-        wall2(D_L,ROOM_H);
+        wall2(ROOM_D_L,ROOM_H);
         translate([-A,0,0])
         rotate(-90)
-        wall(D_R,ROOM_H);
+        wall(ROOM_D_R,ROOM_H);
 
-        translate([0,D_L+30,0])
+        translate([0,ROOM_D_L+30,0])
         rotate(180)
         door();
     }
@@ -90,13 +96,16 @@ X=prefix(0,-D_X);
 U_H=500;
 SU_H=SYSTEM_H-U_H;
 
+
+
 D_K=D_R-D_L;
 L=3*820;
 st=-A+L;
 DELTA_WIDTH=D_K+2*$W;
 
 UPPER_D_X=[820,820,820];
-LOWER_D_X=[L-900-DELTA_WIDTH,DELTA_WIDTH,900];
+SHOE_CAB_W=900;
+LOWER_D_X=[L-SHOE_CAB_W-DELTA_WIDTH-W,W,DELTA_WIDTH,SHOE_CAB_W];
 
 UPPER_X=prefix(st,-UPPER_D_X);
 LOWER_X=prefix(st,-LOWER_D_X);
@@ -117,6 +126,7 @@ module partsU() {
 
     
 }
+module empty(){}
 
 module partsL() {
     
@@ -136,22 +146,25 @@ module partsL() {
     ;
     ;
     }
-        translate([LOWER_X[1],0,0])
+        translate([LOWER_X[2],0,0])
     cabinet2( name = "M",
         h= U_H,
-        dims=[ [0,D_R] , [ DELTA_WIDTH,D_L] , [LOWER_D_X[0],D_L]]) {
+                dims=[ [0,D_R] , [ DELTA_WIDTH,D_L] ,[0,D_L], [LOWER_D_X[0],D_L]]
+            ) {
             
-        doors("D1",300);
+        empty();
         doors("d2",200);
+        empty();
         doors("D3",300);
             
     }
     
     
-    
-        translate([LOWER_X[2],0,0])
-        cabinet("C",LOWER_D_X[2],900,D_R)
+        translate([LOWER_X[3],0,0])
+        cabinet("C",LOWER_D_X[3],1050,D_R,foot=61)
+            cTop(outer=true)
             cBeams()
+            drawer(150)
             drawer(300)
             drawer(300)
             drawer(300)
