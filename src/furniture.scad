@@ -5,6 +5,7 @@ function sublist(l,start)=start<len(l) ? [for(i=[start:len(l)-1])  l[i]] : undef
 function prefix(s,p)=(p==undef || len(p)==0)?[]:concat([s+p[0]], prefix(s+p[0],sublist(p,1)) );
 
 module posNeg() {
+    $front=false;
     $close="";
     $closeBack=false;
     $closeFront=false;
@@ -37,8 +38,6 @@ module ppp(name,dims="") {
 
 module ppp2(name,dims="") {
     if($positive)
-        echo(name,dims);
-    if($positive)
     if($part==undef || $part==name) {
         children();
     }
@@ -46,41 +45,74 @@ module ppp2(name,dims="") {
 
 
 
-module plain(name,w0,h0,closeL,closeR,closeU,closeD) {
+module closeColor(v) {
+    if(v>0.4)
+        color([1,.5,0])
+    children();
+    else
+        color([1,0,0])
+    children();
+        
+}
+
+module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
+    if(!rot) {
+        translate([0,h0,0])
+        rotate(-90)
+        plain(name,h0,w0,closeU,closeD,closeR,closeL,rot=!rot);
+    } else {
     a=2;
     x = closeL;
     y = closeD;
     w = w0 - x - closeR;
     h = h0 - y - closeU;
     translate([x,y,0]) {
+        color($front?[.4,.6,1]:[1,.8,.4])
         cube([w,h,$W]);
-        color([1,0,0]) {
+        //color([1,0,0]) 
+        {
             if(closeL>0) {
+                closeColor(closeL)
                 translate([-closeL,0,0])
                 cube([closeL,h,$W]);
             }
             if(closeR>0) {
+                closeColor(closeR)
                 translate([w,0,0])
                 cube([closeR,h,$W]);
             }
             if(closeD>0) {
+                closeColor(closeD)
                 translate([0,-closeD,0])
                 cube([w,closeD,$W]);
             }
             if(closeU>0) {
+                closeColor(closeU)
                 translate([0,h,0])
                 cube([w,closeU,$W]);
             }
+            color([0,0,1]) 
+            translate([0,h/2-$W/2,-1])
+            cube([w,$W,$W+2]);
+        }
+    }
+    
+        if($positive) {
+            s=$front?"FRONT":"MAIN";
+            echo(str("PLANAR: ",s," ",name, " ", w,"*", h, " ",
+            closeD,";",closeU,";",
+            closeL,";",closeR
+            ));
         }
     }
 }
 
 function toBool(v)=(v==undef? false : v );
 
-module eXY(name, dX, dY) {
+module eXY(name, dX, dY, rot=false) {
     ppp2(str(name,"XY"),str(dX,"x",dY))
-    //    cube([dX,dY,$W]);
-      plain(str(name,"XY"),dX,dY,cLookupR(),cLookupL(),cLookupF(),cLookupA());
+    //  cube([dX,dY,$W]);
+      plain(str(name,"XY"),dX,dY,cLookupR(),cLookupL(),cLookupF(),cLookupA(),rot=rot);
 //      plain(str(name,"XY"),dX,dY,toBool($closeRight),toBool($closeLeft),toBool($closeFront),toBool($closeBack));
 }
 
@@ -99,20 +131,20 @@ function cLookupA() = cLookupX($close, "b", "B");
 function cLookupT() = cLookupX($close, "o", "O");
 function cLookupB() = cLookupX($close, "u", "U");
 
-module eYZ(name, dY, dZ) {
+module eYZ(name, dY, dZ, rot=false) {
     ppp2(str(name,"YZ"),str(dY,"x",dZ)){
         rotate(90,[0,0,1])
         rotate(90,[1,0,0])
-        plain(str(name,"YZ"),dY,dZ,cLookupA(),cLookupF(),cLookupT(),cLookupB());
+        plain(str(name,"YZ"),dY,dZ,cLookupA(),cLookupF(),cLookupT(),cLookupB(),rot=rot);
 //        plain(str(name,"YZ"),dY,dZ,toBool($closeBack),cLookupF(),toBool($closeTop),toBool($closeBottom));
 //        cube([$W,dY,dZ]);
     }
 }
-module eXZ(name, dX, dZ) {
+module eXZ(name, dX, dZ, rot=false) {
     ppp2(str(name,"XZ"),str(dZ,"x",dX))
-        translate([0,$W,0])
-        rotate(90,[1,0,0])
-        plain(str(name,"XZ"),dX,dZ,cLookupR(),cLookupL(),cLookupT(),cLookupB());
+        translate([0,0,dZ])
+        rotate(-90,[1,0,0])
+        plain(str(name,"XZ"),dX,dZ,cLookupR(),cLookupL(),cLookupB(),cLookupT(),rot=rot);
 //        plain(str(name,"XZ"),dX,dZ,toBool($closeRight),toBool($closeLeft),toBool($closeTop),toBool($closeBottom));
 //        cube([dX,$W,dZ]);
 }
@@ -234,8 +266,8 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0) {
     $d=d-dBack;
 
     if(fullBack) {
-        translate([0,-100])
-        eXZ($closeLeft=true,$closeRight=true,$closeTop=true,$closeBottom=true,
+//        translate([0,-100])
+        eXZ($close="LROU",
             str(name,"-Fback"),w,h+foot);
     }else {
         if($positive) {
@@ -250,21 +282,19 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0) {
 
     translate([0,dBack,0]) {
         {
-            $closeTop=true;
-            $closeBottom=true;
-            $closeFront=true;
-            eYZ(name,$d,h+foot+extraHR);
+            
+            eYZ($close="oUF",name,$d,h+foot+extraHR);
             translate([w-$W,0,0])
-            eYZ(name,$d,h+foot+extraHL);
+            eYZ($close="oUF",name,$d,h+foot+extraHL);
             
             
             if(foot>0) {
                 translate([$W,d-2*$W,0])
-                eXZ(name,w-2*$W,foot);
+                eXZ($close="oU",name,w-2*$W,foot);
             }
             
             translate([$W,0,foot])
-            eXY(name,w-2*$W,$d);
+            eXY($close="F",name,w-2*$W,$d);
         }
 
         translate([0,0,$h])
@@ -626,12 +656,12 @@ module drawer(h) {
     translate([0,$d+o_y,-h])
     if($positive) {
         
-        echo("__FRONT", ww, hh);
 
         if($fronts) {            
-            color([0,1,1]){
+//            color([0,1,1])
+            {
                 translate([FRONT_SP/2,0,FRONT_SP/2])
-                eXZ("DF",ww,hh);
+                eXZ($front=true,$close="OULR","DFRONT",ww,hh);
 //                translate([$w/2,$d,-h/2])
   //                cube([ww,$W,hh],center=true);
             }
@@ -639,6 +669,7 @@ module drawer(h) {
   //          eXZ("DF",ww,hh);
         }
         if($drawerBoxes) {
+            $close="Olru";
         translate([qx,-$W,qz])
         eXZ(str(name,"A"),ix,iz);
         translate([qx,-id,qz])
@@ -666,7 +697,8 @@ module drawer(h) {
 
 
 //mode="zigzag";
-mode="zigzag";
+//mode="zigzag";
+mode="planar";
 
 function substr(data, i, length=0) = (length == 0) ? _substr(data, i, len(data)) : _substr(data, i, length+i);
 function _substr(str, i, j, out="") = (i==j) ? out : str(str[i], _substr(str, i+1, j, out));
@@ -699,6 +731,7 @@ module zigzag(){
         doors("D3",300);
             
     }
+    
 }
 
 if(mode=="zigzag") {
@@ -711,4 +744,22 @@ if(mode=="zigzag") {
     zigzag();
 }
 
+if(mode=="planar") {
+    $W=18;
+    $part=undef;
+    posNeg() {
+        for(x=[0,150])
+        translate([x,0,0]) {
+            $close="oU";
+            rot=x>0;
+            
+            translate([$W,$W,0])
+            eXY("a",100,200, rot=rot);
+            translate([$W,0,$W])
+            eXZ("b",100,200, rot=rot);
+            translate([0,$W,$W])
+            eYZ("c",100,200, rot=rot);
+        }
+    }  
+}
 
