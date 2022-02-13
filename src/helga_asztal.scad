@@ -25,12 +25,14 @@ W=18;
 $W=18;
 
 
+FOOT=120;
+
 EYE_H=785+430;
 DESIRED_DESK_H=730; // +?
 DESK_H=DESIRED_DESK_H;
 
 D_1=750;
-D_2=D_1-300 ;
+D_2=D_1-260 ;
 X=[300,0,800,0,300];
 PX=prefix(0,X);
 
@@ -97,33 +99,34 @@ module partsDesk(){
 }
 
 module desk2(){
+
+    SIDE_W=D_1-D_2-W-W;
+    TOP_OVER=W;
+
     translate([0,0,DESK_H])
     eXYp("top",[[0,0],[SPACE_X,0],
-                [SPACE_X,D_2],
-                [SPACE_X-(D_1-D_2),D_1],
-                [0,D_1]
+                [SPACE_X,D_2+TOP_OVER],
+                [SPACE_X-(D_1-D_2),D_1+TOP_OVER],
+                [0,D_1+TOP_OVER]
                 
                 ]);
 
 
-    translate([SPACE_X-300,0,0])
+    translate([SPACE_X-SIDE_W-4*$W,0,0])
     cabinet2( name = "L",
         h=DESK_H ,
-        dims=[ [0,D_1], [270,D_2]]) {
+        dims=[ [0,D_1], [SIDE_W+W+W,D_2]]) {
             
         doors("D1",100);
-        doors("d2",200);
-        doors("d2",200);
-        doors("d2",200);
         doors("d2",200);
             
     }
     cabinet2( name = "R",
         h=DESK_H ,
-        dims=[ [0,D_1], [270,D_1]]) {
+        dims=[ [0,D_1], [SIDE_W+W+W,D_1]]) {
             
         doors("D1",100);
-        doors("d2",200);
+        doors("d2",200)
         doors("d2",200);
         doors("d2",200);
         doors("d2",200);
@@ -131,6 +134,13 @@ module desk2(){
     
     translate([700-50,400,-10])
     cylinder(d=700,h=300);
+
+
+    translate([(PX[1]+PX[2])/2+3*W,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
+//    translate([(PX[1]+PX[2])/2+3*W,100+monitor_dims[1]/2,DESK_H+monitor_dims[2]/2+80-18])
+//    rotate(90,[1,0,0])
+    cube(monitor_dims,center=true);
+
 }
 
 room();

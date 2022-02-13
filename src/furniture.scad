@@ -7,21 +7,15 @@ function prefix(s,p)=(p==undef || len(p)==0)?[]:concat([s+p[0]], prefix(s+p[0],s
 module posNeg() {
     $front=false;
     $close="";
-    $closeBack=false;
-    $closeFront=false;
-    $closeTop=false;
-    $closeBottom=false;
-    $closeLeft=false;
-    $closeRight=false;
 
     difference() {
         union(){
-        $positive=true;
-        children();
+            $positive=true;
+            children();
         }
         union(){
-        $positive=false;
-        children();
+            $positive=false;
+            children();
         }
     }
 }
@@ -170,7 +164,7 @@ module eXYp(name, dims) {
 use <syms.scad>
 
 module hinges(name,ww,hh) {
-    assert(ww<600,str("wider door hinge count calc missing"," ",name," ",ww));
+    assert(ww<630,str("wider door hinge count calc missing"," ",name," ",ww));
 
     echo("__HINGE",name,2);
 }
@@ -178,11 +172,16 @@ module hinges(name,ww,hh) {
 module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
     W=$W;
     module cube1(dim,glass) {
-        difference() {
-            E=2*80;
-            cube(dim,center=true);
-            if(glass)
-            cube(dim+[-E,1,-E],center=true);
+        if(glass) {
+            difference() {
+                E=2*80;
+                cube(dim,center=true);
+                if(glass)
+                cube(dim+[-E,1,-E],center=true);
+            }
+        }else{
+            translate(-dim/2)
+            eXZ($front=true,$close="LROU","Door",dim[0],dim[2]);
         }
     }
     FRONT_SP=2;
@@ -195,7 +194,8 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
         
         if($fronts)
             
-        color([0,1,1]){
+        //color([0,1,1])
+        {
             if(cnt==2) {
                 ww=w/2-FRONT_SP;
                 hh=h-FRONT_SP;
@@ -242,11 +242,28 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
 }
 
 module doors(name,h,cnt=2,clips=[50,-50],glass=false,spacing=0) {
+
+
+    if($d != undef) {
+        translate([spacing>0?spacing:0,$d,-h])
+            doors0(str($name,name),$w-abs(spacing),h,0,cnt,clips,glass);
+    }else {
+
+        dL = ($d == undef) ? $dL : $d;
+        dR = ($d == undef) ? $dR : $d;
+
+        a=atan2($dR-$dL,$w);
+        w=$w/cos(a);
+        echo("TAN",tan(a))
+
+
+        translate([spacing>0?spacing:0,dL,-h])
+        rotate(a,[0,0,1])
+            doors0(str($name,name),w-abs(spacing),h,0,cnt,clips,glass);
+
+    }
     
-    
-    translate([spacing>0?spacing:0,0,-h])
-        doors0(str($name,name),$w-abs(spacing),h,$d,cnt,clips,glass);
-    
+
     translate([0,0,-h])
         children();
     
@@ -282,7 +299,6 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0) {
 
     translate([0,dBack,0]) {
         {
-            
             eYZ($close="oUF",name,$d,h+foot+extraHR);
             translate([w-$W,0,0])
             eYZ($close="oUF",name,$d,h+foot+extraHL);
@@ -303,11 +319,20 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0) {
 }
 
 
+module skyFoot(h,w=undef) {
+
+    width=(w==undef)? $w : w;
+
+    translate([0,$d-50,-h])
+    eXZ(str($name,"Foot"),width,h);
+
+}
+
 // width in dims are inner
-module cabinet2(name,w,h,dims) {
+module cabinet2(name,w,h,dims,foot=0) {
     
     $name=name;
-    $h=h;
+    $h=h+foot;
     
     widths=[ for(x=dims) x[0] ];
     depths=[ for(x=dims) x[1] ];
@@ -322,20 +347,23 @@ module cabinet2(name,w,h,dims) {
 
 //    $w=w;   // FIXME
 //    $d=d;   // FIXME
-    
+
+/*    
+    translate([0,0,foot])
     eYZ(str(name,0),depths[0],h);
-    translate([x[n],0,0])
+    translate([x[n],0,foot])
     eYZ(str(name,n),depths[n],h);
-    
+  */  
+
     for(i=[0:n]) {
         inner=(0<i && i<n);
         off=inner?$W:0;
-        translate([x[i],0,off])
+        translate([x[i],0,off+foot])
         eYZ(str(name,i),depths[i],h-2*off);
     }
     
     for(z=[0,h-$W])
-        translate([0,0,z])
+        translate([0,0,z+foot])
     eXYp(
         str(name,"t"),
             [
@@ -350,27 +378,40 @@ module cabinet2(name,w,h,dims) {
     );
     
     for(idx=[1:n]) {
-        $d=depths[idx-1];
+        $d=undef;
+        $dL=depths[idx-1];
+        $dR=depths[idx];
         $w=widths[idx];
-        translate([x[idx-1]+$W,0,0])
-        children(idx);
+        translate([x[idx-1]+$W,0,$h]) {
+            children(idx);
+        }
+        if(foot>0) {
+            a=atan2($dL-$dR,$w);
+            translate([x[idx-1],$dL-50,0])
+            rotate(-a,[0,0,1])
+            eXZ($close="oU",str(name,"Foot",idx),($w+2*$W)/cos(a),foot);
+        }
+
     }
-    if(false){ 
-    translate([$W,0,foot])
-    eXY(name,w-2*$W,d);
-    
-    if($positive) {
-        bw=w-15;
-        bh=h-15;
-        color([1,0,0])
-        translate([7.5,3,foot+7.5])
-        cube([bw,1,bh]);
-        echo(str(name,"-back"),str(bh,"x",bw));
+
+
+
+    if(false){
+        translate([$W,0,foot])
+        eXY(name,w-2*$W,d);
+        
+        if($positive) {
+                bw=w-15;
+                bh=h-15;
+                color([1,0,0])
+                translate([7.5,3,foot+7.5])
+                cube([bw,1,bh]);
+                echo(str(name,"-back"),str(bh,"x",bw));
+            }
+        
+        translate([0,0,$h])
+        children();
     }
-    
-    translate([0,0,$h])
-    children();
-}
 }
 
 
@@ -392,11 +433,34 @@ module orient(mode) {
 module cBeams() {
     W=$W;
     translate([W,0,-W])
-    eXY(str($name,"-beam"),$w-2*W,100);
-    translate([W,$d-100,-W])
-    eXY(str($name,"-beam"),$w-2*W,100);
+    cBeams0($w-2*W,$d);
     children();
 }
+
+module cBeams0(w,d) {
+    W=$W;
+    k=100;
+    if(d<3*k) {
+        translate([0,0,0])
+        eXY(str($name,"-beamF"),w,d);
+    }else {
+        translate([0,0,0])
+        eXY(str($name,"-beam"),w,100);
+        translate([0,d-100,0])
+        eXY(str($name,"-beam"),w,100);
+    }
+}
+
+module cBeams2() {
+
+    d=min($dL,$dR);
+
+    translate([0,0,-$W])
+    cBeams0($w,d);
+    children();
+}
+
+
 module partition2(x,h) {
 
     BACK_WIDTH=4;

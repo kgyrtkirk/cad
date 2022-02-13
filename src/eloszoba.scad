@@ -2,7 +2,8 @@ use <hulls.scad>
 use <furniture.scad>
 use <kitchen_box.scad>
 
-
+$close="";
+$front=false;
 $fronts=true;
 
 $machines=true;
@@ -26,6 +27,21 @@ DOOR_H=2100;
 DOOR_W=1000;
 ROOM_H=1600+1020;
 WALL_THICK=100;
+
+// ---
+
+SYSTEM_H=2200;
+DEPTH=400;
+FOOT_H=61;
+
+U_H=470;
+SU_H=SYSTEM_H-U_H;
+
+D_K=D_R-D_L;
+
+SHOE_CAB_W=900;
+
+DEPTH_A=560;
 
 
 module room(cut) {
@@ -76,112 +92,117 @@ module room(cut) {
     }
 }
 
-
-
-
-
-SYSTEM_H=2200;
-SYSTEM_W=4370;
-DEPTH=400;
-FOOT_H=60;
-
-D_X=[1000,425,1850,425,650];
-D_Y=[0,650,1050];
-
-X=prefix(0,-D_X);
-//Y=prefix(DEPTH_R+20+W-D_Y[0],D_Y);
-
-
-
-U_H=470;
-SU_H=SYSTEM_H-U_H;
-
-
-
-D_K=D_R-D_L;
-L=3*820;
-st=-A+L;
-DELTA_WIDTH=D_K-W+2*$W;
-
-UPPER_D_X=[820,820,820];
-SHOE_CAB_W=900;
-LOWER_D_X=[L-SHOE_CAB_W-DELTA_WIDTH-W,W,DELTA_WIDTH,SHOE_CAB_W];
-
-UPPER_X=prefix(st,-UPPER_D_X);
-LOWER_X=prefix(st,-LOWER_D_X);
-
-
-
-
-DEPTH_A=560;
-
-
+D_X=[500,500,D_R-D_L+90+3*W,SHOE_CAB_W];
+P_X=-prefix(100,D_X);
 
 module partsU() {
-    
+    CAB_H=450;
+
     translate([0,0,DOOR_H]) {
-        
-        
-    }
-    
 
-    for(i=[0:2]) 
-        translate([UPPER_X[i],0,DOOR_H])
-        cabinet("C1",UPPER_D_X[i],U_H,D_R)
+        translate([P_X[0],0,0])
+            cabinet("U1",D_X[0],CAB_H,D_L)
             cTop()
-            doors("U",U_H);
-        ;        
-
-    
+            doors("D1",CAB_H)
+        ;
+    translate([P_X[1],0,0])
+        cabinet("U2",D_X[1],CAB_H,D_L)
+            cTop()
+            doors("D1",CAB_H)
+    ;
+    translate([P_X[2],0,0])
+        cabinet2("U3",1000,CAB_H,dims=[ [0,D_R], [D_X[2]-2*W,D_L] ]) {
+            empty();
+            cBeams2()
+            doors("D1",CAB_H,cnt=1);
+            ;
+        }
+    translate([P_X[3],0,0])
+        cabinet("C",D_X[3],CAB_H,D_R)
+            cTop()
+            doors("U",CAB_H);
+    ;
+    }
 }
 module empty(){}
 
 module partsL() {
-    
-    
-    if(false){
-    
-        translate([LOWER_X[0],0,0])
-        cabinet("A",LOWER_D_X[0],U_H,D_L)
+    L_H1=400;
+
+    translate([P_X[0],0,FOOT_H])
+        cabinet("L1",D_X[0],L_H1+1200,D_L)
+//            cTop(outer=true)
             cBeams()
-//            doors("U",U_H)
+            shelf(L_H1)
+            shelf(800)
+            shelf(1200)
+            doors("D1",1200)
+            doors("D1",L_H1)
     ;
-    ;
-        translate([LOWER_X[1],0,0])
-        cabinet("B",LOWER_D_X[1],U_H,D_L)
+    translate([P_X[1],0,FOOT_H])
+        cabinet("L2",D_X[1],L_H1,D_L)
             cBeams()
-//            doors("U",U_H)
+            doors("D1",L_H1)
+            skyFoot(FOOT_H,D_X[0]+D_X[1])
     ;
+    translate([P_X[2],0,0])
+        cabinet2("L3",1000,L_H1,dims=[ [0,D_R], [D_X[2]-2*W,D_L] ],foot=61) {
+            empty();
+//            cBeams()
+//space(100)
+            cBeams2()
+//empty();
+            doors("D1",L_H1,cnt=1);
     ;
-    }
-        translate([LOWER_X[2],0,0])
-    cabinet2( name = "M",
-        h= U_H,
-                dims=[ [0,D_R-W] , [ DELTA_WIDTH,D_L] ,[0,D_L], [LOWER_D_X[0],D_L]]
-            ) {
-            
-        empty();
-        doors("d2",200);
-        empty();
-        doors("D3",300);
-            
-    }
+            doors("D1",L_H1);
+        }
     
-    
-        translate([LOWER_X[3],0,0])
-        cabinet("C",LOWER_D_X[3],1050,D_R,foot=61)
-            cTop(outer=true)
+
+    SHOE_CAB_H=1050+FOOT_H;
+
+    translate([P_X[3],0,FOOT_H])
+        cabinet("C",SHOE_CAB_W,SHOE_CAB_H-FOOT_H,D_R)
+//            cTop(outer=true)
             cBeams()
             drawer(150)
             drawer(300)
             drawer(300)
             drawer(300)
-//            drawer(100)
-//            doors("U",U_H)
+            skyFoot(FOOT_H)
     ;
-    ;
+    translate([P_X[3]-$W,D_R-61,0])
+        eYZ($close="fo","SpaceR",61,SHOE_CAB_H);
+
+    translate([P_X[3]-$W,0,SHOE_CAB_H])
+        eXY($close="LF","SpaceR",SHOE_CAB_W+$W,D_R+$W);
+
+
+    translate([0,0,L_H1+FOOT_H])
+    {
+        d1=D_L+$W;
+        d2=D_R+$W;
+        w=D_X[2];
+//        translate([P_X[1],0,0])
+  //      eXY("Cover12",D_X[0]+D_X[1],D_L+$W,rot=false);
+
+        translate([P_X[2],0,0]) 
+        eXYp("Cover3",[[0,0],[0,d2],[W+sin(45)*W,d2],[w,d1],[w,0] ]);
+    }
+
+
 }
 
+module hangers(){
+
+    for(o=[P_X[0]-100:-200:P_X[2]])
+    translate([o,0,1900])
+        if($positive) {
+            cube(100,center=true);
+            translate([0,0,-1000]){
+                cube([10,10,1000]);
+            }
+        }
+}
 
 
 room();
@@ -189,7 +210,10 @@ room();
 posNeg() {
     partsU();
     partsL();
+    hangers();
 }
 
-echo(UPPER_X);
+
 echo(A);
+
+echo("remain", A+P_X[3]);
