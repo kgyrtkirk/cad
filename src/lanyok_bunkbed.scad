@@ -5,7 +5,7 @@ use <furniture.scad>
 $fronts=true;
 $machines=true;
 $internal=false;
-$openDoors=false;
+$openDoors=open;
 $drawerState="CLOSED";
 $drawerBoxes=true;
 $cheat=false;

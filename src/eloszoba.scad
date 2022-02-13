@@ -45,7 +45,7 @@ module room(cut) {
 
     module electric() {
         color([1,0,0])
-        translate([-WALL_THICK,800,2300]) 
+        translate([-WALL_THICK,640,2300]) 
         cube([100,300,300]);
     }
 
@@ -93,7 +93,7 @@ X=prefix(0,-D_X);
 
 
 
-U_H=500;
+U_H=470;
 SU_H=SYSTEM_H-U_H;
 
 
@@ -101,7 +101,7 @@ SU_H=SYSTEM_H-U_H;
 D_K=D_R-D_L;
 L=3*820;
 st=-A+L;
-DELTA_WIDTH=D_K+2*$W;
+DELTA_WIDTH=D_K-W+2*$W;
 
 UPPER_D_X=[820,820,820];
 SHOE_CAB_W=900;
@@ -115,12 +115,20 @@ LOWER_X=prefix(st,-LOWER_D_X);
 
 DEPTH_A=560;
 
+
+
 module partsU() {
+    
+    translate([0,0,DOOR_H]) {
+        
+        
+    }
+    
 
     for(i=[0:2]) 
         translate([UPPER_X[i],0,DOOR_H])
         cabinet("C1",UPPER_D_X[i],U_H,D_R)
-            cBeams()
+            cTop()
             doors("U",U_H);
         ;        
 
@@ -149,7 +157,7 @@ module partsL() {
         translate([LOWER_X[2],0,0])
     cabinet2( name = "M",
         h= U_H,
-                dims=[ [0,D_R] , [ DELTA_WIDTH,D_L] ,[0,D_L], [LOWER_D_X[0],D_L]]
+                dims=[ [0,D_R-W] , [ DELTA_WIDTH,D_L] ,[0,D_L], [LOWER_D_X[0],D_L]]
             ) {
             
         empty();
