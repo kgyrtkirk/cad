@@ -31,15 +31,18 @@ EYE_H=785+430;
 DESIRED_DESK_H=730; // +?
 DESK_H=DESIRED_DESK_H;
 
+DD=330;
 D_1=750;
-D_2=D_1-260 ;
+D_2=D_1-DD;
 X=[300,0,800,0,300];
 PX=prefix(0,X);
+
+LIFT_D=140;
 
 
 echo("desk_monitor_gap",EYE_H-DESIRED_DESK_H-monitor_dims[1]);
 
-SPACE_X=1300; // approx
+SPACE_X=1320; // approx
 module room() {
     L=1350-15;
     WW=100;
@@ -100,7 +103,7 @@ module partsDesk(){
 
 module desk2(){
 
-    SIDE_W=D_1-D_2-W-W;
+    SIDE_W=DD-W-W;
     TOP_OVER=W;
 
     translate([0,0,DESK_H])
@@ -112,7 +115,7 @@ module desk2(){
                 ]);
 
 
-    translate([SPACE_X-SIDE_W-4*$W,0,0])
+    translate([SPACE_X-SIDE_W-4*$W,LIFT_D,0])
     cabinet2( name = "L",
         h=DESK_H ,
         dims=[ [0,D_1], [SIDE_W+W+W,D_2]]) {
@@ -121,9 +124,10 @@ module desk2(){
         doors("d2",200);
             
     }
+    translate([0,LIFT_D,0])
     cabinet2( name = "R",
         h=DESK_H ,
-        dims=[ [0,D_1], [SIDE_W+W+W,D_1]]) {
+        dims=[ [0,D_1-LIFT_D], [SIDE_W+W+W,D_1-LIFT_D]]) {
             
         doors("D1",100);
         doors("d2",200)
@@ -136,7 +140,9 @@ module desk2(){
     cylinder(d=700,h=300);
 
 
-    translate([(PX[1]+PX[2])/2+3*W,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
+//    translate([SPACE_X/2,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
+    translate([SPACE_X/2,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
+//    translate([(PX[1]+PX[2])/2+3*W,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
 //    translate([(PX[1]+PX[2])/2+3*W,100+monitor_dims[1]/2,DESK_H+monitor_dims[2]/2+80-18])
 //    rotate(90,[1,0,0])
     cube(monitor_dims,center=true);
