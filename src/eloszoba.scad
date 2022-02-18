@@ -5,6 +5,7 @@ use <kitchen_box.scad>
 $close="";
 $front=false;
 $fronts=true;
+$handle="top";
 
 $machines=true;
 $openDoors=true;

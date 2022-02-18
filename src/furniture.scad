@@ -7,6 +7,7 @@ function prefix(s,p)=(p==undef || len(p)==0)?[]:concat([s+p[0]], prefix(s+p[0],s
 module posNeg() {
     $front=false;
     $close="";
+    $handle="";
 
     difference() {
         union(){
@@ -134,6 +135,22 @@ module eYZ(name, dY, dZ, rot=false) {
 //        cube([$W,dY,dZ]);
     }
 }
+
+module eFRONT(name, dX, dZ, rot=false) {
+    O=25;
+    if($handle=="top") {
+        if($positive) {
+            translate([0,0,dZ-O])
+            %cube([dX,$W,O]);
+        }
+
+        translate([0,0,0])
+        eXZ($close="oULR",name,dX,dZ-O,rot);
+    } else {
+        eXZ($close="OULR",name,dX,dZ,rot);
+    }
+}
+
 module eXZ(name, dX, dZ, rot=false) {
     ppp2(str(name,"XZ"),str(dZ,"x",dX))
         translate([0,0,dZ])
@@ -181,7 +198,7 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
             }
         }else{
             translate(-dim/2)
-            eXZ($front=true,$close="LROU","Door",dim[0],dim[2]);
+            eFRONT($front=true,$close="LROU","Door",dim[0],dim[2]);
         }
     }
     FRONT_SP=2;
@@ -738,7 +755,7 @@ module drawer(h,withLock=false) {
 //            color([0,1,1])
             {
                 translate([FRONT_SP/2,0,FRONT_SP/2])
-                eXZ($front=true,$close="OULR",str("DF",h),ww,hh);
+                eFRONT($front=true,$close="OULR",str("DF",h),ww,hh);
 //                translate([$w/2,$d,-h/2])
   //                cube([ww,$W,hh],center=true);
             }

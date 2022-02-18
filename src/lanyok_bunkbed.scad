@@ -16,6 +16,29 @@ $part=undef;
 $W=18;
 
 mode="real";
+//mode="step";
+
+if(mode=="step") {
+
+    O=22;
+    P=249;
+    K=O+$W+O;
+
+    R=(O*O+P*P/4)/(2*O);
+
+    echo("R=",R);
+    echo("F=",R-O-$W/2);
+    echo("K=",K);
+
+    intersection() {
+        translate([R-O-$W/2,0])
+        circle(r=R,$fn=128);
+        translate(-[R-O-$W/2,0])
+        circle(r=R,$fn=128);
+        square(P,center=true);
+    }
+
+}
 
 
 module bedFrame(name,l,w,h,sink,xh2=-1,leftOversize=0,backOversize=0) {
@@ -104,7 +127,11 @@ module bunkBed() {
     MAT_SINK=40;
     MAT_BOTTOM_SPACE=20;
     MAT_BOTTOM_SPACE_U=100;
-    
+
+    TOP_RAIL_H1=200;
+    TOP_RAIL_H2=120;
+
+
     LADDER_WIDTH=500;
 //    MAT_BOTTOM_SPACE=MAT_D-MAT_SINK-$W;
     
@@ -148,7 +175,7 @@ module bunkBed() {
     ;
     translate([C_W,0,C_H])
     bedFrame("BED_U",MAT_L,MAT_W,MAT_BOTTOM_SPACE_U+$W+MAT_SINK,MAT_SINK,
-        leftOversize=300,backOversize=300);
+        leftOversize=TOP_RAIL_H1+TOP_RAIL_H2,backOversize=TOP_RAIL_H1+TOP_RAIL_H2);
 
 
 //    translate([0,0,200])
@@ -209,8 +236,8 @@ module bunkBed() {
     
     module topRails() {
         I_W=120;
-        I_H=200;
-        B_H=100;
+        I_H=TOP_RAIL_H1;
+        B_H=TOP_RAIL_H2;
 
         //neessenekki
         w=MAT_W+2*$W;
