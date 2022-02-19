@@ -3,6 +3,7 @@ use <furniture.scad>
 use <kitchen_box.scad>
 
 
+$drawerBoxes=true;
 
 $fronts=true;
 
@@ -10,9 +11,9 @@ $machines=true;
 $internal=true;
 $openDoors=true;
 $drawerState="CLOSED";
+$handle="125";
 
 $part=undef;
-
 
 // LG 32QN600-B Monitor 
 monitor_dims=[ 714.3 , 45.7,420.0 ,  ];
@@ -31,9 +32,9 @@ EYE_H=785+430;
 DESIRED_DESK_H=730; // +?
 DESK_H=DESIRED_DESK_H;
 
-DD=330;
-D_1=750;
-D_2=D_1-DD;
+DD=150;
+D_1=750;            //  right depth
+D_2=D_1-DD;         //  left depth
 X=[300,0,800,0,300];
 PX=prefix(0,X);
 
@@ -74,37 +75,14 @@ module room() {
 
 }
 
-
-
-
-module partsDesk(){
-
-    cabinet2( name = "D",
-        h=DESK_H ,
-        dims=[ [0,D_1],[X[0],D_1] , [ X[1],D_1] ,[X[2],D_1],[X[3],D_1], [X[4],D_2]]) {
-            
-        doors("D1",100);
-        doors("d2",200);
-        doors("d2",200);
-        doors("d2",200);
-        doors("d2",200);
-            
-    }
-    
-    translate([PX[0]+W,0,DESK_H])
-    cylinder(d=60,h=200,center=true);
-    
-    translate([(PX[1]+PX[2])/2+3*W,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
-//    translate([(PX[1]+PX[2])/2+3*W,100+monitor_dims[1]/2,DESK_H+monitor_dims[2]/2+80-18])
-//    rotate(90,[1,0,0])
-    cube(monitor_dims,center=true);
-    
-}
-
 module desk2(){
 
+    WL=350;
     SIDE_W=DD-W-W;
+    SIDE_SPACE=70;
     TOP_OVER=W;
+    $close="";
+    $front=false;
 
     translate([0,0,DESK_H])
     eXYp("top",[[0,0],[SPACE_X,0],
@@ -115,27 +93,46 @@ module desk2(){
                 ]);
 
 
-    translate([SPACE_X-SIDE_W-4*$W,LIFT_D,0])
+    echo("balTaroloMely",D_2-LIFT_D);
+if(false) {
+    translate([SPACE_X-WL,LIFT_D,0])
     cabinet2( name = "L",
         h=DESK_H ,
-        dims=[ [0,D_1], [SIDE_W+W+W,D_2]]) {
-            
+        dims=[ [0,D_1-LIFT_D], [WL-$W,D_2-LIFT_D]]) {
+            cTop()
         doors("D1",100);
         doors("d2",200);
             
     }
-    translate([0,LIFT_D,0])
-    cabinet2( name = "R",
-        h=DESK_H ,
-        dims=[ [0,D_1-LIFT_D], [SIDE_W+W+W,D_1-LIFT_D]]) {
-            
-        doors("D1",100);
-        doors("d2",200)
-        doors("d2",200);
-        doors("d2",200);
-        doors("d2",200);
+}else{
+
+    K=D_1-D_2;
+    translate([SPACE_X-WL-SIDE_SPACE,LIFT_D,0]) {
+        cabinet( name = "L",
+            w=WL,
+            h=DESK_H ,
+            d=D_2) {
+                {
+                    if(!$positive) {
+                        intersection() {
+                            translate([-W+$w/2,$d,-K])
+                            rotate(45,[1,0,0])
+                            cube([$w+2*W,2*K,2*K]);
+                            translate([-$w/2,$d-2*K,-2*K])
+                            cube([2*$w,3*K,2*K]);
+                        }
+                    }
+                }
+                cBeams()
+                shelf(K+$W)
+                space(K)
+                drawer(150)
+                drawer(150)
+                drawer(150);
+        }
     }
-    
+}
+
     translate([700-50,400,-10])
     cylinder(d=700,h=300);
 
