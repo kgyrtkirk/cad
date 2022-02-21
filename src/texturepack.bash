@@ -20,8 +20,11 @@ function x() {
 #	convert rose: -resize ${w}x${h}! \
 #		 -gravity center    -annotate 0 "$label" \
 #		in/$label.1.png
-	for i in `seq 2 $n` ; do
+	for i in `seq 1 $n` ; do
+	
 		convert -pointsize $[ 100+$i ]  -gravity center label:$label -resize ${w}x${h}! \
+			in/$label.$i.png
+echo		convert -pointsize $[ 100+$i ]  -gravity center label:$label -resize ${w}x${h}! \
 			in/$label.$i.png
 #		cp in/$label.1.png in/$label.$i.png
 	done
@@ -97,11 +100,31 @@ x CB 	1 	597 	263 	ABS-2mm 	egyeb 				FÁJL
 x A 	1 	1661 	105 	ABS-2mm 	ABS-04mm 	ABS-2mm 	ABS-2mm 	
 
 }
+function x2() {
+echo $1 $5$6$7 $6 $7
+x $5$6$7  $1 $7 $6
+
+}
+
+function eloszoba() {
+	 x2     4 ECHO: PLANAR: FRONT DoorXZ 420 244 #2;2;2;0.4
+x2      1 ECHO: PLANAR: FRONT DoorXZ 420 612 #.501 #2;2;2;0.4
+x2      2 ECHO: PLANAR: FRONT DoorXZ 420 444 #2;2;2;0.4
+x2      2 ECHO: PLANAR: FRONT DoorXZ 1170 244 #2;2;2;0.4
+x2      4 ECHO: PLANAR: FRONT DoorXZ 370 244 #2;2;2;0.4
+x2      1 ECHO: PLANAR: FRONT DoorXZ 370 612 #.501 #2;2;2;0.4
+x2      1 ECHO: PLANAR: FRONT DF150XZ 120 894 #2;2;2;0.4
+x2      3 ECHO: PLANAR: FRONT DF300XZ 270 894 #2;2;2;0.4
+
+}
+
 
 #jobb2
-gardrob
+#gardrob
+eloszoba
 
 #bash gen.sh && 
 #TexturePacker --disable-rotation  --algorithm MaxRects  --multipack --max-width 2800  --max-height 2070 --sheet 'out/main{n1}.png' --data out/sheet{n1}.list in/ 
-TexturePacker --enable-rotation  --algorithm MaxRects  --multipack --max-width 2800  --max-height 2070 --sheet 'out/main{n1}.png' --data out/sheet{n1}.list in/ 
+#TexturePacker --enable-rotation  --algorithm MaxRects  --multipack --max-width 2800  --max-height 2070 --sheet 'out/main{n1}.png' --data out/sheet{n1}.list in/ 
+TexturePacker --disable-rotation  --algorithm MaxRects  --multipack --max-width 2800  --max-height 1220 --sheet 'out/main{n1}.png' --data out/sheet{n1}.list in/ 
 

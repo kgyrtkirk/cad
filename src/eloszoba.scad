@@ -8,7 +8,7 @@ $fronts=true;
 $handle="top";
 
 $machines=true;
-$openDoors=false;
+$openDoors=true;
 $drawerState="CLOSED";
 $drawerBoxes=true;
 
@@ -22,7 +22,7 @@ ROOM_D_L=290;
 ROOM_D_R=670;
 
 D_L=ROOM_D_L-$W;
-D_R=ROOM_D_R-$W;
+D_R=ROOM_D_R-$W-$W;
 
 DOOR_H=2100;
 DOOR_W=1000;
@@ -33,7 +33,7 @@ WALL_THICK=100;
 
 SYSTEM_H=2200;
 DEPTH=400;
-FOOT_H=61;
+FOOT_H=80;
 
 U_H=470;
 SU_H=SYSTEM_H-U_H;
@@ -96,22 +96,25 @@ module room(cut) {
     }
 }
 
-D_X=[500,500,D_R-D_L+90+3*W,SHOE_CAB_W];
-P_X=-prefix(100,D_X);
+D_X=[500,500,D_R-D_L+100+4*W,SHOE_CAB_W];
+P_X=-prefix(90,D_X);
 
 module partsU() {
     CAB_H=450;
 
     translate([0,0,DOOR_H]) {
+        $close="F";
 
         translate([P_X[0],0,0])
             cabinet("U1",D_X[0],CAB_H,D_L)
             cTop()
+            shelf(200)
             doors("D1",CAB_H)
         ;
     translate([P_X[1],0,0])
         cabinet("U2",D_X[1],CAB_H,D_L)
             cTop()
+            shelf(200)
             doors("D1",CAB_H)
     ;
     translate([P_X[2],0,0])
@@ -124,33 +127,50 @@ module partsU() {
     translate([P_X[3],0,0])
         cabinet("C",D_X[3],CAB_H,D_R)
             cTop()
+            shelf(200)
             doors("U",CAB_H);
     ;
+    SP_DEPTH=200;
+    translate([P_X[3]-$W,D_R-SP_DEPTH,0])
+        eYZ($close="foU","SpacerTopR",SP_DEPTH,CAB_H);
     }
+
 }
 module empty(){}
 
 module partsL() {
     L_H1=400;
+    L_H2=L_H1+1200;
+    L_H3=DOOR_H;
+
 
     translate([P_X[0],0,FOOT_H])
-        cabinet("L1",D_X[0],L_H1+1200,D_L)
+        cabinet("L1",D_X[0],L_H2,D_L)
 //            cTop(outer=true)
             cBeams()
-            shelf(L_H1)
-            shelf(800)
-            shelf(1200)
+            shelf(500)
+            shelf(300)
+            shelf(700)
+            shelf(900)
+            shelf(1200+$W)
             doors("D1",1200)
             doors("D1",L_H1)
     ;
+
+    translate([P_X[0],0,L_H2+FOOT_H])
+        eYZ($close="Foub","SpacerLowLe",D_L,L_H3-L_H2-FOOT_H);
+    translate([-100,0,L_H2+FOOT_H])
+        eYZ($close="Foub","SpacerLowLe",D_L,L_H3-L_H2-FOOT_H);
+
     translate([P_X[1],0,FOOT_H])
         cabinet("L2",D_X[1],L_H1,D_L)
             cBeams()
+            shelf(200)
             doors("D1",L_H1)
             skyFoot(FOOT_H,D_X[0]+D_X[1])
     ;
     translate([P_X[2],0,0])
-        cabinet2("L3",1000,L_H1,dims=[ [0,D_R], [D_X[2]-2*W,D_L] ],foot=61) {
+        cabinet2("L3",1000,L_H1,dims=[ [0,D_R], [D_X[2]-2*W,D_L] ],foot=FOOT_H) {
             empty();
 //            cBeams()
 //space(100)
@@ -175,10 +195,10 @@ module partsL() {
             skyFoot(FOOT_H)
     ;
     translate([P_X[3]-$W,D_R-61,0])
-        eYZ($close="fo","SpaceR",61,SHOE_CAB_H);
+        eYZ($close="fo","SpacerLowR",61,SHOE_CAB_H);
 
     translate([P_X[3]-$W,0,SHOE_CAB_H])
-        eXY($close="LF","SpaceR",SHOE_CAB_W+$W,D_R+$W);
+        eXY($close="LF","ShoeTop",SHOE_CAB_W+$W,D_R+$W);
 
 
     translate([0,0,L_H1+FOOT_H])
@@ -186,11 +206,11 @@ module partsL() {
         d1=D_L+$W;
         d2=D_R+$W;
         w=D_X[2];
-//        translate([P_X[1],0,0])
-  //      eXY("Cover12",D_X[0]+D_X[1],D_L+$W,rot=false);
+        translate([P_X[1],0,0])
+        eXY("SCover12",D_X[1],D_L+$W,rot=false);
 
-//        translate([P_X[2],0,0]) 
-  //      eXYp("Cover3",[[0,0],[0,d2],[W+sin(45)*W,d2],[w,d1],[w,0] ]);
+        translate([P_X[2],0,0]) 
+        eXYp("SCover3",[[0,0],[0,d2],[W+sin(45)*W,d2],[w,d1],[w,0] ]);
     }
 
 
@@ -198,7 +218,13 @@ module partsL() {
 
 module hangers(){
 
-    for(o=[P_X[0]-100:-200:P_X[2]])
+    dist=170;
+    x0=P_X[0]-100;
+    x1=x0-5*dist;
+    translate([x1,$W,1900-100])
+    eXZ($close="OULR","basicHStand",x0-x1,200);
+
+    for(o=[x0-dist/2:-dist:x1])
     translate([o,0,1900])
         if($positive) {
             cube(100,center=true);
@@ -223,3 +249,12 @@ echo(A);
 echo("remain", A+P_X[3]);
 echo("seat_w", D_X[2]+D_X[1]);
 
+echo("QQ",atan2(D_R-D_L,D_X[2]));
+
+
+// hinge:
+// https://publications.blum.com/2020/catalogue/hu/140/
+// lap delta: 9.5
+// 79B3451
+// 173H7100
+// 171A5500

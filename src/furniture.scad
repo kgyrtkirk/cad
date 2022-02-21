@@ -137,7 +137,7 @@ module eYZ(name, dY, dZ, rot=false) {
 }
 
 module eFRONT(name, dX, dZ, rot=false) {
-    O=25;
+    O=26;
     if($handle=="top") {
         if($positive) {
             translate([0,0,dZ-O])
@@ -181,7 +181,7 @@ module eXYp(name, dims) {
 use <syms.scad>
 
 module hinges(name,ww,hh) {
-    assert(ww<630,str("wider door hinge count calc missing"," ",name," ",ww));
+    assert(ww<750,str("wider door hinge count calc missing"," ",name," ",ww));
 
     echo("__HINGE",name,2);
 }
@@ -376,7 +376,7 @@ module cabinet2(name,w,h,dims,foot=0) {
         inner=(0<i && i<n);
         off=inner?$W:0;
         translate([x[i],0,off+foot])
-        eYZ(str(name,i),depths[i],h-2*off);
+        eYZ($close="oU",str(name,i),depths[i],h-2*off);
     }
     
     for(z=[0,h-$W])
@@ -681,7 +681,7 @@ module shelf(h,SHELF_INSET=12,external=false,alignTop=false) {
     
     depth=$d-BACK_WIDTH-(external?0:SHELF_INSET);
     w=$w-2*$W;
-    color([0,1,1])
+//    color([0,1,1])
     translate([$W,BACK_WIDTH,-h-(alignTop?$W:0)])
     eXY(str($name,"-S",external?"-EX":"-IN",w),w,depth);
     
