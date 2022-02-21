@@ -8,7 +8,7 @@ $fronts=true;
 $handle="top";
 
 $machines=true;
-$openDoors=true;
+$openDoors=false;
 $drawerState="CLOSED";
 $drawerBoxes=true;
 
@@ -44,6 +44,9 @@ SHOE_CAB_W=900;
 
 DEPTH_A=560;
 
+
+// https://www.remab.sk/content/images/thumbs/0008615_zaves-45iii-blum-cliptop-blumotion-79b3450.jpeg
+// blum -45 ; width: +11.2
 
 module room(cut) {
     D_L=undef;
@@ -186,8 +189,8 @@ module partsL() {
 //        translate([P_X[1],0,0])
   //      eXY("Cover12",D_X[0]+D_X[1],D_L+$W,rot=false);
 
-        translate([P_X[2],0,0]) 
-        eXYp("Cover3",[[0,0],[0,d2],[W+sin(45)*W,d2],[w,d1],[w,0] ]);
+//        translate([P_X[2],0,0]) 
+  //      eXYp("Cover3",[[0,0],[0,d2],[W+sin(45)*W,d2],[w,d1],[w,0] ]);
     }
 
 
@@ -218,3 +221,5 @@ posNeg() {
 echo(A);
 
 echo("remain", A+P_X[3]);
+echo("seat_w", D_X[2]+D_X[1]);
+

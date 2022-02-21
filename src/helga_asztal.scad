@@ -40,16 +40,21 @@ PX=prefix(0,X);
 
 LIFT_D=140;
 
+D_K=D_1-D_2;
 
 echo("desk_monitor_gap",EYE_H-DESIRED_DESK_H-monitor_dims[1]);
 
 SPACE_X=1320; // approx
 module room() {
-    L=1350-15;
+    L=1350-15; // 1337 - this is very good
     WW=100;
     H=835;
     P_W=45;
+
     P_H=880-835;
+
+    EDGE_D=30;
+    EDGE_H=80;
     color([0,1,1]) {
         mirror([0,1,0])
         cube([L,WW,H]);
@@ -73,16 +78,27 @@ module room() {
     translate([L,0,770-650])
     cube([1000,WW,650]);
 
+    //szegely
+    color([0,1,0])
+    cube([L+100,EDGE_D,EDGE_H]);
+
+    //szegely
+    color([0,1,0])
+    cube([EDGE_D,2*L+100,EDGE_H]);
+
 }
 
 module desk2(){
 
     WL=350;
+    WR=200;
+    HR=500;
     SIDE_W=DD-W-W;
     SIDE_SPACE=70;
     TOP_OVER=W;
     $close="";
     $front=false;
+    FOOT_H=80;
 
     translate([0,0,DESK_H])
     eXYp("top",[[0,0],[SPACE_X,0],
@@ -107,6 +123,7 @@ if(false) {
 }else{
 
     K=D_1-D_2;
+    
     translate([SPACE_X-WL-SIDE_SPACE,LIFT_D,0]) {
         cabinet( name = "L",
             w=WL,
@@ -131,14 +148,41 @@ if(false) {
                 drawer(150);
         }
     }
+
+
+    translate([0,1500,FOOT_H])
+    rotate(-90)
+    cabinet( name = "R",
+        w=1500,
+        h=HR-FOOT_H,
+        d=WR)
+            cTop()
+            shelf(300,internal=false)
+            space(300)
+            skyFoot(FOOT_H);
 }
 
-    translate([700-50,400,-10])
+
+
+    module sideShelf() {
+        eXY($close="LF","SideShelf",SIDE_SPACE,D_1-$W);
+    }
+    translate([SPACE_X-SIDE_SPACE,0,0]) {
+        T=DESK_H-D_K-$W;
+        for(z=[0,150,300,450])
+        translate([0,0,T-z])
+        sideShelf();
+    }
+
+
+
+    echo("remainRight",SPACE_X-700-WL-SIDE_SPACE);
+    translate([SPACE_X-700/2-WL-SIDE_SPACE,400,-10])
     cylinder(d=700,h=300);
 
-
 //    translate([SPACE_X/2,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
-    translate([SPACE_X/2,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
+    translate([WR+700/2,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
+//    translate([SPACE_X/2,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
 //    translate([(PX[1]+PX[2])/2+3*W,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
 //    translate([(PX[1]+PX[2])/2+3*W,100+monitor_dims[1]/2,DESK_H+monitor_dims[2]/2+80-18])
 //    rotate(90,[1,0,0])
