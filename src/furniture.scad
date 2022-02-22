@@ -198,7 +198,7 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
             }
         }else{
             translate(-dim/2)
-            eFRONT($front=true,$close="LROU","Door",dim[0],dim[2]);
+            eFRONT($front=true,$close="LROU",str($name,"Door"),dim[0],dim[2]);
         }
     }
     FRONT_SP=2;
@@ -439,7 +439,6 @@ module cabinet2(name,w,h,dims,foot=0) {
         children();
     }
 }
-
 
 module orient(mode) {
     if(mode[2]=="X" && mode[3] =="Y") {
@@ -730,7 +729,7 @@ module hanger(h) {
 }
 
 
-module drawer(h,withLock=false) {
+module drawer(h,withLock=false,type="std") {
     // 90x60
     LOCK_SP=5;
     LOCKDIM=[90,30,60];
@@ -789,7 +788,6 @@ module drawer(h,withLock=false) {
         cube([ix,id,3]);
         echo(str(name,"Fl"),str(ix,"x",id));
         }
-        
         
     }
     

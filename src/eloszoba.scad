@@ -9,7 +9,7 @@ $handle="top";
 
 $machines=true;
 $openDoors=true;
-$drawerState="CLOSED";
+$drawerState="OPEN";
 $drawerBoxes=true;
 
 $part=undef;
