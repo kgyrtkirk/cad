@@ -33,7 +33,7 @@ WALL_THICK=100;
 
 SYSTEM_H=2200;
 DEPTH=400;
-FOOT_H=80;
+FOOT_H=61;
 
 U_H=470;
 SU_H=SYSTEM_H-U_H;
@@ -109,26 +109,26 @@ module partsU() {
             cabinet("U1",D_X[0],CAB_H,D_L)
             cTop()
             shelf(200)
-            doors("D1",CAB_H)
+            doors("D",CAB_H)
         ;
     translate([P_X[1],0,0])
         cabinet("U2",D_X[1],CAB_H,D_L)
             cTop()
             shelf(200)
-            doors("D1",CAB_H)
+            doors("D",CAB_H)
     ;
     translate([P_X[2],0,0])
         cabinet2("U3",1000,CAB_H,dims=[ [0,D_R], [D_X[2]-2*W,D_L] ]) {
             empty();
             cBeams2()
-            doors("D1",CAB_H,cnt=1);
+            doors("D",CAB_H,cnt=1);
             ;
         }
     translate([P_X[3],0,0])
-        cabinet("C",D_X[3],CAB_H,D_R)
+        cabinet("U4",D_X[3],CAB_H,D_R)
             cTop()
             shelf(200)
-            doors("U",CAB_H);
+            doors("D",CAB_H);
     ;
     SP_DEPTH=200;
     translate([P_X[3]-$W,D_R-SP_DEPTH,0])
@@ -139,6 +139,7 @@ module partsU() {
 module empty(){}
 
 module partsL() {
+    $close="F";
     L_H1=400;
     L_H2=L_H1+1200;
     L_H3=DOOR_H;
@@ -185,7 +186,7 @@ module partsL() {
     SHOE_CAB_H=1050+FOOT_H;
 
     translate([P_X[3],0,FOOT_H])
-        cabinet("C",SHOE_CAB_W,SHOE_CAB_H-FOOT_H,D_R)
+        cabinet("L4",SHOE_CAB_W,SHOE_CAB_H-FOOT_H,D_R)
 //            cTop(outer=true)
             cBeams()
             drawer(150)
@@ -222,7 +223,7 @@ module hangers(){
     x0=P_X[0]-100;
     x1=x0-5*dist;
     translate([x1,$W,1900-100])
-    eXZ($close="OULR","basicHStand",x0-x1,200);
+    eXZ($close="OULR","HangerStand",x0-x1,200);
 
     for(o=[x0-dist/2:-dist:x1])
     translate([o,0,1900])

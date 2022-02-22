@@ -341,7 +341,7 @@ module skyFoot(h,w=undef) {
     width=(w==undef)? $w : w;
 
     translate([0,$d-50,-h])
-    eXZ(str($name,"Foot"),width,h);
+    eXZ($close="oulr",str($name,"Foot"),width,h);
 
 }
 
@@ -412,6 +412,15 @@ module cabinet2(name,w,h,dims,foot=0) {
     }
 
 
+        if($positive) {
+//                bw=widths[n]+$W-15;
+                bw=x[n]+$W-15;
+                bh=h-15;
+                color([1,0,0])
+                translate([7.5,3,foot+7.5])
+                cube([bw,1,bh]);
+                echo(str(name,"-back"),str(bh,"x",bw));
+            }
 
     if(false){
         translate([$W,0,foot])

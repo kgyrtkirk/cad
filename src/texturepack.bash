@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+#grep MAIN eloszoba.md |sort|uniq -c|tr '*;"' '  '|awk '{print "x",$5,$1,$6,$7}'
+
 set -e 
 function t() {
 
@@ -21,7 +23,8 @@ function x() {
 #		 -gravity center    -annotate 0 "$label" \
 #		in/$label.1.png
 	for i in `seq 1 $n` ; do
-	
+		t=in/$label.$i.png
+		[ -e $t ] && echo "error: $t exists" && exit 1
 		convert -pointsize $[ 100+$i ]  -gravity center label:$label -resize ${w}x${h}! \
 			in/$label.$i.png
 echo		convert -pointsize $[ 100+$i ]  -gravity center label:$label -resize ${w}x${h}! \
@@ -106,7 +109,7 @@ x $5$6$7  $1 $7 $6
 
 }
 
-function eloszoba() {
+function eloszobaFront() {
 	 x2     4 ECHO: PLANAR: FRONT DoorXZ 420 244 #2;2;2;0.4
 x2      1 ECHO: PLANAR: FRONT DoorXZ 420 612 #.501 #2;2;2;0.4
 x2      2 ECHO: PLANAR: FRONT DoorXZ 420 444 #2;2;2;0.4
@@ -118,6 +121,51 @@ x2      3 ECHO: PLANAR: FRONT DF300XZ 270 894 #2;2;2;0.4
 
 }
 
+function eloszoba() {
+	x basicHStandXZ 1 196 846
+x C-beamXY 2 100 864
+x CBotXY 2 632 864
+x CD150AXZ 2 93.6 837.8
+x CD150BYZ 2 93.6 588
+x CD300AXZ 6 243.6 837.8
+x CD300BYZ 6 243.6 588
+x CFootXZ 1 80 900
+x C-S-IN864XY 1 616 864
+x CTopXY 1 632 864
+x CYZ 2 1047.6 632
+x aCYZ 2 447.6 632
+x L1-beamFXY 1 272 464
+x L1BotXY 1 270 464
+x L1-S-IN464XY 5 256 464
+x L1YZ 2 1597.6 270
+x L2-beamFXY 1 272 464
+x L2BotXY 1 270 464
+x L2FootXZ 1 80 1000
+x L2-S-IN464XY 1 256 464
+x L2YZ 2 397.6 270
+x L30YZ 1 397.6 634
+x L31YZ 1 397.6 272
+x L3-beamFXY 1 272 498
+x L3Foot1XZ 1 77.6 660.175
+x SCover12XY 1 290 500
+x ShoeTopXY 1 650 916
+x SpacerLowLeYZ 2 419.2 269.6
+x SpacerLowRYZ 1 1129.6 60.6
+x SpacerTopRYZ 1 447.6 199.6
+x U1BotXY 1 270 464
+x U1-S-IN464XY 1 254 464
+x U1TopXY 1 270 464
+x U1YZ 2 447.6 270
+x U2BotXY 1 270 464
+x U2-S-IN464XY 1 254 464
+x U2TopXY 1 270 464
+x U2YZ 2 447.6 270
+x U30YZ 1 447.6 634
+x U31YZ 1 447.6 272
+x U3-beamFXY 1 270 498
+
+}
+
 
 #jobb2
 #gardrob
@@ -125,6 +173,6 @@ eloszoba
 
 #bash gen.sh && 
 #TexturePacker --disable-rotation  --algorithm MaxRects  --multipack --max-width 2800  --max-height 2070 --sheet 'out/main{n1}.png' --data out/sheet{n1}.list in/ 
-#TexturePacker --enable-rotation  --algorithm MaxRects  --multipack --max-width 2800  --max-height 2070 --sheet 'out/main{n1}.png' --data out/sheet{n1}.list in/ 
-TexturePacker --disable-rotation  --algorithm MaxRects  --multipack --max-width 2800  --max-height 1220 --sheet 'out/main{n1}.png' --data out/sheet{n1}.list in/ 
+TexturePacker --enable-rotation  --algorithm MaxRects  --multipack --max-width 2800  --max-height 2070 --sheet 'out/main{n1}.png' --data out/sheet{n1}.list in/ 
+#TexturePacker --disable-rotation  --algorithm MaxRects  --multipack --max-width 2800  --max-height 1220 --sheet 'out/main{n1}.png' --data out/sheet{n1}.list in/ 
 
