@@ -729,7 +729,12 @@ module hanger(h) {
 }
 
 
-module drawer(h,withLock=false,type="std") {
+function smartSlideLen(l) =  (l>601) ? 600 : -1;
+
+
+
+
+module drawer(h,withLock=false,type="smart") {
     // 90x60
     LOCK_SP=5;
     LOCKDIM=[90,30,60];
@@ -746,8 +751,12 @@ module drawer(h,withLock=false,type="std") {
     
     ix=$w-2*qx;
     iz=h-(withLock?LOCKDIM[2]+LOCK_SP+$W:3*qz);  //  -4W
-    id=$d-10;
+    id=(type=="smart"?smartSlideLen($d)-10:$d-10);
     
+    if(id < 0) {
+        assert(false, "id undef");
+    }
+
     o_y=($drawerState=="CLOSED" ? 0 : id-50);
     
     translate([0,$d+o_y,-h])
@@ -771,22 +780,39 @@ module drawer(h,withLock=false,type="std") {
   //          eXZ("DF",ww,hh);
         }
         if($drawerBoxes) {
-            $close="Olru";
-        translate([qx,-$W,qz])
-        eXZ(str(name,"A"),ix,iz);
-        translate([qx,-id,qz])
-        eXZ(str(name,"A"),ix,iz);
+            floorOff=7;
+            if(type=="smart") {
+                // smart
+                $close="Ou";
+                translate([qx+$W,-$W,qz+floorOff])
+                eXZ(str(name,"A"),ix-2*$W,iz-floorOff);
+                translate([qx+$W,-id,qz+floorOff])
+                eXZ(str(name,"A"),ix-2*$W,iz-floorOff);
 
-        translate([qx,-id+$W,qz])
-        eYZ(str(name,"B"),id-2*$W,iz);
-//        color([0,1,0])
-        translate([$w-$W-qx,-id+$W,qz])
-        eYZ(str(name,"B"),id-2*$W,iz);
-        
-//        color([1,0,0])
-        translate([qx,-id,qz-3])
-        cube([ix,id,3]);
-        echo(str(name,"Fl"),str(ix,"x",id));
+                translate([qx,-id,qz])
+                eYZ(str(name,"B"),id,iz);
+                translate([$w-$W-qx,-id,qz])
+                eYZ(str(name,"B"),id,iz);
+            
+                translate([qx+$W-7.5,-id,qz+floorOff-3])
+                cube([ix-15,id,3]);
+                echo(str(name,"Fl"),str(ix-15,"x",id));
+            }else {
+                $close="Olru";
+                translate([qx,-$W,qz])
+                eXZ(str(name,"A"),ix,iz);
+                translate([qx,-id,qz])
+                eXZ(str(name,"A"),ix,iz);
+
+                translate([qx,-id+$W,qz])
+                eYZ(str(name,"B"),id-2*$W,iz);
+                translate([$w-$W-qx,-id+$W,qz])
+                eYZ(str(name,"B"),id-2*$W,iz);
+            
+                translate([qx,-id,qz-3])
+                cube([ix,id,3]);
+                echo(str(name,"Fl"),str(ix,"x",id));
+            }
         }
         
     }
