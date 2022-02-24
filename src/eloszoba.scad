@@ -6,6 +6,8 @@ $close="";
 $front=false;
 $fronts=true;
 $handle="top";
+$closeWFront=[1,1];
+$closeWMain=[.4,2];
 
 $machines=true;
 $openDoors=true;

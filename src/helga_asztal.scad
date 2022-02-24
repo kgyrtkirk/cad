@@ -13,10 +13,20 @@ $openDoors=true;
 $drawerState="CLOSED";
 $handle="125";
 
+$closeWMain=[.4,2];
+$closeWFront=[1,1];
+$defaultDrawer="std";
+
 $part=undef;
 
 // LG 32QN600-B Monitor 
 monitor_dims=[ 714.3 , 45.7,420.0 ,  ];
+// vevor stroke: 500
+VEVOR_STROKE=500;
+//VEVOR_H=500;
+
+
+
 
 //computer_case=[ 175,325,408 ];
 computer_case=[ 190,375,411 ];

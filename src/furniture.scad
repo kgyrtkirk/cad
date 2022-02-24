@@ -116,8 +116,13 @@ module eXY(name, dX, dY, rot=false) {
 function cLookup(s,key,value) = len(search(key, s))>0 ? value : 0;
 
 function cLookup2(s,k1,v1,k2,v2) = cLookup(s,k1,v1) + cLookup(s,k2,v2);
+function cLookup3(s,k1,v1,k2,v2,k3,v3) = cLookup(s,k1,v1) + cLookup(s,k2,v2) + cLookup(s,k3,v3);
 
-function cLookupX(s, k1, k2) = cLookup2(s,k1,.4,k2,2);
+function cWidth1() = $front ? $closeWFront[0] : $closeWMain[0];
+function cWidth2() = $front ? $closeWFront[1] : $closeWMain[1];
+
+
+function cLookupX(s, k1, k2) = cLookup2(s,k1,cWidth1(),k2,cWidth2());
 
 function cLookupL() = cLookupX($close, "l", "L");
 function cLookupR() = cLookupX($close, "r", "R");
@@ -734,7 +739,7 @@ function smartSlideLen(l) =  (l>601) ? 600 : -1;
 
 
 
-module drawer(h,withLock=false,type="smart") {
+module drawer(h,withLock=false,type1="def") {
     // 90x60
     LOCK_SP=5;
     LOCKDIM=[90,30,60];
@@ -745,10 +750,11 @@ module drawer(h,withLock=false,type="smart") {
 
     ww=$w-FRONT_SP;
     hh=h-FRONT_SP;
+
+    type=(type1=="def")?$defaultDrawer:type1;
     
-    qx=$W+12.7;
+    qx=(type=="smart"?$W+4.5:$W+12.7);
     qz=$W;
-    
     ix=$w-2*qx;
     iz=h-(withLock?LOCKDIM[2]+LOCK_SP+$W:3*qz);  //  -4W
     id=(type=="smart"?smartSlideLen($d)-10:$d-10);
@@ -796,7 +802,7 @@ module drawer(h,withLock=false,type="smart") {
             
                 translate([qx+$W-7.5,-id,qz+floorOff-3])
                 cube([ix-15,id,3]);
-                echo(str(name,"Fl"),str(ix-15,"x",id));
+                echo(str(name,"-dback"),str(ix-15,"x",id));
             }else {
                 $close="Olru";
                 translate([qx,-$W,qz])
@@ -811,7 +817,7 @@ module drawer(h,withLock=false,type="smart") {
             
                 translate([qx,-id,qz-3])
                 cube([ix,id,3]);
-                echo(str(name,"Fl"),str(ix,"x",id));
+                echo(str(name,"-dback"),str(ix,"x",id));
             }
         }
         
