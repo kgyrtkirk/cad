@@ -225,3 +225,8 @@ if(mode=="radiator" ) {
     customRadiator();
 }
 
+
+difference() {
+cube(10000);
+    cube(10000,center=true);
+}

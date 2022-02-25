@@ -9,7 +9,7 @@ $fronts=true;
 
 $machines=true;
 $internal=true;
-$openDoors=true;
+$openDoors=false;
 $drawerState="CLOSED";
 $handle="125";
 
@@ -24,6 +24,7 @@ monitor_dims=[ 714.3 , 45.7,420.0 ,  ];
 // vevor stroke: 500
 VEVOR_STROKE=500;
 //VEVOR_H=500;
+CHAIR_D=700; // 67~68 
 
 
 
@@ -35,20 +36,23 @@ computer_case=[ 190,375,411 ];
 W=18;
 $W=18;
 
-
-FOOT=120;
-
 EYE_H=785+430;
 DESIRED_DESK_H=730; // +?
 DESK_H=DESIRED_DESK_H;
 
+
+LIFT_D=120;
+LIFT_Y=45;
+
+LIFT_LOSS=LIFT_D+LIFT_Y;
+
+
 DD=150;
 D_1=750;            //  right depth
-D_2=D_1-DD;         //  left depth
+D_2=D_1-LIFT_LOSS;         //  left depth
 X=[300,0,800,0,300];
 PX=prefix(0,X);
 
-LIFT_D=140;
 
 D_K=D_1-D_2;
 
@@ -83,6 +87,11 @@ module room() {
         cube([L,P_W,P_H]);
     }
     
+    // wall connector
+    color([1,0,0])
+    translate([30,0,80])
+    cube([50,50,200]);
+
     // radiator
     color([1,0,0])
     translate([L,0,770-650])
@@ -95,6 +104,7 @@ module room() {
     //szegely
     color([0,1,0])
     cube([EDGE_D,2*L+100,EDGE_H]);
+    
 
 }
 
@@ -119,7 +129,7 @@ module desk2(){
                 ]);
 
 
-    echo("balTaroloMely",D_2-LIFT_D);
+    echo("balTaroloMely",D_2-LIFT_LOSS);
 if(false) {
     translate([SPACE_X-WL,LIFT_D,0])
     cabinet2( name = "L",
@@ -134,7 +144,7 @@ if(false) {
 
     K=D_1-D_2;
     
-    translate([SPACE_X-WL-SIDE_SPACE,LIFT_D,0]) {
+    translate([SPACE_X-WL-SIDE_SPACE,LIFT_LOSS,0]) {
         cabinet( name = "L",
             w=WL,
             h=DESK_H ,
@@ -160,16 +170,17 @@ if(false) {
     }
 
 
-    translate([0,1500,FOOT_H])
+    translate([0,1500+LIFT_LOSS,FOOT_H])
     rotate(-90)
     cabinet( name = "R",
         w=1500,
         h=HR-FOOT_H,
         d=WR)
             cTop()
-            shelf(300,internal=false)
-            space(300)
+            shelf(300,external=true)
+            space(HR-300-FOOT_H)
             skyFoot(FOOT_H);
+            
 }
 
 
@@ -185,18 +196,43 @@ if(false) {
     }
 
 
+    echo("remainRight",SPACE_X-CHAIR_D-WL-SIDE_SPACE);
+    translate([SPACE_X-CHAIR_D/2-WL-SIDE_SPACE,600,-10])
+    cylinder(d=CHAIR_D,h=300);
 
-    echo("remainRight",SPACE_X-700-WL-SIDE_SPACE);
-    translate([SPACE_X-700/2-WL-SIDE_SPACE,400,-10])
-    cylinder(d=700,h=300);
+    module liftBox() {
+        h=285;
+        translate([0,0,$openDoors?0:-h+$W])
+        cylinder(d=60,h=h);
 
-//    translate([SPACE_X/2,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
-    translate([WR+700/2,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
-//    translate([SPACE_X/2,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
-//    translate([(PX[1]+PX[2])/2+3*W,100+monitor_dims[1]/2,EYE_H-monitor_dims[2]/2])
-//    translate([(PX[1]+PX[2])/2+3*W,100+monitor_dims[1]/2,DESK_H+monitor_dims[2]/2+80-18])
-//    rotate(90,[1,0,0])
-    cube(monitor_dims,center=true);
+    }
+
+    if($machines)
+    color([0,0,1]) {
+        up=true;
+        x=WR+CHAIR_D/2;
+        y=LIFT_LOSS-monitor_dims[1]/2;
+        z=EYE_H-monitor_dims[2]/2-(up?0:VEVOR_STROKE);
+        translate([x,y,z])
+        cube(monitor_dims,center=true);
+
+        translate([x,LIFT_Y+50/2,DESK_H])
+        cube([50,50,1000],center=true);
+
+        translate([x-100,LIFT_Y,0])
+        cube([100,70,70]);
+
+        translate([50,50,DESK_H])
+        liftBox();
+    }
+
+
+    if($machines) {
+        translate([0,50+120,FOOT_H+$W])
+        rotate(0)
+        cube(computer_case);
+    }
+
 
 }
 
@@ -206,5 +242,6 @@ posNeg() {
 //   partsDesk();
 
     desk2();
+    
 }
 

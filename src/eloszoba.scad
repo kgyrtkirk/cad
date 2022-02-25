@@ -13,6 +13,7 @@ $machines=true;
 $openDoors=true;
 $drawerState="OPEN";
 $drawerBoxes=true;
+$defaultDrawer="smart";
 
 $part=undef;
 
@@ -191,10 +192,10 @@ module partsL() {
         cabinet("L4",SHOE_CAB_W,SHOE_CAB_H-FOOT_H,D_R)
 //            cTop(outer=true)
             cBeams()
-            drawer(150,type="smart")
-            drawer(300,type="smart")
-            drawer(300,type="smart")
-            drawer(300,type="smart")
+            drawer(150)
+            drawer(300)
+            drawer(300)
+            drawer(300)
             skyFoot(FOOT_H)
     ;
     translate([P_X[3]-$W,D_R-61,0])

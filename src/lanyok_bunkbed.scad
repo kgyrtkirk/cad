@@ -5,10 +5,13 @@ use <furniture.scad>
 $fronts=true;
 $machines=true;
 $internal=false;
-$openDoors=open;
+$openDoors=true;
 $drawerState="CLOSED";
 $drawerBoxes=true;
 $cheat=false;
+$defaultDrawer="std";
+$closeWMain=[.4,2];
+$closeWFront=[2,2];
 
 
 $part=undef;
