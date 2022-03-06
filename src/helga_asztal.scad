@@ -24,13 +24,13 @@ monitor_dims=[ 714.3 , 45.7,420.0 ,  ];
 // vevor stroke: 500
 VEVOR_STROKE=500;
 //VEVOR_H=500;
-CHAIR_D=700; // 67~68 
+CHAIR_D=680;//700; // 67~68 
 
 
 
 
 //computer_case=[ 175,325,408 ];
-computer_case=[ 190,375,411 ];
+computer_case=[ 195,375,411 ];
 
 
 W=18;
@@ -111,7 +111,7 @@ module room() {
 module desk2(){
 
     WL=350;
-    WR=200;
+    WR=200+$W;
     HR=500;
     SIDE_W=DD-W-W;
     SIDE_SPACE=70;
@@ -144,10 +144,11 @@ if(false) {
 
     K=D_1-D_2;
     
-    translate([SPACE_X-WL-SIDE_SPACE,LIFT_LOSS,0]) {
+    DH=(DESK_H-FOOT_H-K)/4;
+    translate([SPACE_X-WL-SIDE_SPACE,LIFT_LOSS,FOOT_H]) {
         cabinet( name = "L",
             w=WL,
-            h=DESK_H ,
+            h=DESK_H -FOOT_H,
             d=D_2) {
                 {
                     if(!$positive) {
@@ -161,11 +162,14 @@ if(false) {
                     }
                 }
                 cBeams()
-                shelf(K+$W)
-                space(K)
-                drawer(150)
-                drawer(150)
-                drawer(150);
+                shelf(K+$W,external=true)
+                space(-$W)
+                drawer(DH)
+                drawer(DH)
+                drawer(DH)
+                drawer(DH)
+                skyFoot(FOOT_H)
+                ;
         }
     }
 
