@@ -2,7 +2,7 @@ use <threadlib/threadlib.scad>
 use <syms.scad>
 
 
-mode="m14test";
+mode="edgeDrill2";
 
 if(mode=="edge") {
     
@@ -102,6 +102,9 @@ module edgeDrill2() {
 
             translate([0,L/2+i*28,$W/2])
             rotate(90,[0,1,0])
+            children(i==0?0:1);
+            translate([$W,L/2+i*28,$W/2])
+            rotate(-90,[0,1,0])
             children(i==0?0:1);
         }
     }
