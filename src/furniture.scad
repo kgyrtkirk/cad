@@ -51,6 +51,14 @@ module closeColor(v) {
 }
 
 module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
+    if($part == name && $W>1) {
+        W0=$W;
+        W1=.1;
+        $W=W1;
+        translate([0,0,W0/2-W1/2])
+        plain(name,w0,h0,closeU,closeD,closeR,closeL,rot);
+    }else
+
     if(!rot) {
         translate([0,h0,0])
         rotate(-90)
@@ -161,8 +169,6 @@ module eXZ(name, dX, dZ, rot=false) {
         translate([0,0,dZ])
         rotate(-90,[1,0,0])
         plain(str(name,"XZ"),dX,dZ,cLookupR(),cLookupL(),cLookupB(),cLookupT(),rot=rot);
-//        plain(str(name,"XZ"),dX,dZ,toBool($closeRight),toBool($closeLeft),toBool($closeTop),toBool($closeBottom));
-//        cube([dX,$W,dZ]);
 }
 
 module eXY2(name, dX, dY, dY2=undef) {
@@ -445,18 +451,23 @@ module cabinet2(name,w,h,dims,foot=0) {
     }
 }
 
+function tail(n,s) = (n>0) ? str(s[len(s)-n],tail(n-1,s)) : "";
+
 module orient(mode) {
-    if(mode[2]=="X" && mode[3] =="Y") {
+
+    o=tail(2,mode);
+
+    if(o[0]=="X" && o[1] =="Y") {
         children();
-    } else if(mode[2]=="X" && mode[3] =="Z") {
-        rotate(99,[0,1,0])
+    } else if(o[0]=="X" && o[1] =="Z") {
+        rotate(90,[1,0,0])
         children();
-    } else if(mode[2]=="Y" && mode[3] =="Z") {
+    } else if(o[0]=="Y" && o[1] =="Z") {
         rotate(180,[0,0,1])
         rotate(90,[0,1,0])
         children();
     } else {
-        error("x");
+        assert(false, str("orient failed",":",mode,";",tail(2,mode)));
     }
 }
 
@@ -736,7 +747,89 @@ module hanger(h) {
 
 function smartSlideLen(l) =  (l>601) ? 600 : -1;
 
+module jointYP(type="TET") {
+    joint(type);
+}
 
+module jointYN(type="TET") {
+    mirror([0,0,1])
+    joint(type);
+}
+
+module toFLB() {
+    mirror([0,0,1])
+    children();
+}
+module toFLT() {
+    children();
+}
+module toFRT() {
+    mirror([1,0,0])
+    children();
+}
+
+module toFRB() {
+    mirror([1,0,0])
+    mirror([0,0,1])
+    children();
+}
+
+module toBRT() {
+    mirror([0,1,0])
+    toFRT()
+    children();
+}
+module toBRB() {
+    mirror([0,0,1])
+    toBRT()
+    children();
+}
+
+module toBLT() {
+    mirror([0,1,0])
+    children();
+}
+module toBLB() {
+    mirror([0,0,1])
+    toBLT()
+    children();
+}
+
+module joint(type="TET") {
+
+    L=98;
+    translate([0,0,0])
+    if(!$positive) {
+        translate([$W/2,$W/4,L/2])
+        rotate(-90,[1,0,0])
+        cylinder(d=6,h=50);
+
+        for(k=[-1,1])
+        translate([$W/2,$W/4,L/2+k*28])
+        rotate(-90,[1,0,0])
+        cylinder(d=8,h=40);
+
+
+        translate([$W/4,$W+34,L/2])
+        rotate(90,[0,1,0])
+        cylinder(d=15,h=$W);
+
+//        cube(100);
+    }
+}
+
+module joints(len) {
+    L=98;
+    if(len<190) {
+        joint();
+    } else {
+        joint();
+        translate([0,0,len-L])
+        joint();
+    }
+
+
+}
 
 
 module drawer(h,withLock=false,type1="def") {
@@ -816,7 +909,10 @@ module drawer(h,withLock=false,type1="def") {
                 eYZ(str(name,"B"),id-2*$W,iz);
             
                 translate([qx,-id,qz-3])
-                cube([ix,id,3]);
+                union() {
+   //                 cube([ix,id,3]);
+                    eXY(str(name,"-dback"),$W=3,ix,id);
+                }
                 echo(str(name,"-dback"),str(ix,"x",id));
             }
         }

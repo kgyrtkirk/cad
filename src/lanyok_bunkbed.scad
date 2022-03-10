@@ -6,7 +6,7 @@ $fronts=true;
 $machines=true;
 $internal=false;
 $openDoors=true;
-$drawerState="CLOSED";
+$drawerState="OPEN";
 $drawerBoxes=true;
 $cheat=false;
 $defaultDrawer="std";
@@ -20,6 +20,10 @@ $W=18;
 
 mode="real";
 //mode="step";
+//mode="P-BED_L-SBXZ";
+//mode="P-BED_L-FRYZ";
+
+
 
 if(mode=="step") {
 
@@ -51,6 +55,57 @@ module bedFrame(name,l,w,h,sink,xh2=-1,leftOversize=0,backOversize=0) {
     
     translate([0,$W,-q])
     eYZ( str(name,"-FR"),w,h2);
+    
+    translate([0,0,0])
+    joints(h+backOversize);
+    
+
+    translate([l+2*$W,0,0])
+    toFRT()
+    joints(h+backOversize);
+
+
+    translate([l+2*$W,w+$W,0])
+    toBRT()
+    joints(h+backOversize);
+
+    translate([0,w+2*$W,0])
+    toBLT()
+    joints(h+backOversize);
+
+    if(false) {
+        translate([0,0,h+backOversize])
+        toFLB()
+        joint();
+        translate([0,0,0])
+        toFLT()
+        joint();
+        
+        translate([l+$W,0,h+backOversize])
+        toFRB()
+        joint();
+        translate([l+$W,0,0])
+        toFRT()
+        joint();
+
+        translate([l+$W,w+$W,h+backOversize])
+        toBRB()
+        joint();
+        translate([l+$W,w+$W,0])
+        toBRT()
+        joint();
+
+        translate([0,w+$W,h+backOversize])
+        toBLB()
+        joint();
+        translate([0,w+$W,0])
+        toBLT()
+        joint();
+
+    }
+
+
+
     
     translate([0,$W,-q])
     translate([l+$W,0,0])
@@ -184,6 +239,8 @@ module bunkBed() {
 //    translate([0,0,200])
     translate([0,0,BL_DRAWER])
     bedFrame($close="fb","BED_L",MAT_L,MAT_W,BL_TOP-BL_DRAWER,$W+MAT_D+MAT_SINK,BL_TOP);
+    
+    echo("SinkL",$W+MAT_D+MAT_SINK);
     
     
     translate([C_W,0,BL_TOP])
@@ -347,4 +404,23 @@ if(mode=="s30") {
     scale(1/30)
     posNeg()
     bunkBed();
+}
+
+
+
+// xray: BED_L-FRYZ 
+
+
+if(mode[0] == "P" && mode[1]=="-") {
+    $fronts=false;
+    $machines=false;
+    
+    $part=substr(mode,2);
+    
+//    projection(false)
+    orient(mode)
+//    rotate(90,[0,1,0]) 
+    posNeg()
+    bunkBed();
+//        previewLU();
 }
