@@ -73,40 +73,6 @@ module bedFrame(name,l,w,h,sink,xh2=-1,leftOversize=0,backOversize=0) {
     toBLT()
     joints(h+backOversize);
 
-    if(false) {
-        translate([0,0,h+backOversize])
-        toFLB()
-        joint();
-        translate([0,0,0])
-        toFLT()
-        joint();
-        
-        translate([l+$W,0,h+backOversize])
-        toFRB()
-        joint();
-        translate([l+$W,0,0])
-        toFRT()
-        joint();
-
-        translate([l+$W,w+$W,h+backOversize])
-        toBRB()
-        joint();
-        translate([l+$W,w+$W,0])
-        toBRT()
-        joint();
-
-        translate([0,w+$W,h+backOversize])
-        toBLB()
-        joint();
-        translate([0,w+$W,0])
-        toBLT()
-        joint();
-
-    }
-
-
-
-    
     translate([0,$W,-q])
     translate([l+$W,0,0])
     eYZ(str(name,"-FL"),w,h2+leftOversize);
@@ -125,6 +91,8 @@ module bedFrame(name,l,w,h,sink,xh2=-1,leftOversize=0,backOversize=0) {
     
     translate([$W,$W,h-$W-sink])
     eXY($close="",str(name,"-BOT"),l,w);
+    
+    joints(l);
     
     
 }
