@@ -21,9 +21,9 @@ $W=18;
 
 mode="real";
 //mode="step";
-//mode="P-BED_L-SBXZ";
+//mode="P-BED_L-SFXZ";
 //mode="P-BED_L-FRYZ";
-mode="P-L_SIDEXZ";
+//mode="P-L_SIDEXZ";
 
 
 

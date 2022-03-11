@@ -120,7 +120,10 @@ def projMap = [
 	'lights':			['p0','p1','pr'],
 	'lights2':			['main','kitchen'],
 	'ikea_bridge':			['def'],
-	'lanyok_bunkbed':		['proj','P-BED_L-SBXZ','P-L_SIDEXZ'],
+	'lanyok_bunkbed':		['proj',
+		'P-BED_L-SBXZ',
+		'P-BED_L-SFXZ',
+		'P-L_SIDEXZ'],
 	]
 
 task allScad() {}
