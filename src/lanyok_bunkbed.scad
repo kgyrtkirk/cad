@@ -12,7 +12,7 @@ $cheat=false;
 $defaultDrawer="std";
 $closeWMain=[.4,2];
 $closeWFront=[2,2];
-$jointsVisible=true;
+$jointsVisible=false;
 $cornerProtect=false;
 
 $part=undef;
@@ -23,6 +23,7 @@ mode="real";
 //mode="step";
 //mode="P-BED_L-SBXZ";
 //mode="P-BED_L-FRYZ";
+mode="P-L_SIDEXZ";
 
 
 
@@ -94,10 +95,10 @@ module bedFrame(name,l,w,h,sink,xh2=-1,leftOversize=0,backOversize=0) {
         eXY($close="",str(name,"-BOT"),l,w);
         $cornerProtect=true;
         if(true) {
-        translate([0,0,0])
+        translate([0,-$W,0])
         jointsX(l);
 
-        translate([0,w,0])
+        translate([0,w+$W,0])
         toBLT()
         jointsX(l);
         }
@@ -228,8 +229,28 @@ module bunkBed() {
     echo("SinkL",$W+MAT_D+MAT_SINK);
     
     
-    translate([C_W,0,BL_TOP])
-    eXZ($close="LRou","Iback",LADDER_WIDTH,C_H-BL_TOP);
+    translate([C_W,0,BL_TOP]) {
+
+        eXZ($close="LRou","Iback",LADDER_WIDTH,C_H-BL_TOP);
+
+        translate([0,0,0]) {
+            toFLB()
+            jointI();//ZX(100);
+            translate([LADDER_WIDTH,0,0])
+            toFRB()
+            jointI();
+
+            translate([50,0,C_H-BL_TOP])
+            toFLB()
+            jointI();
+
+            translate([LADDER_WIDTH,0,C_H-BL_TOP])
+            toFRB()
+            jointI();
+        }
+    }
+    
+
     
     module ladder(w,h,n) {
         step_w=w/2;
@@ -245,6 +266,18 @@ module bunkBed() {
         translate([w-step_x,0,0])
         eXZ("L_SIDE",step_x,h,$close="Lrou");
 
+
+        for(z=[0,h]) {
+        translate([step_x,$W,z])
+        toBRB()
+        jointI();
+
+        translate([w-step_x,$W,z])
+        toBLB()
+        jointI();
+        }
+
+
         for(i=[1:n-1])
         translate([step_x,0,step_dz*i-step_h]) {
             eXZ($front=true,$close="lroU",
@@ -259,8 +292,14 @@ module bunkBed() {
 
         for(i=[0:n-1]) {
             $close="FBLR";
-            translate([step_x,-$W,step_dz*i])
+            translate([step_x,-$W,step_dz*i]) {
             eXY($front=true,"ladder-step",step_w,3*$W,rot=true);
+                translate([step_w/2,2*$W,$W])
+                toBRB()
+                jointsZX(center=true,100);
+            }
+
+
         }
         
     }
@@ -409,7 +448,7 @@ if(mode[0] == "P" && mode[1]=="-") {
     
     $part=substr(mode,2);
     
-//    projection(false)
+    projection(false)
     orient(mode)
 //    rotate(90,[0,1,0]) 
     posNeg()

@@ -141,8 +141,10 @@ module edgeDrill2() {
 module edgeDrill3() {
     
     module t(d) {
-        cylinder(d=d,h=$W,center=true);
+        cylinder(d=d,h=3*W,center=true);
     }
+    
+    OX=.4;
     
     module holeLocs() {
         
@@ -152,10 +154,10 @@ module edgeDrill3() {
             children(1);
 
 
-            translate([0,L/2+i*28,$W/2])
+            translate([0,L/2+i*28,$W/2+OX])
             rotate(90,[0,1,0])
             children(i==0?0:1);
-            translate([$W,L/2+i*28,$W/2])
+            translate([$W,L/2+i*28,$W/2+OX])
             rotate(-90,[0,1,0])
             children(1);
         }
@@ -163,53 +165,89 @@ module edgeDrill3() {
     L=80;
     
     $W=18.2;
-    W=6;
-    CDIST=34;
+    W=10;
+    CDIST=34+OX;
     CH=CDIST+15/2+W;
     
     $fn=64;
-    difference() {
-        translate([-W,-W,-W])
-        cube([W+$W+W,W+L+W,W+CH]);
-        translate([0,-W-1,0])
-        cube([$W,L+4*W,$W+W+CH]);
+    
+    module mainPart() {
         
-        holeLocs() {
-            t(5);
-            t(15);
-        }
-        
-        translate([0,L/2,CDIST])
-        rotate(90,[0,1,0])
-        cylinder(d=15,h=3*$W,center=true);
-        
-        
-        translate([$W/2,-W,-W]) {
-            translate([0,W/2,CDIST])
-            cube([$W+W,W/2,CDIST+2*W],center=true);
-            rotate(45,[1,0,0])
-            cube([100,W*2.5,2.5*W],center=true);
-        }
-        
-        translate([$W/2,L+W,-W]) {
-            translate([0,-W/2,CDIST])
-            cube([$W+W,W/2,CDIST+2*W],center=true);
-            rotate(45,[1,0,0])
-            cube([100,W*2.5,2.5*W],center=true);
-        }
-    }
-    difference() {
-    holeLocs() {
-        empty();
         difference() {
-            translate([0,0,-W])
-            nut("M15x1.5",turns=W/1.25);
-            translate([0,0,-15-W])
-            cube(30,center=true);
+            translate([-W,-W,-W])
+            cube([W+$W+W,W+L+W,W+CH]);
+            translate([0,-W-1,0])
+            cube([$W,L+4*W,$W+W+CH]);
+            
+            holeLocs() {
+                t(5);
+                t(15);
+            }
+            
+            translate([0,L/2,CDIST])
+            rotate(90,[0,1,0])
+            cylinder(d=15,h=3*$W,center=true);
+            
+            
+            
+            translate([$W/2,-W,-W]) {
+                translate([0,W/2,CH])
+                cube([$W+W/2,W/2,CH],center=true);
+                rotate(30,[1,0,0])
+                cube([100,W*2.5,5.5*W],center=true);
+            }
+            
+            translate([$W/2,L+W,-W]) {
+                translate([0,-W/2,CH])
+                cube([$W+W/2,W/2,CH],center=true);
+                rotate(-30,[1,0,0])
+                cube([100,W*2.5,5.5*W],center=true);
+
+            }
+            
+            for(y=[-W,L+W])
+            translate([0,y,$W/2+OX])
+    //        rotate(90,[0,1,0])
+            rotate(45,[1,0,0])
+            cube([100,W/3,W/3],center=true);
+            
+            translate([0,L/2,CH])
+            rotate(45,[1,0,0])
+            cube([100,W/3,W/3],center=true);
+      //      cylinder(d=3,h=100,center=true);
+
+        }
+        difference() {
+            holeLocs() {
+                empty();
+                difference() {
+                    translate([0,0,-W])
+                    nut("M15x1.5",turns=W/1.25);
+                    translate([0,0,-15-W])
+                    cube(30,center=true);
+                }
+            }
+            cube([$W,L+W,$W+W]);
         }
     }
-        cube([$W,L+W,$W+W]);
+    
+    
+    intersection() {
+        W0=4;
+        mainPart();
+        union() {
+            holeLocs() {
+                mirror([0,0,1])
+                cylinder(h=W,d2=10,d1=25);
+                mirror([0,0,1])
+                cylinder(h=W,d2=18,d1=25);
+            }
+            translate([-W0,-W,-W0])
+            cube([W0+$W+W0,W+L+W,CH+W+W]);
+        }
+        
     }
+    
 }
 
 if(mode=="edgeDrill") {

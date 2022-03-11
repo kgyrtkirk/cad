@@ -797,24 +797,48 @@ module toBLB() {
 
 function xor(a,b) = (a && !b) || (!a && b);
 
-module joint(type="TET") {
-
-    L=98;
-    translate([0,0,0])
+module jointI() {
+    L=80;
+    translate([L/2,0,0])
     if(xor(!$positive,$jointsVisible)) {
-        translate([$W/2,$W/4,L/2])
-        rotate(-90,[1,0,0])
-        cylinder(d=6,h=50);
 
-        for(k=[-1,1])
-        translate([$W/2,$W/4,L/2+k*28])
-        rotate(-90,[1,0,0])
-        cylinder(d=8,h=40);
+        translate([0,$W/2,0])
+        cylinder(d=6,h=2*34,center=true);
+
+            for(k=[-1,1]) {
+            translate([k*28,$W/2,0])
+            cylinder(d=8,h=40,center=true);
+
+                translate([0,$W+$W/4,k*34])
+                rotate(90,[1,0,0])
+                cylinder(d=15,h=$W);
+            }
+    }
+}
+
+module joint(orient="XY",type="TET",center=false) {
+
+    L=80;
+    orient(orient)
+    translate([0,0,center?-L/2:0])
+    if(xor(!$positive,$jointsVisible)) {
+        if(type == "TET") {
+            translate([$W/2,$W/4,L/2])
+            rotate(-90,[1,0,0])
+            cylinder(d=6,h=50);
+
+            for(k=[-1,1])
+            translate([$W/2,$W/4,L/2+k*28])
+            rotate(-90,[1,0,0])
+            cylinder(d=8,h=40);
 
 
-        translate([$W/4,$W+34,L/2])
-        rotate(90,[0,1,0])
-        cylinder(d=15,h=$W);
+            translate([$W/4,$W+34,L/2])
+            rotate(90,[0,1,0])
+            cylinder(d=15,h=$W);
+        } else {
+            
+        }
 
 //        cube(100);
     }
@@ -844,22 +868,37 @@ module jointsXZ(len) {
     rotate(90,[0,0,1])
     jointsZ(len);
 }
+module jointsZX(len,center=false) {
+//    mirror([1,0,0])
+    rotate(90,[0,1,0])
+    rotate(90,[0,0,1])
+    jointsZ(len,center=center);
+}
 
 
-module jointsZ(len) {
+module jointsZ(len,center=false) {
     PROTECT_LEN=50;
     if($cornerProtect) {
         $cornerProtect=false;
         translate([0,0,PROTECT_LEN])
-        jointsZ(len-2*PROTECT_LEN);
+        jointsZ(len-2*PROTECT_LEN,center=center);
     } else {
-        L=98;
-        if(len<190) {
-            joint();
-        } else {
-            joint();
+        L=80;
+        n=len<800?floor(len/230):floor(len/300);
+
+        if(len<190){
+            joint(center=center);
+        } else if (n<=2){
+            joint(center=center);
             translate([0,0,len-L])
-            joint();
+            joint(center=center);
+        } else {
+            for(i=[0:n-1]) {
+                translate([0,0,i*(len-L)/(n-1)])
+                joint(center=center);
+            }
+
+
         }
     }
 }
