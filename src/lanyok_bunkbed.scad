@@ -12,7 +12,8 @@ $cheat=false;
 $defaultDrawer="std";
 $closeWMain=[.4,2];
 $closeWFront=[2,2];
-
+$jointsVisible=true;
+$cornerProtect=false;
 
 $part=undef;
 
@@ -89,10 +90,26 @@ module bedFrame(name,l,w,h,sink,xh2=-1,leftOversize=0,backOversize=0) {
     translate([0,w+$W,0])
     eXZ(str(name,"-SF"),l+2*$W,h);
     
-    translate([$W,$W,h-$W-sink])
-    eXY($close="",str(name,"-BOT"),l,w);
+    translate([$W,$W,h-$W-sink]) {
+        eXY($close="",str(name,"-BOT"),l,w);
+        $cornerProtect=true;
+        if(true) {
+        translate([0,0,0])
+        jointsX(l);
+
+        translate([0,w,0])
+        toBLT()
+        jointsX(l);
+        }
+        
+        jointsY(w);
+        translate([l,0,0])
+        toFRT()
+        jointsY(w);
+        
+        
+    }
     
-    joints(l);
     
     
 }
@@ -229,9 +246,16 @@ module bunkBed() {
         eXZ("L_SIDE",step_x,h,$close="Lrou");
 
         for(i=[1:n-1])
-        translate([step_x,0,step_dz*i-step_h])
-        eXZ($front=true,$close="lroU",
-            "L_CENT",step_w,step_h,rot=true);
+        translate([step_x,0,step_dz*i-step_h]) {
+            eXZ($front=true,$close="lroU",
+                "L_CENT",step_w,step_h,rot=true);
+            translate([-$W,$W,step_h])
+            toBLB()
+            jointsXZ(step_h);
+            translate([step_w+$W,$W,step_h])
+            toBRB()
+            jointsXZ(step_h);
+        }
 
         for(i=[0:n-1]) {
             $close="FBLR";

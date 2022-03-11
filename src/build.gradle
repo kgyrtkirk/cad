@@ -92,7 +92,7 @@ def partMap = [
 	'gyerekszoba':['cab30','a30','b30','d30','table30','bed30'],
 	'lanyok_bunkbed':['s30'],
 	'spacers':['1000','2000','3000','4000','5000','6000','7000' ],
-	'drill_spacers':['edge','ruler9','10to5','edgeDrill','edgeDrill2','m14test'],
+	'drill_spacers':['edge','ruler9','10to5','edgeDrill','edgeDrill2','m14test','d8l1','d8l2','d8l3','edgeDrill3','edgeDrill3s'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->

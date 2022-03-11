@@ -795,11 +795,13 @@ module toBLB() {
     children();
 }
 
+function xor(a,b) = (a && !b) || (!a && b);
+
 module joint(type="TET") {
 
     L=98;
     translate([0,0,0])
-    if(!$positive) {
+    if(xor(!$positive,$jointsVisible)) {
         translate([$W/2,$W/4,L/2])
         rotate(-90,[1,0,0])
         cylinder(d=6,h=50);
@@ -819,16 +821,47 @@ module joint(type="TET") {
 }
 
 module joints(len) {
-    L=98;
-    if(len<190) {
-        joint();
+    jointsZ(len);
+}
+
+module jointsX(len) {
+//    translate([len,0,0])
+    mirror([0,0,1])
+    rotate(90,[0,1,0])
+    jointsZ(len);
+}
+
+
+module jointsY(len) {
+//    translate([len,0,0])
+    mirror([1,0,0])
+    rotate(90,[0,0,1])
+    jointsX(len);
+}
+
+module jointsXZ(len) {
+    mirror([1,0,0])
+    rotate(90,[0,0,1])
+    jointsZ(len);
+}
+
+
+module jointsZ(len) {
+    PROTECT_LEN=50;
+    if($cornerProtect) {
+        $cornerProtect=false;
+        translate([0,0,PROTECT_LEN])
+        jointsZ(len-2*PROTECT_LEN);
     } else {
-        joint();
-        translate([0,0,len-L])
-        joint();
+        L=98;
+        if(len<190) {
+            joint();
+        } else {
+            joint();
+            translate([0,0,len-L])
+            joint();
+        }
     }
-
-
 }
 
 
