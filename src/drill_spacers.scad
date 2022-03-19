@@ -2,7 +2,7 @@ use <threadlib/threadlib.scad>
 use <syms.scad>
 
 
-mode="edgeDrill3";
+mode="ruler9";
 
 if(mode=="edge") {
     
@@ -138,7 +138,7 @@ module edgeDrill2() {
 }
 
 
-module edgeDrill3() {
+module edgeDrill3(spacer=false) {
     
     module t(d) {
         cylinder(d=d,h=3*W,center=true);
@@ -166,7 +166,8 @@ module edgeDrill3() {
     
     $W=18.2;
     W=10;
-    CDIST=34+OX;
+    CDIST=34+OX+.5;
+    CDIST2=24+OX+.5;
     CH=CDIST+15/2+W;
     
     $fn=64;
@@ -184,21 +185,25 @@ module edgeDrill3() {
                 t(15);
             }
             
-            translate([0,L/2,CDIST])
+            translate([0,L/2,CDIST2])
             rotate(90,[0,1,0])
-            cylinder(d=15,h=3*$W,center=true);
+            cylinder(d=15,h=3*W,center=true);
+
+            translate([$W,L/2,CDIST])
+            rotate(90,[0,1,0])
+            cylinder(d=15,h=3*W,center=true);
             
             
             
             translate([$W/2,-W,-W]) {
-                translate([0,W/2,CH])
+                translate([0,3*W/4,CH])
                 cube([$W+W,W/2,CH],center=true);
                 rotate(30,[1,0,0])
                 cube([100,W*2.5,5.5*W],center=true);
             }
             
             translate([$W/2,L+W,-W]) {
-                translate([0,-W/2,CH])
+                translate([0,-3*W/4,CH])
                 cube([$W+W,W/2,CH],center=true);
                 rotate(-30,[1,0,0])
                 cube([100,W*2.5,5.5*W],center=true);
@@ -231,7 +236,12 @@ module edgeDrill3() {
         }
     }
     
-    mainPart();
+    
+    if(!spacer) {
+        mainPart();
+    }else{
+        cube([34,$W+W-1,W/2-.5]);
+    }
     
 }
 
@@ -245,7 +255,7 @@ if(mode=="edgeDrill3") {
     edgeDrill3();
 }
 if(mode=="edgeDrill3s") {
-    cube([34,18.2+8,4.5]);
+    edgeDrill3(true);
 }
 
 if(mode=="m14test") {

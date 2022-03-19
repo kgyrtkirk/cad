@@ -2,7 +2,7 @@ $fn=63;
 X=[16.5,26.5];
 Y=[12, 44];
 D=1.5;
-H=1.5;
+H=5;
 K=3;
 L=5;
 
@@ -15,19 +15,21 @@ SP=.4;
 C=[X[0]+X[1],Y[1]+Y[0],H];
 W=18;
 
-mode="cover";
-//mode="diff_marker";
+//mode="cover";
+mode="main";
 if(mode=="main") {
     difference() {
         union() {
 //            cube(C);
 //            translate([0,-W,0])
-            cube([C[0],C[1]+W,C[2]]);
+            cube([C[0],C[1]+W+2,C[2]+4]);
         }
+        translate([-1,-1,H])
+        cube([C[0]+2,C[1]+W+1,C[2]+4]);
         for(x=X)
         for(y=Y) {
             translate([x,y,0])
-            cylinder(d=D,h=10,center=true);
+            cylinder(d=5,h=100,center=true);
         }
     }
 }
