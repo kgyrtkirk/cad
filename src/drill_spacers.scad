@@ -1,7 +1,6 @@
 use <threadlib/threadlib.scad>
 use <syms.scad>
 
-
 mode="ruler9";
 
 if(mode=="edge") {
