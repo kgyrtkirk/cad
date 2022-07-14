@@ -1,14 +1,14 @@
 use<syms.scad>
 Q=6.8+16.55;
 L=30;
-W=1.6;
+W=2;
 H=20;
 
 echo(Q);
 
 A=45;
-HOLE_D=3.5;
-HOLE_DIST=10;   // hole-dist
+HOLE_D=4.5;
+HOLE_DIST=20;   // hole-dist
 
 
 rotate(A,[1,0,0])
@@ -37,12 +37,12 @@ hull() {
         symX([L/2+HOLE_DIST,Q/2,-W])
         cylinder(d=HOLE_DIST,h=W,center=true);
         }else {
-        translate([0,Q/2,-W])
-    cube([L+3*HOLE_DIST,HOLE_DIST,W],center=true);
+        translate([0,Q,0])
+        cube([HOLE_DIST,L,3*W],center=true);
         }
         
-        symX([L/2+HOLE_DIST,Q/2,-W])
-        cylinder(d=HOLE_D,h=3*W,center=true);
+        translate([0,L,-W])
+        cylinder(d=HOLE_D,h=13*W,center=true);
     }
     
 

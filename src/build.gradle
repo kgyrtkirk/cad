@@ -95,6 +95,8 @@ def partMap = [
 	'drill_spacers':['edge','ruler9','10to5','d8l1','d8l2','d8l3','edgeDrill3','edgeDrill3s'],
 'angelcare_stand':['hook','clamp'],
 'esp-box-angled-mount':['def'],
+'bicycle_handle_ribbon':['def'],
+'key_label':['Akácköz','Kaszás','JMF-947'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
