@@ -598,9 +598,12 @@ module frame(name, w, l, h) {
     eXZ(str(name,"-S"),l,h);
     translate([$W,w+$W,0])
     eXZ(str(name,"-S"),l,h);
-    
-    
 }
+
+module frameExt(name, w, l, h) {
+    frame(name,w-2*$W,l-2*$W,h);
+}
+
 
 module m60_0(sizes) {
     FRONT_SP=2;

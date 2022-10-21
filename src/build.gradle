@@ -97,6 +97,9 @@ def partMap = [
 'esp-box-angled-mount':['def'],
 'bicycle_handle_ribbon':['def'],
 'key_label':['Akácköz','Kaszás','JMF-947'],
+'washers':['300','600','900','1200'],
+'hinge_offset_element':['def'],
+'window_spacer':['def'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
