@@ -37,8 +37,14 @@ function gen() {
 
 labels=( 🚀 🍒 🍕 🌙 🌟 🌂 🌣 🏠 🏀 🏁 🎥 🎤 🐌 🐝 👓 👻 💰 💡 📖 📎 📐 🖂 
 🖶 🗼 🌡 🍰 🍭 🚁 🚂 🚜 🛀 🚴 🛒 🛪 🛢 🛸 🛥 🚽 🛷 🥕 🥄 🤘 🌲 🌧 🌎 🍉 🎡 🎜 🎖 🎸 🎺 🎱 
-💊 💔 📞)
+💊 💔 📞 ☕ ⏰ ☃ 🎪 🏆 🎅 🏭 🏹 💍 💣 🔧 🔨 🔦 🔪 🔒 🍔 )
 
+if echo ${labels[@]}|tr ' ' '\n'|sort|uniq -c|sort|grep -v 1; then
+	echo duplicate label detected!
+	exit 1
+else
+	echo labels-ok
+fi
 #convert -background pink -font 'Symbola' -pointsize 60 -stroke black "label:`echo "${labels[@]}"|tr -d ' '`" out/preview.png
 #convert -background pink -font 'Monospace' -pointsize 60 -stroke black "label:`echo "${labels[@]}"|tr -d ' '`" out/preview.png
 #exit
