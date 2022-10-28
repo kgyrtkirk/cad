@@ -100,6 +100,7 @@ def partMap = [
 'washers':['300','600','900','1200'],
 'hinge_offset_element':['def'],
 'window_spacer':['def'],
+'pencil_extender':['def'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
