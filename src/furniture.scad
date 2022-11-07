@@ -346,13 +346,22 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0) {
     }
 }
 
-
-module skyFoot(h,w=undef) {
+module skyFoot(h,w=undef,sideL=false,sideR=false) {
+    inset=50;
 
     width=(w==undef)? $w : w;
 
-    translate([0,$d-50,-h])
+    translate([0,$d-inset,-h])
     eXZ($close="oulr",str($name,"Foot"),width,h);
+    
+    if(sideL) {
+        translate([$w-$W,0,-h])
+        eYZ($close="oulr",str($name,"FootL"),$d-inset,h);
+    }
+    if(sideR) {
+        translate([0,0,-h])
+        eYZ($close="oulr",str($name,"FootR"),$d-inset,h);
+    }
 
 }
 
@@ -527,6 +536,20 @@ module partition2(x,h) {
         children(2);
     }
 }
+
+module partition3(x1,x2,h) {
+    partition2(x1,h) {
+        children(0);
+        partition2(x2,h) {
+            children(1);
+            children(2);
+        }
+        children(3);
+    }
+
+
+}
+
 
 module partitionBeams(x,fullH) {
     

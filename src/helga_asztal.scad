@@ -42,7 +42,7 @@ DESK_H=DESIRED_DESK_H;
 
 
 LIFT_D=120;
-LIFT_Y=45;
+LIFT_Y=20;//45;
 
 LIFT_LOSS=LIFT_D+LIFT_Y;
 
@@ -63,8 +63,8 @@ module room() {
     L=1350-15; // 1337 - this is very good
     WW=100;
     H=835;
-    P_W=45;
-
+    //
+    P_W=20;
     P_H=880-835;
 
     EDGE_D=30;
@@ -81,6 +81,7 @@ module room() {
         cylinder(r=150,h=30);
         }
     }
+    // párkány
     color([1,0,1]) {
 
         translate([0,0,H])
@@ -128,6 +129,45 @@ module desk2(){
                 
                 ]);
 
+    
+    // emelotarto
+    {
+        L_S=640;
+        L_C=640;
+        W_C=180;
+        W_S=80;
+        SUP_W=180;  //inner
+        SUP_H=300;
+        
+        translate([WR+CHAIR_D/2,0,DESK_H]) {
+            translate([-W_C/2,0,-L_C])
+            eXZ("StrokeC",W_C,L_C);
+
+            for(x=[-1,1])
+            translate([x*(-W_C/2-$W/2)-$W/2,0,-L_S])
+            eYZ($close="f","StrokeS",W_S,L_S);
+        }
+
+
+        
+        
+    }
+    
+    // hatso resz takaro
+    translate([WR,LIFT_LOSS,0])
+    {
+        eXZ($close="ou","backHide",CHAIR_D-3,DESK_H-100);
+    }
+    
+    // billentyuzettarto
+    {
+        W=CHAIR_D-26;
+        D=D_2-LIFT_LOSS-30;
+        translate([WR+(CHAIR_D-W)/2,LIFT_LOSS+30,DESK_H-100]) {
+            
+            eXY($close="FBlr","bill",W,D);
+        }
+    }
 
     echo("balTaroloMely",D_2-LIFT_LOSS);
 if(false) {
@@ -168,34 +208,54 @@ if(false) {
                 drawer(DH)
                 drawer(DH)
                 drawer(DH)
-                skyFoot(FOOT_H)
+                skyFoot(FOOT_H,sideL=true,sideR=true)
                 ;
         }
     }
 
 
-    translate([0,1500+LIFT_LOSS,FOOT_H])
-    rotate(-90)
-    cabinet( name = "R",
-        w=1500,
-        h=HR-FOOT_H,
-        d=WR)
-            cTop()
-            shelf(300,external=true)
-            space(HR-300-FOOT_H)
-            skyFoot(FOOT_H);
+    LEN_R1=500;
+    LEN_R2=1002;
+    LEN_R=LEN_R1+LEN_R2;
+    translate([0,LEN_R+LIFT_LOSS,FOOT_H])
+    rotate(-90) {
+        cabinet( name = "R2",
+            $close="F",
+            w=LEN_R2,
+            h=HR-FOOT_H,
+            d=WR)
+                cTop()
+                partition3((LEN_R2+$W+$W)/3,(LEN_R2+$W+$W)/3,$h) {
+                    shelf(300,external=true);
+                    shelf(100,external=true);
+                    shelf(300,external=true);
+                    skyFoot($w=LEN_R,FOOT_H,sideR=true);
+                }
+        translate([LEN_R2,0,0])
+        cabinet( name = "R1",
+            w=LEN_R1,
+            h=DESK_H-FOOT_H,
+            d=WR)
+                cTop()
+                shelf(200,external=true)
+                space(DESK_H-200-FOOT_H)
+;//                skyFoot(FOOT_H);
+        
+    }
             
 }
 
 
 
     module sideShelf() {
-        eXY($close="LF","SideShelf",SIDE_SPACE,D_1-$W);
+        wallOff=$W;
+        translate([0,wallOff,0])
+        eXY($close="LF","SideShelf",SIDE_SPACE,D_1-wallOff);
     }
     translate([SPACE_X-SIDE_SPACE,0,0]) {
         T=DESK_H-D_K-$W;
-        for(z=[0,150,300,450])
-        translate([0,0,T-z])
+        for(z=[0:.25:1])
+        translate([0,0,T-z*(T-FOOT_H)])
         sideShelf();
     }
 
@@ -226,13 +286,14 @@ if(false) {
         translate([x-100,LIFT_Y,0])
         cube([100,70,70]);
 
-        translate([50,50,DESK_H])
+        translate([60,60,DESK_H])
         liftBox();
     }
 
 
     if($machines) {
         translate([0,50+120,FOOT_H+$W])
+        color([1,0,1])
         rotate(0)
         cube(computer_case);
     }

@@ -56,18 +56,20 @@ module  pencil_extender(L,D,close=false) {
         hullLine() {
             translate([0,0,L])
                 shapeE(D,ADD);
-            translate([0,0,$W])
+            translate([0,0,ADD])
                 shapeE(D,ADD);
             translate([0,0,0])
-                shapeE(D);
+                shapeE(D-2*ADD/4,ADD);
         }
         hullLine() {
             translate([0,0,L+$W])
                 shapeE(D,G);
             translate([0,0,L-2])
                 shapeE(D);
-            translate([0,0,L-12])
+            translate([0,0,L-14])
                 shapeE(D-G);
+            translate([0,0,L-20])
+                shapeE(D-2);
         }
         if(close)
         for(a = [0:120:359]) 
@@ -93,11 +95,11 @@ module  pencil_extender0(L,D) {
 mode="tri";
 if(mode=="hex") {
     $shape=6;
-    pencil_extender($fn=6,50,7.7);
+    pencil_extender($fn=6,50,7.8);
 }
 if(mode=="tri") {
     $shape=3;
-    pencil_extender($fn=3,50,12.9);
+    pencil_extender($fn=3,50,13);
 }
 
 if(mode=="hexc") {
