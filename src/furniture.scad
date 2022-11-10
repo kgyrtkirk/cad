@@ -302,7 +302,7 @@ module space(h) {
         children();
 }
 
-module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,extraDR=0) {
+module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,extraDR=0,sideClose="oUF") {
     
     dBack=fullBack?$W:0;
 
@@ -329,9 +329,9 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,ex
     translate([0,dBack,0]) {
         {
             translate([0,-extraDR,0])
-            eYZ($close="oUF",name,$d+extraDR,h+foot+extraHR);
+            eYZ($close=sideClose,name,$d+extraDR,h+foot+extraHR);
             translate([w-$W,-extraDL,0])
-            eYZ($close="oUF",name,$d+extraDL,h+foot+extraHL);
+            eYZ($close=sideClose,name,$d+extraDL,h+foot+extraHL);
             
             
             if(foot>0) {
@@ -947,7 +947,8 @@ module drawer(h,withLock=false,type1="def") {
 
     type=(type1=="def")?$defaultDrawer:type1;
     
-    qx=(type=="smart"?$W+4.5:$W+12.7);
+    // go with $W=19 for internal sizing - instead of smalle
+    qx=(type=="smart"?$W+5.0:$W+12.7);
     qz=$W;
     ix=$w-2*qx;
     iz=h-(withLock?LOCKDIM[2]+LOCK_SP+$W:3*qz);  //  -4W
@@ -980,7 +981,7 @@ module drawer(h,withLock=false,type1="def") {
   //          eXZ("DF",ww,hh);
         }
         if($drawerBoxes) {
-            floorOff=7;
+            floorOff=12+3;
             if(type=="smart") {
                 // smart
                 $close="Ou";
@@ -994,8 +995,11 @@ module drawer(h,withLock=false,type1="def") {
                 translate([$w-$W-qx,-id,qz])
                 eYZ(str(name,"B"),id,iz);
             
-                translate([qx+$W-7.5,-id,qz+floorOff-3])
-                cube([ix-15,id,3]);
+                nut_depth=6;
+//                nut_depth
+                o=$W-nut_depth;
+                translate([qx+o,-id,qz+floorOff-3])
+                cube([ix-2*o,id,3]);
                 echo(str(name,"-dback"),str(ix-15,"x",id));
             }else {
                 $close="Olru";

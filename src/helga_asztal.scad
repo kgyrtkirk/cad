@@ -10,12 +10,12 @@ $fronts=true;
 $machines=true;
 $internal=true;
 $openDoors=false;
-$drawerState="CLOSED";
+$drawerState="OPEN";
 $handle="125";
 
 $closeWMain=[.4,2];
 $closeWFront=[1,1];
-$defaultDrawer="std";
+$defaultDrawer="smart";
 
 $part=undef;
 
@@ -165,7 +165,7 @@ module desk2(){
         D=D_2-LIFT_LOSS-30;
         translate([WR+(CHAIR_D-W)/2,LIFT_LOSS+30,DESK_H-100]) {
             
-            eXY($close="FBlr","bill",W,D);
+            eXY($front=true,$close="Flr","bill",W,D,rot=true);
         }
     }
 
@@ -184,10 +184,12 @@ if(false) {
 
     K=D_1-D_2;
     
-    DH=(DESK_H-FOOT_H-K)/4;
+    DH=(DESK_H-FOOT_H-K)/4-.5;
     translate([SPACE_X-WL-SIDE_SPACE,LIFT_LOSS,FOOT_H]) {
         cabinet( name = "L",
+            $close="F",
             w=WL,
+            sideClose="F",
             h=DESK_H -FOOT_H,
             d=D_2,
             extraDL=LIFT_LOSS) {
@@ -201,6 +203,9 @@ if(false) {
                             cube([2*$w,3*K,2*K]);
                         }
                     }
+                    // echo("K=",K);
+            // translate([400,300,-K])
+                    // eXY("a",200,400);
                 }
                 cBeams()
                 shelf(K+$W,external=true)
@@ -222,6 +227,7 @@ if(false) {
     rotate(-90) {
         cabinet( name = "R2",
             $close="F",
+            sideClose="F",
             w=LEN_R2,
             h=HR-FOOT_H,
             d=WR)
@@ -235,6 +241,7 @@ if(false) {
         translate([LEN_R2,0,0])
         cabinet( name = "R1",
             $close="F",
+            sideClose="F",
             w=LEN_R1,
             h=DESK_H-FOOT_H,
             d=WR)
@@ -252,13 +259,21 @@ if(false) {
     module sideShelf() {
         wallOff=$W;
         translate([0,wallOff,0])
-        eXY($close="LF","SideShelf",SIDE_SPACE,D_1-wallOff);
+        eXY($front=true,$close="LF","SideShelf",SIDE_SPACE,D_1-wallOff);
     }
     translate([SPACE_X-SIDE_SPACE,0,0]) {
         T=DESK_H-D_K-$W;
         for(z=[0:.25:1])
         translate([0,0,T-z*(T-FOOT_H)])
         sideShelf();
+
+        if(!$positive) {
+            s=40*sqrt(2);
+            translate([SIDE_SPACE,D_1,0])
+            rotate(45)
+            cube([s,s,2*DESK_H],center=true);
+        }
+
     }
 
 
@@ -311,3 +326,6 @@ posNeg() {
     desk2();
     
 }
+
+echo(D_1);
+echo(D_2);
