@@ -189,7 +189,8 @@ if(false) {
         cabinet( name = "L",
             w=WL,
             h=DESK_H -FOOT_H,
-            d=D_2) {
+            d=D_2,
+            extraDL=LIFT_LOSS) {
                 {
                     if(!$positive) {
                         intersection() {
@@ -208,7 +209,7 @@ if(false) {
                 drawer(DH)
                 drawer(DH)
                 drawer(DH)
-                skyFoot(FOOT_H,sideL=true,sideR=true)
+                skyFoot($d=D_1,FOOT_H,sideL=true,sideR=true)
                 ;
         }
     }
@@ -233,11 +234,12 @@ if(false) {
                 }
         translate([LEN_R2,0,0])
         cabinet( name = "R1",
+            $close="F",
             w=LEN_R1,
             h=DESK_H-FOOT_H,
             d=WR)
                 cTop()
-                shelf(200,external=true)
+                shelf(100,external=true)
                 space(DESK_H-200-FOOT_H)
 ;//                skyFoot(FOOT_H);
         
@@ -309,4 +311,3 @@ posNeg() {
     desk2();
     
 }
-

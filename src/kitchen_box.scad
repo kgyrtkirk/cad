@@ -78,7 +78,7 @@ module bBox(e) {
 }
 
 function abs(x) = x<0?-x:x;
-function prefix(s,p)=(len(p)==0 || p==undef)?[]:concat([s+p[0]], prefix(s+p[0],sublist(p,1)) );
+function prefix(s,p)=(p==undef || len(p)==0)?[]:concat([s+p[0]], prefix(s+p[0],sublist(p,1)) );
 
 module maximera(sizes) {
     HOLE_D=5;

@@ -302,7 +302,8 @@ module space(h) {
         children();
 }
 
-module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0) {
+module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,extraDR=0) {
+    
     dBack=fullBack?$W:0;
 
     $name=name;
@@ -327,12 +328,14 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0) {
 
     translate([0,dBack,0]) {
         {
-            eYZ($close="oUF",name,$d,h+foot+extraHR);
-            translate([w-$W,0,0])
-            eYZ($close="oUF",name,$d,h+foot+extraHL);
+            translate([0,-extraDR,0])
+            eYZ($close="oUF",name,$d+extraDR,h+foot+extraHR);
+            translate([w-$W,-extraDL,0])
+            eYZ($close="oUF",name,$d+extraDL,h+foot+extraHL);
             
             
             if(foot>0) {
+                // foot front element
                 translate([$W,d-2*$W,0])
                 eXZ($close="oU",name,w-2*$W,foot);
             }
