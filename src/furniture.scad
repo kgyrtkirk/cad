@@ -302,6 +302,19 @@ module space(h) {
         children();
 }
 
+
+module cutCornerShelf(name,w,d,c,rot=false) {
+    eXY(name,w,d,rot=rot);
+    if(!$positive) {
+//        s=40*sqrt(2);
+            s=c*sqrt(2);
+        translate([0,d,$W/2])
+        rotate(45)
+        cube([s*2,s,$W+.1],center=true);
+    }
+
+}
+
 module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,extraDR=0,sideClose="oUF") {
     
     dBack=fullBack?$W:0;

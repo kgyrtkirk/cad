@@ -122,7 +122,7 @@ module desk2(){
     FOOT_H=80;
 
     translate([0,0,DESK_H])
-    eXYp("top",[[0,0],[SPACE_X,0],
+    eXYp($W=28,"top",[[0,0],[SPACE_X,0],
                 [SPACE_X,D_2+TOP_OVER],
                 [SPACE_X-(D_1-D_2),D_1+TOP_OVER],
                 [0,D_1+TOP_OVER]
@@ -219,12 +219,35 @@ if(false) {
         }
     }
 
-
     LEN_R1=500;
     LEN_R2=1002;
     LEN_R=LEN_R1+LEN_R2;
     translate([0,LEN_R+LIFT_LOSS,FOOT_H])
     rotate(-90) {
+        {   //  uloke
+            $close="FR";
+            EX=70;
+            EY=10;
+            translate([-EX-EY,0,HR-FOOT_H])
+            
+            cutCornerShelf($front=true,"R2Top",LEN_R2+EX+EY,WR+EY,EX/(1+sqrt(2))+EY,rot=true);
+
+            N=3;
+            for(i=[0:N-1]) {
+                translate([-EX,0,(HR-FOOT_H)*i/(N)])
+
+                cutCornerShelf($front=true,"ShelfR",EX,WR,EX/(1+sqrt(2)));
+                echo("cut-d-r",EX/(1+sqrt(2)));
+            }
+
+            {
+
+                M_W=D_1-D_2-20;
+                translate([LEN_R2-M_W,0,HR+100-FOOT_H])
+                cutCornerShelf($front=true,"ShelfM",M_W,WR,M_W/(1+sqrt(2)),rot=true);
+            }
+
+        }
         cabinet( name = "R2",
             $close="F",
             sideClose="F",
