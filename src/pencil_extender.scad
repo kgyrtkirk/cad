@@ -99,7 +99,7 @@ if(mode=="hex") {
 }
 if(mode=="tri") {
     $shape=3;
-    pencil_extender($fn=3,50,13);
+    pencil_extender($fn=3,50,13.2);
 }
 
 if(mode=="hexc") {
