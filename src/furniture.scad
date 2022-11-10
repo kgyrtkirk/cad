@@ -303,16 +303,29 @@ module space(h) {
 }
 
 
-module cutCornerShelf(name,w,d,c,rot=false) {
-    eXY(name,w,d,rot=rot);
+module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false) {
+    eXY(name,w,d);
     if(!$positive) {
 //        s=40*sqrt(2);
-            s=c*sqrt(2);
-        translate([0,d,$W/2])
-        rotate(45)
-        cube([s*2,s,$W+.1],center=true);
+        if(cR>0) {
+            echo("cutCronerShelfR ",name," dc ",cR);
+                s=cR*sqrt(2);
+            translate([0,d,$W/2])
+            rotate(45)
+            cube([s*2,s,$W+.1],center=true);
+        }
+        if(cL>0) {
+            echo("cutCronerShelfL ",name," dc ",cL);
+                s=cL*sqrt(2);
+            translate([w,d,$W/2])
+            rotate(-45)
+            cube([s*2,s,$W+.1],center=true);
+        }
     }
 
+}
+module cutCornerShelf0(name,w,d,c) {
+    eXY(name,w,d);
 }
 
 module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,extraDR=0,sideClose="oUF") {
@@ -741,7 +754,7 @@ module m60_0(sizes) {
 }
 
     
-module shelf(h,SHELF_INSET=12,external=false,alignTop=false) {
+module shelf(h,SHELF_INSET=12,external=false,alignTop=false,rot=false) {
 
     BACK_WIDTH=4;
     
@@ -749,7 +762,7 @@ module shelf(h,SHELF_INSET=12,external=false,alignTop=false) {
     w=$w-2*$W;
 //    color([0,1,1])
     translate([$W,BACK_WIDTH,-h-(alignTop?$W:0)])
-    eXY(str($name,"-S",external?"-EX":"-IN",w),w,depth);
+    eXY(str($name,"-S",external?"-EX":"-IN",w),w,depth,rot=rot);
     
 
     translate([0,0,external?-h:0])
@@ -964,7 +977,7 @@ module drawer(h,withLock=false,type1="def") {
     qx=(type=="smart"?$W+5.0:$W+12.7);
     qz=$W;
     ix=$w-2*qx;
-    iz=h-(withLock?LOCKDIM[2]+LOCK_SP+$W:3*qz);  //  -4W
+    iz=h-(withLock?LOCKDIM[2]+LOCK_SP+$W:3*$W-6);  //  -4W
     id=(type=="smart"?smartSlideLen($d)-10:$d-10);
     
     if(id < 0) {
@@ -997,7 +1010,7 @@ module drawer(h,withLock=false,type1="def") {
             floorOff=12+3;
             if(type=="smart") {
                 // smart
-                $close="Ou";
+                $close="O";
                 translate([qx+$W,-$W,qz+floorOff])
                 eXZ(str(name,"A"),ix-2*$W,iz-floorOff);
                 translate([qx+$W,-id,qz+floorOff])

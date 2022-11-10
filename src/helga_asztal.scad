@@ -121,6 +121,7 @@ module desk2(){
     $front=false;
     FOOT_H=80;
 
+    if(false) {
     translate([0,0,DESK_H])
     eXYp($W=28,"top",[[0,0],[SPACE_X,0],
                 [SPACE_X,D_2+TOP_OVER],
@@ -128,6 +129,23 @@ module desk2(){
                 [0,D_1+TOP_OVER]
                 
                 ]);
+    }else{
+    translate([0,0,DESK_H])
+    cutCornerShelf($W=28,$close="FL","top2",SPACE_X,D_1+TOP_OVER,cL=D_1-D_2);
+    }
+    // monitorkivagas
+    {
+        Q=750;
+        P=80;
+
+        translate([WR+CHAIR_D/2,LIFT_LOSS-P/2+10,DESK_H]) {
+            translate(-[Q/2,P/2,-$W])
+            eXY($close="flrb","m-cover",Q,P,rot=true);
+            if(false && !$positive) {
+                cube([Q,P,100],true);
+            }
+        }
+    }
 
     
     // emelotarto
@@ -208,8 +226,8 @@ if(false) {
                     // eXY("a",200,400);
                 }
                 cBeams()
-                shelf(K+$W,external=true)
-                space(-$W)
+                shelf($front=true,K+$W,external=true)
+                space($front=false,-$W)
                 drawer(DH)
                 drawer(DH)
                 drawer(DH)
@@ -232,12 +250,11 @@ if(false) {
             
             cutCornerShelf($front=true,"R2Top",LEN_R2+EX+EY,WR+EY,EX/(1+sqrt(2))+EY,rot=true);
 
-            N=3;
+            N=4;
             for(i=[0:N-1]) {
                 translate([-EX,0,(HR-FOOT_H)*i/(N)])
 
                 cutCornerShelf($front=true,"ShelfR",EX,WR,EX/(1+sqrt(2)));
-                echo("cut-d-r",EX/(1+sqrt(2)));
             }
 
             {
@@ -256,9 +273,9 @@ if(false) {
             d=WR)
                 cTop()
                 partition3((LEN_R2+$W+$W)/3,(LEN_R2+$W+$W)/3,$h) {
-                    shelf(300,external=true);
-                    shelf(100,external=true);
-                    shelf(300,external=true);
+                    shelf($front=true,300,external=true);
+                    shelf($front=true,100,external=true);
+                    shelf($front=true,300,external=true);
                     skyFoot($w=LEN_R,FOOT_H,sideR=true);
                 }
         translate([LEN_R2,0,0])

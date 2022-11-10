@@ -212,10 +212,15 @@ module partsL() {
         d2=D_R+$W;
         w=D_X[2];
         translate([P_X[1],0,0])
-        eXY("SCover12",D_X[1],D_L+$W,rot=false);
+        eXY($front=true,"SC1",D_X[1],d1,rot=false);
+
+        qAngle=atan2(D_R-D_L,D_X[2]-2*$W);
+        echo("SC2-roff",$W+sin(qAngle)*$W);
 
         translate([P_X[2],0,0]) 
-        eXYp("SCover3",[[0,0],[0,d2],[W+sin(45)*W,d2],[w,d1],[w,0] ]);
+    //    eXY($front=true,"SC2",w,d2);
+       cutCornerShelf($front=true,"SC2",w,d2,d1);
+//        eXYp($front=true,"SC2",[[0,0],[0,d2],[W+sin(45)*W,d2],[w,d1],[w,0] ]);
     }
 
 
@@ -254,7 +259,7 @@ echo(A);
 echo("remain", A+P_X[3]);
 echo("seat_w", D_X[2]+D_X[1]);
 
-echo("QQ",atan2(D_R-D_L,D_X[2]));
+echo("QQ",atan2(D_R-D_L,D_X[2]-2*$W));
 
 
 // hinge:
