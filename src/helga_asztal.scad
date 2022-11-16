@@ -284,36 +284,17 @@ if(false) {
             
 }
 
-
-
-    module sideShelf() {
-        wallOff=$W;
-        if($m) {
-        translate([0,wallOff,0])
-        eXY($front=true,$close="LF","SideShelf",SIDE_SPACE,D_1-wallOff);
-        }
-        else
-        translate([0,wallOff,0])
-        cutCornerShelf($front=true,$close="FL","top",SIDE_SPACE,D_1-wallOff,cL=40);
-    }
     translate([SPACE_X-SIDE_SPACE,0,0]) {
-        $m=false;
         T=DESK_H-D_K-$W;
+        wallOff=$W;
         for(z=[0:.25:1])
-        translate([0,0,T-z*(T-FOOT_H)])
-        sideShelf();
-
-        if($m && !$positive) {
-            s=40*sqrt(2);
-            translate([SIDE_SPACE,D_1,0])
-            rotate(45)
-            cube([s,s,2*DESK_H],center=true);
-        }
-
+        translate([0,wallOff,T-z*(T-FOOT_H)])
+        cutCornerShelf($front=true,$close="FL","ShelfL",SIDE_SPACE,D_1-wallOff,cL=40);
     }
 
 
     echo("remainRight",SPACE_X-CHAIR_D-WL-SIDE_SPACE);
+    if($machines)
     translate([SPACE_X-CHAIR_D/2-WL-SIDE_SPACE,600,-10])
     cylinder(d=CHAIR_D,h=300);
 
@@ -353,22 +334,40 @@ if(false) {
 
 
 }
-mode="normal";
 
-if(mode=="normal") {
-    room();
+module model() {
     posNeg() {
         desk2();
     }
 }
+
+mode="normal";
+mode="P-topXY";
+
+if(mode=="normal") {
+    room();
+    model();
+}
 if(mode=="print") {
     scale(1/25) {
         room();
-        posNeg() {
-            desk2();
-        }
+        model();
     }
 }
+
+if(mode[0] == "P" && mode[1]=="-") {
+    $fronts=false;
+    $machines=false;
+    
+    $part=substr(mode,2);
+    
+    projection(false)
+    orient(mode)
+//    rotate(90,[0,1,0]) 
+        model();
+//        previewLU();
+}
+
 
 echo(D_1);
 echo(D_2);

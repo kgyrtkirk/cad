@@ -303,7 +303,7 @@ module space(h) {
 }
 
 
-module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false) {
+module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false,type="straight") {
     eXY(name,w,d,rot=rot);
     if(!$positive) {
 //        s=40*sqrt(2);
@@ -322,8 +322,8 @@ module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false) {
             cube([s*2,s,$W+.1],center=true);
         }
     }
-
 }
+
 module cutCornerShelf0(name,w,d,c) {
     eXY(name,w,d);
 }
@@ -347,7 +347,7 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,ex
             bh=h-15;
             color([1,0,0])
             translate([7.5,3,foot+7.5])
-            cube([bw,1,bh]);
+            eXZ($W=3,str(name,"-back"),bw,bh);
             echo(str(name,"-back"),str(bh,"x",bw));
         }
     }
@@ -1025,7 +1025,7 @@ module drawer(h,withLock=false,type1="def") {
 //                nut_depth
                 o=$W-nut_depth;
                 translate([qx+o,-id,qz+floorOff-3])
-                cube([ix-2*o,id,3]);
+                eXY($W=3,str(name,"Fl-back"),ix-2*o,id);
                 echo(str(name,"-dback"),str(ix-15,"x",id));
             }else {
                 $close="Olru";
