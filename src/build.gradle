@@ -101,6 +101,7 @@ def partMap = [
 'hinge_offset_element':['def'],
 'window_spacer':['def'],
 'pencil_extender':['tri','hex'],
+'helga_asztal':['def'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->

@@ -121,18 +121,8 @@ module desk2(){
     $front=false;
     FOOT_H=80;
 
-    if(false) {
     translate([0,0,DESK_H])
-    eXYp($W=28,"top",[[0,0],[SPACE_X,0],
-                [SPACE_X,D_2+TOP_OVER],
-                [SPACE_X-(D_1-D_2),D_1+TOP_OVER],
-                [0,D_1+TOP_OVER]
-                
-                ]);
-    }else{
-    translate([0,0,DESK_H])
-    cutCornerShelf($W=28,$close="FL","top2",SPACE_X,D_1+TOP_OVER,cL=D_1-D_2);
-    }
+    cutCornerShelf($W=28,$close="FL","top",SPACE_X,D_1+TOP_OVER,cL=D_1-D_2,rot=true);
     // monitorkivagas
     {
         Q=750;

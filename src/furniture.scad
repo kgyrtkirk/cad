@@ -304,7 +304,7 @@ module space(h) {
 
 
 module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false) {
-    eXY(name,w,d);
+    eXY(name,w,d,rot=rot);
     if(!$positive) {
 //        s=40*sqrt(2);
         if(cR>0) {
