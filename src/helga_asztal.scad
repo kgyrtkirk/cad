@@ -288,16 +288,22 @@ if(false) {
 
     module sideShelf() {
         wallOff=$W;
+        if($m) {
         translate([0,wallOff,0])
         eXY($front=true,$close="LF","SideShelf",SIDE_SPACE,D_1-wallOff);
+        }
+        else
+        translate([0,wallOff,0])
+        cutCornerShelf($front=true,$close="FL","top",SIDE_SPACE,D_1-wallOff,cL=40);
     }
     translate([SPACE_X-SIDE_SPACE,0,0]) {
+        $m=false;
         T=DESK_H-D_K-$W;
         for(z=[0:.25:1])
         translate([0,0,T-z*(T-FOOT_H)])
         sideShelf();
 
-        if(!$positive) {
+        if($m && !$positive) {
             s=40*sqrt(2);
             translate([SIDE_SPACE,D_1,0])
             rotate(45)
@@ -347,14 +353,21 @@ if(false) {
 
 
 }
+mode="normal";
 
-room();
-
-posNeg() {
-//   partsDesk();
-
-    desk2();
-    
+if(mode=="normal") {
+    room();
+    posNeg() {
+        desk2();
+    }
+}
+if(mode=="print") {
+    scale(1/25) {
+        room();
+        posNeg() {
+            desk2();
+        }
+    }
 }
 
 echo(D_1);
