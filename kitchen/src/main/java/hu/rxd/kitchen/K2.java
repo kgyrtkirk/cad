@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+//import org.junit.Test;
 
 public class K2 {
 
@@ -16,7 +16,7 @@ public class K2 {
   private static final int LEFT_HALF_WIDTH = 2000;
   private static final int BACK_WALL_WIDTH = 2000;
 
-  @Test
+//  @Test
   public void asd() throws Exception {
 
     SObj wall = new SObj("union()");

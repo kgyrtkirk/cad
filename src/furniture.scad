@@ -306,20 +306,54 @@ module space(h) {
 module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false,type="straight") {
     eXY(name,w,d,rot=rot);
     if(!$positive) {
-//        s=40*sqrt(2);
-        if(cR>0) {
-            echo("cutCronerShelfR ",name," dc ",cR);
-                s=cR*sqrt(2);
-            translate([0,d,$W/2])
-            rotate(45)
-            cube([s*2,s,$W+.1],center=true);
-        }
-        if(cL>0) {
-            echo("cutCronerShelfL ",name," dc ",cL);
-                s=cL*sqrt(2);
-            translate([w,d,$W/2])
-            rotate(-45)
-            cube([s*2,s,$W+.1],center=true);
+        
+        if(type == "straight") {
+            if(cR>0) {
+                echo("cutCronerShelfR ",name," dc ",cR);
+                    s=cR*sqrt(2);
+                translate([0,d,$W/2])
+                rotate(45)
+                cube([s*2,s,$W+.1],center=true);
+            }
+            if(cL>0) {
+                echo("cutCronerShelfL ",name," dc ",cL);
+                    s=cL*sqrt(2);
+                translate([w,d,$W/2])
+                rotate(-45)
+                cube([s*2,s,$W+.1],center=true);
+            }
+        }else if(type=="round") {
+            if(cR>0) {
+                r=cR;
+                // echo("cutCronerShelfR ",name," dc ",cR);
+                translate([0,d,$W/2]) {
+                    difference() {
+                        translate([r/2,-r/2])
+                        cube([r+.1,r+.1,$W+.1],center=true);
+                        translate([r,-r])
+                        cylinder($fn=64,r=r,h=$W+.2,center=true);
+                    }
+                }
+
+                // rotate(45)
+                // cube([s*2,s,$W+.1],center=true);
+            }
+            if(cL>0) {
+                r=cL;
+                echo("roundCornerShelfL ",name," dc ",cL);
+                translate([w,d,$W/2]) {
+                    difference() {
+                        translate([-r/2,-r/2])
+                        cube([r+.1,r+.1,$W+.1],center=true);
+                        translate([-r,-r])
+                        cylinder($fn=64,r=r,h=$W+.2,center=true);
+                    }
+                }
+//                rotate(-45)
+//                cube([s*2,s,$W+.1],center=true);
+            }
+        } else {
+            assert(false,"unknown cornertype");
         }
     }
 }

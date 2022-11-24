@@ -134,6 +134,7 @@ def projMap = [
 		'P-BED_L-SFXZ',
 		'P-L_SIDEXZ'],
 	'ex':				['def'],
+	'helga_asztal':	['P-topXY'],
 	]
 
 task allScad() {}

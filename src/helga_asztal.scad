@@ -41,6 +41,9 @@ DESIRED_DESK_H=730; // +?
 DESK_H=DESIRED_DESK_H;
 
 
+VEVOR_MOUNT_X=100;
+VEVOR_MOUNT_Y=56;
+
 LIFT_D=120;
 LIFT_Y=20;//45;
 
@@ -122,17 +125,25 @@ module desk2(){
     FOOT_H=80;
 
     translate([0,0,DESK_H])
-    cutCornerShelf($W=28,$close="FL","top",SPACE_X,D_1+TOP_OVER,cL=D_1-D_2,rot=true);
+    cutCornerShelf($W=28,$close="FL","top",SPACE_X,D_1+TOP_OVER,cL=1.5*(D_1-D_2),rot=true,type="round");
     // monitorkivagas
     {
-        Q=750;
-        P=80;
+        Q=750;  //  szelesseg
+        P=70;   //  melyseg
+        R=110;  //  kozep hatul szelesseg
+        E=4;    // tulmeretezes a lekerikitett kivagas miatt
 
-        translate([WR+CHAIR_D/2,LIFT_LOSS-P/2+10,DESK_H]) {
+
+        translate([WR+CHAIR_D/2,0,DESK_H]) {
+            translate([0,LIFT_Y+VEVOR_MOUNT_Y+monitor_dims[1]/2,0])
             translate(-[Q/2,P/2,-$W])
             eXY($close="flrb","m-cover",Q,P,rot=true);
-            if(false && !$positive) {
-                cube([Q,P,100],true);
+            translate([0,0,$W])
+            if(!$positive) {
+                translate([0,LIFT_Y+VEVOR_MOUNT_Y+monitor_dims[1]/2,0])
+                cube([Q+E,P+E,2*$W],true);
+                translate([0,LIFT_Y+VEVOR_MOUNT_Y,0])
+                cube([R,VEVOR_MOUNT_Y*2,2*$W],true);
             }
         }
     }
@@ -143,7 +154,7 @@ module desk2(){
         L_S=640;
         L_C=640;
         W_C=180;
-        W_S=80;
+        W_S=70;
         SUP_W=180;  //inner
         SUP_H=300;
         
@@ -194,11 +205,19 @@ if(false) {
     
     DH=(DESK_H-FOOT_H-K)/4-.5;
     translate([SPACE_X-WL-SIDE_SPACE,LIFT_LOSS,FOOT_H]) {
+        // cabinet( name="LT",
+        //     $close="F",
+        //     w=WL,
+        //     sideClose="F",
+        //     h=DESK_H -FOOT_H-K,
+        //     d=D_2,
+        //     extraDL=LIFT_LOSS);
+
         cabinet( name = "L",
             $close="F",
             w=WL,
             sideClose="F",
-            h=DESK_H -FOOT_H,
+            h=DESK_H -FOOT_H,//-K,
             d=D_2,
             extraDL=LIFT_LOSS) {
                 {
@@ -238,20 +257,20 @@ if(false) {
             EY=10;
             translate([-EX-EY,0,HR-FOOT_H])
             
-            cutCornerShelf($front=true,"R2Top",LEN_R2+EX+EY,WR+EY,EX/(1+sqrt(2))+EY,rot=true);
+            cutCornerShelf($front=true,"R2Top",LEN_R2+EX+EY,WR+EY,EX+0*EX/(1+sqrt(2))+EY,rot=true,type="round");
 
             N=4;
             for(i=[0:N-1]) {
                 translate([-EX,0,(HR-FOOT_H)*i/(N)])
 
-                cutCornerShelf($front=true,"ShelfR",EX,WR,EX/(1+sqrt(2)));
+                cutCornerShelf($front=true,"ShelfR",EX,WR,cR=EX+0*EX/(1+sqrt(2)),type="round");
             }
 
             {
 
                 M_W=D_1-D_2-20;
                 translate([LEN_R2-M_W,0,HR+100-FOOT_H])
-                cutCornerShelf($front=true,"ShelfM",M_W,WR,M_W/(1+sqrt(2)),rot=true);
+                cutCornerShelf($front=true,"ShelfM",M_W,WR,M_W+0*M_W/(1+sqrt(2)),rot=true,type="round");
             }
 
         }
@@ -286,10 +305,10 @@ if(false) {
 
     translate([SPACE_X-SIDE_SPACE,0,0]) {
         T=DESK_H-D_K-$W;
-        wallOff=$W;
+        wallOff=0*$W;
         for(z=[0:.25:1])
         translate([0,wallOff,T-z*(T-FOOT_H)])
-        cutCornerShelf($front=true,$close="FL","ShelfL",SIDE_SPACE,D_1-wallOff,cL=40);
+        cutCornerShelf($front=true,$close="FL","ShelfL",SIDE_SPACE,D_1-wallOff,cL=SIDE_SPACE+0*40,type="round");
     }
 
 
@@ -307,15 +326,18 @@ if(false) {
 
     if($machines)
     color([0,0,1]) {
+
+
         up=true;
         x=WR+CHAIR_D/2;
-        y=LIFT_LOSS-monitor_dims[1]/2;
+        y=LIFT_Y+VEVOR_MOUNT_Y+monitor_dims[1]/2;
         z=EYE_H-monitor_dims[2]/2-(up?0:VEVOR_STROKE);
         translate([x,y,z])
         cube(monitor_dims,center=true);
 
-        translate([x,LIFT_Y+50/2,DESK_H])
-        cube([50,50,1000],center=true);
+        
+        translate([x,LIFT_Y+VEVOR_MOUNT_Y/2,DESK_H])
+        cube([VEVOR_MOUNT_X,VEVOR_MOUNT_Y,1000],center=true);
 
         translate([x-100,LIFT_Y,0])
         cube([100,70,70]);
@@ -342,7 +364,11 @@ module model() {
 }
 
 mode="normal";
-mode="P-topXY";
+//mode="P-topXY";
+//mode="P-R2TopXY";
+// mode="P-ShelfRXY";
+// mode="P-ShelfMXY";
+// mode="P-ShelfLXY";
 
 if(mode=="normal") {
     room();
