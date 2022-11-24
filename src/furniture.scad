@@ -362,7 +362,7 @@ module cutCornerShelf0(name,w,d,c) {
     eXY(name,w,d);
 }
 
-module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,extraDR=0,sideClose="oUF") {
+module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,extraDR=0,sideClose="oUF",bottom=true) {
     
     dBack=fullBack?$W:0;
 
@@ -402,6 +402,7 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,ex
                 eXZ($close="oU",name,w-2*$W,foot);
             }
             
+            if(bottom)
             translate([$W,0,foot])
             eXY($close="F",str(name,"Bot"),w-2*$W,$d);
         }
