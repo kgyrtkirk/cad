@@ -205,12 +205,19 @@ if(false) {
     
     DH=(DESK_H-FOOT_H-K)/4-.5;
     translate([SPACE_X-WL-SIDE_SPACE,LIFT_LOSS,FOOT_H]) {
-        translate([0,0,DESK_H-FOOT_H-K])
-        cabinet( name="LT",
+        // cabinet( name="LT",
+        //     $close="F",
+        //     w=WL,
+        //     sideClose="F",
+        //     h=DESK_H -FOOT_H-K,
+        //     d=D_2,
+        //     extraDL=LIFT_LOSS);
+
+        cabinet( name = "L",
             $close="F",
             w=WL,
             sideClose="F",
-            h=K,
+            h=DESK_H -FOOT_H,//-K,
             d=D_2,
             extraDL=LIFT_LOSS) {
                 {
@@ -227,17 +234,8 @@ if(false) {
             // translate([400,300,-K])
                     // eXY("a",200,400);
                 }
-                cBeams();
-            }
-
-        cabinet( name = "L",
-            $close="F",
-            w=WL,
-            sideClose="F",
-            h=DESK_H -FOOT_H-K,
-            d=D_2,
-            extraDL=LIFT_LOSS) {
-                shelf($front=true,$W,external=true)
+                cBeams()
+                shelf($front=true,K+$W,external=true)
                 space($front=false,-$W)
                 drawer(DH)
                 drawer(DH)
