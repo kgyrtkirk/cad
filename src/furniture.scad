@@ -371,6 +371,8 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,ex
     $h=h+foot;
     $d=d-dBack;
 
+    individNames = (extraHL!=extraHR) || (extraDL!=extraDR);
+
     if(fullBack) {
 //        translate([0,-100])
         eXZ($close="LROU",
@@ -389,9 +391,9 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,ex
     translate([0,dBack,0]) {
         {
             translate([0,-extraDR,0])
-            eYZ($close=sideClose,name,$d+extraDR,h+foot+extraHR);
+            eYZ($close=sideClose,str(name,individNames?"r":""),$d+extraDR,h+foot+extraHR);
             translate([w-$W,-extraDL,0])
-            eYZ($close=sideClose,name,$d+extraDL,h+foot+extraHL);
+            eYZ($close=sideClose,str(name,individNames?"l":""),$d+extraDL,h+foot+extraHL);
             
             
             if(foot>0) {
