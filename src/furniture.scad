@@ -42,8 +42,14 @@ module ppp2(name,dims="") {
 
 module closeColor(v) {
     if(v>0.4)
-        color([1,.5,0])
-    children();
+    {
+        if(v>1.1)
+            color([1,.5,0])
+            children();
+        else
+            color([0,.5,0])
+            children();
+    }
     else
         color([1,0,0])
     children();
@@ -52,11 +58,13 @@ module closeColor(v) {
 
 module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
     if($part == name && $W>1) {
+        // drill plan for selected part is evaluated at the center
+        // not perfect ; but something
         W0=$W;
         W1=.1;
         $W=W1;
         translate([0,0,W0/2-W1/2])
-        plain(name,w0,h0,closeU,closeD,closeR,closeL,rot);
+        plain(name,w0,h0,closeL,closeR,closeU,closeD,rot);
     }else
 
     if(!rot) {
@@ -74,25 +82,26 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
         cube([w,h,$W]);
         //color([1,0,0]) 
         {
+            E=.1;
             if(closeL>0) {
                 closeColor(closeL)
                 translate([-closeL,0,0])
-                cube([closeL,h,$W]);
+                cube([closeL-E,h,$W]);
             }
             if(closeR>0) {
                 closeColor(closeR)
-                translate([w,0,0])
-                cube([closeR,h,$W]);
+                translate([w+E,0,0])
+                cube([closeR-E,h,$W]);
             }
             if(closeD>0) {
                 closeColor(closeD)
                 translate([0,-closeD,0])
-                cube([w,closeD,$W]);
+                cube([w,closeD-E,$W]);
             }
             if(closeU>0) {
                 closeColor(closeU)
-                translate([0,h,0])
-                cube([w,closeU,$W]);
+                translate([0,h+E,0])
+                cube([w,closeU-E,$W]);
             }
             color([0,0,1]) 
             translate([0,h/2-$W/2,-1])
@@ -378,14 +387,17 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,ex
         eXZ($close="LROU",
             str(name,"-Fback"),w,h+foot);
     }else {
-        if($positive) {
             bw=w-15;
             bh=h-15;
             color([1,0,0])
-            translate([7.5,3,foot+7.5])
-            eXZ($W=3,str(name,"-back"),bw,bh);
-            echo(str(name,"-back"),str(bh,"x",bw));
-        }
+            translate([7.5,0,foot+7.5])
+            if($positive) {
+                eXZ($W=3,str(name,"-back"),bw,bh);
+                echo(str(name,"-back"),str(bh-1,"x",bw-1));
+            }else {
+                cube([bw,2.5,bh]);
+//                eXZ($W=2,str(name,"-back"),bw,bh);
+            }
     }
 
     translate([0,dBack,0]) {

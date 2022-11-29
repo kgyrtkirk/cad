@@ -134,7 +134,17 @@ def projMap = [
 		'P-BED_L-SFXZ',
 		'P-L_SIDEXZ'],
 	'ex':				['def'],
-	'helga_asztal':	['P-topXY'],
+	'helga_asztal':	[
+			//'P-topXY',
+			'P-LTlYZ',
+			'P-LTrYZ',	
+			'P-LlYZ',
+			'P-LrYZ',	
+			'P-R2TopXY',
+			'P-ShelfLXY',
+			'P-ShelfRXY',
+			'P-ShelfMXY',
+			],
 	]
 
 task allScad() {}
@@ -164,6 +174,8 @@ projMap.each { inputName,modes ->
 		def sFile=new File(outputDir,"${outputName}.svg")
 		def oFile=new File(outputDir,"${outputName}.pdf")
 		def oFile2=new File(outputDir,"${outputName}.png")
+		def epsFile=new File(outputDir,"${outputName}.eps")
+		def dxfFile=new File(outputDir,"${outputName}.dxf")
 		def t=task("scad_${outputName}",type:Exec) {
 			def inputFile=file("${inputName}.scad")
 			inputs.file inputFile
@@ -176,6 +188,18 @@ projMap.each { inputName,modes ->
 			outputs.file oFile
 			commandLine "inkscape","--without-gui","--export-pdf=$oFile",sFile
 		}
+		def tEps=task("inkscape_${outputName}_eps",type:Exec) {
+			dependsOn t
+			inputs.file sFile
+			outputs.file dxfFile
+			commandLine "inkscape","--without-gui","-o",epsFile,sFile
+		}
+		def t4=task("pstoedit_${outputName}_dxf",type:Exec) {
+			dependsOn tEps
+			inputs.file epsFile
+			outputs.file dxfFile
+			commandLine "pstoedit","-dt","-f",'dxf:-polyaslines -mm',epsFile,dxfFile
+		}
 		def t3=task("inkscape_${outputName}_png",type:Exec) {
 			dependsOn t
 			inputs.file sFile
@@ -186,6 +210,7 @@ projMap.each { inputName,modes ->
 
 		allScad.dependsOn(t2)
 		allScad.dependsOn(t3)
+		allScad.dependsOn(t4)
 		allPdf.dependsOn(t2)
 		allPdf.dependsOn(t3)
 //		allDxf.dependsOn(t3)

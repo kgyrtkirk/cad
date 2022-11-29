@@ -219,7 +219,7 @@ module partsL() {
 
         translate([P_X[2],0,0]) 
     //    eXY($front=true,"SC2",w,d2);
-       cutCornerShelf($front=true,"SC2",w,d2,d1);
+       cutCornerShelf($front=true,"SC2",w,d2,cR=d1);
 //        eXYp($front=true,"SC2",[[0,0],[0,d2],[W+sin(45)*W,d2],[w,d1],[w,0] ]);
     }
 

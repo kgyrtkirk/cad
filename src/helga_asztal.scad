@@ -125,7 +125,7 @@ module desk2(){
     FOOT_H=80;
 
     translate([0,0,DESK_H])
-    cutCornerShelf($W=28,$close="FL","top",SPACE_X,D_1+TOP_OVER,cL=1.5*(D_1-D_2),rot=true,type="round");
+    cutCornerShelf($W=28,$close="LF","top",SPACE_X,D_1+TOP_OVER,cL=1.5*(D_1-D_2),rot=true,type="round");
     // monitorkivagas
     {
         Q=750;  //  szelesseg
@@ -154,7 +154,7 @@ module desk2(){
         L_S=640;
         L_C=640;
         W_C=180;
-        W_S=70;
+        W_S=62;
         SUP_W=180;  //inner
         SUP_H=300;
         
@@ -206,7 +206,7 @@ if(false) {
     DH=(DESK_H-FOOT_H-K)/4-.5;
     translate([SPACE_X-WL-SIDE_SPACE,LIFT_LOSS,FOOT_H]) {
         translate([0,0,DESK_H-FOOT_H-K])
-        cabinet( name="LT",
+        cabinet( name="LT",$closeWMain=[1,1],
             $close="F",
             w=WL,
             sideClose="F",
@@ -231,14 +231,14 @@ if(false) {
                 cBeams();
             }
 
-        cabinet( name = "L",
+        cabinet( name = "L",$closeWMain=[1,1],
             $close="F",
             w=WL,
             sideClose="F",
             h=DESK_H -FOOT_H-K,
             d=D_2,
             extraDL=LIFT_LOSS) {
-                shelf($front=true,$W,external=true)
+                shelf($front=true,$W,external=true,$closeWMain=[.4,2])
                 space($front=false,-$W)
                 drawer(DH)
                 drawer(DH)
@@ -260,7 +260,7 @@ if(false) {
             EY=10;
             translate([-EX-EY,0,HR-FOOT_H])
             
-            cutCornerShelf($front=true,"R2Top",LEN_R2+EX+EY,WR+EY,EX+0*EX/(1+sqrt(2))+EY,rot=true,type="round");
+            cutCornerShelf($front=true,"R2TopA",LEN_R2+EX+EY,WR+EY,EX+0*EX/(1+sqrt(2))+EY,rot=true,type="round");
 
             N=4;
             for(i=[0:N-1]) {
@@ -277,7 +277,7 @@ if(false) {
             }
 
         }
-        cabinet( name = "R2",
+        cabinet( name = "R2",$closeWMain=[1,1],
             $close="F",
             sideClose="F",
             w=LEN_R2,
@@ -288,7 +288,7 @@ if(false) {
                     shelf($front=true,300,external=true);
                     shelf($front=true,100,external=true);
                     shelf($front=true,300,external=true);
-                    skyFoot($w=LEN_R,FOOT_H,sideR=true);
+                    skyFoot($closeWMain=[.4,2],$w=LEN_R,FOOT_H,sideR=true);
                 }
         translate([LEN_R2,0,0])
         cabinet( name = "R1",
@@ -322,8 +322,13 @@ if(false) {
 
     module liftBox() {
         h=285;
-        translate([0,0,$openDoors?0:-h+$W])
+        if($machines)
+        translate([0,0,$openDoors?0:-h+2.2*$W])
         cylinder(d=60,h=h);
+        if(!$positive) {
+            translate([0,0,0])
+            cylinder(d=63,h=2.1*$W);
+        }
 
     }
 
@@ -345,10 +350,10 @@ if(false) {
         translate([x-100,LIFT_Y,0])
         cube([100,70,70]);
 
-        translate([60,60,DESK_H])
-        liftBox();
     }
 
+    translate([60,LIFT_Y+55/2+20,DESK_H])
+    liftBox();
 
     if($machines) {
         translate([0,50+120,FOOT_H+$W])
@@ -367,8 +372,9 @@ module model() {
 }
 
 mode="normal";
+//mode="P-LTlYZ";
 //mode="P-topXY";
-//mode="P-R2TopXY";
+mode="P-R2TopAXY";
 // mode="P-ShelfRXY";
 // mode="P-ShelfMXY";
 // mode="P-ShelfLXY";
