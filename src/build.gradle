@@ -92,7 +92,7 @@ def partMap = [
 	'gyerekszoba':['cab30','a30','b30','d30','table30','bed30'],
 	'lanyok_bunkbed':['s30'],
 	'spacers':['1000','2000','3000','4000','5000','6000','7000' ],
-	'drill_spacers':['edge','ruler9','10to5','d8l1','d8l2','d8l3','edgeDrill3','edgeDrill3s'],
+	'drill_spacers':['edge','ruler9','10to5','d8l1','d8l2','d8l3','edgeDrill3','edgeDrill3s','edgeDrill3a20','samet_drawer_drill'],
 'angelcare_stand':['hook','clamp'],
 'esp-box-angled-mount':['def'],
 'bicycle_handle_ribbon':['def'],
@@ -102,6 +102,7 @@ def partMap = [
 'window_spacer':['def'],
 'pencil_extender':['tri','hex'],
 'helga_asztal':['print'],
+'vacuum_adapter':['def'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
@@ -135,12 +136,12 @@ def projMap = [
 		'P-L_SIDEXZ'],
 	'ex':				['def'],
 	'helga_asztal':	[
-			//'P-topXY',
-			'P-LTlYZ',
-			'P-LTrYZ',	
+			'P-topXY',
+//			'P-LTlYZ',
+//			'P-LTrYZ',	
 			'P-LlYZ',
 			'P-LrYZ',	
-			'P-R2TopXY',
+			'P-R2TopAXY',
 			'P-ShelfLXY',
 			'P-ShelfRXY',
 			'P-ShelfMXY',

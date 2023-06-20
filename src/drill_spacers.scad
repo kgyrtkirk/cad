@@ -1,7 +1,7 @@
 use <threadlib/threadlib.scad>
 use <syms.scad>
 
-mode="ruler9";
+mode="samet_drawer_drill";
 
 if(mode=="edge") {
     
@@ -137,7 +137,7 @@ module edgeDrill2() {
 }
 
 
-module edgeDrill3(spacer=false) {
+module edgeDrill3(spacer=false,SP=28) {
     
     module t(d) {
         cylinder(d=d,h=3*W,center=true);
@@ -149,14 +149,14 @@ module edgeDrill3(spacer=false) {
         
         for(i=[-1,0,1]) {
             D=(i==0)?5:8;
-            translate([$W/2,L/2+i*28,0])
+            translate([$W/2,L/2+i*SP,0])
             children(1);
 
 
-            translate([0,L/2+i*28,$W/2+OX])
+            translate([0,L/2+i*SP,$W/2+OX])
             rotate(90,[0,1,0])
             children(i==0?0:1);
-            translate([$W,L/2+i*28,$W/2+OX])
+            translate([$W,L/2+i*SP,$W/2+OX])
             rotate(-90,[0,1,0])
             children(1);
         }
@@ -253,6 +253,9 @@ if(mode=="edgeDrill2") {
 if(mode=="edgeDrill3") {
     edgeDrill3();
 }
+if(mode=="edgeDrill3a20") {
+    edgeDrill3(SP=20);
+}
 if(mode=="edgeDrill3s") {
     edgeDrill3(true);
 }
@@ -272,6 +275,32 @@ module d8(H){
     }
 }
 
+
+module samet_drawer_drill() {
+    $W=4;
+    $fn=64;
+    
+    difference() {
+        linear_extrude(2*$W)
+        translate([-7,0,0]){
+            offset(3+$W)
+            square([14,11]);
+    //        cube([14,11+$W,2*$W]);
+        }
+        translate([0,11,0])
+        cylinder(100,d=6,center=true);
+        
+        A=30;
+        translate([0,A,A+$W])
+        cube(2*A,center=true);
+
+        for(x=[-1,1])
+        translate([(A+7)*x,0,A+$W])
+        cube(2*A,center=true);
+    }
+    
+    
+}
 // 20 
 // 77.5
 // 13
@@ -291,5 +320,10 @@ if(mode=="d8l3") {
     $fn=64;
     H=77.5-20-25+5;
     d8(H);
+}
+
+
+if(mode=="samet_drawer_drill") {
+    samet_drawer_drill();
 }
 

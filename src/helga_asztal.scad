@@ -6,7 +6,7 @@ use <kitchen_box.scad>
 $drawerBoxes=true;
 
 $fronts=true;
-
+$showL=false;
 $machines=true;
 $internal=true;
 $openDoors=false;
@@ -14,7 +14,7 @@ $drawerState="OPEN";
 $handle="125";
 
 $closeWMain=[.4,2];
-$closeWFront=[1,1];
+$closeWFront=[.4,1];
 $defaultDrawer="smart";
 
 $part=undef;
@@ -128,20 +128,25 @@ module desk2(){
     cutCornerShelf($W=28,$close="LF","top",SPACE_X,D_1+TOP_OVER,cL=1.5*(D_1-D_2),rot=true,type="round");
     // monitorkivagas
     {
-        Q=750;  //  szelesseg
-        P=70;   //  melyseg
-        R=110;  //  kozep hatul szelesseg
         E=4;    // tulmeretezes a lekerikitett kivagas miatt
+        Q=750;  //  szelesseg
+        P=70-E-E;   //  melyseg
+        R=110;  //  kozep hatul szelesseg
 
 
         translate([WR+CHAIR_D/2,0,DESK_H]) {
+            A=Q+2*E/sqrt(2);
+            B=P+2*E/sqrt(2);
             translate([0,LIFT_Y+VEVOR_MOUNT_Y+monitor_dims[1]/2,0])
-            translate(-[Q/2,P/2,-$W])
-            eXY($close="flrb","m-cover",Q,P,rot=true);
+            translate(-[A/2,B/2,-$W])
+            eXY($close="flrb","m-cover",A,B,rot=true);
             translate([0,0,$W])
             if(!$positive) {
-                translate([0,LIFT_Y+VEVOR_MOUNT_Y+monitor_dims[1]/2,0])
-                cube([Q+E,P+E,2*$W],true);
+                $fn=32;
+               translate([0,LIFT_Y+VEVOR_MOUNT_Y+monitor_dims[1]/2,0])
+                linear_extrude(2*$W,center=true)
+                    offset(E)
+                    square([Q,P],center=true);
                 translate([0,LIFT_Y+VEVOR_MOUNT_Y,0])
                 cube([R,VEVOR_MOUNT_Y*2,2*$W],true);
             }
@@ -173,6 +178,7 @@ module desk2(){
     }
     
     // hatso resz takaro
+    if(showL)
     translate([WR,LIFT_LOSS,0])
     {
         eXZ($close="ou","backHide",CHAIR_D-3,DESK_H-100);
@@ -204,16 +210,17 @@ if(false) {
     K=D_1-D_2;
     
     DH=(DESK_H-FOOT_H-K)/4-.5;
+    echo("DH",DH);
+    if($showL)
     translate([SPACE_X-WL-SIDE_SPACE,LIFT_LOSS,FOOT_H]) {
-        translate([0,0,DESK_H-FOOT_H-K])
-        cabinet( name="LT",$closeWMain=[1,1],
-            $close="F",
+//        translate([0,0,DESK_H-FOOT_H-K])
+        cabinet( name = "L",
+            $close="f",
             w=WL,
-            sideClose="F",
-            h=K,
+            sideClose="f",
+            h=DESK_H -FOOT_H,
             d=D_2,
-            extraDL=LIFT_LOSS,
-            bottom=false) {
+            extraDL=LIFT_LOSS) {
                 {
                     if(!$positive) {
                         intersection() {
@@ -229,16 +236,7 @@ if(false) {
                     // eXY("a",200,400);
                 }
                 cBeams();
-            }
-
-        cabinet( name = "L",$closeWMain=[1,1],
-            $close="F",
-            w=WL,
-            sideClose="F",
-            h=DESK_H -FOOT_H-K,
-            d=D_2,
-            extraDL=LIFT_LOSS) {
-                shelf($front=true,$W,external=true,$closeWMain=[.4,2])
+                shelf($front=true,K+$W,external=true)
                 space($front=false,-$W)
                 drawer(DH)
                 drawer(DH)
@@ -255,15 +253,16 @@ if(false) {
     translate([0,LEN_R+LIFT_LOSS,FOOT_H])
     rotate(-90) {
         {   //  uloke
-            $close="FR";
+            $close="fr";
             EX=70;
             EY=10;
             translate([-EX-EY,0,HR-FOOT_H])
             
-            cutCornerShelf($front=true,"R2TopA",LEN_R2+EX+EY,WR+EY,EX+0*EX/(1+sqrt(2))+EY,rot=true,type="round");
+            cutCornerShelf($close="FR",$front=true,"R2TopA",LEN_R2+EX+EY,WR+EY,EX+0*EX/(1+sqrt(2))+EY,rot=true,type="round");
 
             N=4;
             for(i=[0:N-1]) {
+                echo("RshelfZ",(HR-FOOT_H)*i/(N)+$W/2)
                 translate([-EX,0,(HR-FOOT_H)*i/(N)])
 
                 cutCornerShelf($front=true,"ShelfR",EX,WR,cR=EX+0*EX/(1+sqrt(2)),type="round");
@@ -271,15 +270,16 @@ if(false) {
 
             {
 
+                echo("ShelfMZ",(HR+DESK_H)/2+9-FOOT_H);
                 M_W=D_1-D_2-20;
-                translate([LEN_R2-M_W,0,HR+100-FOOT_H])
+                translate([LEN_R2-M_W,0,(HR+DESK_H)/2-FOOT_H])
                 cutCornerShelf($front=true,"ShelfM",M_W,WR,M_W+0*M_W/(1+sqrt(2)),rot=true,type="round");
             }
 
         }
-        cabinet( name = "R2",$closeWMain=[1,1],
-            $close="F",
-            sideClose="F",
+        cabinet( name = "R2",
+            $close="f",
+            sideClose="f",
             w=LEN_R2,
             h=HR-FOOT_H,
             d=WR)
@@ -292,8 +292,8 @@ if(false) {
                 }
         translate([LEN_R2,0,0])
         cabinet( name = "R1",
-            $close="F",
-            sideClose="F",
+            $close="f",
+            sideClose="f",
             w=LEN_R1,
             h=DESK_H-FOOT_H,
             d=WR)
@@ -309,9 +309,11 @@ if(false) {
     translate([SPACE_X-SIDE_SPACE,0,0]) {
         T=DESK_H-D_K-$W;
         wallOff=0*$W;
-        for(z=[0:.25:1])
-        translate([0,wallOff,T-z*(T-FOOT_H)])
-        cutCornerShelf($front=true,$close="FL","ShelfL",SIDE_SPACE,D_1-wallOff,cL=SIDE_SPACE+0*40,type="round");
+        for(z=[0:.25:1]) {
+            echo("pZ",z*(T-FOOT_H)+$W/2);
+        translate([0,wallOff,T-z*(T-FOOT_H)]) 
+        cutCornerShelf($front=true,$close="fl","ShelfL",SIDE_SPACE,D_1-wallOff,cL=SIDE_SPACE+0*40,type="round");
+        }
     }
 
 
@@ -374,7 +376,7 @@ module model() {
 mode="normal";
 //mode="P-LTlYZ";
 //mode="P-topXY";
-mode="P-R2TopAXY";
+//mode="P-R2TopAXY";
 // mode="P-ShelfRXY";
 // mode="P-ShelfMXY";
 // mode="P-ShelfLXY";

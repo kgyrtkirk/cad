@@ -56,6 +56,8 @@ module closeColor(v) {
         
 }
 
+function elementTypeName() = ($W<5)?"BACK":($front?"FRONT":"MAIN");
+
 module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
     if($part == name && $W>1) {
         // drill plan for selected part is evaluated at the center
@@ -110,7 +112,7 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
     }
     
         if($positive) {
-            s=$front?"FRONT":"MAIN";
+            s=elementTypeName();
             echo(str("PLANAR: ",s," ",name, " ", w,"*", h, " ",
             closeD,";",closeU,";",
             closeL,";",closeR
@@ -416,7 +418,7 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,ex
             
             if(bottom)
             translate([$W,0,foot])
-            eXY($close="F",str(name,"Bot"),w-2*$W,$d);
+            eXY($close=sideClose,str(name,"Bot"),w-2*$W,$d);
         }
 
         translate([0,0,$h])
