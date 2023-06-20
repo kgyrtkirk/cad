@@ -103,6 +103,7 @@ def partMap = [
 'pencil_extender':['tri','hex'],
 'helga_asztal':['print'],
 'vacuum_adapter':['def'],
+'bag_hanger':['def'],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
