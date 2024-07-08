@@ -9,12 +9,14 @@ module roundedCutShape(w,h,d,r) {
 }
 
 
-mode="JMF-947";
+mode="+36(20)411-94-67";
+//mode="JMF-111";
 str=mode;
 S=6;
 
 W=.6;
-A=len(str)*S+2*W;
+echo( len(str));
+A=len(str)*S*8/11+2*W;
 B=S*1.4+4*W;
 R=2;
 H1=4;
@@ -45,3 +47,4 @@ difference() {
     //"Bitstream Vera Sans:style=Bold",
         halign="center",valign="center");
 
+//cylinder(d=A,h=.1);

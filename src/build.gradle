@@ -54,8 +54,8 @@ def partMap = [
 	'baby_lock3':		['main'],
 	'maximera_front_drill': ['main','addon','off5'],
 	'can_cap':		['75500','86000','55000','54300','102000'],
-	'dxf_car1':	['def'],
-	'dxf_car2':	['def'],
+//	'dxf_car1':	['def'],
+//	'dxf_car2':	['def'],
 	'geocaching_box1':	['holder','full','magnet-test','simple','hanger'],
 //	'activity_board_1':	['def'],
 //	'dimmer_bottom':	['def'],
@@ -71,14 +71,14 @@ def partMap = [
 	'kinga_rajz_kulcst':['def'],
 	'pir_hole_cover':['upper'],
 	'Clips':['def'],
-	'dxf_stuff':['car3','car4','car5','frozen1','frozen2','icecream','grass1','grass2','cherry1','cherry2','tree1','tree2','tree3','tree4','house1','house2','house3','people1','people2','people3','people4'],
+//	'dxf_stuff':['car3','car4','car5','frozen1','frozen2','icecream','grass1','grass2','cherry1','cherry2','tree1','tree2','tree3','tree4','house1','house2','house3','people1','people2','people3','people4'],
 	'sound16_mount':		['simple'],
 	'mounts':		['rc522','sound16','hourglass','dingdong','dingdong2','keyb','speaker','digitboard','melodyboard','b22fix'],
 	'run_light_case2':	['def'],
 	'run_light_case3':	['def'],
 	'penhold4_2017update':	['def'],
         'sofa_feet_plug':  ['plug','stand'],
-	'climate_end': ['def','main'],
+//	'climate_end': ['def','main'],
 	'wire_guide':['5','8','10'],
 //	'bathroom_shelf':['render'],
 'drawing_shapes':['a6','a4','a3','a5','a360'],
@@ -87,7 +87,7 @@ def partMap = [
 	'pipe_cup':['part'],
 	'seat_switch':['l','r'],
 	'hook':['def'],
-	'kx':['def'],
+//	'kx':['def'],
 	'lanyok_szoba':['print','radiator'],
 	'gyerekszoba':['cab30','a30','b30','d30','table30','bed30'],
 	'lanyok_bunkbed':['s30'],
@@ -96,14 +96,16 @@ def partMap = [
 'angelcare_stand':['hook','clamp'],
 'esp-box-angled-mount':['def'],
 'bicycle_handle_ribbon':['def'],
-'key_label':['Akácköz','Kaszás','JMF-947'],
+'key_label':['Akácköz','Kaszás','JMF-947','+36(20)411-94-67'],
 'washers':['300','600','900','1200'],
-'hinge_offset_element':['def'],
+//'hinge_offset_element':['def'],
 'window_spacer':['def'],
 'pencil_extender':['tri','hex'],
 'helga_asztal':['print'],
 'vacuum_adapter':['def'],
 'bag_hanger':['def'],
+'wedge_underfloor':['5','3','2'],
+'coins':[1,2,5,10,20,50,100,200],
 		]
 
 //new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
@@ -135,8 +137,8 @@ def projMap = [
 		'P-BED_L-SBXZ',
 		'P-BED_L-SFXZ',
 		'P-L_SIDEXZ'],
-	'ex':				['def'],
-	'helga_asztal':	[
+//	'ex':				['def'],
+/*	'helga_asztal':	[
 			'P-topXY',
 //			'P-LTlYZ',
 //			'P-LTrYZ',	
@@ -146,7 +148,7 @@ def projMap = [
 			'P-ShelfLXY',
 			'P-ShelfRXY',
 			'P-ShelfMXY',
-			],
+			],*/
 	]
 
 task allScad() {}
