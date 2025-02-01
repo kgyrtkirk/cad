@@ -1,10 +1,14 @@
 $fn=64;
 
 
-L=1500;
-H=400;
-Q=206;
-
+lost=11;
+H0=400;
+H=H0-lost;
+L=1500*H/H0;
+echo("L",L);
+Q=206*H/H0;
+C=sqrt(H*H+L*L);
+echo("C",C);
 HANGER_D=10;
 
 module hangers() {
@@ -20,12 +24,29 @@ module hangers() {
 }
 
 module hangerPoles() {
-    translate([90,H-50,0])
-   rotate(90+atan2(L,H))
+    q=12;//(7.7+16.1)/2;
+    x0=90;
+    y0=50;
+    echo("q",q);
+    a=atan2(L,H);
+   translate([0,H,0])
+   rotate(90+a)
     for(ix=[-5:0])
-    for(iy=[-0:2]) {
-        translate([(ix+iy/2)*Q,iy*sqrt(3)/4*Q,0]) {
-            hanger();
+    for(iy=[-0:3]) {
+        x=(ix+iy/2)*Q       + cos(90+a) * x0 - sin(90+a)*y0;
+        y=iy*sqrt(3)/4*Q    - sin(90+a) * x0 - cos(90+a)*y0;
+        px=-x;
+        py=y;
+        if( 
+            (py>250 && px>200 && px <300) ||
+                px>0  && py<250
+                && py-px < 0
+                && (py<100 || ( px < 1000)) 
+                && (py<200 || ( px < 600))  ) {
+            echo("hanger",round(px),round(py)-q/2);
+            translate([x,y,0]) {
+                hanger();
+            }
         }
     }
 }
