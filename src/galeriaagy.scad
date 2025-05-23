@@ -15,7 +15,7 @@ $cornerProtect=false;
 $jointsVisible=true;
 $machines=true;
 $openDoors=false;
-$drawerState="OPEN";
+$drawerState="CLOSED";
 $drawerBoxes=true;
 $defaultDrawer="smart";
 
@@ -40,7 +40,7 @@ BACK_L_WIDTH=STEP_W+400;
 BACK_R_WIDTH=400;
 
 LDESK_WIDTH = 400;   
-LCAB_DEPTH = STEP_W -W + LDESK_WIDTH;
+LCAB_DEPTH = STEP_W -W + LDESK_WIDTH -W-W;
 
 
 FOOT_A=120;
@@ -48,18 +48,27 @@ FOOT_A=120;
 DESK_H=700;
 
 function step_depth(i) = (DEPTH-W)/STEP_CNT*i;
-function step_w(i) = STEP_W-W + ((i>=3)?400:0);
+function step_alt(i) = i>=3;
+function step_w(i) = STEP_W-W + (step_alt(i)?400:0);
 function step_height(step_i) = BED_H-BED_H/(STEP_CNT+1)*step_i;
+function step_d() = step_depth(1);
 
 
 module lepcso() {
     
-    translate([0,W,0]) {
+    translate([-W,W,0]) {
         for(step_i=[0:1:STEP_CNT]) {
             
-
+            n=concat("step",step_i);
+            
             translate([-step_w(step_i),0,step_height(step_i)])
-            eXY(concat("step",step_i),step_w(step_i),step_depth(step_i));
+            if(step_alt(step_i)) {
+            cutCornerShelf(n, step_w(step_i),step_depth(step_i), step_d(),type="round");
+                
+            } else {
+                eXY(n,step_w(step_i),step_depth(step_i));
+            }
+            
             if(step_i==STEP_CNT) {
                 translate([-step_w(step_i),0,0])
                 eXY(concat("step",0),step_w(step_i),step_depth(step_i));
@@ -152,6 +161,7 @@ module galeriaAgy() {
     ] );
 
 
+    translate([0,0,0])
     translate([-W,W,step_height(4)])
     rotate(90,[0,0,1])
     builtinCabinet("c1",
