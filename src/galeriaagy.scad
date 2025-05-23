@@ -6,13 +6,16 @@ use <syms.scad>
 $close="";
 $front=false;
 $fronts=true;
+$handle="normal";
 $closeWFront=[1,1];
 $closeWMain=[.4,2];
 $defaultDrawer="smart";
+$cornerProtect=false;
 
+$jointsVisible=true;
 $machines=true;
 $openDoors=false;
-$drawerState="CLOSED";
+$drawerState="OPEN";
 $drawerBoxes=true;
 $defaultDrawer="smart";
 
@@ -53,6 +56,8 @@ module lepcso() {
     
     translate([0,W,0]) {
         for(step_i=[0:1:STEP_CNT]) {
+            
+
             translate([-step_w(step_i),0,step_height(step_i)])
             eXY(concat("step",step_i),step_w(step_i),step_depth(step_i));
             if(step_i==STEP_CNT) {
@@ -61,6 +66,7 @@ module lepcso() {
             }
         }
     }
+    
     translate([-W,W,0])
     eYZp("stepLeft",[   [0,0],
                         [step_depth(STEP_CNT),0],
@@ -94,13 +100,28 @@ module desk() {
 
 DESK_W=800;
 DESK_D=900;
+    DESK_RO=(DESK_W-FOOT_A)/2;
     
     translate([0,DEPTH-W,0])
     foot();
     
     translate([FOOT_A/2-DESK_W/2,0,DESK_H]) {
-        eXY("desk", DESK_W,DESK_D);
+            cutCornerShelf("desk", DESK_W,DESK_D, DESK_RO,DESK_RO,type="round");
+//        eXY("desk", DESK_W,DESK_D);
     }
+    
+    DRAWER_W=400;
+    DRAWER_D=370;
+    translate([0,DRAWER_W,0])
+    rotate(-90)
+    builtinCabinet("c3",DRAWER_W,DESK_H,DRAWER_D,"R")
+        shelf($front=true,160+$W,external=true)
+        space($front=false,-$W)
+        drawer(160)
+        drawer(160)
+        drawer(160)
+        shelf(0,external=true)
+    ;
     
 
 }
