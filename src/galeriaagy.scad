@@ -34,23 +34,29 @@ STEP_W=400;
 STEP_CNT=4;
 
 BACK_L_WIDTH=STEP_W+400;
+BACK_R_WIDTH=400;
 
+LDESK_WIDTH = 400;   
+LCAB_DEPTH = STEP_W -W + LDESK_WIDTH;
 
 
 FOOT_A=120;
 
+DESK_H=700;
+
 function step_depth(i) = (DEPTH-W)/STEP_CNT*i;
-function step_w(i) = STEP_W-W;
+function step_w(i) = STEP_W-W + ((i>=3)?400:0);
 function step_height(step_i) = BED_H-BED_H/(STEP_CNT+1)*step_i;
 
 
 module lepcso() {
     
-    translate([-STEP_W,W,0]) {
+    translate([0,W,0]) {
         for(step_i=[0:1:STEP_CNT]) {
-            translate([0,0,step_height(step_i)])
+            translate([-step_w(step_i),0,step_height(step_i)])
             eXY(concat("step",step_i),step_w(step_i),step_depth(step_i));
             if(step_i==STEP_CNT) {
+                translate([-step_w(step_i),0,0])
                 eXY(concat("step",0),step_w(step_i),step_depth(step_i));
             }
         }
@@ -65,16 +71,38 @@ module lepcso() {
     
 }
 
-module builtinCabinet(name,w,h,d) {
+module builtinCabinet(name,w,h,d,side="L") {
     $name=name;
     $w=w;
     $h=h;
     $d=d;
 
-    translate([$w-$W,0,$W])
+    wi=side=="L" ?  ($w-$W) : 0;
+
+    translate([wi,0,$W])
     eYZ(concat(name,"side"),$d,$h-$W);
     translate([0,0,$h])
     children();
+}
+
+module foot(){
+    eXZ("footRA",FOOT_A,BED_H);
+}
+
+
+module desk() {
+
+DESK_W=800;
+DESK_D=900;
+    
+    translate([0,DEPTH-W,0])
+    foot();
+    
+    translate([FOOT_A/2-DESK_W/2,0,DESK_H]) {
+        eXY("desk", DESK_W,DESK_D);
+    }
+    
+
 }
 
 module galeriaAgy() {
@@ -91,9 +119,8 @@ module galeriaAgy() {
     }
     
     translate([-STEP_W-FOOT_A,DEPTH-W,0])
-    eXZ("footLA",FOOT_A,BED_H);
-    
-    
+    foot();
+
     translate([-STEP_W-W,W,0])
     eYZp("stepR",[   
                         [step_depth(STEP_CNT),0],
@@ -107,7 +134,7 @@ module galeriaAgy() {
     translate([-W,W,step_height(4)])
     rotate(90,[0,0,1])
     builtinCabinet("c1",
-        step_depth(2), step_height(STEP_CNT), step_w(2) )
+        step_depth(2), step_height(STEP_CNT), LCAB_DEPTH )
         drawer(step_height(STEP_CNT)/2)
         drawer(step_height(STEP_CNT)/2);
 
@@ -115,10 +142,21 @@ module galeriaAgy() {
     translate([-W,W,step_height(5)])
     rotate(90,[0,0,1])
     builtinCabinet("c2",
-        step_depth(3), step_height(STEP_CNT), step_w(2) )
+        step_depth(3), step_height(STEP_CNT), LCAB_DEPTH )
         drawer(step_height(STEP_CNT)/2)
         drawer(step_height(STEP_CNT)/2);
 
+
+    translate([-STEP_W-MAT_L-2*$W,0,0]) {
+        
+        eXZ("jHatso",BACK_R_WIDTH,BED_H);
+        
+        desk();
+    }
+
+
+    translate([-1400,400,0])
+    %cylinder(d=750,h=900);
     
 //    cabinet(name = "agy", w = 1800, h = 1600, d = 900);
 }
