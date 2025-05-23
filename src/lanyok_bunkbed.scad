@@ -50,7 +50,7 @@ if(mode=="step") {
 }
 
 
-module bedFrame(name,l,w,h,sink,xh2=-1,leftOversize=0,backOversize=0) {
+module bedFrameOld(name,l,w,h,sink,xh2=-1,leftOversize=0,backOversize=0) {
     $close=str($close,"LROU");
     h2=(xh2<0)?h:xh2;
     q=h2-h;

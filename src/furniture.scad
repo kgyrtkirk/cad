@@ -200,6 +200,17 @@ module eXYp(name, dims) {
 }
 
 
+module eYZp(name, dims) {
+    ppp(str(name,"-YZ"))
+        rotate(90,[0,0,1])
+        rotate(90,[1,0,0])
+        linear_extrude($W)
+        polygon(dims);
+//        cube([dX,dY2,$W]);
+}
+
+
+
 use <syms.scad>
 
 module hinges(name,ww,hh) {
@@ -851,7 +862,10 @@ module hanger(h) {
 }
 
 
-function smartSlideLen(l) =  (l>601) ? 600 : -1;
+function smartSlideLen(l) =  
+    (l>601) ? 600 : 
+    (l>350) ? 350 : 
+    -1;
 
 module jointYP(type="TET") {
     joint(type);
@@ -1032,6 +1046,8 @@ module drawer(h,withLock=false,type1="def") {
     id=(type=="smart"?smartSlideLen($d)-10:$d-10);
     
     if(id < 0) {
+        echo($d);
+        echo(smartSlideLen($d));
         assert(false, "id undef");
     }
 
@@ -1144,6 +1160,74 @@ module zigzag(){
     }
     
 }
+
+
+
+module bedFrame(name,l,w,h,sink,xh2=-1,leftOversize=0,backOversize=0) {
+    $close=str($close,"LROU");
+    h2=(xh2<0)?h:xh2;
+    q=h2-h;
+    
+    translate([0,$W,-q])
+    eYZ( str(name,"-FR"),w,h2);
+    
+    translate([0,0,0])
+    joints(h+backOversize);
+    
+
+    translate([l+2*$W,0,0])
+    toFRT()
+    joints(h+backOversize);
+
+
+    translate([l+2*$W,w+$W,0])
+    toBRT()
+    joints(h+backOversize);
+
+    translate([0,w+2*$W,0])
+    toBLT()
+    joints(h+backOversize);
+
+    translate([0,$W,-q])
+    translate([l+$W,0,0])
+    eYZ(str(name,"-FL"),w,h2+leftOversize);
+    
+    if(xh2>0) {
+        translate([0,0,-q])
+        translate([(l+$W)/2,$W,0])
+        eYZ(str(name,"-C"),w,q+h-sink-$W);
+    }
+    
+
+    translate([0,0,0])
+    eXZ(str(name,"-SB"),l+2*$W,h+backOversize);
+    translate([0,w+$W,0])
+    eXZ(str(name,"-SF"),l+2*$W,h);
+    
+    translate([$W,$W,h-$W-sink]) {
+        eXY($close="",str(name,"-BOT"),l,w);
+        $cornerProtect=true;
+        if(true) {
+        translate([0,-$W,0])
+        jointsX(l);
+
+        translate([0,w+$W,0])
+        toBLT()
+        jointsX(l);
+        }
+        
+        jointsY(w);
+        translate([l,0,0])
+        toFRT()
+        jointsY(w);
+        
+        
+    }
+    
+    
+    
+}
+
 
 if(mode=="zigzag") {
     $W=18;
