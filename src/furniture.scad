@@ -1171,22 +1171,23 @@ module bedFrame(name,l,w,h,sink,xh2=-1,leftOversize=0,backOversize=0) {
     translate([0,$W,-q])
     eYZ( str(name,"-FR"),w,h2);
     
+    backOversize1=0; // FIXME: seems like this was off...
     translate([0,0,0])
-    joints(h+backOversize);
+    joints(h+backOversize1);
     
 
     translate([l+2*$W,0,0])
     toFRT()
-    joints(h+backOversize);
+    joints(h+backOversize1);
 
 
     translate([l+2*$W,w+$W,0])
     toBRT()
-    joints(h+backOversize);
+    joints(h+backOversize1);
 
     translate([0,w+2*$W,0])
     toBLT()
-    joints(h+backOversize);
+    joints(h+backOversize1);
 
     translate([0,$W,-q])
     translate([l+$W,0,0])

@@ -14,7 +14,6 @@ use <syms.scad>
 // hatso fiok v valami
 
 
-
 $close="";
 $front=false;
 $fronts=true;
@@ -152,6 +151,60 @@ DESK_D=900;
 
 }
 
+RAIL_H=80;
+RAIL_DECOR_H=80;
+RAIL_DECOR_W=80;
+RAIL_DECOR_DESIRED_SP=100;
+RAIL_TOTAL_H=RAIL_DECOR_H+RAIL_H;
+
+
+module rail(name, w, lEnd=false, rEnd=false,railClose="LFR") {
+    h=RAIL_H;
+    translate([0,W,RAIL_DECOR_H])
+    rotate(90,[1,0,0]) 
+    cutCornerShelf($close=railClose, name, w, h, cL=lEnd?h:0, cR=rEnd?h:0, type="round");
+
+    iw = w + (!lEnd ? RAIL_DECOR_W/2 :0)+ (!rEnd ? RAIL_DECOR_W/2 :0);
+    ix = !rEnd ? -RAIL_DECOR_W/2 : 0;
+
+    d=(RAIL_DECOR_W + RAIL_DECOR_DESIRED_SP);
+    n=floor((iw-RAIL_DECOR_W)/d);
+    ad=(iw-RAIL_DECOR_W)/n;
+
+    for(x=[ix:ad:iw]) {
+    
+        translate([x,0,0]) 
+        if(x<0 || x+RAIL_DECOR_W>w) 
+        translate([x<0?RAIL_DECOR_W/2:0,0,0]) 
+        eXZ($close="LR",concat(n,i),RAIL_DECOR_W/2,RAIL_DECOR_H);
+        else
+        eXZ($close="LR",concat(n,i),RAIL_DECOR_W,RAIL_DECOR_H);
+    }
+
+//    eYZ("BARR-I",I_W,I_H);
+  //  eYZ($front=true,$close="FBLRou","BARR-I",I_W,I_H);
+  
+}
+
+module agy() {
+
+    
+
+    bedFrame("BED_U",MAT_L,MAT_W,BED_FRAME_H,MAT_SINK,backOversize=RAIL_TOTAL_H);
+    translate([0,MAT_W+W,BED_FRAME_H])
+    rail("railF", MAT_L+W+W );
+
+    translate([W,W,BED_FRAME_H])
+    rotate(90) 
+    rail(railClose="F","railR", MAT_W );
+
+    OFF=400;
+    translate([MAT_L+W+W,W+OFF,BED_FRAME_H])
+    rotate(90) 
+    rail(railClose="FR","railL", MAT_W-OFF , rEnd=true);
+
+}
+
 module galeriaAgy() {
     
     lepcso();
@@ -162,7 +215,7 @@ module galeriaAgy() {
     translate([-MAT_L-2*$W-STEP_W,0,BED_H]) {
         translate([MAT_L-100,0,0])  jointI();
         translate([MAT_L-300,0,0])  jointI();
-        bedFrame("BED_U",MAT_L,MAT_W,BED_FRAME_H,MAT_SINK);
+        agy();
     }
 
 
