@@ -48,7 +48,7 @@ FOOT_A=120;
 
 DESK_H=700;
 
-function step_depth(i) = (DEPTH-W)/STEP_CNT*i;
+function step_depth(i) = (DEPTH-W-W)/STEP_CNT*i;
 function step_alt(i) = i>=3;
 function step_w(i) = STEP_W-W + (step_alt(i)?400:0);
 function step_height(step_i) = BED_H-BED_H/(STEP_CNT+1)*step_i;
@@ -148,9 +148,7 @@ module galeriaAgy() {
         translate([MAT_L-300,0,0])  jointI();
         bedFrame("BED_U",MAT_L,MAT_W,BED_FRAME_H,MAT_SINK);
     }
-    
-    translate([-STEP_W-FOOT_A,DEPTH-W,0])
-    foot();
+
 
     translate([-STEP_W-W,W,0])
     eYZp("stepR",[   
@@ -160,9 +158,13 @@ module galeriaAgy() {
                         [0,BED_H],
                         [0,step_height(1)]
     ] );
+
+    translate([-STEP_W-FOOT_A,DEPTH-W,0])
+    foot($close="LRU");
     
     translate([-STEP_W-W,W+step_depth(STEP_CNT-1),step_height(STEP_CNT)+W])
         eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W));
+
     
 
     translate([0,0,0])
