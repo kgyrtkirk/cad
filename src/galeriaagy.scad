@@ -3,6 +3,18 @@ use <furniture.scad>
 use <kitchen_box.scad>
 use <syms.scad>
 
+
+// TODO
+// polcok
+// zartszelvenylab
+// felso korlat
+// osztott fiok?
+// lekerekitetett bal felso hatlap?
+// polcok az asztalra / diszites hatra
+// hatso fiok v valami
+
+
+
 $close="";
 $front=false;
 $fronts=true;
@@ -48,10 +60,14 @@ FOOT_A=120;
 
 DESK_H=700;
 
-function step_depth(i) = (DEPTH-W-W)/STEP_CNT*i;
+STEP_TOP=BED_H+BED_FRAME_H;
+
+STEP_THETA=.7;
+
+function step_depth(i) = (DEPTH-W-W)/(STEP_CNT+STEP_THETA)*(i+STEP_THETA);
 function step_alt(i) = i>=3;
 function step_w(i) = STEP_W-W + (step_alt(i)?400:0);
-function step_height(step_i) = BED_H-BED_H/(STEP_CNT+1)*step_i;
+function step_height(step_i) = STEP_TOP-STEP_TOP/(STEP_CNT+1)*step_i;
 function step_d() = step_depth(1);
 
 CORNER_ROUND=50;
@@ -59,7 +75,7 @@ CORNER_ROUND=50;
 module lepcso() {
     
     translate([-W,W,0]) {
-        for(step_i=[0:1:STEP_CNT]) {
+        for(step_i=[1:1:STEP_CNT]) {
             
             hs=concat([step_height(step_i)], (step_i==STEP_CNT)?[0]:[]);
 
@@ -155,6 +171,7 @@ module galeriaAgy() {
                         [step_depth(2),step_height(3)],
                         [step_depth(3),step_height(3)+W],
                         [step_depth(1),step_height(1)+W],
+                        [step_depth(0)+(STEP_TOP-BED_H)*(step_depth(1)-step_depth(0))/(STEP_TOP-(step_height(1)+W)),BED_H],
                         [0,BED_H],
                         [0,step_height(1)]
     ] );
