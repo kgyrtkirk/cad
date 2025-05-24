@@ -15,8 +15,9 @@ $cornerProtect=false;
 $jointsVisible=true;
 $machines=true;
 $openDoors=false;
-$drawerState="CLOSED";
+$drawerState="OPEN";
 $drawerBoxes=true;
+
 $defaultDrawer="smart";
 
 $part=undef;
@@ -27,9 +28,9 @@ $W=18;
 MAT_L=1800;
 MAT_W=810;
 MAT_D=100;
-MAT_SINK=40;
+MAT_SINK=80-$W;
 BED_FRAME_SP_UNDER=50;
-BED_FRAME_H=BED_FRAME_SP_UNDER+MAT_SINK+$W;
+BED_FRAME_H=BED_FRAME_SP_UNDER+$W+MAT_SINK;
 
 BED_H=1600;
 DEPTH=MAT_W+W+W;
@@ -115,11 +116,11 @@ DESK_D=900;
     foot();
     
     translate([FOOT_A/2-DESK_W/2,0,DESK_H]) {
-            cutCornerShelf("desk", DESK_W,DESK_D, DESK_RO,DESK_RO,type="round");
+            cutCornerShelf($W=2*W,"desk", DESK_W,DESK_D, DESK_RO,DESK_RO,type="round");
 //        eXY("desk", DESK_W,DESK_D);
     }
     
-    DRAWER_W=400;
+    DRAWER_W=300;
     DRAWER_D=370;
     translate([0,DRAWER_W,0])
     rotate(-90)
@@ -153,13 +154,16 @@ module galeriaAgy() {
 
     translate([-STEP_W-W,W,0])
     eYZp("stepR",[   
-                        [step_depth(STEP_CNT),0],
-                        [step_depth(STEP_CNT),step_height(STEP_CNT)+W],
+                        [step_depth(2),step_height(3)],
+                        [step_depth(3),step_height(3)+W],
                         [step_depth(1),step_height(1)+W],
                         [0,BED_H],
                         [0,step_height(1)]
     ] );
-
+    
+    translate([-STEP_W-W,W+step_depth(STEP_CNT-1),step_height(STEP_CNT)+W])
+        eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W));
+    
 
     translate([0,0,0])
     translate([-W,W,step_height(4)])
@@ -186,13 +190,14 @@ module galeriaAgy() {
     }
 
 
-    translate([-1400,400,0])
-    %cylinder(d=750,h=900);
     
 //    cabinet(name = "agy", w = 1800, h = 1600, d = 900);
 }
 
 posNeg() {
     galeriaAgy();
+    
+    translate([-1400,400,0])
+    %cylinder(d=750,h=900);
 }
 
