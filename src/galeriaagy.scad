@@ -54,25 +54,25 @@ function step_w(i) = STEP_W-W + (step_alt(i)?400:0);
 function step_height(step_i) = BED_H-BED_H/(STEP_CNT+1)*step_i;
 function step_d() = step_depth(1);
 
+CORNER_ROUND=50;
 
 module lepcso() {
     
     translate([-W,W,0]) {
         for(step_i=[0:1:STEP_CNT]) {
             
-            n=concat("step",step_i);
-            
-            translate([-step_w(step_i),0,step_height(step_i)])
-            if(step_alt(step_i)) {
-            cutCornerShelf(n, step_w(step_i),step_depth(step_i), step_d(),type="round");
-                
-            } else {
-                eXY(n,step_w(step_i),step_depth(step_i));
-            }
-            
-            if(step_i==STEP_CNT) {
-                translate([-step_w(step_i),0,0])
-                eXY(concat("step",0),step_w(step_i),step_depth(step_i));
+            hs=concat([step_height(step_i)], (step_i==STEP_CNT)?[0]:[]);
+
+            for(h=hs)
+            translate([-step_w(step_i),0,h])
+            {
+                n=concat("step",h);
+                if(step_alt(step_i)) {
+                cutCornerShelf($close="FR", n, step_w(step_i),step_depth(step_i),     2*CORNER_ROUND,type="round");
+                    
+                } else {
+                    eXY($close="F", n,step_w(step_i),step_depth(step_i));
+                }
             }
         }
     }
@@ -96,7 +96,7 @@ module builtinCabinet(name,w,h,d,side="L") {
     wi=side=="L" ?  ($w-$W) : 0;
 
     translate([wi,0,$W])
-    eYZ(concat(name,"side"),$d,$h-$W);
+    eYZ($close="F",concat(name,"side"),$d,$h-$W);
     translate([0,0,$h])
     children();
 }
@@ -167,11 +167,12 @@ module galeriaAgy() {
 
     
 
+
     translate([0,0,0])
     translate([-W,W,step_height(4)])
     rotate(90,[0,0,1])
     builtinCabinet("c1",
-        step_depth(2), step_height(STEP_CNT), LCAB_DEPTH )
+        step_depth(3)-CORNER_ROUND, step_height(STEP_CNT), LCAB_DEPTH )
         drawer(step_height(STEP_CNT)/2)
         drawer(step_height(STEP_CNT)/2);
 
@@ -179,7 +180,7 @@ module galeriaAgy() {
     translate([-W,W,step_height(5)])
     rotate(90,[0,0,1])
     builtinCabinet("c2",
-        step_depth(3), step_height(STEP_CNT), LCAB_DEPTH )
+        step_depth(4)-CORNER_ROUND, step_height(STEP_CNT), LCAB_DEPTH )
         drawer(step_height(STEP_CNT)/2)
         drawer(step_height(STEP_CNT)/2);
 
