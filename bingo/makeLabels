@@ -1,0 +1,48 @@
+#!/bin/bash
+
+
+set -e
+
+SET=out/s
+IN=tavaszi_bingo
+
+a=116
+
+mkdir -p ${SET}
+
+function gen() {
+	idx=$1
+	label=$2
+	color=white
+	num=1
+
+	stroke=4
+	a=200
+	b=400
+	c=600
+	r=80
+	w=300
+	ps=600
+	m=$[ $w * 1 / 20 ]
+	n=$[ $w * 19 / 20 ]
+
+	convert "$IN/$idx" -fuzz 5% -trim +repage -scale "${a}x${a}" out/t0.png
+
+	args="convert -size ${w}x${w} xc:white "
+	args+=" -fill $color -stroke black -strokewidth $stroke "
+	args+=" -draw 'roundrectangle $m,$m $n,$n $r,$r' "
+	args+=" -fill black -stroke black -strokewidth 0"
+	args+=" -font 'Symbola' -pointsize ${ps} -gravity center -draw 'image over 0,0  0,0 out/t0.png'"
+	args+=" -scale 100% ${SET}/${idx}.png"
+	eval $args
+}
+
+
+
+ls $IN |while read f;do
+	gen "$f" "$f"
+done
+# for((i=0;i<${#labels[@]};i++));do
+# 	gen $i "${labels[i]}"
+# done
+

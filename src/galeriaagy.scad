@@ -3,7 +3,6 @@ use <furniture.scad>
 use <kitchen_box.scad>
 use <syms.scad>
 
-
 // TODO
 // polcok
 // zartszelvenylab
@@ -14,6 +13,7 @@ use <syms.scad>
 // hatso fiok v valami
 
 
+$mode="print";
 $close="";
 $front=false;
 $fronts=true;
@@ -26,7 +26,7 @@ $cornerProtect=false;
 $jointsVisible=true;
 $machines=true;
 $openDoors=false;
-$drawerState="OPEN";
+$drawerState="CLOSED";
 $drawerBoxes=true;
 
 $defaultDrawer="smart";
@@ -176,9 +176,9 @@ module rail(name, w, lEnd=false, rEnd=false,railClose="LFR") {
         translate([x,0,0]) 
         if(x<0 || x+RAIL_DECOR_W>w) 
         translate([x<0?RAIL_DECOR_W/2:0,0,0]) 
-        eXZ($close="LR",concat(n,i),RAIL_DECOR_W/2,RAIL_DECOR_H);
+        eXZ($front=true, $close="LR",concat(n,i),RAIL_DECOR_W/2,RAIL_DECOR_H);
         else
-        eXZ($close="LR",concat(n,i),RAIL_DECOR_W,RAIL_DECOR_H);
+        eXZ($front=true, $close="LR",concat(n,i),RAIL_DECOR_W,RAIL_DECOR_H);
     }
 
 //    eYZ("BARR-I",I_W,I_H);
@@ -267,6 +267,9 @@ module galeriaAgy() {
 //    cabinet(name = "agy", w = 1800, h = 1600, d = 900);
 }
 
+
+s=($mode == "print")?.05:1;
+scale([1,1,1]*s)
 posNeg() {
     galeriaAgy();
     
