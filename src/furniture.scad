@@ -335,7 +335,7 @@ module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false,type="straight") {
                     s=cR*sqrt(2);
                 translate([0,d,$W/2])
                 rotate(45)
-                cube([s*2,s,$W+.1],center=true);
+                cube([s,s,$W+.1],center=true);
             }
             if(cL>0) {
                 echo("cutCronerShelfL ",name," dc ",cL);
@@ -831,6 +831,20 @@ module shelf(h,SHELF_INSET=12,external=false,alignTop=false,rot=false) {
     children();
 }
 
+module fullBottom(h,external=false,alignTop=false,rot=false) {
+
+    
+    depth=$d-(external?0:SHELF_INSET);
+    w=$w-2*$W;
+//    color([0,1,1])
+    translate([$W,0,-h-(alignTop?$W:0)])
+    eXY(str($name,"-S",external?"-EX":"-IN",w),w,depth,rot=rot);
+    
+
+    translate([0,0,-h])
+    children();
+}
+
 module maximera1(h) {
     assert(len(search($w,[600,800]))>0,str("not supported maximera width:",$w));
 //    cube(1000);
@@ -865,6 +879,8 @@ module hanger(h) {
 function smartSlideLen(l) =  
     (l>601) ? 600 : 
     (l>350) ? 350 : 
+    (l>300) ? 300 :
+    (l>250) ? 250 :
     -1;
 
 module jointYP(type="TET") {
@@ -1043,7 +1059,8 @@ module drawer(h,withLock=false,type1="def") {
     qz=$W;
     ix=$w-2*qx;
     iz=h-(withLock?LOCKDIM[2]+LOCK_SP+$W:3*$W-6);  //  -4W
-    id=(type=="smart"?smartSlideLen($d)-10:$d-10);
+    id0=( (type=="smart") ?smartSlideLen($d)-10:$d-10);
+    id=( (type=="smart" && $smartOverdrive==undef  ) ?id0:$d-10);
     
     if(id < 0) {
         echo($d);
@@ -1091,9 +1108,17 @@ module drawer(h,withLock=false,type1="def") {
                 nut_depth=6;
 //                nut_depth
                 o=$W-nut_depth;
-                translate([qx+o,-id,qz+floorOff-3])
+                translate([qx+o,-id,qz+floorOff])
                 eXY($W=3,str(name,"Fl-back"),ix-2*o,id);
                 echo(str(name,"-dback"),str(ix-15,"x",id));
+
+
+                if($smartOverdrive!=undef) {
+                    shimD= id - id0;
+                    translate([qx+o,-shimD,qz])
+                    eXY($W=12,str(name,"some1012"),ix-2*$W,shimD);
+                }
+
             }else {
                 $close="Olru";
                 translate([qx,-$W,qz])
