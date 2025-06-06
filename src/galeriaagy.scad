@@ -5,16 +5,19 @@ use <syms.scad>
 
 // TODO
 // polcok
-// zartszelvenylab
-// lekerekitetett bal felso hatlap?
 // polcok az asztalra / diszites hatra
-// hibas jobb oldali korlat elem
-// belepos resz
-// hianyzo kicsi elemek a lapcso ala
+// belepos resz???
+// hianyzo kicsi elemek a lapcso ala ???
 
 
 // beszelni:
 // felso korlat: jo lesz igy - Helga valamit mondott...
+
+
+// rendelni
+// zartszelveny
+// fiokok
+// fogantyuk
 
 
 $mode="print";
@@ -47,7 +50,7 @@ MAT_SINK=80-$W;
 BED_FRAME_SP_UNDER=50;
 BED_FRAME_H=BED_FRAME_SP_UNDER+$W+MAT_SINK;
 
-BED_H=1600;
+BED_H=1500;
 DEPTH=MAT_W+W+W;
 STEP_W=400;
 STEP_CNT=4;
@@ -57,7 +60,10 @@ LDESK_WIDTH = 400;
 LCAB_DEPTH = STEP_W -W + LDESK_WIDTH -W-W;
 
 
-FOOT_A=120;
+MAT_TOP_H= BED_H + BED_FRAME_SP_UNDER + $W + MAT_D;
+
+FOOT_A=40;
+FOOT_B=120;
 
 DESK_H=700;
 DESK_WW=2*$W;
@@ -138,7 +144,7 @@ module builtinCabinet(name,w,h,d,side="L",sideUp=$W) {
 }
 
 module foot(){
-    eXZ("footRA",FOOT_A,BED_H);
+    eXZ("footRB",FOOT_B,BED_H);
 }
 
 module mirrorC() {
@@ -161,8 +167,8 @@ module doubleSided(a) {
 module desk() {
 
     
-    translate([0,DEPTH-W,0])
-    foot();
+    translate([0,DEPTH-FOOT_A,0])
+    eXZ($W=FOOT_A,"ZARTSZELVENY", FOOT_A,BED_H);
     
     translate([FOOT_A/2-DESK_W/2,$W,DESK_H]) {
             cutCornerShelf($W=DESK_WW,"desk", DESK_W,DESK_D, DESK_RO,DESK_RO,type="round");
@@ -251,6 +257,12 @@ module galeriaAgy() {
     lepcso();
     
     translate([-BACK_L_WIDTH,0,0])
+
+    if(true)
+    rotate(90, [1,0,0]) 
+    translate([0,0,-$W]) 
+    cutCornerShelf("bHatsoC", BACK_L_WIDTH,BED_H, cL=BED_H-step_height(1)-W);
+    else
     eXZ("bHatso",BACK_L_WIDTH,BED_H);
     
     translate([-MAT_L-2*$W-STEP_W,0,BED_H]) {
@@ -270,7 +282,7 @@ module galeriaAgy() {
                         [0,BED_H]
     ] );
 
-    translate([-STEP_W-FOOT_A,DEPTH-W,0])
+    translate([-STEP_W-FOOT_B,DEPTH-W,0])
     foot($close="LRU");
     
     translate([-STEP_W-W,W+step_depth(STEP_CNT-1),step_height(STEP_CNT)+W])
@@ -343,3 +355,6 @@ posNeg() {
     %cylinder(d=750,h=900);
 }
 
+
+echo ("matTopH",MAT_TOP_H);
+echo ("ss",step_height(4));
