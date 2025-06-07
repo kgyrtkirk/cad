@@ -20,6 +20,7 @@ use <syms.scad>
 // fogantyuk
 
 
+$smartOverdrive=undef;
 $mode="print";
 $close="";
 $front=false;
@@ -143,10 +144,6 @@ module builtinCabinet(name,w,h,d,side="L",sideUp=$W) {
     children();
 }
 
-module foot(){
-    eXZ("footRB",FOOT_B,BED_H);
-}
-
 module mirrorC() {
 
 }
@@ -268,6 +265,8 @@ module galeriaAgy() {
     translate([-MAT_L-2*$W-STEP_W,0,BED_H]) {
         translate([MAT_L-100,0,0])  jointI();
         translate([MAT_L-300,0,0])  jointI();
+        translate([100,0,0])  jointI();
+        translate([200,0,0])  jointI();
         agy();
     }
 
@@ -283,10 +282,20 @@ module galeriaAgy() {
     ] );
 
     translate([-STEP_W-FOOT_B,DEPTH-W,0])
-    foot($close="LRU");
+    eXZ($close="LRU","footRB",FOOT_B,BED_H);
     
     translate([-STEP_W-W,W+step_depth(STEP_CNT-1),step_height(STEP_CNT)+W])
-        eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W));
+        eYZ($close="B","footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W));
+
+    translate([-STEP_W-W,step_depth(STEP_CNT-1)-CORNER_ROUND,step_height(STEP_CNT)+W])
+        eYZ($close="F","footIp",CORNER_ROUND+W,step_height(STEP_CNT-1)-step_height(STEP_CNT)-W);
+
+    if(true)
+    translate([-STEP_W-W,step_depth(STEP_CNT)-CORNER_ROUND,step_height(STEP_CNT+1)+W])
+        eYZ($close="F","footIp",CORNER_ROUND+W,step_height(STEP_CNT-1)-step_height(STEP_CNT)-W);
+        else
+    translate([-STEP_W-W-W-W,DEPTH-W-W,W])
+        eXZ($close="O","footIp",STEP_W+W+W,step_height(STEP_CNT-1)-step_height(STEP_CNT)-W);
 
     
 
