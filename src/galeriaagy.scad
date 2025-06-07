@@ -5,13 +5,11 @@ use <syms.scad>
 
 // TODO
 // polcok
-// polcok az asztalra / diszites hatra
-// belepos resz???
-// hianyzo kicsi elemek a lapcso ala ???
-
+// fenti polcok
 
 // beszelni:
 // felso korlat: jo lesz igy - Helga valamit mondott...
+// belepos resz: berakunk valami nyomtatott cuccot v mittomen - de most igymarad
 
 
 // rendelni
@@ -258,9 +256,9 @@ module galeriaAgy() {
     if(true)
     rotate(90, [1,0,0]) 
     translate([0,0,-$W]) 
-    cutCornerShelf("bHatsoC", BACK_L_WIDTH,BED_H, cL=BED_H-step_height(1)-W);
+    cutCornerShelf($close="Fr","bHatsoC", BACK_L_WIDTH,BED_H, cL=BED_H-step_height(1)-W);
     else
-    eXZ("bHatso",BACK_L_WIDTH,BED_H);
+    eXZ($close="Or","bHatso",BACK_L_WIDTH,BED_H);
     
     translate([-MAT_L-2*$W-STEP_W,0,BED_H]) {
         translate([MAT_L-100,0,0])  jointI();
@@ -334,6 +332,26 @@ module galeriaAgy() {
         drawer(c2space/2);
     }
 
+
+    POLC_L=STEP_W+MAT_L+W+W-BACK_L_WIDTH-BACK_R_WIDTH;
+    POLC_H=900;
+
+    module polc(depth,overlap) {
+        back_height=100;
+        eXZ($close="Ou","polcHat",POLC_L,back_height);
+        translate([-overlap,W,0]) 
+        cutCornerShelf($close="FLR",name = "polcLap", w = POLC_L+overlap*2, d = depth, cR=depth,cL=depth,type="round");
+    }
+
+
+    // polcok
+    translate([-BACK_L_WIDTH-POLC_L,0,POLC_H]) {
+        polc(100,100);
+        translate([0,0,200]) 
+        polc(140,140);
+        translate([0,0,400]) 
+        polc(180,180);
+    }
 
     translate([-STEP_W-MAT_L-2*$W,0,0]) {
         
