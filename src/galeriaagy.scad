@@ -4,7 +4,7 @@ use <kitchen_box.scad>
 use <syms.scad>
 
 // TODO
-// polcok
+// polcok az asztalra / diszites hatra
 // fenti polcok
 
 // beszelni:
@@ -17,6 +17,8 @@ use <syms.scad>
 // fiokok
 // fogantyuk
 
+
+// alap: https://lapszabaszat.hu/termek/egger-butorlapok/39485-h1225-st12-18/
 
 $smartOverdrive=undef;
 $mode="print";
@@ -43,7 +45,7 @@ W=18;
 $W=18;
 
 MAT_L=1800;
-MAT_W=810;
+MAT_W=910;
 MAT_D=100;
 MAT_SINK=80-$W;
 BED_FRAME_SP_UNDER=50;
@@ -72,7 +74,7 @@ STEP_TOP=BED_H+BED_FRAME_H;
 STEP_THETA=.7;
 
 DESK_W=800;
-DESK_D=900;
+DESK_D=MAT_W+100;
 DESK_RO=(DESK_W-FOOT_A)/2;
 
 // right drawers
@@ -108,10 +110,10 @@ module lepcso() {
             {
                 n=concat("step",h);
                 if(step_alt(step_i)) {
-                cutCornerShelf($close="FR", n, step_w(step_i),step_depth(step_i),     2*CORNER_ROUND,type="round");
+                cutCornerShelf($front=true, $close="FR", n, step_w(step_i),step_depth(step_i),     2*CORNER_ROUND,type="round");
                     
                 } else {
-                    eXY($close="F", n,step_w(step_i),step_depth(step_i));
+                    eXY($front=true, $close="F", n,step_w(step_i),step_depth(step_i));
                 }
             }
         }
@@ -166,7 +168,7 @@ module desk() {
     eXZ($W=FOOT_A,"ZARTSZELVENY", FOOT_A,BED_H);
     
     translate([FOOT_A/2-DESK_W/2,$W,DESK_H]) {
-            cutCornerShelf($W=DESK_WW,"desk", DESK_W,DESK_D, DESK_RO,DESK_RO,type="round");
+            cutCornerShelf($front=true,$W=DESK_WW,"desk", DESK_W,DESK_D, DESK_RO,DESK_RO,type="round");
 //        eXY("desk", DESK_W,DESK_D);
     }
     
@@ -194,9 +196,9 @@ module desk() {
 }
 
 RAIL_H=80;
-RAIL_DECOR_H=80;
-RAIL_DECOR_W=80;
-RAIL_DECOR_DESIRED_SP=100;
+RAIL_DECOR_H=200;
+RAIL_DECOR_W=120;
+RAIL_DECOR_DESIRED_SP=150;
 RAIL_TOTAL_H=RAIL_DECOR_H+RAIL_H;
 
 
@@ -218,9 +220,9 @@ module rail(name, w, lEnd=false, rEnd=false,railClose="LFR") {
         translate([x,0,0]) 
         if(x<0 || x+RAIL_DECOR_W>w) 
         translate([x<0?RAIL_DECOR_W/2:0,0,0]) 
-        eXZ($front=true, $close="LR",concat(n,i),RAIL_DECOR_W/2,RAIL_DECOR_H);
+        eXZ($front=true, $close="LR",concat(n,x),RAIL_DECOR_W/2,RAIL_DECOR_H);
         else
-        eXZ($front=true, $close="LR",concat(n,i),RAIL_DECOR_W,RAIL_DECOR_H);
+        eXZ($front=true, $close="LR",concat(n,x),RAIL_DECOR_W,RAIL_DECOR_H);
     }
 
 //    eYZ("BARR-I",I_W,I_H);
@@ -340,7 +342,7 @@ module galeriaAgy() {
         back_height=100;
         eXZ($close="Ou","polcHat",POLC_L,back_height);
         translate([-overlap,W,0]) 
-        cutCornerShelf($close="FLR",name = "polcLap", w = POLC_L+overlap*2, d = depth, cR=depth,cL=depth,type="round");
+        cutCornerShelf($front=true, $close="FLR",name = "polcLap", w = POLC_L+overlap*2, d = depth, cR=depth,cL=depth,type="round");
     }
 
 
@@ -355,7 +357,7 @@ module galeriaAgy() {
 
     translate([-STEP_W-MAT_L-2*$W,0,0]) {
         
-        eXZ("jHatso",BACK_R_WIDTH,BED_H);
+        eXZ($close="lR","jHatso",BACK_R_WIDTH,BED_H);
 
         d2= DRAWER_D - BACK_R_WIDTH;
         translate([-d2,0,0]) 
