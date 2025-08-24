@@ -23,7 +23,7 @@ module posNeg() {
 
 module ppp(name,dims="") {
     if($positive)
-        echo(str("CUSTOM-", elementTypeName(), ": ", name),dims);
+        echo(str("custom PLANAR?-", elementTypeName(), ": ", name),dims);
     if($positive)
     if($part==undef || $part==name) {
         children();
@@ -827,7 +827,7 @@ module shelf(h,SHELF_INSET=12,external=false,alignTop=false,rot=false) {
     w=$w-2*$W;
 //    color([0,1,1])
     translate([$W,BACK_WIDTH,-h-(alignTop?$W:0)])
-    eXY(str($name,"-S",external?"-EX":"-IN",w),w,depth,rot=rot);
+    eXY(str($name,"Shelf",external?"Ex":"",w),w,depth,rot=rot);
     
 
     translate([0,0,external?-h:0])
@@ -841,7 +841,7 @@ module fullBottom(h,external=false,alignTop=false,rot=false) {
     w=$w-2*$W;
 //    color([0,1,1])
     translate([$W,0,-h-(alignTop?$W:0)])
-    eXY(str($name,"-S",external?"-EX":"-IN",w),w,depth,rot=rot);
+    eXY(str($name,"Shelf",external?"Ex":"",w),w,depth,rot=rot);
     
 
     translate([0,0,-h])
@@ -1049,7 +1049,7 @@ module drawer(h,withLock=false,type1="def") {
     LOCK_SP=5;
     LOCKDIM=[90,30,60];
     
-    name=str($name,"D",h);
+    name=str($name,"H",h);
     
     FRONT_SP=2;
 
@@ -1236,7 +1236,7 @@ module bedFrame(name,l,w,h,sink,xh2=-1,leftOversize=0,backOversize=0) {
     eXZ(str(name,"-SF"),l+2*$W,h);
     
     translate([$W,$W,h-$W-sink]) {
-        eXY($close="",str(name,"-BOT"),l,w);
+        eXY($close="",str(name,"-Bot"),l,w);
         $cornerProtect=true;
         if(true) {
         translate([0,-$W,0])

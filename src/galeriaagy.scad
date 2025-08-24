@@ -19,6 +19,7 @@ use <syms.scad>
 
 // beszelni:
 
+// jhatso nem 45fokos vagas
 
 // rendelni
 // zartszelveny
@@ -31,7 +32,7 @@ $close="";
 $front=false;
 $fronts=true;
 $handle="normal";
-$closeWFront=[1,1];
+$closeWFront=[.4,2];
 $closeWMain=[.4,2];
 $defaultDrawer="smart";
 $cornerProtect=false;
@@ -40,7 +41,7 @@ $smartOverdrive=false;
 $jointsVisible=true;
 $machines=true;
 $openDoors=false;
-$drawerState="CLOSED";
+$drawerState="OPEN";
 $drawerBoxes=true;
 
 $part=undef;
@@ -207,8 +208,8 @@ module desk() {
     echo("t_drawers",T_DRAWERS);
     translate([-DRAWER_D/2+FOOT_A/2,DRAWER_W,0])
     rotate(-90)
-    builtinCabinet("c3",DRAWER_W,DESK_H,DRAWER_D,"R",sideUp=0)
-        shelf($front=true,DESK_H-T_DRAWERS+$W,external=true)
+    builtinCabinet("c3",DRAWER_W,DESK_H,DRAWER_D,"R",sideUp=0,$smartOverdrive=undef)
+        fullBottom($front=true,DESK_H-T_DRAWERS+$W,external=true,$close="FB")
         space($front=false,-$W)
         doubleSided(.5,$DRAWER_WALL_W=10) {
             drawer(DRAWERS[0])
@@ -234,7 +235,7 @@ RAIL_DECOR_DESIRED_SP=140;
 RAIL_TOTAL_H=RAIL_DECOR_H+RAIL_H;
 
 
-module rail(name, w, lEnd=false, rEnd=false,railClose="LFR", RAIL_DECOR_DESIRED_SP=RAIL_DECOR_DESIRED_SP) {
+module rail(name, w, lEnd=false, rEnd=false,railClose="LFBR", RAIL_DECOR_DESIRED_SP=RAIL_DECOR_DESIRED_SP) {
     h=RAIL_H;
     translate([0,W,RAIL_DECOR_H])
     rotate(90,[1,0,0]) 
@@ -252,9 +253,9 @@ module rail(name, w, lEnd=false, rEnd=false,railClose="LFR", RAIL_DECOR_DESIRED_
         translate([x,0,0]) 
         if(x<0 || x+RAIL_DECOR_W>w) 
         translate([x<0?RAIL_DECOR_W/2:0,0,0]) 
-        eXZ($front=true, $close="LR",str("railDecHalf"),RAIL_DECOR_W/2,RAIL_DECOR_H);
+        eXZ($front=true, $close="LRou",str("railDecHalf"),RAIL_DECOR_W/2,RAIL_DECOR_H);
         else
-        eXZ($front=true, $close="LR",str("railDecFull"),RAIL_DECOR_W,RAIL_DECOR_H);
+        eXZ($front=true, $close="LRou",str("railDecFull"),RAIL_DECOR_W,RAIL_DECOR_H);
     }
 
 //    eYZ("BARR-I",I_W,I_H);
@@ -266,18 +267,18 @@ module agy() {
 
     
 
-    bedFrame("BED_U",MAT_L,MAT_W,BED_FRAME_H,MAT_SINK,backOversize=RAIL_TOTAL_H);
+    bedFrame("Bed",MAT_L,MAT_W,BED_FRAME_H,MAT_SINK,backOversize=RAIL_TOTAL_H);
     translate([0,MAT_W+W,BED_FRAME_H])
-    rail("railF", MAT_L+W+W );
+    rail("railFront", MAT_L+W+W );
 
     translate([W,W,BED_FRAME_H])
     rotate(90) 
-    rail(railClose="F","railR", MAT_W );
+    rail(railClose="FB","railR", MAT_W );
 
     OFF=400;
     translate([MAT_L+W+W,W+OFF,BED_FRAME_H])
     rotate(90) 
-    rail(RAIL_DECOR_DESIRED_SP=RAIL_DECOR_DESIRED_SP/2, railClose="FR","railL", MAT_W-OFF , rEnd=true);
+    rail(RAIL_DECOR_DESIRED_SP=RAIL_DECOR_DESIRED_SP/2, railClose="FBR","railL", MAT_W-OFF , rEnd=true);
 
 }
 
@@ -303,7 +304,7 @@ module polcok() {
         polc(INTER,200,200);
 
     translate([X0,0,2000])
-        polc(INTER,0,150);
+        polc(INTER,0,160);
 
     S1L=1000;
     S1D=150;
@@ -329,7 +330,7 @@ module galeriaAgy() {
     if(true)
         rotate(90, [1,0,0]) 
         translate([0,0,-$W]) 
-        cutCornerShelf("bHatsoCut", BACK_L_WIDTH,BED_H, cL=BED_H-step_height(1)-W);
+        cutCornerShelf("bHatso", BACK_L_WIDTH,BED_H, cL=BED_H-step_height(1)-W, $close="FR");
     else
         eXZ("bHatso",BACK_L_WIDTH,BED_H);
     
@@ -354,7 +355,7 @@ module galeriaAgy() {
     foot($close="LRU");
     
     translate([-STEP_W-W,W+step_depth(STEP_CNT-1),step_height(STEP_CNT)+W])
-        eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W));
+        eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W), $close="Bou");
 
     
 
@@ -382,12 +383,12 @@ module galeriaAgy() {
         c2wb=c2w-c2wa;
         c2space=step_height(STEP_CNT)-$W;
 
-    builtinCabinet("c2a",
+    builtinCabinet("c2",
         c2wa, step_height(STEP_CNT), LCAB_DEPTH ,$smartOverdrive=true)
         drawer(c2space/2)
         drawer(c2space/2);
         translate([c2wa-$W,0,0]) 
-    builtinCabinet("c2b",
+    builtinCabinet("c2",
         c2wb, step_height(STEP_CNT), LCAB_DEPTH ,$smartOverdrive=true)
         drawer(c2space/2)
         drawer(c2space/2);
@@ -396,7 +397,7 @@ module galeriaAgy() {
 
     translate([-STEP_W-MAT_L-2*$W,0,0]) {
         
-        eXZ("jHatso",BACK_R_WIDTH,BED_H);
+        eXZ("jHatso",BACK_R_WIDTH,BED_H,$close="LR");
 
         d2= DRAWER_D - BACK_R_WIDTH;
         translate([-d2,0,0]) 
