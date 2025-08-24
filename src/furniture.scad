@@ -23,7 +23,7 @@ module posNeg() {
 
 module ppp(name,dims="") {
     if($positive)
-        echo(name,dims);
+        echo(str("CUSTOM-", elementTypeName(), ": ", name),dims);
     if($positive)
     if($part==undef || $part==name) {
         children();
@@ -201,7 +201,7 @@ module eXYp(name, dims) {
 
 
 module eYZp(name, dims) {
-    ppp(str(name,"-YZ"))
+    ppp(str(name,"-YZ"),"<poly>")
         rotate(90,[0,0,1])
         rotate(90,[1,0,0])
         linear_extrude($W)
@@ -334,15 +334,15 @@ module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false,type="straight") {
         
         if(type == "straight") {
             if(cR>0) {
-                echo("cutCronerShelfR ",name," dc ",cR);
-                    s=cR*sqrt(2);
+                //echo("cutCronerShelfR ",name," dc ",cR);
+                s=cR*sqrt(2);
                 translate([0,d,$W/2])
                 rotate(45)
                 cube([s,s,$W+.1],center=true);
             }
             if(cL>0) {
-                echo("cutCronerShelfL ",name," dc ",cL);
-                    s=cL*sqrt(2);
+                //echo("cutCronerShelfL ",name," dc ",cL);
+                s=cL*sqrt(2);
                 translate([w,d,$W/2])
                 rotate(-45)
                 cube([s*2,s,$W+.1],center=true);
@@ -365,7 +365,7 @@ module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false,type="straight") {
             }
             if(cL>0) {
                 r=cL;
-                echo("roundCornerShelfL ",name," dc ",cL);
+                //echo("roundCornerShelfL ",name," dc ",cL);
                 translate([w,d,$W/2]) {
                     difference() {
                         translate([-r/2,-r/2])
@@ -1115,7 +1115,7 @@ module drawer(h,withLock=false,type1="def") {
                 o=$W-nut_depth;
                 translate([qx+o,-id,qz+floorOff])
                 eXY($W=3,str(name,"Floor"),ix-2*o,id);
-                echo(str(name,"-dback"),str(ix-15,"x",id));
+                //echo(str(name,"-dback"),str(ix-15,"x",id));
 
 
                 if($smartOverdrive!=undef) {
@@ -1139,9 +1139,9 @@ module drawer(h,withLock=false,type1="def") {
                 translate([qx,-id,qz-3])
                 union() {
    //                 cube([ix,id,3]);
-                    eXY(str(name,"-dback"),$W=3,ix,id);
+                    eXY(str(name,"-floor"),$W=3,ix,id);
                 }
-                echo(str(name,"-dback"),str(ix,"x",id));
+                //echo(str(name,"-dback"),str(ix,"x",id));
             }
         }
         
