@@ -56,7 +56,7 @@ module closeColor(v) {
         
 }
 
-function elementTypeName() = ($W<5)?"BACK":($front?"FRONT":"MAIN");
+function elementTypeName() = ($W<5)?"BACK":($front?"FRONT":str("M",$W));
 
 module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
     if($part == name && $W>1) {
@@ -326,7 +326,10 @@ module space(h) {
 
 
 module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false,type="straight") {
-    eXY(name,w,d,rot=rot);
+
+    n2=cL>0?str(name, "L",cL):name;
+    n3=cR>0?str(n2, "R",cR):n2;
+    eXY(n3,w,d,rot=rot);
     if(!$positive) {
         
         if(type == "straight") {
@@ -877,10 +880,11 @@ module hanger(h) {
 
 
 function smartSlideLen(l) =  
-    (l>601) ? 600 : 
-    (l>350) ? 350 : 
-    (l>300) ? 300 :
-    (l>250) ? 250 :
+    (l>603) ? 600 : 
+    (l>403) ? 400 : 
+    (l>353) ? 350 : 
+    (l>303) ? 300 :
+    (l>253) ? 250 :
     -1;
 
 module jointYP(type="TET") {
@@ -1094,6 +1098,7 @@ module drawer(h,withLock=false,type1="def") {
             floorOff=12+3;
             if(type=="smart") {
                 // smart
+                $W=is_undef($DRAWER_WALL_W) ? $W : $DRAWER_WALL_W;
                 $close="O";
                 translate([qx+$W,-$W,qz+floorOff])
                 eXZ(str(name,"A"),ix-2*$W,iz-floorOff);
@@ -1109,14 +1114,14 @@ module drawer(h,withLock=false,type1="def") {
 //                nut_depth
                 o=$W-nut_depth;
                 translate([qx+o,-id,qz+floorOff])
-                eXY($W=3,str(name,"Fl-back"),ix-2*o,id);
+                eXY($W=3,str(name,"Floor"),ix-2*o,id);
                 echo(str(name,"-dback"),str(ix-15,"x",id));
 
 
                 if($smartOverdrive!=undef) {
                     shimD= id - id0;
                     translate([qx+o,-shimD,qz])
-                    eXY($W=12,str(name,"some1012"),ix-2*$W,shimD);
+                    eXY($W=12,str(name,"OvrDrv"),ix-2*$W,shimD);
                 }
 
             }else {

@@ -4,14 +4,20 @@ use <kitchen_box.scad>
 use <syms.scad>
 
 // TODO
-// polcok
 // polcok az asztalra / diszites hatra
 // belepos resz???
 // hianyzo kicsi elemek a lapcso ala ???
+// ledcsik agy ala
+// spotlampa valami
+// kabel lejarat
+// konnektor balra
+// konnektor jobbra
 
+
+// lampa
+// https://fali-es-mennyezeti-lampa-csillar.arukereso.hu/rabalux/karen-5564-p778014348/?utm_source=google&utm_medium=organic&utm_campaign=dma#
 
 // beszelni:
-// felso korlat: jo lesz igy - Helga valamit mondott...
 
 
 // rendelni
@@ -29,6 +35,7 @@ $closeWFront=[1,1];
 $closeWMain=[.4,2];
 $defaultDrawer="smart";
 $cornerProtect=false;
+$smartOverdrive=false;
 
 $jointsVisible=true;
 $machines=true;
@@ -36,15 +43,13 @@ $openDoors=false;
 $drawerState="CLOSED";
 $drawerBoxes=true;
 
-$defaultDrawer="smart";
-
 $part=undef;
 
 W=18;
 $W=18;
 
 MAT_L=1800;
-MAT_W=810;
+MAT_W=910;
 MAT_D=100;
 MAT_SINK=80-$W;
 BED_FRAME_SP_UNDER=50;
@@ -72,15 +77,15 @@ STEP_TOP=BED_H+BED_FRAME_H;
 
 STEP_THETA=.7;
 
-DESK_W=800;
-DESK_D=900;
+DESK_W=900;
+DESK_D=MAT_W+100;
 DESK_RO=(DESK_W-FOOT_A)/2;
 
 // right drawers
 DRAWERS=[120,120,160,160];
 T_DRAWERS=sum(DRAWERS)+$W;
-DRAWER_W=300;
-DRAWER_D=DESK_W-99;
+DRAWER_W=250+82; //300
+DRAWER_D=2*403+$W;//DESK_W-99;
 
 
 function step_depth(i) = (DEPTH-W-W)/(STEP_CNT+STEP_THETA)*(i+STEP_THETA);
@@ -107,7 +112,7 @@ module lepcso() {
             for(h=hs)
             translate([-step_w(step_i),0,h])
             {
-                n=concat("step",h);
+                n=str("step",h);
                 if(step_alt(step_i)) {
                 cutCornerShelf($close="FR", n, step_w(step_i),step_depth(step_i),     2*CORNER_ROUND,type="round");
                     
@@ -138,7 +143,19 @@ module builtinCabinet(name,w,h,d,side="L",sideUp=$W) {
 
     // if(false)
     translate([wi,0,sideUp])
-    eYZ($close="F",concat(name,"side"),$d,$h-sideUp);
+    eYZ($close="F",str(name,"side"),$d,$h-sideUp);
+
+    for(y=[100,$d-100]) {
+        translate([wi,y,0]) {
+        joint("XZ",center=true);
+
+        translate([0,0,$W+$h])
+        rotate(180,[1,0,0]) 
+        joint("XZ",center=true);
+        }
+
+    }
+
     translate([0,0,$h])
     children();
 }
@@ -164,6 +181,13 @@ module doubleSided(a) {
     children(2);
 }
 
+module internalSeparator(ratio, height) {
+    translate([0,($d-$W)*ratio,-height]) 
+    eXZ("intSep",$w,height-$W);
+    space($front=false,height)
+    children();
+}
+
 module desk() {
 
     
@@ -172,6 +196,11 @@ module desk() {
     
     translate([FOOT_A/2-DESK_W/2,$W,DESK_H]) {
             cutCornerShelf($W=DESK_WW,"desk", DESK_W,DESK_D, DESK_RO,DESK_RO,type="round");
+
+        if(!$positive) {
+            translate([DESK_W/2,40+20,0]) 
+            cylinder(h=200,d=80,center=true);
+        }
 //        eXY("desk", DESK_W,DESK_D);
     }
     
@@ -181,7 +210,7 @@ module desk() {
     builtinCabinet("c3",DRAWER_W,DESK_H,DRAWER_D,"R",sideUp=0)
         shelf($front=true,DESK_H-T_DRAWERS+$W,external=true)
         space($front=false,-$W)
-        doubleSided(.5) {
+        doubleSided(.5,$DRAWER_WALL_W=10) {
             drawer(DRAWERS[0])
             drawer(DRAWERS[1])
             drawer(DRAWERS[2])
@@ -190,22 +219,22 @@ module desk() {
             drawer(DRAWERS[1])
             drawer(DRAWERS[2])
             drawer(DRAWERS[3]);
-            space($front=false,T_DRAWERS)
-            fullBottom(0,external=true);
+            internalSeparator(.5,T_DRAWERS)
+            fullBottom(0,external=true,$close="FB");
         }
     ;
     
 
 }
 
-RAIL_H=80;
-RAIL_DECOR_H=80;
-RAIL_DECOR_W=80;
-RAIL_DECOR_DESIRED_SP=100;
+RAIL_H=100;
+RAIL_DECOR_H=160;
+RAIL_DECOR_W=120;
+RAIL_DECOR_DESIRED_SP=140;
 RAIL_TOTAL_H=RAIL_DECOR_H+RAIL_H;
 
 
-module rail(name, w, lEnd=false, rEnd=false,railClose="LFR") {
+module rail(name, w, lEnd=false, rEnd=false,railClose="LFR", RAIL_DECOR_DESIRED_SP=RAIL_DECOR_DESIRED_SP) {
     h=RAIL_H;
     translate([0,W,RAIL_DECOR_H])
     rotate(90,[1,0,0]) 
@@ -223,9 +252,9 @@ module rail(name, w, lEnd=false, rEnd=false,railClose="LFR") {
         translate([x,0,0]) 
         if(x<0 || x+RAIL_DECOR_W>w) 
         translate([x<0?RAIL_DECOR_W/2:0,0,0]) 
-        eXZ($front=true, $close="LR",concat(n,i),RAIL_DECOR_W/2,RAIL_DECOR_H);
+        eXZ($front=true, $close="LR",str("railDecHalf"),RAIL_DECOR_W/2,RAIL_DECOR_H);
         else
-        eXZ($front=true, $close="LR",concat(n,i),RAIL_DECOR_W,RAIL_DECOR_H);
+        eXZ($front=true, $close="LR",str("railDecFull"),RAIL_DECOR_W,RAIL_DECOR_H);
     }
 
 //    eYZ("BARR-I",I_W,I_H);
@@ -248,8 +277,47 @@ module agy() {
     OFF=400;
     translate([MAT_L+W+W,W+OFF,BED_FRAME_H])
     rotate(90) 
-    rail(railClose="FR","railL", MAT_W-OFF , rEnd=true);
+    rail(RAIL_DECOR_DESIRED_SP=RAIL_DECOR_DESIRED_SP/2, railClose="FR","railL", MAT_W-OFF , rEnd=true);
 
+}
+
+module polc(inter,over,depth) {
+
+        if(over>0)
+            eXZ("shelfBack",inter,100,$close="Ou");
+
+        translate([-over,$W,0]) 
+        cutCornerShelf("shelfXY",inter+2*over,depth,depth,depth,type="round",$close="LRF");
+}
+
+module polcok() {
+
+    INTER=MAT_L+2*$W-(BACK_L_WIDTH+BACK_R_WIDTH-STEP_W);
+
+    OVER=100;
+
+    X0=-BACK_L_WIDTH-INTER;
+    translate([X0,0,1050])
+        polc(INTER,100,150);
+    translate([X0,0,1300])
+        polc(INTER,200,200);
+
+    translate([X0,0,2000])
+        polc(INTER,0,150);
+
+    S1L=1000;
+    S1D=150;
+    S2L=1000;
+    S2D=150;
+    
+    if(false)
+    translate([-S1L,0,2300])
+        cutCornerShelf("shelfS1",S1L,S1D,S1D,0,type="round",$close="LRF");
+
+    if(false)
+    translate([0,0,2000])
+        rotate(90,[0,0,1]) 
+        cutCornerShelf("shelfS2",S2L,S2D,0,S2D,type="round",$close="LRF");
 }
 
 module galeriaAgy() {
@@ -259,11 +327,11 @@ module galeriaAgy() {
     translate([-BACK_L_WIDTH,0,0])
 
     if(true)
-    rotate(90, [1,0,0]) 
-    translate([0,0,-$W]) 
-    cutCornerShelf("bHatsoC", BACK_L_WIDTH,BED_H, cL=BED_H-step_height(1)-W);
+        rotate(90, [1,0,0]) 
+        translate([0,0,-$W]) 
+        cutCornerShelf("bHatsoCut", BACK_L_WIDTH,BED_H, cL=BED_H-step_height(1)-W);
     else
-    eXZ("bHatso",BACK_L_WIDTH,BED_H);
+        eXZ("bHatso",BACK_L_WIDTH,BED_H);
     
     translate([-MAT_L-2*$W-STEP_W,0,BED_H]) {
         translate([MAT_L-100,0,0])  jointI();
@@ -309,7 +377,7 @@ module galeriaAgy() {
     translate([-W,0,step_height(5)])
     rotate(90,[0,0,1]) {
 
-        c2w=step_depth(4)-CORNER_ROUND;
+        c2w=step_depth(4)-CORNER_ROUND+$W;
         c2wa=c2w/2;
         c2wb=c2w-c2wa;
         c2space=step_height(STEP_CNT)-$W;
@@ -318,7 +386,7 @@ module galeriaAgy() {
         c2wa, step_height(STEP_CNT), LCAB_DEPTH ,$smartOverdrive=true)
         drawer(c2space/2)
         drawer(c2space/2);
-        translate([c2wa,0,0]) 
+        translate([c2wa-$W,0,0]) 
     builtinCabinet("c2b",
         c2wb, step_height(STEP_CNT), LCAB_DEPTH ,$smartOverdrive=true)
         drawer(c2space/2)
@@ -341,10 +409,26 @@ module galeriaAgy() {
     }
 
 
+    polcok();
+
+    translate([-MAT_L-STEP_W,0,1300]) 
+    lampa();
+
+    translate([-STEP_W-200,0,1300]) 
+    lampa();
+
+    translate([-MAT_L-STEP_W,0,2200]) 
+    lampa();
+
     
 //    cabinet(name = "agy", w = 1800, h = 1600, d = 900);
 }
 
+
+module lampa() {
+    if($positive)
+    cube(160);
+}
 
 s=($mode == "print")?.05:1;
 scale([1,1,1]*s)
@@ -353,6 +437,10 @@ posNeg() {
     
     translate([-1400,400,0])
     %cylinder(d=750,h=900);
+
+//    if(!$positive) {        cube([1000,1000,4000],center=true);    }
+//    if(!$positive) {        cube([10000,200,4000],center=true);    }
+    
 }
 
 
