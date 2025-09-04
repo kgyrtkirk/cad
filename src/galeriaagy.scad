@@ -4,22 +4,22 @@ use <kitchen_box.scad>
 use <syms.scad>
 
 // TODO
-// polcok az asztalra / diszites hatra
-// belepos resz???
 // hianyzo kicsi elemek a lapcso ala ???
 // ledcsik agy ala
 // spotlampa valami
 // kabel lejarat
 // konnektor balra
 // konnektor jobbra
+// fiok overdrive vs lepcso
 
+
+// H3433-ST22-18
+// H309-ST12-18
 
 // lampa
 // https://fali-es-mennyezeti-lampa-csillar.arukereso.hu/rabalux/karen-5564-p778014348/?utm_source=google&utm_medium=organic&utm_campaign=dma#
 
 // beszelni:
-
-// jhatso nem 45fokos vagas
 
 // rendelni
 // zartszelveny
@@ -41,7 +41,7 @@ $smartOverdrive=false;
 $jointsVisible=true;
 $machines=true;
 $openDoors=false;
-$drawerState="OPEN";
+$drawerState="CLOSED";
 $drawerBoxes=true;
 
 $part=undef;
@@ -58,7 +58,7 @@ BED_FRAME_H=BED_FRAME_SP_UNDER+$W+MAT_SINK;
 
 BED_H=1500;
 DEPTH=MAT_W+W+W;
-STEP_W=400;
+STEP_W=500;
 STEP_CNT=4;
 
 
@@ -184,7 +184,7 @@ module doubleSided(a) {
 
 module internalSeparator(ratio, height) {
     translate([0,($d-$W)*ratio,-height]) 
-    eXZ("intSep",$w,height-$W);
+    eXZ(str($name,"intSep"),$w,height-$W);
     space($front=false,height)
     children();
 }
@@ -196,7 +196,7 @@ module desk() {
     eXZ($W=FOOT_A,"ZARTSZELVENY", FOOT_A,BED_H);
     
     translate([FOOT_A/2-DESK_W/2,$W,DESK_H]) {
-            cutCornerShelf($W=DESK_WW,"desk", DESK_W,DESK_D, DESK_RO,DESK_RO,type="round");
+            cutCornerShelf($W=DESK_WW,"desk", DESK_W,DESK_D, DESK_RO,DESK_RO,type="round",$close="LRF");
 
         if(!$positive) {
             translate([DESK_W/2,40+20,0]) 
@@ -397,13 +397,24 @@ module galeriaAgy() {
 
     translate([-STEP_W-MAT_L-2*$W,0,0]) {
         
-        eXZ("jHatso",BACK_R_WIDTH,BED_H,$close="LR");
+        translate([-DRAWER_D+BACK_R_WIDTH,0,0]) 
+        eXZp("jHatso",
+            [
+                [0,-(DESK_H+DESK_WW)],
+                [0,0],
+                [DRAWER_D,0],
+                [DRAWER_D,-BED_H],
+                [DRAWER_D-BACK_R_WIDTH,-BED_H]
+            ]);
+        
+//        BACK_R_WIDTH,BED_H,$close="LR");
+//        eXZ("jHatso",BACK_R_WIDTH,BED_H,$close="LR");
 
-        d2= DRAWER_D - BACK_R_WIDTH;
-        translate([-d2,0,0]) 
-        rotate(90,[1,0,0]) 
-        translate([0,0,-$W]) 
-        cutCornerShelf(name = "jHatsoAsztal", w = d2, d = DESK_H+DESK_WW+d2, cR=d2);
+        // d2= DRAWER_D - BACK_R_WIDTH;
+        // translate([-d2,0,0]) 
+        // rotate(90,[1,0,0]) 
+        // translate([0,0,-$W]) 
+        // cutCornerShelf(name = "jHatsoAsztal", w = d2, d = DESK_H+DESK_WW+d2, cR=d2);
 //        eXZ("jHatsoAsztal",d2,DESK_H+DESK_WW+d2);
         
         desk();
@@ -427,6 +438,9 @@ module galeriaAgy() {
 
 
 module lampa() {
+    if($positive)
+        echo(str("custom PART-lampa"));
+
     if($positive)
     cube(160);
 }

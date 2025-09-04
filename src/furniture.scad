@@ -209,6 +209,13 @@ module eYZp(name, dims) {
 //        cube([dX,dY2,$W]);
 }
 
+module eXZp(name, dims) {
+    ppp(str(name,"-XZ"),"<poly>")
+        rotate(-90,[1,0,0])
+        linear_extrude($W)
+        polygon(dims);
+//        cube([dX,dY2,$W]);
+}
 
 
 use <syms.scad>
