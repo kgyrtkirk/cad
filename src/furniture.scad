@@ -1073,6 +1073,12 @@ module drawer(h,withLock=false,type1="def") {
     id0=( (type=="smart") ?smartSlideLen($d)-10:$d-10);
     id=( (type=="smart" && $smartOverdrive==undef  ) ?id0:$d-10);
     
+    nBeams=($d>500)? 2 : 0;
+
+    if($positive ) {
+        echo(str("PART:SLIDE:",type,":",id0));
+    }
+
     if(id < 0) {
         echo($d);
         echo(smartSlideLen($d));
@@ -1111,6 +1117,12 @@ module drawer(h,withLock=false,type1="def") {
                 eXZ(str(name,"A"),ix-2*$W,iz-floorOff);
                 translate([qx+$W,-id,qz+floorOff])
                 eXZ(str(name,"A"),ix-2*$W,iz-floorOff);
+
+                for(i=[0:nBeams-1]) {
+                translate([qx+$W,-$W-(i+1)*(id/(nBeams+1)),qz+floorOff])
+                eXZ(str(name,"AR"),ix-2*$W,min(iz-floorOff,50));
+                }
+
 
                 translate([qx,-id,qz])
                 eYZ(str(name,"B"),id,iz);

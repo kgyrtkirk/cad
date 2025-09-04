@@ -4,7 +4,6 @@ use <kitchen_box.scad>
 use <syms.scad>
 
 // TODO
-// hianyzo kicsi elemek a lapcso ala ???
 // ledcsik agy ala
 // spotlampa valami
 // kabel lejarat
@@ -27,6 +26,8 @@ use <syms.scad>
 // fogantyuk
 
 
+
+
 $mode="print";
 $close="";
 $front=false;
@@ -41,7 +42,7 @@ $smartOverdrive=false;
 $jointsVisible=true;
 $machines=true;
 $openDoors=false;
-$drawerState="CLOSED";
+$drawerState="OPEN";
 $drawerBoxes=true;
 
 $part=undef;
@@ -357,8 +358,12 @@ module galeriaAgy() {
     translate([-STEP_W-W,W+step_depth(STEP_CNT-1),step_height(STEP_CNT)+W])
         eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W), $close="Bou");
 
-    
+    UV=CORNER_ROUND+W;
+    translate([-STEP_W-W,W+step_depth(STEP_CNT)-UV,W])
+        eYZ("footJ",UV,step_height(STEP_CNT)-W, $close="f");
 
+    translate([-STEP_W-W,W+step_depth(STEP_CNT-1)-UV,W+step_height(STEP_CNT)])
+        eYZ("footJ",UV,step_height(STEP_CNT)-W, $close="f");
 
     
     translate([0,0,0])
@@ -396,6 +401,7 @@ module galeriaAgy() {
 
 
     translate([-STEP_W-MAT_L-2*$W,0,0]) {
+        echo("DRAWER_D",DRAWER_D);
         
         translate([-DRAWER_D+BACK_R_WIDTH,0,0]) 
         eXZp("jHatso",
