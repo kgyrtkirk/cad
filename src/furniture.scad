@@ -193,7 +193,7 @@ module eXY2(name, dX, dY, dY2=undef) {
 
 module eXYp(name, dims) {
 //    dY2=dY2==undef ? dY:dY2;
-    ppp(str(name,"-XY"))
+    ppp(str(name,"-XY"),dims)
         linear_extrude($W)
         polygon(dims);
 //        cube([dX,dY2,$W]);
@@ -201,7 +201,7 @@ module eXYp(name, dims) {
 
 
 module eYZp(name, dims) {
-    ppp(str(name,"-YZ"),"<poly>")
+    ppp(str(name,"-YZ"),dims)
         rotate(90,[0,0,1])
         rotate(90,[1,0,0])
         linear_extrude($W)
@@ -210,7 +210,7 @@ module eYZp(name, dims) {
 }
 
 module eXZp(name, dims) {
-    ppp(str(name,"-XZ"),"<poly>")
+    ppp(str(name,"-XZ"),dims)
         rotate(-90,[1,0,0])
         linear_extrude($W)
         polygon(dims);
@@ -1051,7 +1051,7 @@ module jointsZ(len,center=false) {
 }
 
 
-module drawer(h,withLock=false,type1="def") {
+module drawer(h,withLock=false,type1="def",izAdd=0) {
     // 90x60
     LOCK_SP=5;
     LOCKDIM=[90,30,60];
@@ -1069,7 +1069,8 @@ module drawer(h,withLock=false,type1="def") {
     qx=(type=="smart"?$W+5.0:$W+12.7);
     qz=$W;
     ix=$w-2*qx;
-    iz=h-(withLock?LOCKDIM[2]+LOCK_SP+$W:3*$W-6);  //  -4W
+    iz=h-(withLock?LOCKDIM[2]+LOCK_SP+$W:3*$W-6)+izAdd;  //  -4W
+
     id0=( (type=="smart") ?smartSlideLen($d)-10:$d-10);
     id=( (type=="smart" && $smartOverdrive==undef  ) ?id0:$d-10);
     
@@ -1108,7 +1109,9 @@ module drawer(h,withLock=false,type1="def") {
   //          eXZ("DF",ww,hh);
         }
         if($drawerBoxes) {
-            floorOff=12+3;
+            floorW=is_undef($floorW) ? 3 : $floorW;
+            floorOff=12+floorW;
+            nut_depth=floorW>3 ? 0 : 6;
             if(type=="smart") {
                 // smart
                 $W=is_undef($DRAWER_WALL_W) ? $W : $DRAWER_WALL_W;
@@ -1118,29 +1121,31 @@ module drawer(h,withLock=false,type1="def") {
                 translate([qx+$W,-id,qz+floorOff])
                 eXZ(str(name,"A"),ix-2*$W,iz-floorOff);
 
+if(nBeams>0)
                 for(i=[0:nBeams-1]) {
                 translate([qx+$W,-$W-(i+1)*(id/(nBeams+1)),qz+floorOff])
                 eXZ(str(name,"AR"),ix-2*$W,min(iz-floorOff,50));
                 }
 
-
+                
+                nameB=str("B", nut_depth>0?str("m",floorOff-floorW):"");
                 translate([qx,-id,qz])
-                eYZ(str(name,"B"),id,iz);
+                eYZ(str(name,nameB),id,iz);
                 translate([$w-$W-qx,-id,qz])
-                eYZ(str(name,"B"),id,iz);
+                eYZ(str(name,nameB),id,iz);
             
-                nut_depth=6;
 //                nut_depth
+                
                 o=$W-nut_depth;
-                translate([qx+o,-id,qz+floorOff])
-                eXY($W=3,str(name,"Floor"),ix-2*o,id);
+                translate([qx+o,-id,qz+floorOff-floorW])
+                eXY($W=floorW,str(name,"Floor"),ix-2*o,id);
                 //echo(str(name,"-dback"),str(ix-15,"x",id));
 
 
                 if($smartOverdrive!=undef) {
                     shimD= id - id0;
                     translate([qx+o,-shimD,qz])
-                    eXY($W=12,str(name,"OvrDrv"),ix-2*$W,shimD);
+                    eXY($W=10,str(name,"OvrDrv"),ix-2*$W,shimD);
                 }
 
             }else {

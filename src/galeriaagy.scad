@@ -84,7 +84,7 @@ DESK_D=MAT_W+100;
 DESK_RO=(DESK_W-FOOT_A)/2;
 
 // right drawers
-DRAWERS=[120,120,160,160];
+DRAWERS=[140,140,140,140];
 T_DRAWERS=sum(DRAWERS)+$W;
 DRAWER_W=250+82; //300
 DRAWER_D=2*403+$W;//DESK_W-99;
@@ -341,13 +341,25 @@ module galeriaAgy() {
         agy();
     }
 
+//    slope=(step_depth(1)-step_depth(0))/(STEP_TOP-(step_height(1)+W));
+    slope=(step_depth(3)-step_depth(1))/(step_height(3)-step_height(1));
+    step_top_wi=step_depth(1)-W+(STEP_TOP-BED_H+W)*slope;
+    
+    slope2=1/slope;
+    xw=step_top_wi*(slope2/(sqrt(1+slope2*slope2)));
+    yw=(sqrt(1+slope2*slope2))*step_height(3);
+    if($positive){
+    translate([-STEP_W-W,step_depth(0)+W,step_height(0)+W])
+%    rotate(180+atan(-slope),[1,0,0]) 
+        cube([30,-xw,yw]);
+    }
 
-    step_top_wi=step_depth(0)+(STEP_TOP-BED_H)*(step_depth(1)-step_depth(0))/(STEP_TOP-(step_height(1)+W));
+
     translate([-STEP_W-W,W,0])
-    eYZp("stepR",[   
+    eYZp(str("stepRs",xw,"x",yw),[   
                         [step_depth(3)-step_top_wi,step_height(3)+W],
                         [step_depth(3),step_height(3)+W],
-                        [step_depth(1),step_height(1)+W],
+//                        [step_depth(1),step_height(1)+W],
                         [step_top_wi,BED_H],
                         [0,BED_H]
     ] );
@@ -372,6 +384,7 @@ module galeriaAgy() {
         c1w=step_depth(3)-CORNER_ROUND;
         c1wa=c1w/2;
         c1wb=c1w-c1wa;
+        $floorW=10;
     builtinCabinet("c1",
         c1w, step_height(STEP_CNT), LCAB_DEPTH,$smartOverdrive=true)
         drawer(step_height(STEP_CNT)/2)
@@ -387,6 +400,7 @@ module galeriaAgy() {
         c2wa=c2w/2;
         c2wb=c2w-c2wa;
         c2space=step_height(STEP_CNT)-$W;
+        $floorW=10;
 
     builtinCabinet("c2",
         c2wa, step_height(STEP_CNT), LCAB_DEPTH ,$smartOverdrive=true)
