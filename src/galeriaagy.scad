@@ -79,7 +79,7 @@ STEP_TOP=BED_H+BED_FRAME_H;
 
 STEP_THETA=.7;
 
-DESK_W=900;
+DESK_W=890;
 DESK_D=MAT_W+100;
 DESK_RO=(DESK_W-FOOT_A)/2;
 
@@ -365,7 +365,7 @@ module galeriaAgy() {
     ] );
 
     translate([-STEP_W-FOOT_B,DEPTH-W,0])
-    foot($close="LRU");
+    foot($close="LRUo");
     
     translate([-STEP_W-W,W+step_depth(STEP_CNT-1),step_height(STEP_CNT)+W])
         eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W), $close="Bou");
@@ -377,6 +377,7 @@ module galeriaAgy() {
     translate([-STEP_W-W,W+step_depth(STEP_CNT-1)-UV,W+step_height(STEP_CNT)])
         eYZ("footJ",UV,step_height(STEP_CNT)-W, $close="f");
 
+        $floorW=10;
     
     translate([0,0,0])
     translate([-W,0,step_height(4)])
