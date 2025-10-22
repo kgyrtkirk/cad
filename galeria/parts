@@ -1,3 +1,12 @@
+oohimcdb
+
+
+
+seems like partial_range_index_generate_ext_clarity0_phiohmoa_2025-08-06T00:54:48.284Z is canceled around 12641 times:
+2025-08-13T01:03:10,620 INFO [qtp338027825-165] org.apache.druid.indexing.overlord.ForkingTaskRunner - Shutdown [partial_dimension_distribution_ext_clarity-saas0_jcnhnngo_2025-08-06T00:51:19.499Z] because: [shut down request via HTTP endpoint]
+2025-08-13T01:03:10,620 INFO [qtp338027825-165] org.apache.druid.indexing.overlord.ForkingTaskRunner - Ignoring request to cancel unknown task: partial_dimension_distribution_ext_clarity-saas0_jcnhnngo_2025-08-06T00:51:19.499Z
+
+
 Loaded design '/home/kirk/projects/cad/src/galeriaagy.scad'.
 Compiling design (CSG Tree generation)...
 ECHO: "PLANAR: M18 step1304XY 327.149*482 0;0;2;0"
