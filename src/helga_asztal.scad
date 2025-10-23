@@ -373,9 +373,9 @@ module model() {
     }
 }
 
-mode="normal";
+//mode="normal";
 //mode="P-LTlYZ";
-//mode="P-topXY";
+mode="P-topXY";
 //mode="P-R2TopAXY";
 // mode="P-ShelfRXY";
 // mode="P-ShelfMXY";

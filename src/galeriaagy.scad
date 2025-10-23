@@ -3,6 +3,7 @@ use <furniture.scad>
 use <kitchen_box.scad>
 use <syms.scad>
 
+
 // TODO
 // ledcsik agy ala
 // spotlampa valami
@@ -27,7 +28,7 @@ use <syms.scad>
 
 
 
-
+$connect=undef;
 $mode="print";
 $close="";
 $front=false;
@@ -43,7 +44,7 @@ $jointsVisible=true;
 $machines=true;
 $openDoors=false;
 $drawerState="CLOSED";
-$drawerBoxes=true;
+$drawerBoxes=false;
 
 $part=undef;
 
@@ -185,8 +186,8 @@ module doubleSided(a) {
 }
 
 module internalSeparator(ratio, height) {
-    translate([0,($d-$W)*ratio,-height]) 
-    eXZ(str($name,"intSep"),$w,height-$W);
+    translate([$W,($d-$W)*ratio,-height+$W]) 
+    eXZ(str($name,"intSep"),$w-$W-$W,height-$W-$W,$connect=[["l","TT"],["r","TT"],["f","TT"],["b","TT"]]);
     space($front=false,height)
     children();
 }
@@ -255,9 +256,9 @@ module rail(name, w, lEnd=false, rEnd=false,railClose="LFBR", RAIL_DECOR_DESIRED
         translate([x,0,0]) 
         if(x<0 || x+RAIL_DECOR_W>w) 
         translate([x<0?RAIL_DECOR_W/2:0,0,0]) 
-        eXZ($front=true, $close="LRou",str("railDecHalf"),RAIL_DECOR_W/2,RAIL_DECOR_H);
+        eXZ($front=true, $close="LRou",str("railDecHalf"),RAIL_DECOR_W/2,RAIL_DECOR_H, $connect=[]);
         else
-        eXZ($front=true, $close="LRou",str("railDecFull"),RAIL_DECOR_W,RAIL_DECOR_H);
+        eXZ($front=true, $close="LRou",str("railDecFull"),RAIL_DECOR_W,RAIL_DECOR_H, $connect=[["f","cTT"],["b","cTT"]]);
     }
 
 //    eYZ("BARR-I",I_W,I_H);
@@ -266,8 +267,6 @@ module rail(name, w, lEnd=false, rEnd=false,railClose="LFBR", RAIL_DECOR_DESIRED
 }
 
 module agy() {
-
-    
 
     bedFrame("Bed",MAT_L,MAT_W,BED_FRAME_H,MAT_SINK,backOversize=RAIL_TOTAL_H);
     translate([0,MAT_W+W,BED_FRAME_H])
@@ -359,7 +358,7 @@ module galeriaAgy() {
 
 
     translate([-STEP_W-W,W,0])
-    eYZp(str("stepRs",xw,"x",yw),[   
+    eYZp(str("stepRs"),[   
                         [step_depth(3)-step_top_wi,step_height(3)+W],
                         [step_depth(3),step_height(3)+W],
 //                        [step_depth(1),step_height(1)+W],
@@ -417,12 +416,12 @@ module galeriaAgy() {
         c2space=step_height(STEP_CNT)-$W;
         $floorW=10;
 
-    builtinCabinet("c2",
+    builtinCabinet("c2a",
         c2wa, step_height(STEP_CNT), LCAB_DEPTH ,$smartOverdrive=true)
         drawer(c2space/2)
         drawer(c2space/2);
         translate([c2wa-$W,0,0]) 
-    builtinCabinet("c2",
+    builtinCabinet("c2b",
         c2wb, step_height(STEP_CNT), LCAB_DEPTH ,$smartOverdrive=true)
         drawer(c2space/2)
         drawer(c2space/2);
@@ -487,6 +486,18 @@ posNeg() {
 }
 }
 
+mode="P-step0R100XY";
+mode="P-stepLeftYZ";
+mode="P-stepRsYZ";
+mode="P-step1304XY";
+mode="P-step978XY";
+mode="P-step652R100XY";
+mode="P-step326R100XY";
+mode="P-c1sideYZ";
+mode="P-c2asideYZ";
+mode="P-c2bsideYZ";
+mode="P-c3sideYZ";
+//mode="P-c3intSepXZ";
 mode="print";
 if(mode == "print") {
 
@@ -502,6 +513,9 @@ model();
 //    if(!$positive) {        cube([1000,1000,4000],center=true);    }
 //    if(!$positive) {        cube([10000,200,4000],center=true);    }
     
+
+
+
 } else 
 //lse 
  if(mode[0] == "P" && mode[1]=="-") {
@@ -511,8 +525,8 @@ model();
     
     $part=substr(mode,2);
     
-    projection(false)
-    orient(mode)
+//    projection(false)
+   orient(mode)
 //    rotate(90,[0,1,0]) 
         model();
 //        previewLU();

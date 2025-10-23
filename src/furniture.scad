@@ -71,6 +71,8 @@ translate([0,-$W,0])
 
 function mapGet(arr, key) = search(key, arr) != [] ? arr[search(key, arr)[0]][1] : undef;
 
+function drawPositive(n) = $positive && ($part == undef || $part == n);
+
 module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
 
     if($part == name && $W>1) {
@@ -115,6 +117,7 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
     y = closeD;
     w = w0 - x - closeR;
     h = h0 - y - closeU;
+    if(drawPositive(name)) 
     translate([x,y,0]) {
         color($front?[.4,.6,1]:[1,.8,.4])
         cube([w,h,$W]);
@@ -160,7 +163,7 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
 function toBool(v)=(v==undef? false : v );
 
 module eXY(name, dX, dY, rot=false) {
-    ppp2(str(name,"XY"),str(dX,"x",dY))
+//    ppp2(str(name,"XY"),str(dX,"x",dY))
     //  cube([dX,dY,$W]);
       plain(str(name,"XY"),dX,dY,cLookupR(),cLookupL(),cLookupF(),cLookupA(),rot=rot);
 //      plain(str(name,"XY"),dX,dY,toBool($closeRight),toBool($closeLeft),toBool($closeFront),toBool($closeBack));
@@ -212,7 +215,7 @@ module eFRONT(name, dX, dZ, rot=false) {
 }
 
 module eXZ(name, dX, dZ, rot=false) {
-    ppp2(str(name,"XZ"),str(dZ,"x",dX))
+//    ppp2(str(name,"XZ"),str(dZ,"x",dX))
         translate([0,0,dZ])
         rotate(-90,[1,0,0])
         plain(str(name,"XZ"),dX,dZ,cLookupR(),cLookupL(),cLookupB(),cLookupT(),rot=rot);
@@ -227,28 +230,41 @@ module eXY2(name, dX, dY, dY2=undef) {
 }
 
 
+module mlinear_extrude(w) {
+    if($part == undef) {
+        linear_extrude($W)
+            children();
+    } else {
+        W1=.01;
+        translate([0,0,($W-W1)/2]) 
+        linear_extrude(W1)
+            children();
+    }
+}
+
+
 module eXYp(name, dims) {
 //    dY2=dY2==undef ? dY:dY2;
-    ppp(str(name,"-XY"),dims)
-        linear_extrude($W)
+    ppp(str(name,"XY"),dims)
+        mlinear_extrude($W)
         polygon(dims);
 //        cube([dX,dY2,$W]);
 }
 
 
 module eYZp(name, dims) {
-    ppp(str(name,"-YZ"),dims)
+    ppp(str(name,"YZ"),dims)
         rotate(90,[0,0,1])
         rotate(90,[1,0,0])
-        linear_extrude($W)
+        mlinear_extrude($W)
         polygon(dims);
 //        cube([dX,dY2,$W]);
 }
 
 module eXZp(name, dims) {
-    ppp(str(name,"-XZ"),dims)
+    ppp(str(name,"XZ"),dims)
         rotate(-90,[1,0,0])
-        linear_extrude($W)
+        mlinear_extrude($W)
         polygon(dims);
 //        cube([dX,dY2,$W]);
 }
@@ -606,11 +622,13 @@ module orient(mode) {
     if(o[0]=="X" && o[1] =="Y") {
         children();
     } else if(o[0]=="X" && o[1] =="Z") {
-        rotate(90,[1,0,0])
+//        rotate(90,[1,0,0])
+        rotate(90,[0,1,0])
         children();
     } else if(o[0]=="Y" && o[1] =="Z") {
-        rotate(180,[0,0,1])
-        rotate(90,[0,1,0])
+        // rotate(180,[0,0,1])
+        // rotate(90,[0,1,0])
+        rotate(90,[1,0,0])
         children();
     } else {
         assert(false, str("orient failed",":",mode,";",tail(2,mode)));
@@ -884,7 +902,7 @@ module fullBottom(h,external=false,alignTop=false,rot=false) {
     w=$w-2*$W;
 //    color([0,1,1])
     translate([$W,0,-h-(alignTop?$W:0)])
-    eXY(str($name,"Shelf",external?"Ex":"",w),w,depth,rot=rot);
+    eXY(str($name,"Shelf",external?"Ex":"",w),w,depth,rot=rot, $connect=[["l","TET"],["r","TET"]]);
     
 
     translate([0,0,-h])
@@ -1020,6 +1038,9 @@ module joint(orient="XY",type="TET",center=false) {
     translate([0,0,center?-L/2:0])
     if(xor(!$positive,$jointsVisible)) {
         if(type == "TET") {
+            echo("PART:T");
+            echo("PART:E");
+            echo("PART:T");
             translate([$W/2,$W/4,L/2]) {
             rotate(-90,[1,0,0])
             cylinder(d=6,h=50);
@@ -1030,10 +1051,10 @@ module joint(orient="XY",type="TET",center=false) {
             cylinder(d=8,h=40);
 
 
-            if($machines)
+            //if($machines)
             for(k=[-1:1]) {
                 translate([$W/2,$W+20,L/2+k*28])
-                %cube([2*$W,1,1],center=true);
+                cube([2*$W,2,2],center=true);
             }
 
             translate([$W/4,$W+34,L/2])
@@ -1041,6 +1062,8 @@ module joint(orient="XY",type="TET",center=false) {
             cylinder(d=15,h=$W);
         } else 
         if(type == "TT") {
+            echo("PART:T");
+            echo("PART:T");
             for(k=[-1,1]) 
             translate([$W/2,$W/4,L/2+k*28])
             rotate(-90,[1,0,0])
@@ -1099,6 +1122,12 @@ module jointsZY(len,center=false) {
 
 
 module jointsZ(len,center=false,mode="TET") {
+    if(mode[0] == "c") {
+
+        m=substr(mode,1);
+        translate([0,0,len/2])
+        joint(center=true,type=m);
+    } else {
     PROTECT_LEN=50;
     if($cornerProtect) {
         $cornerProtect=false;
@@ -1123,6 +1152,7 @@ module jointsZ(len,center=false,mode="TET") {
 
 
         }
+    }
     }
 }
 
@@ -1149,7 +1179,8 @@ module drawer(h,withLock=false,type1="def",izAdd=0) {
 
     id0=( (type=="smart") ?smartSlideLen($d)-10:$d-10);
     id=( (type=="smart" && $smartOverdrive==undef  ) ?id0:$d-10);
-    
+    shimD= id - id0;
+
     nBeams=($d>500)? 2 : 0;
 
     if($positive ) {
@@ -1219,7 +1250,6 @@ if(nBeams>0)
 
 
                 if($smartOverdrive!=undef) {
-                    shimD= id - id0;
                     translate([qx+o,-shimD,qz])
                     eXY($W=10,str(name,"OvrDrv"),ix-2*$W,shimD);
                 }
@@ -1246,12 +1276,34 @@ if(nBeams>0)
         }
         
     }
+    if(xor(!$positive, $jointsVisible)) {
+        if(type=="smart") {
+            pos=[10,27,32,96,96,32];
+            translate([$w/2,$d+o_y,-h]) 
+            symX([$w/2,0,41]) 
+            {
+                translate([0,0,-12]) 
+                euroscrews(pos);
+                translate([0,-shimD,0])
+                euroscrews(pos);
+            }
+        }
+    }
     
     translate([0,0,-h])
         children();
     
 }
 
+
+module euroscrews(pos) {
+
+    for(x = prefix(0,pos)) {
+        translate([0,-x,0]) 
+        rotate(90,[0,1,0])
+        cylinder(h = $W*1.5, d = 5,center=true);
+    }
+}
 
 //mode="zigzag";
 //mode="zigzag";
@@ -1389,3 +1441,9 @@ if(mode=="planar") {
     }  
 }
 
+
+
+function search2(key, arr) = (!is_list(arr) || len(arr) == 0) ? undef : arr[0][0] == key ? arr[0][1] : search2(key, sublist(arr, 1));
+arr=[["f", "1"]];
+echo(search2("f", arr));
+echo(search2("X", arr));
