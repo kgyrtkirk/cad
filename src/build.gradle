@@ -138,6 +138,7 @@ def projMap = [
 		'P-BED_L-SBXZ',
 		'P-BED_L-SFXZ',
 		'P-L_SIDEXZ'],
+	'galeriaagy':			['P-stepLeft']
 //	'ex':				['def'],
 /*	'helga_asztal':	[
 			'P-topXY',

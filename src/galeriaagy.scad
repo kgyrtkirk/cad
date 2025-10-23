@@ -108,7 +108,6 @@ module lepcso() {
     
     translate([-W,W,0]) {
         for(step_i=[1:1:STEP_CNT]) {
-            
             hs=concat([step_height(step_i)], (step_i==STEP_CNT)?[0]:[]);
 
             for(h=hs)
@@ -116,9 +115,11 @@ module lepcso() {
             {
                 n=str("step",h);
                 if(step_alt(step_i)) {
-                cutCornerShelf($close="FR", n, step_w(step_i),step_depth(step_i),     2*CORNER_ROUND,type="round");
+                    $connect=[[ "l","TET"],["b","TET"]];
+                    cutCornerShelf($close="FR", n, step_w(step_i),step_depth(step_i),     2*CORNER_ROUND,type="round");
                     
                 } else {
+                    $connect=[[ "l","TET"],["b","TET"],["r","TET"]];
                     eXY($close="F", n,step_w(step_i),step_depth(step_i));
                 }
             }
@@ -283,6 +284,7 @@ module agy() {
 
 }
 
+JOINT_LEN=80;
 module polc(inter,over,depth) {
 
         if(over>0)
@@ -348,7 +350,8 @@ module galeriaAgy() {
     slope2=1/slope;
     xw=step_top_wi*(slope2/(sqrt(1+slope2*slope2)));
     yw=(sqrt(1+slope2*slope2))*step_height(3);
-    if($positive){
+    if($positive && false){
+        // show stepR bounding box
     translate([-STEP_W-W,step_depth(0)+W,step_height(0)+W])
 %    rotate(180+atan(-slope),[1,0,0]) 
         cube([30,-xw,yw]);
@@ -363,6 +366,16 @@ module galeriaAgy() {
                         [step_top_wi,BED_H],
                         [0,BED_H]
     ] );
+    
+    translate([-STEP_W-W,W,0])
+    translate([0,step_depth(3)-JOINT_LEN,step_height(3)]) 
+    jointsZY(100,center=true);
+
+    translate([-STEP_W-W,W,0])
+    translate([0,step_top_wi,BED_H])
+
+    rotate(-90,[0,0,1])
+    jointI();
 
     translate([-STEP_W-FOOT_B,DEPTH-W,0])
     foot($close="LRUo");
@@ -371,11 +384,13 @@ module galeriaAgy() {
         eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W), $close="Bou");
 
     UV=CORNER_ROUND+W;
-    translate([-STEP_W-W,W+step_depth(STEP_CNT)-UV,W])
-        eYZ("footJ",UV,step_height(STEP_CNT)-W, $close="f");
+    translate([-STEP_W-W,W+step_depth(STEP_CNT)-UV,W]) {
+        eYZ("footJ",UV,step_height(STEP_CNT)-W, $close="f",$connect=[[ "l","TT"],["r","TT"]]);
+    }
+
 
     translate([-STEP_W-W,W+step_depth(STEP_CNT-1)-UV,W+step_height(STEP_CNT)])
-        eYZ("footJ",UV,step_height(STEP_CNT)-W, $close="f");
+        eYZ("footJ",UV,step_height(STEP_CNT)-W, $close="f",$connect=[[ "l","TT"],["r","TT"]]);
 
         $floorW=10;
     
@@ -390,7 +405,6 @@ module galeriaAgy() {
         c1w, step_height(STEP_CNT), LCAB_DEPTH,$smartOverdrive=true)
         drawer(step_height(STEP_CNT)/2)
         drawer(step_height(STEP_CNT)/2);
-
     }
 
 
@@ -462,21 +476,46 @@ module lampa() {
     if($positive)
         echo(str("custom PART-lampa"));
 
-    if($positive)
+    if($positive && $machines)
     cube(160);
 }
 
-s=($mode == "print")?.05:1;
-scale([1,1,1]*s)
+module model() {
 posNeg() {
     galeriaAgy();
+
+}
+}
+
+mode="print";
+if(mode == "print") {
+
+s=($mode == "print")?.05:1;
+scale([1,1,1]*s) {
+    
+model();
     
     translate([-1400,400,0])
     %cylinder(d=750,h=900);
+}
 
 //    if(!$positive) {        cube([1000,1000,4000],center=true);    }
 //    if(!$positive) {        cube([10000,200,4000],center=true);    }
     
+} else 
+//lse 
+ if(mode[0] == "P" && mode[1]=="-") {
+    $fronts=false;
+    $machines=false;
+    $jointsVisible=false;
+    
+    $part=substr(mode,2);
+    
+    projection(false)
+    orient(mode)
+//    rotate(90,[0,1,0]) 
+        model();
+//        previewLU();
 }
 
 

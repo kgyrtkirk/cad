@@ -1,6 +1,7 @@
 use <hulls.scad>
 use <kitchen_box.scad>
 
+JOINT_LEN=80;
 function sublist(l,start)=start<len(l) ? [for(i=[start:len(l)-1])  l[i]] : undef;
 function prefix(s,p)=(p==undef || len(p)==0)?[]:concat([s+p[0]], prefix(s+p[0],sublist(p,1)) );
 
@@ -58,7 +59,20 @@ module closeColor(v) {
 
 function elementTypeName() = ($W<5)?"BACK":($front?"FRONT":str("M",$W));
 
+module makeContact(len,mode) {
+      if(mode == "" || mode == undef) {
+        
+      }else {
+
+translate([0,-$W,0]) 
+    jointsX(len, mode);
+  }
+}
+
+function mapGet(arr, key) = search(key, arr) != [] ? arr[search(key, arr)[0]][1] : undef;
+
 module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
+
     if($part == name && $W>1) {
         // drill plan for selected part is evaluated at the center
         // not perfect ; but something
@@ -74,6 +88,28 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
         rotate(-90)
         plain(name,h0,w0,closeU,closeD,closeR,closeL,rot=!rot);
     } else {
+
+    if($connect!=undef) {
+        modeL=mapGet($connect, "r");
+        modeR=mapGet($connect, "l");
+        modeU=mapGet($connect, "f");
+        modeD=mapGet($connect, "b");
+        makeContact(w0,modeL);
+        translate([0,h0,0]) 
+        mirror([0,1,0]) 
+        makeContact(w0,modeR);
+
+        translate([0,h0,0]) 
+        rotate(-90, [0,0,1]) 
+        makeContact(h0,modeU);
+
+        translate([w0,0,0]) 
+        rotate(90, [0,0,1]) 
+        makeContact(h0,modeD);
+
+
+    }
+
     a=2;
     x = closeL;
     y = closeD;
@@ -963,6 +999,20 @@ module jointI() {
     }
 }
 
+
+
+module jointT() {
+    if(xor(!$positive,$jointsVisible)) {
+
+            translate([$W/2,$W/4,L/2+0*28])
+            rotate(-90,[1,0,0])
+            cylinder(d=8,h=40);
+        if($positive) {
+            cube(100,center=true);
+        }
+    }
+}
+
 module joint(orient="XY",type="TET",center=false) {
 
     L=80;
@@ -970,36 +1020,55 @@ module joint(orient="XY",type="TET",center=false) {
     translate([0,0,center?-L/2:0])
     if(xor(!$positive,$jointsVisible)) {
         if(type == "TET") {
-            translate([$W/2,$W/4,L/2])
+            translate([$W/2,$W/4,L/2]) {
             rotate(-90,[1,0,0])
             cylinder(d=6,h=50);
-
-            for(k=[-1,1])
+            }
+            for(k=[-1,1]) 
             translate([$W/2,$W/4,L/2+k*28])
             rotate(-90,[1,0,0])
             cylinder(d=8,h=40);
 
 
+            if($machines)
+            for(k=[-1:1]) {
+                translate([$W/2,$W+20,L/2+k*28])
+                %cube([2*$W,1,1],center=true);
+            }
+
             translate([$W/4,$W+34,L/2])
             rotate(90,[0,1,0])
             cylinder(d=15,h=$W);
+        } else 
+        if(type == "TT") {
+            for(k=[-1,1]) 
+            translate([$W/2,$W/4,L/2+k*28])
+            rotate(-90,[1,0,0])
+            cylinder(d=8,h=40);
+
+
+            if($machines)
+            for(k=[-1,1]) {
+                translate([$W/2,$W+20,L/2+k*28])
+                %cube([2*$W,1,1],center=true);
+            }
         } else {
-            
+            assert(false, str("joint type unknwon:",type)            );
         }
 
 //        cube(100);
     }
 }
 
-module joints(len) {
+module joints(len,mode="TET") {
     jointsZ(len);
 }
 
-module jointsX(len) {
+module jointsX(len,mode="TET") {
 //    translate([len,0,0])
     mirror([0,0,1])
     rotate(90,[0,1,0])
-    jointsZ(len);
+    jointsZ(len,mode=mode);
 }
 
 
@@ -1022,27 +1091,34 @@ module jointsZX(len,center=false) {
     jointsZ(len,center=center);
 }
 
+module jointsZY(len,center=false) {
+    rotate(90,[1,0,0])
+//    mirror([1,0,0])
+    jointsZ(len,center=center);
+}
 
-module jointsZ(len,center=false) {
+
+module jointsZ(len,center=false,mode="TET") {
     PROTECT_LEN=50;
     if($cornerProtect) {
         $cornerProtect=false;
         translate([0,0,PROTECT_LEN])
-        jointsZ(len-2*PROTECT_LEN,center=center);
+        jointsZ(len-2*PROTECT_LEN,center=center,mode);
     } else {
         L=80;
-        n=len<800?floor(len/230):floor(len/300);
+        //n=len<800?floor(len/230):floor(len/300);
+        n=floor(len/230);
 
         if(len<190){
-            joint(center=center);
+            joint(center=center,type=mode);
         } else if (n<=2){
-            joint(center=center);
+            joint(center=center,type=mode);
             translate([0,0,len-L])
-            joint(center=center);
+            joint(center=center,type=mode);
         } else {
             for(i=[0:n-1]) {
                 translate([0,0,i*(len-L)/(n-1)])
-                joint(center=center);
+                joint(center=center,type=mode);
             }
 
 
