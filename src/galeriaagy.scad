@@ -338,10 +338,13 @@ module galeriaAgy() {
         cutCornerShelf("bHatso", BACK_L_WIDTH,BED_H, cL=BED_H-step_height(1)-W, $close="FR", $connect=[["l",">TET"]]);
     else
         eXZ("bHatso",BACK_L_WIDTH,BED_H);
-    
+
+    translate([-STEP_W,0,BED_H]) {
+        translate([-100,0,0])  jointI();
+        translate([-BACK_L_WIDTH+STEP_W,0,0])  jointI();
+    }
+
     translate([-MAT_L-2*$W-STEP_W,0,BED_H]) {
-        translate([MAT_L-100,0,0])  jointI();
-        translate([MAT_L-300,0,0])  jointI();
         agy();
     }
 
@@ -447,7 +450,7 @@ module galeriaAgy() {
         translate([DRAWER_D-80,0,BED_H]) 
         jointI();
         }
-        translate([0,0,BED_H]) 
+        translate([20,0,BED_H]) 
         jointI();
 //        BACK_R_WIDTH,BED_H,$close="LR");
 //        eXZ("jHatso",BACK_R_WIDTH,BED_H,$close="LR");
@@ -512,13 +515,14 @@ mode="PXZ-railFrontXY";
 mode="P-Bed-SFXZ";
 mode="PYZ-railRXY";
 mode="PYZ-railLR100XY";
-mode="PXZ-jHatsoXZ";
 mode="P-deskL425R425XY";
 mode="print";
+mode="P-Bed-SBXZ";
 
-//@OUTPUT:PYZ-railLR100XY
-//@OUTPUT:PXZ-jHatso
-//@OUTPUT:P-bHatsoL178XY
+//x@OUTPUT:PYZ-railLR100XY
+//x@OUTPUT:PXZ-jHatso-XZ
+//x@OUTPUT:P-bHatsoL178XY
+//@OUTPUT:P-Bed-SBXZ
 
 
 if(mode == "print") {

@@ -3,7 +3,6 @@ import static groovy.io.FileType.*
 def outputDir="/home/kirk/3d/scad"
 
 def partMap = [
-	'galeriaagy':		['print'],
 	'garbage_truck':	['trashPrint','trashCanTop'],
 	'rail_plugs':	['m1','m2','m3'],
 	'Aqee_customizable_toy_train_tracks':	['x'],
@@ -110,7 +109,7 @@ def partMap = [
 		]
 
 println "* discovery"
-def projMap = [] ;
+def projMap = [:] ;
 
 new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
 	
@@ -124,22 +123,18 @@ new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
 		def part = it-"//@OUTPUT:";
 	println "${baseName}:${part}"
 		if( part =~ "P.*") {
-			projects += part;
+			projects.add(part);
 		} else {
-			objects += part;
+			objects += [part];
 		}
 	}
 	if(!projects.isEmpty()) {
-//		projMap[baseName]=projects
+		projMap[baseName]=projects
 	}
 	if(!objects.isEmpty()) {
-//		partMap[baseName]=objects
+		partMap[baseName]=objects
 	}
-
 }
-
-
-
 
 task allScad() {}
 task allPdf() {}
@@ -168,8 +163,8 @@ projMap.each { inputName,modes ->
 		def sFile=new File(outputDir,"${outputName}.svg")
 		def oFile=new File(outputDir,"${outputName}.pdf")
 		def oFile2=new File(outputDir,"${outputName}.png")
-		def epsFile=new File(outputDir,"${outputName}1.eps")
-		def dxfFile=new File(outputDir,"${outputName}.dxf")
+		def epsFile=new File(outputDir,"${outputName}333.eps")
+		def dxfFile=new File(outputDir,"${outputName}1.dxf")
 		def t=task("scad_${outputName}",type:Exec) {
 			def inputFile=file("${inputName}.scad")
 			inputs.file inputFile

@@ -69,7 +69,7 @@ module makeContact(len,mode) {
 if(mode[0] == "<" || mode[0] == ">") {
 
         m=substr(mode,1);
-        cube(10);
+//        cube(10);
         if(mode[0]=="<") 
         rotate(90,[1,0,0])
     translate([0,0,-$W]) {
@@ -94,7 +94,7 @@ function drawPositive(n) = $positive && ($part == undef || $part == n);
 
 module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
 
-    if(false && $part == name && $W>1) {
+    if(true && $part == name && $W>1) {
         // drill plan for selected part is evaluated at the center
         // not perfect ; but something
         W0=$W;
