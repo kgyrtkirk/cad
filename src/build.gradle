@@ -109,61 +109,37 @@ def partMap = [
 'coins':[1,2,5,10,20,50,100,200],
 		]
 
-//new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
-//	println f
-//}
+println "* discovery"
+def projMap = [] ;
 
-def projMap = [
-	'lanyok_galeria':		['proj'],
-	'matchbox_container':		['floor'],
-	'esp-gen-3':			['project'],
-//	'kitchen':			['mPiece', 'mFuszer', 'mFelso',
-/*						'projtest','P-YZ_LI9','P-YZ_LI8','P-XY_U3','F-A_250','F-A_550',
-						'P-YZ_LI5',
-						'P-YZ_LI3',
-						'P-YZ_LI2',
-						'P-YZ_LI1',
-						'P-YZ_RC1',
-						'P-YZ_RC3',
-						'P-XY_BF_1',
-						'P-YZ_RX11U',
-						'P-YZ_RX11L',
-						'P-YZ_RX13L',
-						],*/
-	'inserta_knock-in_drill':	['project'],
-	'lights':			['p0','p1','pr'],
-	'lights2':			['main','kitchen'],
-	'ikea_bridge':			['def'],
-	'lanyok_bunkbed':		['proj',
-		'P-BED_L-SBXZ',
-		'P-BED_L-SFXZ',
-		'P-L_SIDEXZ'],
-	'galeriaagy':			['P-step0R100XY',
-'PXZ-railFrontXY',
-'P-railRXY',
-'P-railLR100XY',
-			'P-stepLeftYZ',
-			'P-stepRsYZ',
-			'P-step1304XY',
-			'P-Bed-BotXY',
-			'P-Bed-SFXZ',
-			'P-Bed-SBXZ',
-			'P-Bed-FLYZ',
-			'P-Bed-FRYZ',
-]
-//	'ex':				['def'],
-/*	'helga_asztal':	[
-			'P-topXY',
-//			'P-LTlYZ',
-//			'P-LTrYZ',	
-			'P-LlYZ',
-			'P-LrYZ',	
-			'P-R2TopAXY',
-			'P-ShelfLXY',
-			'P-ShelfRXY',
-			'P-ShelfMXY',
-			],*/
-	]
+new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
+	
+	def baseName = f.name.replace(".scad","")
+	def projects=[];
+	def objects=[];
+
+	f.filterLine { it =~ "//@OUTPUT:" }.toString().split("\n").each { it ->
+		if(it == "") 
+			return;
+		def part = it-"//@OUTPUT:";
+	println "${baseName}:${part}"
+		if( part =~ "P.*") {
+			projects += part;
+		} else {
+			objects += part;
+		}
+	}
+	if(!projects.isEmpty()) {
+//		projMap[baseName]=projects
+	}
+	if(!objects.isEmpty()) {
+//		partMap[baseName]=objects
+	}
+
+}
+
+
+
 
 task allScad() {}
 task allPdf() {}
@@ -171,7 +147,7 @@ task allDxf() {}
 
 partMap.each { inputName,modes ->
 	modes.each { mode ->
-		println "${inputName} ; ${mode}"
+		//println "${inputName} ; ${mode}"
 		def outputName="${inputName}@${mode}"
 		def oFile=new File(outputDir,"${outputName}.stl")
 		def t=task("scad_${outputName}",type:Exec) {
@@ -187,7 +163,7 @@ partMap.each { inputName,modes ->
 
 projMap.each { inputName,modes ->
 	modes.each { mode ->
-		println "${inputName} ; ${mode}"
+		//println "${inputName} ; ${mode}"
 		def outputName="${inputName}@${mode}"
 		def sFile=new File(outputDir,"${outputName}.svg")
 		def oFile=new File(outputDir,"${outputName}.pdf")

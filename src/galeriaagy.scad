@@ -44,7 +44,7 @@ $jointsVisible=true;
 $machines=true;
 $openDoors=false;
 $drawerState="CLOSED";
-$drawerBoxes=false;
+$drawerBoxes=true;
 
 $part=undef;
 
@@ -120,7 +120,7 @@ module lepcso() {
                     cutCornerShelf($close="FR", n, step_w(step_i),step_depth(step_i),     2*CORNER_ROUND,type="round");
                     
                 } else {
-                    $connect=[[ "l","TET"],["b","TET"],["r","TET"]];
+                    $connect=[[ "l","TET"],["b","bTET"],["r","bTET"]];
                     eXY($close="F", n,step_w(step_i),step_depth(step_i));
                 }
             }
@@ -149,7 +149,7 @@ module builtinCabinet(name,w,h,d,side="L",sideUp=$W) {
     translate([wi,0,sideUp])
     eYZ($close="F",str(name,"side"),$d,$h-sideUp);
 
-    for(y=[100,$d-100]) {
+    for(y=[120,$d-120]) {
         translate([wi,y,0]) {
         joint("XZ",center=true);
 
@@ -157,7 +157,6 @@ module builtinCabinet(name,w,h,d,side="L",sideUp=$W) {
         rotate(180,[1,0,0]) 
         joint("XZ",center=true);
         }
-
     }
 
     translate([0,0,$h])
@@ -200,6 +199,9 @@ module desk() {
     
     translate([FOOT_A/2-DESK_W/2,$W,DESK_H]) {
             cutCornerShelf($W=DESK_WW,"desk", DESK_W,DESK_D, DESK_RO,DESK_RO,type="round",$close="LRF");
+
+    translate([0,-$W,0]) 
+    jointsX(DESK_W,"4TET");
 
         if(!$positive) {
             translate([DESK_W/2,40+20,0]) 
@@ -288,7 +290,7 @@ JOINT_LEN=80;
 module polc(inter,over,depth) {
 
         if(over>0)
-            eXZ("shelfBack",inter,100,$close="Ou");
+            eXZ("shelfBack",inter,100,$close="Ou",$connect=[["l","cTET"],["r","cTET"]]);
 
         translate([-over,$W,0]) 
         cutCornerShelf("shelfXY",inter+2*over,depth,depth,depth,type="round",$close="LRF");
@@ -333,7 +335,7 @@ module galeriaAgy() {
     if(true)
         rotate(90, [1,0,0]) 
         translate([0,0,-$W]) 
-        cutCornerShelf("bHatso", BACK_L_WIDTH,BED_H, cL=BED_H-step_height(1)-W, $close="FR");
+        cutCornerShelf("bHatso", BACK_L_WIDTH,BED_H, cL=BED_H-step_height(1)-W, $close="FR", $connect=[["l",">TET"]]);
     else
         eXZ("bHatso",BACK_L_WIDTH,BED_H);
     
@@ -378,10 +380,10 @@ module galeriaAgy() {
     jointI();
 
     translate([-STEP_W-FOOT_B,DEPTH-W,0])
-    foot($close="LRUo",$connect=[["b","bTIT"]]);
+    foot($close="LRUo",$connect=[["b","bTIT"],["f",">cTET"]]);
     
     translate([-STEP_W-W,W+step_depth(STEP_CNT-1),step_height(STEP_CNT)+W])
-        eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W), $close="Bou",$connect=[["f","eTIT"],["l","bTET"]]);
+        eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W), $close="Bou",$connect=[["f","eTIT"],["l","sTET"],["b","bTT"]]);
 
     UV=CORNER_ROUND+W;
     translate([-STEP_W-W,W+step_depth(STEP_CNT)-UV,W]) {
@@ -432,7 +434,7 @@ module galeriaAgy() {
     translate([-STEP_W-MAT_L-2*$W,0,0]) {
         echo("DRAWER_D",DRAWER_D);
         
-        translate([-DRAWER_D+BACK_R_WIDTH,0,0]) 
+        translate([-DRAWER_D+BACK_R_WIDTH,0,0])  {
         eXZp("jHatso",
             [
                 [0,-(DESK_H+DESK_WW)],
@@ -442,6 +444,11 @@ module galeriaAgy() {
                 [DRAWER_D-BACK_R_WIDTH,-BED_H]
             ]);
         
+        translate([DRAWER_D-80,0,BED_H]) 
+        jointI();
+        }
+        translate([0,0,BED_H]) 
+        jointI();
 //        BACK_R_WIDTH,BED_H,$close="LR");
 //        eXZ("jHatso",BACK_R_WIDTH,BED_H,$close="LR");
 
@@ -483,6 +490,8 @@ module lampa() {
 module model() {
 posNeg() {
     galeriaAgy();
+//  if(!$positive) {        cube([1000,1000,4000],center=true);    }
+//    if(!$positive) {        cube([10000,200,4000],center=true);    }
 
 }
 }
@@ -501,12 +510,18 @@ mode="P-c3sideYZ";
 mode="PXZ-railFrontXY";
 //mode="P-c3intSepXZ";
 mode="P-Bed-SFXZ";
-mode="print";
 mode="PYZ-railRXY";
 mode="PYZ-railLR100XY";
-mode="P-Bed-FLYZ";
-if(mode == "print") {
+mode="PXZ-jHatsoXZ";
+mode="P-deskL425R425XY";
+mode="print";
 
+//@OUTPUT:PYZ-railLR100XY
+//@OUTPUT:PXZ-jHatso
+//@OUTPUT:P-bHatsoL178XY
+
+
+if(mode == "print") {
 s=($mode == "print")?.05:1;
 scale([1,1,1]*s) {
     
@@ -516,8 +531,6 @@ model();
     %cylinder(d=750,h=900);
 }
 
-//    if(!$positive) {        cube([1000,1000,4000],center=true);    }
-//    if(!$positive) {        cube([10000,200,4000],center=true);    }
     
 
 

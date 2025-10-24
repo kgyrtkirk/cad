@@ -64,7 +64,24 @@ function elementTypeName() = ($W<5)?"BACK":($front?"FRONT":str("M",$W));
 module makeContact(len,mode) {
       if(mode == "" || mode == undef) {
         
-      }else {
+      }else 
+
+if(mode[0] == "<" || mode[0] == ">") {
+
+        m=substr(mode,1);
+        cube(10);
+        if(mode[0]=="<") 
+        rotate(90,[1,0,0])
+    translate([0,0,-$W]) {
+        jointsX(len, m);
+    }
+        else 
+        rotate(-90,[1,0,0])
+    translate([0,-$W,0]) {
+        jointsX(len, m);
+    }
+
+}else {
 
 translate([0,-$W,0]) 
     jointsX(len, mode);
@@ -77,7 +94,7 @@ function drawPositive(n) = $positive && ($part == undef || $part == n);
 
 module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
 
-    if($part == name && $W>1) {
+    if(false && $part == name && $W>1) {
         // drill plan for selected part is evaluated at the center
         // not perfect ; but something
         W0=$W;
@@ -419,7 +436,7 @@ module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false,type="straight") {
                         translate([r/2,-r/2])
                         cube([r+.1,r+.1,$W+.1],center=true);
                         translate([r,-r])
-                        cylinder($fn=16,r=r,h=$W+.2,center=true);
+                        cylinder($fn=64,r=r,h=$W+.2,center=true);
                     }
                 }
 
@@ -434,7 +451,7 @@ module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false,type="straight") {
                         translate([-r/2,-r/2])
                         cube([r+.1,r+.1,$W+.1],center=true);
                         translate([-r,-r])
-                        cylinder($fn=16,r=r,h=$W+.2,center=true);
+                        cylinder($fn=64,r=r,h=$W+.2,center=true);
                     }
                 }
 //                rotate(-45)
@@ -1057,9 +1074,9 @@ module joint(orient="XY",type="TET",center=false) {
                 cube([2*$W,2,2],center=true);
             }
 
-            translate([$W/4,$W+34,L/2])
+            translate([$W/2,$W+34,L/2])
             rotate(90,[0,1,0])
-            cylinder(d=15,h=2*$W,center=true);
+            cylinder(d=15,h=1.5*$W,center=true);
         } else 
         if(type == "TIT") {
             translate([$W,$W,0]) 
@@ -1135,16 +1152,18 @@ module jointsZY(len,center=false) {
 
 module jointsZ(len,center=false,mode="TET") {
         L=80;
-    if(mode[0] == "c"||mode[0] == "b"||mode[0] == "e") {
+    if(mode[0] == "c"||mode[0] == "b"||mode[0] == "e"||mode[0] == "s") {
         s=mode[0];
         m=substr(mode,1);
         if(s=="c") {
         translate([0,0,len/2])
         joint(center=true,type=m);
-        }else if(s=="b") {
+        }
+        if(s=="b" || s=="s") {
         translate([0,0,L/2])
         joint(center=true,type=m);
-        }else if(s=="e") {
+        }
+        if(s=="e" || s=="s") {
         translate([0,0,len-L/2])
         joint(center=true,type=m);
         }
@@ -1156,6 +1175,14 @@ module jointsZ(len,center=false,mode="TET") {
         jointsZ(len-2*PROTECT_LEN,center=center,mode);
     } else {
         //n=len<800?floor(len/230):floor(len/300);
+        if("0" < mode[0] && mode[0] <="9") {
+            n=toInt(mode[0]);
+            for(i=[0:n-1]) {
+                translate([0,0,L/2+i*(len-L)/(n-1)])
+                joint(center=true,type=substr(mode,1));
+            }
+        } else {
+
         n0=floor(len/230);
         n=n0>5?5:n0;
 
@@ -1170,6 +1197,7 @@ module jointsZ(len,center=false,mode="TET") {
                 translate([0,0,L/2+i*(len-L)/(n-1)])
                 joint(center=true,type=mode);
             }
+        }
 
 
         }
