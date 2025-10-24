@@ -381,7 +381,7 @@ module galeriaAgy() {
     foot($close="LRUo",$connect=[["b","bTIT"]]);
     
     translate([-STEP_W-W,W+step_depth(STEP_CNT-1),step_height(STEP_CNT)+W])
-        eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W), $close="Bou",$connect=[["f","eTIT"]]);
+        eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W), $close="Bou",$connect=[["f","eTIT"],["l","bTET"]]);
 
     UV=CORNER_ROUND+W;
     translate([-STEP_W-W,W+step_depth(STEP_CNT)-UV,W]) {
@@ -500,7 +500,11 @@ mode="P-c2bsideYZ";
 mode="P-c3sideYZ";
 mode="PXZ-railFrontXY";
 //mode="P-c3intSepXZ";
+mode="P-Bed-SFXZ";
 mode="print";
+mode="PYZ-railRXY";
+mode="PYZ-railLR100XY";
+mode="P-Bed-FLYZ";
 if(mode == "print") {
 
 s=($mode == "print")?.05:1;
@@ -526,7 +530,8 @@ model();
     $jointsVisible=false;
     
     $part=substr(mode,2);
-    
+
+
     projection(false)
    orient(mode)
 //    rotate(90,[0,1,0]) 
@@ -534,7 +539,9 @@ model();
 //        previewLU();
 }
 
- if(mode[0] == "P" && mode[1]=="X"&& mode[2]=="Z"&& mode[3]=="-") {
+function  isXYZ(a) = a =="X" || a=="Y" || a=="Z";
+
+ if(mode[0] == "P" && isXYZ(mode[1]) && isXYZ(mode[2]) && mode[3]=="-") {
     $fronts=false;
     $machines=false;
     $jointsVisible=false;
@@ -542,7 +549,7 @@ model();
     $part=substr(mode,4);
     
     projection(false)
-   orient("XZ")
+   orient(substr(mode,1,2))
 //    rotate(90,[0,1,0]) 
         model();
 //        previewLU();

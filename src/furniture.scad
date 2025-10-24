@@ -22,6 +22,8 @@ module posNeg() {
     }
 }
 
+function isProjection() = $part != undef;
+
 module ppp(name,dims="") {
     if($positive)
         echo(str("custom PLANAR?-", elementTypeName(), ": ", name),dims);
@@ -82,7 +84,7 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
         W1=.1;
         $W=W1;
         translate([0,0,W0/2-W1/2])
-        plain(name,w0,h0,closeL,closeR,closeU,closeD,rot);
+        plain(name,w0,h0,0,0,0,0,rot);
     }else 
 
     if(!rot) {
@@ -191,7 +193,8 @@ function cLookupT() = cLookupX($close, "o", "O");
 function cLookupB() = cLookupX($close, "u", "U");
 
 module eYZ(name, dY, dZ, rot=false) {
-    ppp2(str(name,"YZ"),str(dY,"x",dZ)){
+    //ppp2(str(name,"YZ"),str(dY,"x",dZ))
+    {
         rotate(90,[0,0,1])
         rotate(90,[1,0,0])
         plain(str(name,"YZ"),dY,dZ,cLookupA(),cLookupF(),cLookupT(),cLookupB(),rot=rot);
@@ -416,7 +419,7 @@ module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false,type="straight") {
                         translate([r/2,-r/2])
                         cube([r+.1,r+.1,$W+.1],center=true);
                         translate([r,-r])
-                        cylinder($fn=64,r=r,h=$W+.2,center=true);
+                        cylinder($fn=16,r=r,h=$W+.2,center=true);
                     }
                 }
 
@@ -431,7 +434,7 @@ module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false,type="straight") {
                         translate([-r/2,-r/2])
                         cube([r+.1,r+.1,$W+.1],center=true);
                         translate([-r,-r])
-                        cylinder($fn=64,r=r,h=$W+.2,center=true);
+                        cylinder($fn=16,r=r,h=$W+.2,center=true);
                     }
                 }
 //                rotate(-45)
@@ -627,9 +630,9 @@ module orient(mode) {
 //        rotate(90,[0,1,0])
         children();
     } else if(o[0]=="Y" && o[1] =="Z") {
-        // rotate(180,[0,0,1])
-        // rotate(90,[0,1,0])
-        rotate(90,[1,0,0])
+         rotate(180,[0,0,1])
+         rotate(90,[0,1,0])
+        //rotate(90,[1,0,0])
         children();
     } else {
         assert(false, str("orient failed",":",mode,";",tail(2,mode)));
@@ -1056,7 +1059,7 @@ module joint(orient="XY",type="TET",center=false) {
 
             translate([$W/4,$W+34,L/2])
             rotate(90,[0,1,0])
-            cylinder(d=15,h=$W);
+            cylinder(d=15,h=2*$W,center=true);
         } else 
         if(type == "TIT") {
             translate([$W,$W,0]) 
@@ -1369,29 +1372,11 @@ module bedFrame(name,l,w,h,sink,xh2=-1,leftOversize=0,backOversize=0) {
     q=h2-h;
     
     translate([0,$W,-q])
-    eYZ( str(name,"-FR"),w,h2);
+    eYZ( str(name,"-FR"),w,h2,$connect=[["l","eTET"],["r","eTET"]]);
     
-    backOversize1=0; // FIXME: seems like this was off...
-    translate([0,0,0])
-    joints(h+backOversize1);
-    
-
-    translate([l+2*$W,0,0])
-    toFRT()
-    joints(h+backOversize1);
-
-
-    translate([l+2*$W,w+$W,0])
-    toBRT()
-    joints(h+backOversize1);
-
-    translate([0,w+2*$W,0])
-    toBLT()
-    joints(h+backOversize1);
-
     translate([0,$W,-q])
     translate([l+$W,0,0])
-    eYZ(str(name,"-FL"),w,h2+leftOversize);
+    eYZ(str(name,"-FL"),w,h2+leftOversize, $connect=[["l","eTET"],["r","eTET"]]);
     
     if(xh2>0) {
         translate([0,0,-q])

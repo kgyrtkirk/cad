@@ -192,7 +192,7 @@ projMap.each { inputName,modes ->
 		def sFile=new File(outputDir,"${outputName}.svg")
 		def oFile=new File(outputDir,"${outputName}.pdf")
 		def oFile2=new File(outputDir,"${outputName}.png")
-		def epsFile=new File(outputDir,"${outputName}.eps")
+		def epsFile=new File(outputDir,"${outputName}1.eps")
 		def dxfFile=new File(outputDir,"${outputName}.dxf")
 		def t=task("scad_${outputName}",type:Exec) {
 			def inputFile=file("${inputName}.scad")
@@ -227,6 +227,7 @@ projMap.each { inputName,modes ->
 
 
 		allScad.dependsOn(t2)
+		allScad.dependsOn(tEps)
 		allScad.dependsOn(t3)
 		allScad.dependsOn(t4)
 		allPdf.dependsOn(t2)
