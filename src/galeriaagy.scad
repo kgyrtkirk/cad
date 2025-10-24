@@ -238,11 +238,12 @@ RAIL_DECOR_DESIRED_SP=140;
 RAIL_TOTAL_H=RAIL_DECOR_H+RAIL_H;
 
 
-module rail(name, w, lEnd=false, rEnd=false,railClose="LFBR", RAIL_DECOR_DESIRED_SP=RAIL_DECOR_DESIRED_SP) {
+module rail(name, w, lEnd=false, rEnd=false,railClose="LFBR", railConnect="", RAIL_DECOR_DESIRED_SP=RAIL_DECOR_DESIRED_SP) {
     h=RAIL_H;
     translate([0,W,RAIL_DECOR_H])
-    rotate(90,[1,0,0]) 
-    cutCornerShelf($close=railClose, name, w, h, cL=lEnd?h:0, cR=rEnd?h:0, type="round");
+    rotate(90,[1,0,0])
+
+    cutCornerShelf($close=railClose, name, w, h, cL=lEnd?h:0, cR=rEnd?h:0, type="round", $connect=railConnect);
 
     iw = w + (!lEnd ? RAIL_DECOR_W/2 :0)+ (!rEnd ? RAIL_DECOR_W/2 :0);
     ix = !rEnd ? -RAIL_DECOR_W/2 : 0;
@@ -274,12 +275,12 @@ module agy() {
 
     translate([W,W,BED_FRAME_H])
     rotate(90) 
-    rail(railClose="FB","railR", MAT_W );
+    rail(railClose="FB","railR", MAT_W ,railConnect=[["l","TET"],["r","TET"]]);
 
     OFF=400;
     translate([MAT_L+W+W,W+OFF,BED_FRAME_H])
     rotate(90) 
-    rail(RAIL_DECOR_DESIRED_SP=RAIL_DECOR_DESIRED_SP/2, railClose="FBR","railL", MAT_W-OFF , rEnd=true);
+    rail(RAIL_DECOR_DESIRED_SP=RAIL_DECOR_DESIRED_SP/2, railClose="FBR","railL", MAT_W-OFF , rEnd=true,railConnect=[["l","TET"]]);
 
 }
 
@@ -377,10 +378,10 @@ module galeriaAgy() {
     jointI();
 
     translate([-STEP_W-FOOT_B,DEPTH-W,0])
-    foot($close="LRUo");
+    foot($close="LRUo",$connect=[["b","bTIT"]]);
     
     translate([-STEP_W-W,W+step_depth(STEP_CNT-1),step_height(STEP_CNT)+W])
-        eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W), $close="Bou");
+        eYZ("footI",DEPTH-step_depth(STEP_CNT-1)-W-W,BED_H-(step_height(STEP_CNT)+W), $close="Bou",$connect=[["f","eTIT"]]);
 
     UV=CORNER_ROUND+W;
     translate([-STEP_W-W,W+step_depth(STEP_CNT)-UV,W]) {
@@ -497,6 +498,7 @@ mode="P-c1sideYZ";
 mode="P-c2asideYZ";
 mode="P-c2bsideYZ";
 mode="P-c3sideYZ";
+mode="PXZ-railFrontXY";
 //mode="P-c3intSepXZ";
 mode="print";
 if(mode == "print") {
@@ -525,12 +527,27 @@ model();
     
     $part=substr(mode,2);
     
-//    projection(false)
+    projection(false)
    orient(mode)
 //    rotate(90,[0,1,0]) 
         model();
 //        previewLU();
 }
+
+ if(mode[0] == "P" && mode[1]=="X"&& mode[2]=="Z"&& mode[3]=="-") {
+    $fronts=false;
+    $machines=false;
+    $jointsVisible=false;
+    
+    $part=substr(mode,4);
+    
+    projection(false)
+   orient("XZ")
+//    rotate(90,[0,1,0]) 
+        model();
+//        previewLU();
+}
+
 
 
 echo ("matTopH",MAT_TOP_H);

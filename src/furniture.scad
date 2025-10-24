@@ -83,7 +83,7 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
         $W=W1;
         translate([0,0,W0/2-W1/2])
         plain(name,w0,h0,closeL,closeR,closeU,closeD,rot);
-    }else
+    }else 
 
     if(!rot) {
         translate([0,h0,0])
@@ -108,6 +108,7 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
         translate([w0,0,0]) 
         rotate(90, [0,0,1]) 
         makeContact(h0,modeD);
+
 
 
     }
@@ -622,8 +623,8 @@ module orient(mode) {
     if(o[0]=="X" && o[1] =="Y") {
         children();
     } else if(o[0]=="X" && o[1] =="Z") {
-//        rotate(90,[1,0,0])
-        rotate(90,[0,1,0])
+        rotate(90,[1,0,0])
+//        rotate(90,[0,1,0])
         children();
     } else if(o[0]=="Y" && o[1] =="Z") {
         // rotate(180,[0,0,1])
@@ -1038,9 +1039,6 @@ module joint(orient="XY",type="TET",center=false) {
     translate([0,0,center?-L/2:0])
     if(xor(!$positive,$jointsVisible)) {
         if(type == "TET") {
-            echo("PART:T");
-            echo("PART:E");
-            echo("PART:T");
             translate([$W/2,$W/4,L/2]) {
             rotate(-90,[1,0,0])
             cylinder(d=6,h=50);
@@ -1049,7 +1047,6 @@ module joint(orient="XY",type="TET",center=false) {
             translate([$W/2,$W/4,L/2+k*28])
             rotate(-90,[1,0,0])
             cylinder(d=8,h=40);
-
 
             //if($machines)
             for(k=[-1:1]) {
@@ -1061,9 +1058,21 @@ module joint(orient="XY",type="TET",center=false) {
             rotate(90,[0,1,0])
             cylinder(d=15,h=$W);
         } else 
+        if(type == "TIT") {
+            translate([$W,$W,0]) 
+            rotate(90,[1,0,0])
+            rotate(90,[0,0,1])
+            jointI();
+
+            //if($machines)
+            for(k=[-1:1]) {
+                translate([$W/2,$W+20,L/2+k*28])
+                cube([2*$W,2,2],center=true);
+                translate([$W/2,-$W+20,L/2+k*28])
+                cube([2*$W,2,2],center=true);
+            }
+        } else 
         if(type == "TT") {
-            echo("PART:T");
-            echo("PART:T");
             for(k=[-1,1]) 
             translate([$W/2,$W/4,L/2+k*28])
             rotate(-90,[1,0,0])
@@ -1122,11 +1131,20 @@ module jointsZY(len,center=false) {
 
 
 module jointsZ(len,center=false,mode="TET") {
-    if(mode[0] == "c") {
-
+        L=80;
+    if(mode[0] == "c"||mode[0] == "b"||mode[0] == "e") {
+        s=mode[0];
         m=substr(mode,1);
+        if(s=="c") {
         translate([0,0,len/2])
         joint(center=true,type=m);
+        }else if(s=="b") {
+        translate([0,0,L/2])
+        joint(center=true,type=m);
+        }else if(s=="e") {
+        translate([0,0,len-L/2])
+        joint(center=true,type=m);
+        }
     } else {
     PROTECT_LEN=50;
     if($cornerProtect) {
@@ -1134,9 +1152,9 @@ module jointsZ(len,center=false,mode="TET") {
         translate([0,0,PROTECT_LEN])
         jointsZ(len-2*PROTECT_LEN,center=center,mode);
     } else {
-        L=80;
         //n=len<800?floor(len/230):floor(len/300);
-        n=floor(len/230);
+        n0=floor(len/230);
+        n=n0>5?5:n0;
 
         if(len<190){
             joint(center=center,type=mode);
@@ -1146,8 +1164,8 @@ module jointsZ(len,center=false,mode="TET") {
             joint(center=center,type=mode);
         } else {
             for(i=[0:n-1]) {
-                translate([0,0,i*(len-L)/(n-1)])
-                joint(center=center,type=mode);
+                translate([0,0,L/2+i*(len-L)/(n-1)])
+                joint(center=true,type=mode);
             }
 
 
@@ -1388,21 +1406,24 @@ module bedFrame(name,l,w,h,sink,xh2=-1,leftOversize=0,backOversize=0) {
     eXZ(str(name,"-SF"),l+2*$W,h);
     
     translate([$W,$W,h-$W-sink]) {
-        eXY($close="",str(name,"-Bot"),l,w);
-        $cornerProtect=true;
-        if(true) {
+       $connect=[["l","cTET"], ["r","cTET"],["f","TET"],["b","TET"]];
+    
+        eXY($close="",str(name,"-Bot"),l,w,$cornerProtect=true);
+        if(false) {
         translate([0,-$W,0])
         jointsX(l);
 
         translate([0,w+$W,0])
         toBLT()
         jointsX(l);
-        }
-        
+
         jointsY(w);
         translate([l,0,0])
         toFRT()
         jointsY(w);
+
+        }
+        
         
         
     }
@@ -1447,3 +1468,11 @@ function search2(key, arr) = (!is_list(arr) || len(arr) == 0) ? undef : arr[0][0
 arr=[["f", "1"]];
 echo(search2("f", arr));
 echo(search2("X", arr));
+
+
+posNeg() {
+    cube(20,center=true);
+    $W=18;
+    $jointsVisible=true;
+joint(center=true);
+}
