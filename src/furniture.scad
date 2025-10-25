@@ -61,12 +61,13 @@ module closeColor(v) {
 
 function elementTypeName() = ($W<5)?"BACK":($front?"FRONT":str("M",$W));
 
+// </> change connect orientation to left right
+
 module makeContact(len,mode) {
       if(mode == "" || mode == undef) {
         
-      }else 
-
-if(mode[0] == "<" || mode[0] == ">") {
+      }
+ else if(mode[0] == "<" || mode[0] == ">") {
 
         m=substr(mode,1);
 //        cube(10);
@@ -1052,6 +1053,60 @@ module jointT() {
     }
 }
 
+
+
+module jointPartC(off) {
+        echo(str("PART:CONFIRMATOR"));
+
+            translate([$W/2,-$W/4,off]) {
+            rotate(-90,[1,0,0])
+            cylinder(d=5,h=70);
+            }
+
+            translate([$W/2,-$W/4,off]) {
+            rotate(-90,[1,0,0])
+            cylinder(d=7,h=$W+$W/4+5);
+            }
+
+
+        if($machines)
+        translate([$W/2,$W+20,off+0*28])
+        %cube([2*$W,4,4],center=true);
+
+}
+
+module jointPartE() {
+        echo(str("PART:EXCENTER"));
+    L=80;
+            translate([$W/2,$W/4,L/2]) {
+            rotate(-90,[1,0,0])
+            cylinder(d=6,h=50);
+            }
+            translate([$W/2,$W+34,L/2])
+            rotate(90,[0,1,0])
+            cylinder(d=15,h=1.5*$W,center=true);
+
+        if($machines)
+        translate([$W/2,$W+20,L/2+0*28])
+        %cube([2*$W,4,2],center=true);
+
+}
+module jointPartT() {
+        echo(str("PART:DUBEL"));
+        echo(str("PART:DUBEL"));
+    L=80;
+    for(k=[-1,1]) {
+        translate([$W/2,$W/4,L/2+k*28])
+        rotate(-90,[1,0,0])
+        cylinder(d=8,h=40);
+        // marker
+        if($machines)
+        translate([$W/2,$W+20,L/2+k*28])
+        %cube([2*$W,2,2],center=true);
+    }
+}
+
+
 module joint(orient="XY",type="TET",center=false) {
 
     L=80;
@@ -1059,26 +1114,22 @@ module joint(orient="XY",type="TET",center=false) {
     translate([0,0,center?-L/2:0])
     if(xor(!$positive,$jointsVisible)) {
         if(type == "TET") {
-            translate([$W/2,$W/4,L/2]) {
-            rotate(-90,[1,0,0])
-            cylinder(d=6,h=50);
-            }
-            for(k=[-1,1]) 
-            translate([$W/2,$W/4,L/2+k*28])
-            rotate(-90,[1,0,0])
-            cylinder(d=8,h=40);
+            jointPartE();
+            jointPartT();
 
-            //if($machines)
-            for(k=[-1:1]) {
-                translate([$W/2,$W+20,L/2+k*28])
-                cube([2*$W,2,2],center=true);
-            }
+        } else 
+        if(type == "TCT") {
+            jointPartC(L/2);
+            jointPartT();
 
-            translate([$W/2,$W+34,L/2])
-            rotate(90,[0,1,0])
-            cylinder(d=15,h=1.5*$W,center=true);
+        } else 
+        if(type == "CC") {
+            jointPartC(L/2-28);
+            jointPartC(L/2+28);
         } else 
         if(type == "TIT") {
+                    echo(str("PART:DUBEL"));
+        echo(str("PART:DUBEL"));
             translate([$W,$W,0]) 
             rotate(90,[1,0,0])
             rotate(90,[0,0,1])
@@ -1087,23 +1138,13 @@ module joint(orient="XY",type="TET",center=false) {
             //if($machines)
             for(k=[-1:1]) {
                 translate([$W/2,$W+20,L/2+k*28])
-                cube([2*$W,2,2],center=true);
+                %cube([2*$W,2,2],center=true);
                 translate([$W/2,-$W+20,L/2+k*28])
-                cube([2*$W,2,2],center=true);
+                %cube([2*$W,2,2],center=true);
             }
         } else 
         if(type == "TT") {
-            for(k=[-1,1]) 
-            translate([$W/2,$W/4,L/2+k*28])
-            rotate(-90,[1,0,0])
-            cylinder(d=8,h=40);
-
-
-            if($machines)
-            for(k=[-1,1]) {
-                translate([$W/2,$W+20,L/2+k*28])
-                %cube([2*$W,1,1],center=true);
-            }
+            jointPartT();
         } else {
             assert(false, str("joint type unknwon:",type)            );
         }
@@ -1149,9 +1190,20 @@ module jointsZY(len,center=false) {
     jointsZ(len,center=center);
 }
 
+// b: begin
+// e: end
+// c: center
+// s: sides = b+e
 
 module jointsZ(len,center=false,mode="TET") {
         L=80;
+    if(mode[0] == ":") {
+        m=substr(mode,1);
+        PROTECT_LEN=50;
+        translate([0,0,PROTECT_LEN])
+        jointsZ(len=len-2*PROTECT_LEN,center=center,mode=m);
+
+    } else
     if(mode[0] == "c"||mode[0] == "b"||mode[0] == "e"||mode[0] == "s") {
         s=mode[0];
         m=substr(mode,1);

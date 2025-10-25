@@ -116,11 +116,11 @@ module lepcso() {
             {
                 n=str("step",h);
                 if(step_alt(step_i)) {
-                    $connect=[[ "l","TET"],["b","TET"]];
+                    $connect=[[ "l","TCT"],["b",":CC"]];
                     cutCornerShelf($close="FR", n, step_w(step_i),step_depth(step_i),     2*CORNER_ROUND,type="round");
                     
                 } else {
-                    $connect=[[ "l","TET"],["b","bTET"],["r","bTET"]];
+                    $connect=[[ "l","TCT"],["b","bCC"],["r","bTET"]];
                     eXY($close="F", n,step_w(step_i),step_depth(step_i));
                 }
             }
@@ -335,7 +335,7 @@ module galeriaAgy() {
     if(true)
         rotate(90, [1,0,0]) 
         translate([0,0,-$W]) 
-        cutCornerShelf("bHatso", BACK_L_WIDTH,BED_H, cL=BED_H-step_height(1)-W, $close="FR", $connect=[["l",">TET"]]);
+        cutCornerShelf("bHatso", BACK_L_WIDTH,BED_H, cL=BED_H-step_height(1)-W, $close="FR", $connect=[["l",">TCT"]]);
     else
         eXZ("bHatso",BACK_L_WIDTH,BED_H);
 
@@ -374,13 +374,16 @@ module galeriaAgy() {
     
     translate([-STEP_W-W,W,0])
     translate([0,step_depth(3)-JOINT_LEN,step_height(3)]) 
-    jointsZY(100,center=true);
+    jointsZY(200,center=true);
 
     translate([-STEP_W-W,W,0])
     translate([0,step_top_wi,BED_H])
+    rotate(-90,[0,0,1]) {
+        translate([100,0,0]) 
+        jointI();
 
-    rotate(-90,[0,0,1])
-    jointI();
+        jointI();
+    }
 
     translate([-STEP_W-FOOT_B,DEPTH-W,0])
     foot($close="LRUo",$connect=[["b","bTIT"],["f",">cTET"]]);
@@ -516,8 +519,8 @@ mode="P-Bed-SFXZ";
 mode="PYZ-railRXY";
 mode="PYZ-railLR100XY";
 mode="P-deskL425R425XY";
-mode="print";
 mode="P-Bed-SBXZ";
+mode="print";
 
 //x@OUTPUT:PYZ-railLR100XY
 //x@OUTPUT:PXZ-jHatso-XZ
