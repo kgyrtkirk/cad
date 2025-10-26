@@ -43,7 +43,7 @@ $smartOverdrive=false;
 $jointsVisible=true;
 $machines=true;
 $openDoors=false;
-$drawerState="OPEN";
+$drawerState="CLOSED";
 $drawerBoxes=true;
 
 $part=undef;
