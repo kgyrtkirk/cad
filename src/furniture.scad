@@ -73,10 +73,11 @@ module makeContact(len,mode) {
 //        cube(10);
         if(mode[0]=="<") 
         rotate(90,[1,0,0])
-    translate([0,0,-$W]) {
+        translate([0,0,-$W]) {
         jointsX(len, m);
     }
         else 
+//        translate([0,$W,18]) 
         rotate(-90,[1,0,0])
     translate([0,-$W,0]) {
         jointsX(len, m);
@@ -94,24 +95,11 @@ function mapGet(arr, key) = search(key, arr) != [] ? arr[search(key, arr)[0]][1]
 function drawPositive(n) = $positive && ($part == undef || $part == n);
 
 module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
-
-    if(true && $part == name && $W>1) {
-        // drill plan for selected part is evaluated at the center
-        // not perfect ; but something
-        W0=$W;
-        W1=.1;
-        $W=W1;
-        translate([0,0,W0/2-W1/2])
-        plain(name,w0,h0,0,0,0,0,rot);
-    }else 
-
     if(!rot) {
         translate([0,h0,0])
         rotate(-90)
         plain(name,h0,w0,closeU,closeD,closeR,closeL,rot=!rot);
-    } else {
-
-    if($connect!=undef) {
+    } else  if($connect!=undef) {
         modeL=mapGet($connect, "r");
         modeR=mapGet($connect, "l");
         modeU=mapGet($connect, "f");
@@ -128,10 +116,19 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
         translate([w0,0,0]) 
         rotate(90, [0,0,1]) 
         makeContact(h0,modeD);
+        plain(name,w0,h0,closeL,closeR,closeU,closeD,rot,$connect=undef);
+    }else 
+    if(true && $part == name && $W>1) {
+        // drill plan for selected part is evaluated at the center
+        // not perfect ; but something
+        W0=$W;
+        W1=.1;
+        $W=W1;
+        translate([0,0,W0/2-W1/2])
+        plain(name,w0,h0,0,0,0,0,rot);
+    }else  {
 
 
-
-    }
 
     a=2;
     x = closeL;
@@ -924,7 +921,7 @@ module fullBottom(h,external=false,alignTop=false,rot=false) {
     w=$w-2*$W;
 //    color([0,1,1])
     translate([$W,0,-h-(alignTop?$W:0)])
-    eXY(str($name,"Shelf",external?"Ex":"",w),w,depth,rot=rot, $connect=[["l","TET"],["r","TET"]]);
+    eXY(str($name,"Shelf",external?"Ex":"",w),w,depth,rot=rot, $connect=[["l","sTCT"],["r","sTET"]]);
     
 
     translate([0,0,-h])
@@ -1034,7 +1031,7 @@ module jointI() {
 
                 translate([0,$W+$W/4,k*34])
                 rotate(90,[1,0,0])
-                cylinder(d=15,h=$W);
+                cylinder(d=15,h=$W*3/2);
             }
     }
 }
@@ -1109,6 +1106,7 @@ module jointPartT() {
 
 module joint(orient="XY",type="TET",center=false) {
 
+    $fn=8;
     L=80;
     orient(orient)
     translate([0,0,center?-L/2:0])
@@ -1379,14 +1377,23 @@ if(nBeams>0)
     }
     if(xor(!$positive, $jointsVisible)) {
         if(type=="smart") {
-            pos=[10,27,32,96,96,32];
+            pos0=[19,18,32,96-9,96,32+9];
+            pos=concat(prefix(0,pos0), prefix(shimD, pos0), prefix(96,pos0));
+            pos2=concat(prefix(96,pos0));
+            echo(str("sc0:",prefix(0, pos0)));
+            echo(str("scD:",prefix(shimD,pos0)));
+            echo(str("scDA:",prefix(96 ,pos0)));
+            echo(str("scM:",prefix(822 ,-pos0)));
             translate([$w/2,$d+o_y,-h]) 
             symX([$w/2,0,41]) 
             {
-                translate([0,0,-12]) 
+                translate([0,0,0]) 
                 euroscrews(pos);
-                translate([0,-shimD,0])
-                euroscrews(pos);
+
+//                translate([0,9,-3]) 
+//%                euroscrews(pos2);
+
+
             }
         }
     }
@@ -1399,7 +1406,7 @@ if(nBeams>0)
 
 module euroscrews(pos) {
 
-    for(x = prefix(0,pos)) {
+    for(x = pos) {
         translate([0,-x,0]) 
         rotate(90,[0,1,0])
         cylinder(h = $W*1.5, d = 5,center=true);

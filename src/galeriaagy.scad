@@ -43,7 +43,7 @@ $smartOverdrive=false;
 $jointsVisible=true;
 $machines=true;
 $openDoors=false;
-$drawerState="CLOSED";
+$drawerState="OPEN";
 $drawerBoxes=true;
 
 $part=undef;
@@ -186,7 +186,7 @@ module doubleSided(a) {
 
 module internalSeparator(ratio, height) {
     translate([$W,($d-$W)*ratio,-height+$W]) 
-    eXZ(str($name,"intSep"),$w-$W-$W,height-$W-$W,$connect=[["l","TT"],["r","TT"],["f","TT"],["b","TT"]]);
+    eXZ(str($name,"intSep"),$w-$W-$W,height-$W-$W,$connect=[["l","cTT"],["r","cTT"],["f","cTT"],["b","cTT"]]);
     space($front=false,height)
     children();
 }
@@ -393,12 +393,12 @@ module galeriaAgy() {
 
     UV=CORNER_ROUND+W;
     translate([-STEP_W-W,W+step_depth(STEP_CNT)-UV,W]) {
-        eYZ("footJ",UV,step_height(STEP_CNT)-W, $close="f",$connect=[[ "l","TT"],["r","TT"]]);
+        eYZ("footJ1",UV,step_height(STEP_CNT)-W, $close="f",$connect=[[ "l","TT"],["r","TT"]]);
     }
 
 
     translate([-STEP_W-W,W+step_depth(STEP_CNT-1)-UV,W+step_height(STEP_CNT)])
-        eYZ("footJ",UV,step_height(STEP_CNT)-W, $close="f",$connect=[[ "l","TT"],["r","TT"]]);
+        eYZ("footJ2",UV,step_height(STEP_CNT)-W, $close="f",$connect=[[ "l","TT"],["r","TT"]]);
 
         $floorW=10;
     
@@ -408,11 +408,12 @@ module galeriaAgy() {
         c1w=step_depth(3)-CORNER_ROUND;
         c1wa=c1w/2;
         c1wb=c1w-c1wa;
+        c1space=step_height(STEP_CNT)-$W;
         $floorW=10;
     builtinCabinet("c1",
         c1w, step_height(STEP_CNT), LCAB_DEPTH,$smartOverdrive=true)
-        drawer(step_height(STEP_CNT)/2)
-        drawer(step_height(STEP_CNT)/2);
+        drawer(c1space/2)
+        drawer(c1space/2);
     }
 
 
@@ -519,14 +520,23 @@ mode="P-Bed-SFXZ";
 mode="PYZ-railRXY";
 mode="PYZ-railLR100XY";
 mode="P-deskL425R425XY";
-mode="P-Bed-SBXZ";
+mode="P-footRBXZ";
+mode="PXZ-bHatsoL178XY";
 mode="print";
 
 //x@OUTPUT:PYZ-railLR100XY
 //x@OUTPUT:PXZ-jHatso-XZ
 //x@OUTPUT:P-bHatsoL178XY
-//@OUTPUT:P-Bed-SBXZ
-
+//x@OUTPUT:P-Bed-SBXZ
+//x@OUTPUT:P-step0R100XY
+//x@OUTPUT:P-step326R100XY
+//x@OUTPUT:P-step1304XY
+//x@OUTPUT:P-step978XY
+//x@OUTPUT:P-footJ1
+//x@OUTPUT:PXZ-bHatsoL178XY
+//@OUTPUT:PXZ-c1sideYZ
+//@OUTPUT:PXZ-c2asideYZ
+//@OUTPUT:PXZ-c2bsideYZ
 
 if(mode == "print") {
 s=($mode == "print")?.05:1;
@@ -552,7 +562,7 @@ model();
     $part=substr(mode,2);
 
 
-    projection(false)
+   projection(false)
    orient(mode)
 //    rotate(90,[0,1,0]) 
         model();
@@ -568,7 +578,7 @@ function  isXYZ(a) = a =="X" || a=="Y" || a=="Z";
     
     $part=substr(mode,4);
     
-    projection(false)
+   projection(false)
    orient(substr(mode,1,2))
 //    rotate(90,[0,1,0]) 
         model();
