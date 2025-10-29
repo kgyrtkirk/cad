@@ -219,6 +219,12 @@ module zartszelveny() {
                     cube([D,D,2*BED_FRAME_SP_UNDER],center=true);
                 }
             }
+            else {
+                difference() {
+                    cylinder(h = H, r=R+1);
+                    cylinder(h = H, r=R+.1);
+                }
+            }
     }
 
     {
@@ -592,10 +598,10 @@ mode="PXZ-railFrontXY";
 mode="P-Bed-SFXZ";
 mode="PYZ-railRXY";
 mode="PYZ-railLR100XY";
-mode="P-deskL425R425XY";
 mode="P-footRBXZ";
 mode="PXZ-bHatsoL178XY";
 mode="A-ZDugo";
+mode="P-deskL425R425XY";
 mode="print";
 
 //x@OUTPUT:PYZ-railLR100XY
@@ -606,14 +612,14 @@ mode="print";
 //x@OUTPUT:P-step1304XY
 //x@OUTPUT:P-step978XY
 //x@OUTPUT:P-footJ1
-//@OUTPUT:PXZ-bHatsoL178XY
+//x@OUTPUT:PXZ-bHatsoL178XY
 //x@OUTPUT:PXZ-c1sideYZ
 //x@OUTPUT:PXZ-c2asideYZ
 //x@OUTPUT:PXZ-c2bsideYZ
 //x@OUTPUT:PXZ-c3sideYZ
 //x@OUTPUT:P-jHatsoXZ
-////@xOUTPUT:P-deskL425R425XY
-//@xOUTPUT:P-step652R100XY
+//x@OUTPUT:P-deskL425R425XY
+//@OUTPUT:P-Bed-BotXY
 
 //x@OUTPUT:A-ZDugo
 //x@OUTPUT:P-stepRsYZ

@@ -124,7 +124,7 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
         W0=$W;
         W1=.1;
         $W=W1;
-        translate([0,0,W0/2-W1/2])
+        translate([0,0,18/2-W1/2])
         plain(name,w0,h0,0,0,0,0,rot);
     }else  {
 
