@@ -191,17 +191,89 @@ module internalSeparator(ratio, height) {
     children();
 }
 
+module zartszelveny() {
+
+    H=1545;
+    D=43;
+    R=D/2;
+    WALL=3;
+    DI=D-2*WALL;
+
+    CL_DOWN=4;
+
+    translate([R,-R,0]) {
+    {
+        name1="ZartSzelveny";
+
+        if(drawPositive(name1)) 
+            difference() {
+                translate([0,0,CL_DOWN])
+                cylinder(h = H, r=R);
+                translate([0,0,CL_DOWN])
+                translate([0,0,-1]) 
+                cylinder(h = H+2, r=R-WALL);
+                translate([-D+19,0,BED_H+BED_FRAME_SP_UNDER])  {
+                    cube([D,D,2*BED_FRAME_SP_UNDER],center=true);
+                }
+                translate([0,D-19,BED_H+BED_FRAME_SP_UNDER])  {
+                    cube([D,D,2*BED_FRAME_SP_UNDER],center=true);
+                }
+            }
+    }
+
+    {
+        name="ZDugo";
+        color([1,0,0])
+        if(drawPositive(name)) {
+            
+R2=D2/2;
+R=D/2;
+RI=DI/2;
+R2=R+5;
+
+H=13;
+
+            $fn=128;
+                translate([0,0,0])
+                cylinder(h = 15, d=DI);
+
+                rotate_extrude() 
+                polygon([
+                    [R2,0],
+                    [R2,CL_DOWN],
+                    [R+1,H],
+                    [R,H],
+                    [R,CL_DOWN],
+                    [RI,CL_DOWN],
+                    [RI-1,H],
+                    [RI-3,H],
+                    [RI-4,CL_DOWN],
+                    [0,CL_DOWN],
+                    [0,0],
+                ]
+
+                );
+
+//                translate([0,0,0])
+  //              cylinder(h = CL_DOWN, d1=D+10,d2=D);
+        }
+    }
+    }
+
+
+}
+
 module desk() {
 
     
-    translate([0,DEPTH-FOOT_A,0])
-    eXZ($W=FOOT_A,"ZARTSZELVENY", FOOT_A,BED_H);
+    translate([0,DEPTH,0])
+    zartszelveny();
     
     translate([FOOT_A/2-DESK_W/2,$W,DESK_H]) {
             cutCornerShelf($W=DESK_WW,"desk", DESK_W,DESK_D, DESK_RO,DESK_RO,type="round",$close="LRF");
 
     translate([0,-$W,0]) 
-    jointsX(DESK_W,"4TET");
+    jointsX(DESK_W,":4TCT");
 
         if(!$positive) {
             translate([DESK_W/2,40+20,0]) 
@@ -289,11 +361,12 @@ module agy() {
 JOINT_LEN=80;
 module polc(inter,over,depth) {
 
+//,$connect=[["l","cTET"],["r","cTET"]]
         if(over>0)
-            eXZ("shelfBack",inter,100,$close="Ou",$connect=[["l","cTET"],["r","cTET"]]);
+            eXZ("shelfBack",inter,100,$close="Ou");
 
         translate([-over,$W,0]) 
-        cutCornerShelf("shelfXY",inter+2*over,depth,depth,depth,type="round",$close="LRF");
+        cutCornerShelf("shelfXY",inter+2*over,depth,depth,depth,type="round",$close="LRF",$connect=[["b","sTCT"]]);
 }
 
 module polcok() {
@@ -522,21 +595,29 @@ mode="PYZ-railLR100XY";
 mode="P-deskL425R425XY";
 mode="P-footRBXZ";
 mode="PXZ-bHatsoL178XY";
+mode="A-ZDugo";
 mode="print";
 
 //x@OUTPUT:PYZ-railLR100XY
 //x@OUTPUT:PXZ-jHatso-XZ
-//x@OUTPUT:P-bHatsoL178XY
 //x@OUTPUT:P-Bed-SBXZ
 //x@OUTPUT:P-step0R100XY
 //x@OUTPUT:P-step326R100XY
 //x@OUTPUT:P-step1304XY
 //x@OUTPUT:P-step978XY
 //x@OUTPUT:P-footJ1
-//x@OUTPUT:PXZ-bHatsoL178XY
-//@OUTPUT:PXZ-c1sideYZ
-//@OUTPUT:PXZ-c2asideYZ
-//@OUTPUT:PXZ-c2bsideYZ
+//@OUTPUT:PXZ-bHatsoL178XY
+//x@OUTPUT:PXZ-c1sideYZ
+//x@OUTPUT:PXZ-c2asideYZ
+//x@OUTPUT:PXZ-c2bsideYZ
+//x@OUTPUT:PXZ-c3sideYZ
+//x@OUTPUT:P-jHatsoXZ
+////@xOUTPUT:P-deskL425R425XY
+//@xOUTPUT:P-step652R100XY
+
+//x@OUTPUT:A-ZDugo
+//x@OUTPUT:P-stepRsYZ
+
 
 if(mode == "print") {
 s=($mode == "print")?.05:1;
@@ -568,6 +649,17 @@ model();
         model();
 //        previewLU();
 }
+
+ if(mode[0] == "A" && mode[1]=="-") {
+    $fronts=false;
+    $machines=false;
+    $jointsVisible=false;
+    
+    $part=substr(mode,2);
+
+        model();
+}
+
 
 function  isXYZ(a) = a =="X" || a=="Y" || a=="Z";
 

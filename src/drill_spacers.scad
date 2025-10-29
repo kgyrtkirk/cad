@@ -1,7 +1,12 @@
 use <threadlib/threadlib.scad>
 use <syms.scad>
 
-mode="samet_drawer_drill";
+mode="edgeDrill3";
+mode="confDrill";
+
+//@OUTPUT:confDrill
+//@OUTPUT:edgeDrill3
+
 
 if(mode=="edge") {
     
@@ -137,7 +142,7 @@ module edgeDrill2() {
 }
 
 
-module edgeDrill3(spacer=false,SP=28) {
+module edgeDrill3(spacer=false,SP=28,confirmatorDriller=false) {
     
     module t(d) {
         cylinder(d=d,h=3*W,center=true);
@@ -150,7 +155,7 @@ module edgeDrill3(spacer=false,SP=28) {
         for(i=[-1,0,1]) {
             D=(i==0)?5:8;
             translate([$W/2,L/2+i*SP,0])
-            children(1);
+            children(confirmatorDriller && i!=0?0:1);
 
 
             translate([0,L/2+i*SP,$W/2+OX])
@@ -158,7 +163,7 @@ module edgeDrill3(spacer=false,SP=28) {
             children(i==0?0:1);
             translate([$W,L/2+i*SP,$W/2+OX])
             rotate(-90,[0,1,0])
-            children(1);
+            children(confirmatorDriller&& i!=0?0:1);
         }
     }
     L=80;
@@ -167,7 +172,8 @@ module edgeDrill3(spacer=false,SP=28) {
     W=10;
     CDIST=34+OX+.5;
     CDIST2=24+OX+.5;
-    CH=CDIST+15/2+W;
+
+    CH=confirmatorDriller? CDIST : CDIST+15/2+W;
     
     $fn=64;
     
@@ -184,6 +190,7 @@ module edgeDrill3(spacer=false,SP=28) {
                 t(15);
             }
             
+            if(!confirmatorDriller) {
             translate([0,L/2,CDIST2])
             rotate(90,[0,1,0])
             cylinder(d=15,h=3*W,center=true);
@@ -191,7 +198,7 @@ module edgeDrill3(spacer=false,SP=28) {
             translate([$W,L/2,CDIST])
             rotate(90,[0,1,0])
             cylinder(d=15,h=3*W,center=true);
-            
+            }
             
             
             translate([$W/2,-W,-W]) {
@@ -253,11 +260,14 @@ if(mode=="edgeDrill2") {
 if(mode=="edgeDrill3") {
     edgeDrill3();
 }
+if(mode=="confDrill") {
+    edgeDrill3(confirmatorDriller=true);
+}
 if(mode=="edgeDrill3a20") {
     edgeDrill3(SP=20);
 }
 if(mode=="edgeDrill3s") {
-    edgeDrill3(true);
+    edgeDrill3(spacer=true);
 }
 
 if(mode=="m14test") {
