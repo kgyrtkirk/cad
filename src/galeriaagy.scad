@@ -220,6 +220,7 @@ module zartszelveny() {
                 }
             }
             else {
+                if(!$positive)
                 difference() {
                     cylinder(h = H, r=R+1);
                     cylinder(h = H, r=R+.1);
@@ -228,9 +229,8 @@ module zartszelveny() {
     }
 
     {
-        name="ZDugo";
         color([1,0,0])
-        if(drawPositive(name)) {
+        if(drawPositive("ZDugo")) {
             
 R2=D2/2;
 R=D/2;
@@ -260,9 +260,68 @@ H=13;
 
                 );
 
-//                translate([0,0,0])
-  //              cylinder(h = CL_DOWN, d1=D+10,d2=D);
         }
+
+
+        color([0,1,0])
+        if(drawPositive("FAlat")) {
+        H=1545;
+R2=D2/2;
+R=D/2;
+RI=DI/2;
+R2=R+5;
+H=13;
+            $fn=128;
+            rotate(270)
+            translate([0,0,1545-40]) 
+                rotate_extrude(angle=90) 
+                polygon([
+                    [0,0],
+                    [RI,0],
+                    [RI,40],
+                    [0,40],
+                ]
+                );
+
+        }
+
+        color([0,0,1])
+        if(drawPositive("Alat")) {
+            S=20;
+            $fn=128;
+            rotate(270)
+            translate([0,0,DESK_H-S]) 
+                difference() {
+                rotate_extrude() 
+                polygon([
+                    [R+1,0],
+                    [R+5,0],
+                    [R+25,S],
+                    [R+1,S],
+                ]
+                );
+                translate([0,0,S/2])  {
+                    rotate(90,[1,0,0]) 
+                    cylinder(h = 200, d = 6,center=true);
+
+                    rotate(90,[1,0,0]) 
+                    symZ([0,0,R+7]) 
+                    cylinder(h = 50, d = 15);
+                }
+                translate([0,0,S])  
+                {
+                    for(i=[0:15:360]) {
+                    rotate(i,[0,0,1]) 
+                    rotate(90,[1,0,0]) 
+                    cylinder($fn=4,h = 200, d = 2,center=true);
+                    }
+                }
+
+                }
+
+        }
+
+
     }
     }
 
@@ -603,6 +662,7 @@ mode="PXZ-bHatsoL178XY";
 mode="A-ZDugo";
 mode="P-deskL425R425XY";
 mode="print";
+mode="print";
 
 //x@OUTPUT:PYZ-railLR100XY
 //x@OUTPUT:PXZ-jHatso-XZ
@@ -619,9 +679,13 @@ mode="print";
 //x@OUTPUT:PXZ-c3sideYZ
 //x@OUTPUT:P-jHatsoXZ
 //x@OUTPUT:P-deskL425R425XY
-//@OUTPUT:P-Bed-BotXY
+//x@OUTPUT:P-Bed-BotXY
+//@OUTPUT:P-shelfXYL150R150XY
+//@OUTPUT:P-shelfXYL200R200XY
 
 //x@OUTPUT:A-ZDugo
+//x@OUTPUT:A-FAlat
+//x@OUTPUT:A-Alat
 //x@OUTPUT:P-stepRsYZ
 
 
