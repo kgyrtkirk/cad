@@ -1,0 +1,235 @@
+use <hulls.scad>
+use <furniture.scad>
+use <kitchen_box.scad>
+use <syms.scad>
+
+
+// TODO
+// ledcsik agy ala
+
+// H3433-ST22-18
+// H309-ST12-18
+
+// lampa
+// https://fali-es-mennyezeti-lampa-csillar.arukereso.hu/rabalux/karen-5564-p778014348/?utm_source=google&utm_medium=organic&utm_campaign=dma#
+
+// beszelni:
+
+// rendelni
+// fiokok
+// fogantyuk
+
+
+
+$connect=undef;
+$mode="print";
+$close="";
+$front=false;
+$fronts=true;
+$handle="normal";
+$closeWFront=[.4,2];
+$closeWMain=[.4,2];
+$defaultDrawer="smart";
+$cornerProtect=false;
+$smartOverdrive=false;
+
+$jointsVisible=true;
+$machines=true;
+$openDoors=true;
+$drawerState="CLOSED";
+$drawerBoxes=true;
+
+$part=undef;
+
+W=18;
+$W=18;
+
+module builtinCabinet(name,w,h,d,side="L",sideUp=$W) {
+    $name=name;
+    $w=w;
+    $h=h;
+    $d=d;
+
+    wi=side=="L" ?  ($w-$W) : 0;
+
+    // if(false)
+    translate([wi,0,sideUp])
+    eYZ($close="F",str(name,"side"),$d,$h-sideUp);
+
+    for(y=[120,$d-120]) {
+        translate([wi,y,0]) {
+        joint("XZ",center=true);
+
+        translate([0,0,$W+$h])
+        rotate(180,[1,0,0]) 
+        joint("XZ",center=true);
+        }
+    }
+
+    translate([0,0,$h])
+    children();
+}
+
+module foot(){
+    eXZ("footRB",FOOT_B,BED_H);
+}
+
+module mirrorC() {
+
+}
+
+module doubleSided(a) {
+    d0=$d;
+    d1=$d*a;
+    d2=$d*(1-a);
+
+    translate($d=d1,[0,d0-d1,0]) 
+    children(0);
+    translate($d=d2, [$w,d2,0]) 
+    rotate(180) 
+    children(1);
+    children(2);
+}
+
+module internalSeparator(ratio, height) {
+    translate([$W,($d-$W)*ratio,-height+$W]) 
+    eXZ(str($name,"intSep"),$w-$W-$W,height-$W-$W,$connect=[["l","cTT"],["r","cTT"],["f","cTT"],["b","cTT"]]);
+    space($front=false,height)
+    children();
+}
+
+
+MAX_H=2640; // foot not included!
+DEPTH=630;
+FOOT=50;
+module actor() {
+    HEIGHT=1700;
+    H_SIZE=200;
+    translate([0,0,HEIGHT-H_SIZE/2]) 
+        sphere(d=H_SIZE);
+    cylinder(HEIGHT, d = H_SIZE/2);
+    children();
+}
+module fdm_printer() {
+
+    cube([392,406,478]);
+    translate([0,0,478]) 
+    cube([372,280,226]);
+    children();
+}
+
+module szekreny() {
+    U_SIZE=MAX_H-1600;
+    W_A=800;
+    W_B=800;
+
+    cabinet(name = "cA", w = W_A, h = MAX_H, d = DEPTH,foot=FOOT){ 
+        cTop()
+        shelf(U_SIZE*1/3)
+        shelf(U_SIZE*2/3)
+        shelf(U_SIZE)
+        doors(name = "asd", h = U_SIZE)
+        drawer(h = 200)
+        drawer(h = 200)
+        drawer(h = 150)
+        drawer(h = 150)
+        drawer(h = 300)
+        drawer(h = 300)
+        drawer(h = 300);
+    };
+    translate([W_A,0,0]) 
+    {
+        cabinet(name = "cB", w = W_B, h = 1200, d = DEPTH,foot=FOOT) {
+            fdm_printer()
+            cTop(outer=true)
+            drawer(h = 200)
+            drawer(h = 200)
+            drawer(h = 200)
+            drawer(h = 300)
+            drawer(h = 300)
+            ;
+        }
+        X_H=500;
+        for(i=[0:1])
+        translate([0,$W,MAX_H+50-$W-i*X_H]) 
+        cutCornerShelf(name = "x1", w = W_B, d = DEPTH-$W,cL=DEPTH,type="round");
+        translate([0,0,MAX_H+50-$W-X_H]) 
+        eXZ("xB",W_B,X_H+$W);
+
+    }
+
+
+}
+
+
+
+module model() {
+posNeg() {
+
+    szekreny();
+//  if(!$positive) {        cube([1000,1000,4000],center=true);    }
+//    if(!$positive) {        cube([10000,200,4000],center=true);    }
+
+}
+}
+
+mode="print";
+
+//x@OUTPUT:P-stepRsYZ
+
+
+if(mode == "print") {
+s=($mode == "print")?.05:1;
+scale([1,1,1]*s) {
+    
+    translate([1000,1000,0]) 
+    %actor();
+model();
+    
+}
+
+
+} else 
+//lse 
+ if(mode[0] == "P" && mode[1]=="-") {
+    $fronts=false;
+    $machines=false;
+    $jointsVisible=false;
+    
+    $part=substr(mode,2);
+
+
+   projection(false)
+   orient(mode)
+//    rotate(90,[0,1,0]) 
+        model();
+//        previewLU();
+}
+
+ if(mode[0] == "A" && mode[1]=="-") {
+    $fronts=false;
+    $machines=false;
+    $jointsVisible=false;
+    
+    $part=substr(mode,2);
+
+        model();
+}
+
+
+function  isXYZ(a) = a =="X" || a=="Y" || a=="Z";
+
+ if(mode[0] == "P" && isXYZ(mode[1]) && isXYZ(mode[2]) && mode[3]=="-") {
+    $fronts=false;
+    $machines=false;
+    $jointsVisible=false;
+    
+    $part=substr(mode,4);
+    
+   projection(false)
+   orient(substr(mode,1,2))
+//    rotate(90,[0,1,0]) 
+        model();
+//        previewLU();
+}
+
