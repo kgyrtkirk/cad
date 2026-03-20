@@ -10,14 +10,14 @@ module roundedCutShape(w,h,d,r) {
 
 
 mode="+36(20)411-94-67";
-//mode="JMF-111";
+//mode="+36(50)104-89-33";
 str=mode;
-S=6;
+S=4;
 
 W=.6;
 echo( len(str));
 A=len(str)*S*8/11+2*W;
-B=S*1.4+4*W;
+B=S*1.3+4*W;
 R=2;
 H1=4;
 H2=H1+4*W;

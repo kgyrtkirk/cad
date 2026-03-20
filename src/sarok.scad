@@ -29,7 +29,7 @@ $fronts=true;
 $handle="normal";
 $closeWFront=[.4,2];
 $closeWMain=[.4,2];
-$defaultDrawer="smart";
+$defaultDrawer="std";
 $cornerProtect=false;
 $smartOverdrive=false;
 
@@ -99,7 +99,8 @@ module internalSeparator(ratio, height) {
 }
 
 
-MAX_H=2640; // foot not included!
+// 2640
+MAX_H=2540; // foot not included!
 DEPTH=630;
 FOOT=50;
 module actor() {
@@ -110,51 +111,76 @@ module actor() {
     cylinder(HEIGHT, d = H_SIZE/2);
     children();
 }
+
+module air_filter() {
+    translate([500,0,0]) 
+    cube([240,240,540]);
+    children();
+}
 module fdm_printer() {
 
     cube([392,406,478]);
     translate([0,0,478]) 
     cube([372,280,226]);
+    translate([0,0,478]) 
+    cube([372,180,380]);
+    cube([372,80,860]);
     children();
 }
 
 module szekreny() {
-    U_SIZE=MAX_H-1600;
+    A1_H=1500;
+    A2_H=MAX_H-A1_H;
+    U_SIZE=A2_H;
     W_A=800;
     W_B=800;
 
-    cabinet(name = "cA", w = W_A, h = MAX_H, d = DEPTH,foot=FOOT){ 
+    cabinet(name = "cA1", w = W_A, h = A1_H, d = DEPTH,foot=FOOT){ 
+        cTop()
+        drawer(h = 200)
+        drawer(h = 200)
+        drawer(h = 250)
+        drawer(h = 250)
+        drawer(h = 200)
+        drawer(h = 400);
+    };
+
+    translate([0,0,A1_H+FOOT])
+    cabinet(name = "cA2", w = W_A, h = A2_H, d = DEPTH){ 
         cTop()
         shelf(U_SIZE*1/3)
         shelf(U_SIZE*2/3)
         shelf(U_SIZE)
-        doors(name = "asd", h = U_SIZE)
-        drawer(h = 200)
-        drawer(h = 200)
-        drawer(h = 150)
-        drawer(h = 150)
-        drawer(h = 300)
-        drawer(h = 300)
-        drawer(h = 300);
+        doors(name = "asd", h = U_SIZE);
     };
+
+    /**
+     21.5 filamentes doboz
+     23 
+     19 A4
+     ruhas: 19cm
+    */
     translate([W_A,0,0]) 
     {
+        X_H=450;
+        DEC_W=DEPTH;
         cabinet(name = "cB", w = W_B, h = 1200, d = DEPTH,foot=FOOT) {
             fdm_printer()
+            air_filter()
             cTop(outer=true)
+            drawer(h = 100) // 155 - 112
+            drawer(h = 250)
+            drawer(h = 250)
             drawer(h = 200)
             drawer(h = 200)
             drawer(h = 200)
-            drawer(h = 300)
-            drawer(h = 300)
             ;
         }
-        X_H=500;
         for(i=[0:1])
         translate([0,$W,MAX_H+50-$W-i*X_H]) 
-        cutCornerShelf(name = "x1", w = W_B, d = DEPTH-$W,cL=DEPTH,type="round");
+        cutCornerShelf(name = "x1", w = DEC_W, d = DEPTH-$W,cL=DEPTH,type="round");
         translate([0,0,MAX_H+50-$W-X_H]) 
-        eXZ("xB",W_B,X_H+$W);
+        eXZ("xB",DEC_W,X_H+$W);
 
     }
 

@@ -11,6 +11,7 @@ H=10;
 
 OF=.5;
 mode="part";
+m3screw=false;
 
 module part() {
     
@@ -28,12 +29,19 @@ module part() {
                 ]
             );
         
-        translate([-OR/2,O,0])
-        cylinder(d=3.5,h=20,center=true);
+        
+            translate([-OR/2,O,0])
+            cylinder(d=3.5,h=20,center=true);
+            translate([0,O/2,H/2])
+            rotate(90,[0,1,0])
+            cylinder(d=1.5,h=3*OR,center=true);
+            
+        
     }
     
     
     O=8;
+//    if(m3screw)
     translate([OR/2,0,W]) {
         difference() {
             hull()
