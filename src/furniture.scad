@@ -1320,8 +1320,8 @@ module drawer(h,type1="def") {
         if($drawerBoxes) {
             floorW=is_undef($floorW) ? 3 : $floorW;
             if(type=="smart") {
-            floorOff=12+floorW;
-            nut_depth=floorW>3 ? 0 : 6;
+                floorOff=12+floorW;
+                nut_depth=floorW>3 ? 0 : 6;
                 // smart
                 $W=is_undef($DRAWER_WALL_W) ? $W : $DRAWER_WALL_W;
                 $close="O";
@@ -1357,6 +1357,37 @@ if(nBeams>0)
                 }
 
             }else {
+
+                if($floorW != undef) {
+
+                    $W=$DRAWER_WALL_W;
+                    zLossTop=$W+3;
+                    zLossBot=0+4;
+
+                    iz=h-zLossTop-zLossBot;
+
+                    $close="Olru";
+
+                    translate([0,0, zLossBot]) {
+
+                        translate([qx,-$W,0])
+                        eXZ(str(name,"A"),ix,iz);
+
+                        translate([qx,-id,0])
+                        eXZ(str(name,"A"),ix,iz);
+
+                        translate([qx,-id+$W,0])
+                        eYZ(str(name,"B"),id-2*$W,iz);
+                        translate([$w-$W-qx,-id+$W,0])
+                        eYZ(str(name,"B"),id-2*$W,iz);
+
+                        translate([qx+$W,-id+$W,0])
+                        eXY(str(name,"-floor"),$W=$floorW,ix-2*$W,id-2*$W);
+                    }
+            
+
+                }else {
+
                 $close="Olru";
                 translate([qx,-$W,qz])
                 eXZ(str(name,"A"),ix,iz);
@@ -1372,6 +1403,7 @@ if(nBeams>0)
                 union() {
    //                 cube([ix,id,3]);
                     eXY(str(name,"-floor"),$W=3,ix,id);
+                }
                 }
                 //echo(str(name,"-dback"),str(ix,"x",id));
             }

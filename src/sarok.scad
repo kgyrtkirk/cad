@@ -41,6 +41,10 @@ $drawerBoxes=true;
 
 $part=undef;
 
+
+$floorW=10;
+$DRAWER_WALL_W=10;
+
 W=18;
 $W=18;
 
@@ -172,9 +176,9 @@ module szekreny() {
             drawer(h = 100) // 155 - 112
             drawer(h = 250)
             drawer(h = 250)
-            drawer(h = 200)
-            drawer(h = 200)
-            drawer(h = 200)
+            // drawer(h = 200)
+            // drawer(h = 200)
+            // drawer(h = 200)
             ;
         }
         for(i=[0:1])
