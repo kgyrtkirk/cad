@@ -210,11 +210,12 @@ module bunkBed() {
 //        shelf(400,external=false,alignTop=true)
   //      doors("DOOR",cnt=1,400)
         drawer(150)
+        
         drawer(200)
-        drawer(200,true)
-        drawer(200,true)
-        drawer(200,true)
-        drawer(200,true)
+        drawer(200)
+        drawer(200)
+        drawer(200)
+        drawer(200)
         drawer(290)
     ;
     translate([C_W,0,C_H])

@@ -117,21 +117,6 @@ module demoE() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// F: withLock=true
-//    Lock block (90x30x60) is cut into the top of one drawer.
-//    iz is reduced: h - (LOCKDIM[2]+LOCK_SP+W) instead of h - (3W-6).
-// ─────────────────────────────────────────────────────────────────────────────
-module demoF() {
-    $defaultDrawer = "std";
-    posNeg()
-    cabinet(name="F_lock", w=600, h=750, d=630, foot=FOOT) {
-        cTop()
-        drawer(h=380, withLock=true)
-        drawer(h=380);
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Layout — columns along X, all share Y=0 origin
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -147,4 +132,3 @@ translate([xB, 0, 0]) demoB();
 translate([xC, 0, 0]) demoC();
 translate([xD, 0, 0]) demoD();
 translate([xE, 0, 0]) demoE();
-translate([xF, 0, 0]) demoF();
