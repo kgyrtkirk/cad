@@ -1319,9 +1319,9 @@ module drawer(h,type1="def") {
         }
         if($drawerBoxes) {
             floorW=is_undef($floorW) ? 3 : $floorW;
+            if(type=="smart") {
             floorOff=12+floorW;
             nut_depth=floorW>3 ? 0 : 6;
-            if(type=="smart") {
                 // smart
                 $W=is_undef($DRAWER_WALL_W) ? $W : $DRAWER_WALL_W;
                 $close="O";
