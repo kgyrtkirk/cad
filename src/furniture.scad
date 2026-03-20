@@ -692,7 +692,7 @@ module cBeams2() {
 
 module partition2(x,h) {
 
-    BACK_WIDTH=4;
+    BACK_WIDTH=$internalDepthLoss;
 
 //        translate([0,100,0])
         translate([x-$W,0,-h+$W])
@@ -733,7 +733,7 @@ module partition3(x1,x2,h) {
 module partitionBeams(x,fullH) {
     
     beamH=$h-2*$W - fullH;
-    BACK_WIDTH=4;
+    BACK_WIDTH=$internalDepthLoss;
 
     
     D=100;
@@ -948,11 +948,12 @@ module maximera1(h) {
 }
 
 
+// cloth hanger rod
 module hanger(h) {
 
     BACK_WIDTH=4;
     
-    depth=$d-BACK_WIDTH;
+    depth=$d-$internalDepthLoss;
     
     if($machines) {
         color([0,1,0])
