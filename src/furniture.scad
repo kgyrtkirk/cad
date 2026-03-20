@@ -465,9 +465,12 @@ module cutCornerShelf0(name,w,d,c) {
     eXY(name,w,d);
 }
 
-module cabinet(name,w,h,d,foot=0,back="sinken",extraHL=0,extraHR=0,extraDL=0,extraDR=0,sideClose="oUF",bottom=true) {
+function internalOff(back) = is_list(back) && back[0]=="internal" ? back[1] : -1;
+
+module cabinet(name,w,h,d,foot=0,back=["internal",0],extraHL=0,extraHR=0,extraDL=0,extraDR=0,sideClose="oUF",bottom=true) {
 
     dBack = (back=="full") ? $W : 0;
+    internalDepthLoss=internalOff(back)>=0?internalOff(back)+3:0;
 
     $name=name;
     $w=w;
@@ -479,19 +482,17 @@ module cabinet(name,w,h,d,foot=0,back="sinken",extraHL=0,extraHR=0,extraDL=0,ext
     if(back=="full") {
         eXZ($close="LROU",
             str(name,"-Fback"),w,h+foot);
-    } else if(back=="sinken") {
+    } else if(internalOff(back)>=0) {
         bw=w-15;
         bh=h-15;
         color([1,0,0])
-        translate([7.5,0,foot+7.5])
+        translate([7.5, internalOff(back), foot+7.5])
         if($positive) {
             eXZ($W=3,str(name,"-back"),bw,bh);
             echo(str(name,"-back"),str(bh-1,"x",bw-1));
         } else {
-            cube([bw,2.5,bh]);
+            cube([bw,3,bh]);
         }
-    } else if(back=="internal") {
-        // no back panel — cabinet is built against a wall
     } else {
         assert(false, str("cabinet: unknown back type: ", back));
     }
@@ -515,8 +516,10 @@ module cabinet(name,w,h,d,foot=0,back="sinken",extraHL=0,extraHR=0,extraDL=0,ext
             eXY($close=sideClose,str(name,"Bot"),w-2*$W,$d);
         }
 
-        translate([0,0,$h])
-        children();
+        $internalDepthLoss=internalDepthLoss;
+        translate([0,0,$h]) {
+            children();
+        }
     }
 }
 

@@ -135,7 +135,8 @@ module szekreny() {
     W_A=800;
     W_B=800;
 
-    cabinet(name = "cA1", w = W_A, h = A1_H, d = DEPTH,foot=FOOT){ 
+
+    cabinet(name = "cA1", w = W_A, h = A1_H, d = DEPTH,foot=FOOT,back=["internal",8]){ 
         cTop()
         drawer(h = 200)
         drawer(h = 200)
@@ -146,7 +147,7 @@ module szekreny() {
     };
 
     translate([0,0,A1_H+FOOT])
-    cabinet(name = "cA2", w = W_A, h = A2_H, d = DEPTH){ 
+    cabinet(name = "cA2", w = W_A, h = A2_H, d = DEPTH,back=["internal",8]){ 
         cTop()
         shelf(U_SIZE*1/3)
         shelf(U_SIZE*2/3)
@@ -164,7 +165,7 @@ module szekreny() {
     {
         X_H=450;
         DEC_W=DEPTH;
-        cabinet(name = "cB", w = W_B, h = 1200, d = DEPTH,foot=FOOT) {
+        cabinet(name = "cB", w = W_B, h = 1200, d = DEPTH,foot=FOOT,back=["internal",8]) {
             fdm_printer()
             air_filter()
             cTop(outer=true)
