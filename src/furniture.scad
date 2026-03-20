@@ -513,7 +513,7 @@ module cabinet(name,w,h,d,foot=0,back=["internal",0],extraHL=0,extraHR=0,extraDL
             
             if(bottom)
             translate([$W,0,foot])
-            eXY($close=sideClose,str(name,"Bot"),w-2*$W,$d);
+            eXY($close=sideClose,str(name,"Bot"),w-2*$W,$d, $connect=[["l",":sTET"],["r",":sTET"]]);
         }
 
         $internalDepthLoss=internalDepthLoss;
@@ -782,10 +782,10 @@ module cTop(outer=false) {
     W=$W;
     if(!outer) {
         translate([W,0,-W])
-        eXY(str($name,"Top"),$w-2*W,$d);
+        eXY(str($name,"Top"),$w-2*W,$d,$connect=[["l","sTET"],["r","sTET"]]);
     }else {
 //        translate([0,-W,-0])
-        eXY($close="LRF",str($name,"OuterTop"),$w,$d+W);
+        eXY($close="LRF",str($name,"OuterTop"),$w,$d+W,$connect=[["l",">:sTET"],["r",">:sTET"]]);
     }
     children();
 }
@@ -1085,7 +1085,7 @@ module jointPartE() {
             rotate(-90,[1,0,0])
             cylinder(d=6,h=50);
             }
-            translate([$W/2,$W+34,L/2])
+            translate([$W,$W+34,L/2])
             rotate(90,[0,1,0])
             cylinder(d=15,h=1.5*$W,center=true);
 
@@ -1201,6 +1201,13 @@ module jointsZY(len,center=false) {
 
 module jointsZ(len,center=false,mode="TET") {
         L=80;
+    if(mode[0] == "-") {
+        m=substr(mode,1);
+        PROTECT_LEN=50;
+        translate([$W,0,0])
+        mirror([1,0,0])
+        jointsZ(len=len,center=center,mode=m);
+    } else
     if(mode[0] == ":") {
         m=substr(mode,1);
         PROTECT_LEN=50;
