@@ -1383,6 +1383,18 @@ if(nBeams>0)
 
                         translate([qx+$W,-id+$W,0])
                         eXY(str(name,"-floor"),$W=$floorW,ix-2*$W,id-2*$W);
+
+
+                        if(xor(!$positive, $jointsVisible)) {
+
+                                translate([$w/2,0,0]) 
+                                symX([$w/2,0,41]) 
+                                {
+                                    translate([0,0,0]) 
+                                    euroscrews([100,200]);
+                                }
+                            }
+
                     }
             
 
@@ -1431,6 +1443,7 @@ if(nBeams>0)
 
             }
         }
+
     }
     
     translate([0,0,-h])
@@ -1439,12 +1452,12 @@ if(nBeams>0)
 }
 
 
-module euroscrews(pos) {
+module euroscrews(pos, d=5) {
 
     for(x = pos) {
         translate([0,-x,0]) 
         rotate(90,[0,1,0])
-        cylinder(h = $W*1.5, d = 5,center=true);
+        cylinder(h = $W*1.5, d = d,center=true);
     }
 }
 
