@@ -1256,7 +1256,7 @@ module jointsZ(len,center=false,mode="TET") {
 }
 
 
-module drawer(h,withLock=false,type1="def",izAdd=0) {
+module drawer(h,withLock=false,type1="def") {
     // 90x60
     LOCK_SP=5;
     LOCKDIM=[90,30,60];
@@ -1274,7 +1274,7 @@ module drawer(h,withLock=false,type1="def",izAdd=0) {
     qx=(type=="smart"?$W+5.0:$W+12.7);
     qz=$W;
     ix=$w-2*qx;
-    iz=h-(withLock?LOCKDIM[2]+LOCK_SP+$W:3*$W-6)+izAdd;  //  -4W
+    iz=h-(withLock?LOCKDIM[2]+LOCK_SP+$W:3*$W-6);  //  -4W
 
     id0=( (type=="smart") ?smartSlideLen($d)-10:$d-10);
     id=( (type=="smart" && $smartOverdrive==undef  ) ?id0:$d-10);
