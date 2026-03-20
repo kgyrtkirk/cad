@@ -465,9 +465,9 @@ module cutCornerShelf0(name,w,d,c) {
     eXY(name,w,d);
 }
 
-module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,extraDR=0,sideClose="oUF",bottom=true) {
-    
-    dBack=fullBack?$W:0;
+module cabinet(name,w,h,d,foot=0,back="sinken",extraHL=0,extraHR=0,extraDL=0,extraDR=0,sideClose="oUF",bottom=true) {
+
+    dBack = (back=="full") ? $W : 0;
 
     $name=name;
     $w=w;
@@ -476,22 +476,24 @@ module cabinet(name,w,h,d,foot=0,fullBack=false,extraHL=0,extraHR=0,extraDL=0,ex
 
     individNames = (extraHL!=extraHR) || (extraDL!=extraDR);
 
-    if(fullBack) {
-//        translate([0,-100])
+    if(back=="full") {
         eXZ($close="LROU",
             str(name,"-Fback"),w,h+foot);
-    }else {
-            bw=w-15;
-            bh=h-15;
-            color([1,0,0])
-            translate([7.5,0,foot+7.5])
-            if($positive) {
-                eXZ($W=3,str(name,"-back"),bw,bh);
-                echo(str(name,"-back"),str(bh-1,"x",bw-1));
-            }else {
-                cube([bw,2.5,bh]);
-//                eXZ($W=2,str(name,"-back"),bw,bh);
-            }
+    } else if(back=="sinken") {
+        bw=w-15;
+        bh=h-15;
+        color([1,0,0])
+        translate([7.5,0,foot+7.5])
+        if($positive) {
+            eXZ($W=3,str(name,"-back"),bw,bh);
+            echo(str(name,"-back"),str(bh-1,"x",bw-1));
+        } else {
+            cube([bw,2.5,bh]);
+        }
+    } else if(back=="internal") {
+        // no back panel — cabinet is built against a wall
+    } else {
+        assert(false, str("cabinet: unknown back type: ", back));
     }
 
     translate([0,dBack,0]) {

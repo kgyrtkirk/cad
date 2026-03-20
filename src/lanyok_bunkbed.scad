@@ -205,7 +205,7 @@ module bunkBed() {
 
     FOOT=10;
     translate([MAT_L+$W+$W,0,-0])
-    cabinet("Cab",C_W,C_H-FOOT,D-$W,foot=FOOT,extraHR=MAT_BOTTOM_SPACE_U,fullBack=true)
+    cabinet("Cab",C_W,C_H-FOOT,D-$W,foot=FOOT,extraHR=MAT_BOTTOM_SPACE_U,back="full")
         cTop()
 //        shelf(400,external=false,alignTop=true)
   //      doors("DOOR",cnt=1,400)
