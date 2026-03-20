@@ -39,7 +39,7 @@ $jointsVisible=false;
 $machines=true;
 $openDoors=true;
 $drawerState="OPEN";
-$drawerBoxes=false;
+$drawerBoxes=true;
 
 $part=undef;
 

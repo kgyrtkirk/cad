@@ -1461,7 +1461,7 @@ if(nBeams>0)
         }else
                     if(type!="smart" && $floorW!=undef) {
                     translate([0,$d,-h])
-                    translate([0,0,45.3/2+$floorW+zLossBot]) 
+                    translate([0,0,45.3/2+zLossBot]) 
                     if(xor(!$positive, $jointsVisible)) {
 
                             translate([$w/2,0,0]) 
