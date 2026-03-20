@@ -21,6 +21,8 @@ use <syms.scad>
 
 
 
+// PK-L-H45-600
+
 $connect=undef;
 $mode="print";
 $close="";
@@ -33,11 +35,11 @@ $defaultDrawer="std";
 $cornerProtect=false;
 $smartOverdrive=false;
 
-$jointsVisible=true;
+$jointsVisible=false;
 $machines=true;
 $openDoors=true;
 $drawerState="OPEN";
-$drawerBoxes=true;
+$drawerBoxes=false;
 
 $part=undef;
 
@@ -147,7 +149,7 @@ module szekreny() {
         drawer(h = 250)
         drawer(h = 250)
         drawer(h = 200)
-        drawer(h = 400);
+        drawer(h = 400, bottomDrawer=true);
     };
 
     translate([0,0,A1_H+FOOT])
@@ -176,9 +178,9 @@ module szekreny() {
             drawer(h = 100) // 155 - 112
             drawer(h = 250)
             drawer(h = 250)
-            // drawer(h = 200)
-            // drawer(h = 200)
-            // drawer(h = 200)
+            drawer(h = 200)
+            drawer(h = 200)
+            drawer(h = 200, bottomDrawer=true)
             ;
         }
         for(i=[0:1])

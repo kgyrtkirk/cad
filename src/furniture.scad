@@ -912,7 +912,7 @@ module shelf(h,SHELF_INSET=12,external=false,alignTop=false,rot=false) {
     w=$w-2*$W;
 //    color([0,1,1])
     translate([$W,BACK_WIDTH,-h-(alignTop?$W:0)])
-    eXY(str($name,"Shelf",external?"Ex":"",w),w,depth,rot=rot);
+    eXY(str($name,"Shelf",external?"Ex":"",w),w,depth,rot=rot,$connect=[["l","O"],["r","O"]]);
     
 
     translate([0,0,external?-h:0])
@@ -1110,6 +1110,22 @@ module jointPartT() {
 }
 
 
+module jointPartO() {
+        echo(str("PART:SHELVO"));
+    L=80;
+    translate([$W/2,$W/4,L/2]) {
+    rotate(-90,[1,0,0]) {
+    cylinder(d=5,h=20);
+
+    if($machines)
+        %cylinder(d=2,h=40,center=true);
+    }
+
+    }
+
+}
+
+
 module joint(orient="XY",type="TET",center=false) {
 
     $fn=8;
@@ -1125,6 +1141,10 @@ module joint(orient="XY",type="TET",center=false) {
         if(type == "TCT") {
             jointPartC(L/2);
             jointPartT();
+
+        } else 
+        if(type == "O") {
+            jointPartO();
 
         } else 
         if(type == "CC") {
@@ -1269,7 +1289,7 @@ module jointsZ(len,center=false,mode="TET") {
 }
 
 
-module drawer(h,type1="def") {
+module drawer(h,type1="def",bottomDrawer=false) {
     name=str($name,"H",h);
 
     FRONT_SP=2;
@@ -1285,11 +1305,17 @@ module drawer(h,type1="def") {
     ix=$w-2*qx;
     iz=h-(3*$W-6);  //  -4W
 
+
+    zLossBot=(bottomDrawer?$W:0)+4;
+
+
     id0=( (type=="smart") ?smartSlideLen($d-$internalDepthLoss)-10:$d-10-$internalDepthLoss);
     id=( (type=="smart" && $smartOverdrive==undef  ) ?id0:$d-5-$internalDepthLoss);
     shimD= id - id0;
 
     nBeams=($d>500)? 2 : 0;
+
+
 
     if($positive ) {
         echo(str("PART:SLIDE:",type,":",id0));
@@ -1362,7 +1388,6 @@ if(nBeams>0)
 
                     $W=$DRAWER_WALL_W;
                     zLossTop=$W+3;
-                    zLossBot=0+4;
 
                     iz=h-zLossTop-zLossBot;
 
@@ -1383,19 +1408,10 @@ if(nBeams>0)
 
                         translate([qx+$W,-id+$W,0])
                         eXY(str(name,"-floor"),$W=$floorW,ix-2*$W,id-2*$W);
-
-
-                        if(xor(!$positive, $jointsVisible)) {
-
-                                translate([$w/2,0,0]) 
-                                symX([$w/2,0,41]) 
-                                {
-                                    translate([0,0,0]) 
-                                    euroscrews([100,200]);
-                                }
-                            }
-
                     }
+
+
+
             
 
                 }else {
@@ -1442,9 +1458,33 @@ if(nBeams>0)
 
 
             }
-        }
+        }else
+                    if(type!="smart" && $floorW!=undef) {
+                    translate([0,$d,-h])
+                    translate([0,0,45.3/2+$floorW+zLossBot]) 
+                    if(xor(!$positive, $jointsVisible)) {
+
+                            translate([$w/2,0,0]) 
+                            symX([$w/2-$W,0,0]) 
+                            {
+                                translate([0,0,0]) 
+                                euroscrews(prefix(0,[37,64,96+64,64+64]));
+                            }
+
+                            translate([0,o_y,0])
+                            translate([$w/2,0,0]) 
+                            symX([$w/2-$W-13,0,0]) 
+                            {
+                                translate([0,0,0]) 
+                                euroscrews(prefix(0,[35,224,192]));
+                            }
+
+                        }
+                    }
+
 
     }
+
     
     translate([0,0,-h])
         children();
@@ -1457,7 +1497,7 @@ module euroscrews(pos, d=5) {
     for(x = pos) {
         translate([0,-x,0]) 
         rotate(90,[0,1,0])
-        cylinder(h = $W*1.5, d = d,center=true);
+        cylinder(h = 10, d = d,center=true);
     }
 }
 
