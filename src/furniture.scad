@@ -1277,8 +1277,8 @@ module drawer(h,type1="def") {
     ix=$w-2*qx;
     iz=h-(3*$W-6);  //  -4W
 
-    id0=( (type=="smart") ?smartSlideLen($d)-10:$d-10);
-    id=( (type=="smart" && $smartOverdrive==undef  ) ?id0:$d-10);
+    id0=( (type=="smart") ?smartSlideLen($d-$internalDepthLoss)-10:$d-10-$internalDepthLoss);
+    id=( (type=="smart" && $smartOverdrive==undef  ) ?id0:$d-5-$internalDepthLoss);
     shimD= id - id0;
 
     nBeams=($d>500)? 2 : 0;

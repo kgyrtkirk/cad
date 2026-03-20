@@ -194,7 +194,7 @@ module model() {
 posNeg() {
 
     szekreny();
-//  if(!$positive) {        cube([1000,1000,4000],center=true);    }
+ if(!$positive) {        cube([1000,1000,4000],center=true);    }
 //    if(!$positive) {        cube([10000,200,4000],center=true);    }
 
 }
