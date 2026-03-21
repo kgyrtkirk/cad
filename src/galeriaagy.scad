@@ -138,6 +138,7 @@ module lepcso() {
 }
 
 module builtinCabinet(name,w,h,d,side="L",sideUp=$W) {
+    $internalDepthLoss=0;
     $name=name;
     $w=w;
     $h=h;

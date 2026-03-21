@@ -105,10 +105,11 @@ module internalSeparator(ratio, height) {
 }
 
 
-// 2640
-MAX_H=2540; // foot not included!
+// 2620
+REAL_MAX_H=2620;
+FOOT=72;
+MAX_H=REAL_MAX_H-FOOT-30; // foot not included!
 DEPTH=630;
-FOOT=80;
 module actor() {
     HEIGHT=1700;
     H_SIZE=200;
@@ -119,18 +120,21 @@ module actor() {
 }
 
 module air_filter() {
+    translate([0,0,$W+1]) {
     translate([500,0,0]) 
     cube([240,240,540]);
+    }
     children();
 }
 module fdm_printer() {
-
+    translate([0,0,$W]) {
     cube([392,406,478]);
     translate([0,0,478]) 
     cube([372,280,226]);
     translate([0,0,478]) 
     cube([372,180,380]);
     cube([372,80,860]);
+    }
     children();
 }
 
@@ -142,18 +146,18 @@ module szekreny() {
     W_B=800;
 
 
-    cabinet(name = "cA1", w = W_A, h = A1_H, d = DEPTH,foot=FOOT,back=["internal",8]){ 
+    cabinet(name = "cAA", w = W_A, h = A1_H, d = DEPTH,foot=FOOT,back=["internal",8]){ 
         cTop()
-        drawer(h = 200)
-        drawer(h = 200)
         drawer(h = 250)
         drawer(h = 250)
-        drawer(h = 200)
+        drawer(h = 100)
+        drawer(h = 250)
+        drawer(h = 250)
         drawer(h = 400, bottomDrawer=true);
     };
 
     translate([0,0,A1_H+FOOT])
-    cabinet(name = "cA2", w = W_A, h = A2_H, d = DEPTH,back=["internal",8]){ 
+    cabinet(name = "cAB", w = W_A, h = A2_H, d = DEPTH,back=["internal",8],sideClose="ouF"){ 
         cTop()
         shelf(U_SIZE*1/3)
         shelf(U_SIZE*2/3)
@@ -169,15 +173,15 @@ module szekreny() {
     */
     translate([W_A,0,0]) 
     {
-        X_H=450;
+        X_H=420;
         DEC_W=DEPTH;
-        cabinet(name = "cB", w = W_B, h = 1200, d = DEPTH,foot=FOOT,back=["internal",8]) {
+        cabinet(name = "cB", w = W_B, h = 1000, d = DEPTH,foot=FOOT,back=["internal",8]) {
             fdm_printer()
             air_filter()
             cTop(outer=true)
             drawer(h = 100) // 155 - 112
-            drawer(h = 250)
-            drawer(h = 250)
+            drawer(h = 100) // 155 - 112
+            drawer(h = 200)
             drawer(h = 200)
             drawer(h = 200)
             drawer(h = 200, bottomDrawer=true)
@@ -207,8 +211,13 @@ posNeg() {
 }
 
 mode="print";
-
-//x@OUTPUT:P-stepRsYZ
+//mode="P-cB2H250BYZ";
+//mode="P-cBOuterTopXY";
+// mode="P-cBBotXY";
+//cBOuterTopXY
+//x@OUTPUT:P-cBBotXY
+//x@OUTPUT:P-cBlYZ
+//x@OUTPUT:P-cBrYZ
 
 
 if(mode == "print") {

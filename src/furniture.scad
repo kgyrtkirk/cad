@@ -478,7 +478,7 @@ module cabinet(name,w,h,d,foot=0,back=["internal",0],extraHL=0,extraHR=0,extraDL
     $h=h+foot;
     $d=d-dBack;
 
-    individNames = (extraHL!=extraHR) || (extraDL!=extraDR);
+    individNames = true || (extraHL!=extraHR) || (extraDL!=extraDR);
 
     if(back=="full") {
         eXZ($close="LROU",
@@ -519,6 +519,7 @@ module cabinet(name,w,h,d,foot=0,back=["internal",0],extraHL=0,extraHR=0,extraDL
 
         $internalDepthLoss=internalDepthLoss;
         translate([0,0,$h]) {
+            $partIndex=0;
             children();
         }
     }
@@ -1291,7 +1292,8 @@ module jointsZ(len,center=false,mode="TET") {
 
 
 module drawer(h,type1="def",bottomDrawer=false) {
-    name=str($name,"H",h);
+    name=str($name,$partIndex,"H",h);
+    $partIndex=$partIndex+1;
 
     FRONT_SP=2;
 
@@ -1323,6 +1325,7 @@ module drawer(h,type1="def",bottomDrawer=false) {
     }
 
     if(id < 0) {
+        echo(id0);
         echo($d);
         echo(smartSlideLen($d));
         assert(false, "id undef");
@@ -1399,13 +1402,13 @@ if(nBeams>0)
                         translate([qx,-$W,0])
                         eXZ(str(name,"A"),ix,iz);
 
-                        translate([qx,-id,0])
-                        eXZ(str(name,"A"),ix,iz);
+                        // translate([qx,-id,0])
+                        // eXZ(str(name,"A"),ix,iz);
 
                         translate([qx,-id+$W,0])
                         eYZ(str(name,"B"),id-2*$W,iz);
-                        translate([$w-$W-qx,-id+$W,0])
-                        eYZ(str(name,"B"),id-2*$W,iz);
+                        // translate([$w-$W-qx,-id+$W,0])
+                        // eYZ(str(name,"B"),id-2*$W,iz);
 
                         translate([qx+$W,-id+$W,0])
                         eXY(str(name,"-floor"),$W=$floorW,ix-2*$W,id-2*$W);
@@ -1469,7 +1472,7 @@ if(nBeams>0)
                             symX([$w/2-$W,0,0]) 
                             {
                                 translate([0,0,0]) 
-                                euroscrews(prefix(0,[37,64,96+64,64+64]));
+                                euroscrews(prefix(0,[37,64,96+64,64+64]),2);
                             }
 
                             translate([0,o_y,0])
@@ -1477,7 +1480,7 @@ if(nBeams>0)
                             symX([$w/2-$W-13,0,0]) 
                             {
                                 translate([0,0,0]) 
-                                euroscrews(prefix(0,[35,224,192]));
+                                euroscrews(prefix(0,[35,224,192]),2);
                             }
 
                         }
@@ -1498,7 +1501,7 @@ module euroscrews(pos, d=5) {
     for(x = pos) {
         translate([0,-x,0]) 
         rotate(90,[0,1,0])
-        cylinder(h = 10, d = d,center=true);
+        cylinder(h = $W*1.01, d = d,center=true);
     }
 }
 
