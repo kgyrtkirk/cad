@@ -90,7 +90,8 @@ translate([0,-$W,0])
   }
 }
 
-function mapGet(arr, key) = search(key, arr) != [] ? arr[search(key, arr)[0]][1] : undef;
+function mapGet(key, arr) = (!is_list(arr) || len(arr) == 0) ? undef : arr[0][0] == key ? arr[0][1] : mapGet(key, sublist(arr, 1));
+//function mapGet(arr, key) = search(key, arr) != [] ? arr[search(key, arr)[0]][1] : undef;
 
 function drawPositive(n) = $positive && ($part == undef || $part == n);
 

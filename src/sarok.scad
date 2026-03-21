@@ -108,7 +108,7 @@ module internalSeparator(ratio, height) {
 // 2640
 MAX_H=2540; // foot not included!
 DEPTH=630;
-FOOT=50;
+FOOT=80;
 module actor() {
     HEIGHT=1700;
     H_SIZE=200;
@@ -184,9 +184,9 @@ module szekreny() {
             ;
         }
         for(i=[0:1])
-        translate([0,$W,MAX_H+50-$W-i*X_H]) 
+        translate([0,$W,MAX_H+FOOT-$W-i*X_H]) 
         cutCornerShelf(name = "x1", w = DEC_W, d = DEPTH-$W,cL=DEPTH,type="round");
-        translate([0,0,MAX_H+50-$W-X_H]) 
+        translate([0,0,MAX_H+FOOT-$W-X_H]) 
         eXZ("xB",DEC_W,X_H+$W);
 
     }
