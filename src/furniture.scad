@@ -143,6 +143,7 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
         color($front?[.4,.6,1]:[1,.8,.4])
         cube([w,h,$W]);
         //color([1,0,0]) 
+        if(!isProjection())
         {
             E=.1;
             if(closeL>0) {
@@ -1404,13 +1405,13 @@ if(nBeams>0)
                         translate([qx,-$W,0])
                         eXZ(str(name,"A"),ix,iz);
 
-                        // translate([qx,-id,0])
-                        // eXZ(str(name,"A"),ix,iz);
+                        translate([qx,-id,0])
+                        eXZ(str(name,"A"),ix,iz);
 
                         translate([qx,-id+$W,0])
                         eYZ(str(name,"B"),id-2*$W,iz);
-                        // translate([$w-$W-qx,-id+$W,0])
-                        // eYZ(str(name,"B"),id-2*$W,iz);
+                        translate([$w-$W-qx,-id+$W,0])
+                        eYZ(str(name,"B"),id-2*$W,iz);
 
                         translate([qx+$W,-id+$W,0])
                         eXY(str(name,"-floor"),$W=$floorW,ix-2*$W,id-2*$W);
