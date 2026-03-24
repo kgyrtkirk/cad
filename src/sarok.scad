@@ -120,13 +120,16 @@ module actor() {
 }
 
 module air_filter() {
+    if(!isProjection()){
     translate([0,0,$W+1]) {
     translate([500,0,0]) 
     cube([240,240,540]);
     }
+    }
     children();
 }
 module fdm_printer() {
+    if(!isProjection()){
     translate([0,0,$W]) {
     cube([392,406,478]);
     translate([0,0,478]) 
@@ -134,6 +137,7 @@ module fdm_printer() {
     translate([0,0,478]) 
     cube([372,180,380]);
     cube([372,80,860]);
+    }
     }
     children();
 }
@@ -175,7 +179,7 @@ module szekreny() {
     {
         X_H=420;
         DEC_W=DEPTH;
-        cabinet(name = "cB", w = W_B, h = 1000, d = DEPTH,foot=FOOT,back=["internal",8]) {
+        cabinet(name = "cB", w = W_B, h = 1000, d = DEPTH,foot=FOOT,back=["internal",8],sideClose="UF") {
             fdm_printer()
             air_filter()
             cTop(outer=true)
@@ -200,7 +204,7 @@ module model() {
 posNeg() {
 
     szekreny();
- if(!$positive) {        cube([1000,1000,4000],center=true);    }
+// if(!$positive) {        cube([1000,1000,4000],center=true);    }
 //    if(!$positive) {        cube([10000,200,4000],center=true);    }
 
 }
@@ -210,7 +214,7 @@ mode="print";
 //mode="P-cB2H250BYZ";
 //mode="P-cBOuterTopXY";
 
-mode="P-cBlYZ";
+// mode="P-cBlYZ";
 
 //cBOuterTopXY
 //x@OUTPUT:P-cBBotXY
@@ -226,7 +230,7 @@ scale([1,1,1]*s) {
     
     translate([1000,1000,0]) 
     %actor();
-model();
+    model();
     
 }
 
@@ -241,7 +245,7 @@ model();
     $part=substr(mode,2);
 
 
-   projection(false)
+//    projection(false)
    orient(mode)
 //    rotate(90,[0,1,0]) 
         model();

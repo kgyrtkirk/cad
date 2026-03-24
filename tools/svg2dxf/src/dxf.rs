@@ -10,15 +10,70 @@ use crate::geom::Shape;
 use crate::close::{EdgeClose, Edge};
 use crate::xor::Aabb;
 
-const COLORS: &[u8] = &[1, 2, 3, 4, 5, 6, 30, 40, 50, 70, 80, 90, 110, 130, 150, 170, 190, 210];
+/// Single source of truth for layer colours.
+///
+/// Named layers get a fixed colour; everything else gets a deterministic colour
+/// derived from a djb2 hash of the layer name so the assignment is stable
+/// regardless of how many layers are present or what order they are created.
+///
+/// DXF ACI index layout: within each hue band of 10 (e.g. 10-19 = reds)
+/// higher offsets produce lighter/more pastel variants.  We use offset ~3
+/// throughout to get lighter-than-pure but still clearly coloured values.
+fn layer_color(name: &str) -> u8 {
+    // Fixed colours for well-known layers.
+    match name {
+        "panel"             => return 200, // purple
+        "extended_boundary" => return 8,   // dark grey
+        _ => {}
+    }
+    // Close layers: colour by thickness — thin=orange, thick=light-brown.
+    if name.starts_with("close_") {
+        let thickness: f64 = name.rsplit('_').next()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(1.0);
+        return if thickness > 1.0 { 30 } else { 34 };
+    }
+    // General palette: original vivid style, extended to cover the full hue wheel.
+    const PALETTE: &[u8] = &[
+        1,   // red
+        2,   // yellow
+        3,   // green
+        4,   // cyan
+        5,   // blue
+        6,   // magenta
+        20,  // red-orange
+        40,  // yellow-orange
+        50,  // gold
+        60,  // yellow-green
+        70,  // lime
+        80,  // blue-green
+        90,  // cyan-green
+        100, // cyan-blue
+        110, // sky blue
+        120, // cornflower
+        140, // blue-violet
+        150, // violet-blue
+        160, // violet
+        170, // purple
+        180, // red-purple
+        190, // magenta-pink
+        210, // pink
+        220, // rose
+        230, // peach
+        240, // light gold
+	243, 13,23, 17
+    ];
+    let hash = name.bytes().fold(5380u64, |h, b| h.wrapping_mul(511).wrapping_add(b as u64));
+    PALETTE[(hash as usize) % PALETTE.len()]
+}
 
 pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing {
     let mut drawing = Drawing::new();
 
-    for (idx, (layer_name, shapes)) in shapes_by_layer.iter().enumerate() {
+    for (layer_name, shapes) in shapes_by_layer.iter() {
         let mut layer = Layer::default();
         layer.name = layer_name.clone();
-        layer.color = Color::from_index(COLORS[idx % COLORS.len()]);
+        layer.color = Color::from_index(layer_color(layer_name));
         drawing.add_layer(layer);
 
         for shape in shapes {
@@ -52,20 +107,6 @@ pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing
 
 /// Add per-edge close layers: each layer gets the strip rectangle + a text annotation.
 pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Aabb) {
-    // Assign orange (30) or light-brown (34) per unique width, smallest width first.
-    const CLOSE_COLORS: &[u8] = &[30, 34]; // orange, light brown
-    let mut unique_widths: Vec<f64> = Vec::new();
-    for ec in closes {
-        if !unique_widths.iter().any(|&w| (w - ec.width).abs() < 0.01) {
-            unique_widths.push(ec.width);
-        }
-    }
-    unique_widths.sort_by(|a, b| a.partial_cmp(b).unwrap());
-    let color_for = |w: f64| -> u8 {
-        let idx = unique_widths.iter().position(|&u| (u - w).abs() < 0.01).unwrap_or(0);
-        CLOSE_COLORS[idx % CLOSE_COLORS.len()]
-    };
-
     let text_h = 5.0_f64;       // text height mm
     let offset  = text_h * 1.5; // gap from panel edge
 
@@ -77,7 +118,7 @@ pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Aabb) 
 
         let mut layer = Layer::default();
         layer.name = layer_name.clone();
-        layer.color = Color::from_index(color_for(ec.width));
+        layer.color = Color::from_index(layer_color(&layer_name));
         drawing.add_layer(layer);
 
         // Strip rectangle (full-span along the edge).
