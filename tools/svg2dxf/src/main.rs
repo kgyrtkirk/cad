@@ -13,6 +13,34 @@ use xor::{Aabb, feature_loops};
 use close::{extract_closes, Edge};
 use classify::layer;
 
+/// Split large panel-profile polygons (area > 10 000 mm²) into their edge notches.
+///
+/// The panel outline in some SVGs is a single complex polygon whose boundary
+/// IS the panel perimeter plus rectangular slot notches.  Applying the same
+/// boundary-strip logic against the polygon's own AABB extracts the notches
+/// as separate closed shapes, which are then processed by detect_slots.
+/// The large polygon itself is discarded — the panel boundary comes from the
+/// separately computed panel_bb.
+fn decompose_profiles(shapes: Vec<Shape>) -> Vec<Shape> {
+    let mut result = Vec::new();
+    for shape in shapes {
+        if let Shape::Poly(ref poly) = shape {
+            if poly.area() > 10_000.0 {
+                if let Some((x0, y0, x1, y1)) = poly.bbox() {
+                    let local_bb = Aabb { min_x: x0, min_y: y0, max_x: x1, max_y: y1 };
+                    let wrapper = [Shape::Poly(poly.clone())];
+                    for notch in feature_loops(&wrapper, &local_bb) {
+                        result.push(Shape::Poly(notch));
+                    }
+                    continue; // discard the large polygon itself
+                }
+            }
+        }
+        result.push(shape);
+    }
+    result
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
@@ -46,6 +74,9 @@ let loop_shapes: Vec<Shape> = loops.into_iter().map(Shape::Poly).collect();
     // Separate edge-close strips from the rest.
     let (closes, loop_shapes) = extract_closes(loop_shapes, &bb);
     for ec in &closes { eprintln!("  close {}: {:.2}mm", ec.edge.label(), ec.width); }
+
+    // Decompose panel-profile polygons into their edge notches.
+    let loop_shapes = decompose_profiles(loop_shapes);
 
     // Circle and slot detection + dedup.
     let panel_cx = (bb.min_x + bb.max_x) / 2.0;
