@@ -20,10 +20,6 @@ pub fn layer(shape: &Shape) -> String {
             if !p.closed {
                 return "unclassified".to_string();
             }
-            // Large shapes are the panel profile (cut outline with edge features).
-            if p.area() > 10_000.0 {
-                return "panel_profile".to_string();
-            }
             let ar = p.aspect_ratio();
             if let Some((min_x, min_y, max_x, max_y)) = p.bbox() {
                 let w = max_x - min_x;

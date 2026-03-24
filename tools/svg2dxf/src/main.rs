@@ -10,36 +10,8 @@ use std::env;
 use std::fs;
 use geom::{Shape, detect_circles, detect_slots, shape_key};
 use xor::{Aabb, feature_loops};
-use close::{extract_closes, Edge};
+use close::extract_closes;
 use classify::layer;
-
-/// Split large panel-profile polygons (area > 10 000 mm²) into their edge notches.
-///
-/// The panel outline in some SVGs is a single complex polygon whose boundary
-/// IS the panel perimeter plus rectangular slot notches.  Applying the same
-/// boundary-strip logic against the polygon's own AABB extracts the notches
-/// as separate closed shapes, which are then processed by detect_slots.
-/// The large polygon itself is discarded — the panel boundary comes from the
-/// separately computed panel_bb.
-fn decompose_profiles(shapes: Vec<Shape>) -> Vec<Shape> {
-    let mut result = Vec::new();
-    for shape in shapes {
-        if let Shape::Poly(ref poly) = shape {
-            if poly.area() > 10_000.0 {
-                if let Some((x0, y0, x1, y1)) = poly.bbox() {
-                    let local_bb = Aabb { min_x: x0, min_y: y0, max_x: x1, max_y: y1 };
-                    let wrapper = [Shape::Poly(poly.clone())];
-                    for notch in feature_loops(&wrapper, &local_bb) {
-                        result.push(Shape::Poly(notch));
-                    }
-                    continue; // discard the large polygon itself
-                }
-            }
-        }
-        result.push(shape);
-    }
-    result
-}
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -62,23 +34,24 @@ fn main() {
 
     eprintln!("Parsed {} raw shapes ({}×{} mm)", raw_shapes.len(), width as i64, height as i64);
 
-    let bb = Aabb::from_shapes(&raw_shapes)
+    // 1. Compute outer AABB (includes close strips) for close detection.
+    let outer_bb = Aabb::from_shapes(&raw_shapes)
         .unwrap_or_else(|| { eprintln!("No geometry found"); std::process::exit(1) });
 
-    // Extract individual feature loops by dropping boundary segments.
-    let loops = feature_loops(&raw_shapes, &bb);
-    eprintln!("Feature loops after boundary strip: {}", loops.len());
-
-let loop_shapes: Vec<Shape> = loops.into_iter().map(Shape::Poly).collect();
-
-    // Separate edge-close strips from the rest.
-    let (closes, loop_shapes) = extract_closes(loop_shapes, &bb);
+    // 2. Extract close strips first — they live on the outer boundary.
+    let (closes, remaining) = extract_closes(raw_shapes, &outer_bb);
     for ec in &closes { eprintln!("  close {}: {:.2}mm", ec.edge.label(), ec.width); }
 
-    // Decompose panel-profile polygons into their edge notches.
-    let loop_shapes = decompose_profiles(loop_shapes);
+    // 3. Inner panel AABB — computed without the close strips.
+    let bb = Aabb::from_shapes(&remaining)
+        .unwrap_or_else(|| { eprintln!("No geometry after close removal"); std::process::exit(1) });
 
-    // Circle and slot detection + dedup.
+    // 4. Extract individual feature loops by dropping segments on the panel boundary.
+    let loops = feature_loops(&remaining, &bb);
+    eprintln!("Feature loops after boundary strip: {}", loops.len());
+    let loop_shapes: Vec<Shape> = loops.into_iter().map(Shape::Poly).collect();
+
+    // 5. Circle and slot detection + dedup.
     let panel_cx = (bb.min_x + bb.max_x) / 2.0;
     let panel_cy = (bb.min_y + bb.max_y) / 2.0;
     let shapes = detect_circles(loop_shapes, 0.05);
@@ -88,38 +61,25 @@ let loop_shapes: Vec<Shape> = loops.into_iter().map(Shape::Poly).collect();
 
     eprintln!("After circle detection + dedup: {}", shapes.len());
 
-    // Layer assignment.
+    // 6. Layer assignment.
     let mut by_layer: BTreeMap<String, Vec<&Shape>> = BTreeMap::new();
     for shape in &shapes {
         by_layer.entry(layer(shape)).or_default().push(shape);
     }
     for (l, v) in &by_layer { eprintln!("  layer {l}: {} shapes", v.len()); }
 
-    // Inner panel boundary (shrunk by close widths — the actual cut outline).
-    let mut p_min_x = bb.min_x;
-    let mut p_max_x = bb.max_x;
-    let mut p_min_y = bb.min_y;
-    let mut p_max_y = bb.max_y;
-    for ec in &closes {
-        match ec.edge {
-            Edge::Left   => p_min_x += ec.width,
-            Edge::Right  => p_max_x -= ec.width,
-            Edge::Bottom => p_min_y += ec.width,
-            Edge::Top    => p_max_y -= ec.width,
-        }
-    }
-    let panel_bb = Aabb { min_x: p_min_x, min_y: p_min_y, max_x: p_max_x, max_y: p_max_y };
+    // Panel boundary (inner — the actual cut outline).
     by_layer.entry("panel".to_string()).or_default().push(
-        Box::leak(Box::new(Shape::Poly(panel_bb.as_polyline())))
-    );
-
-    // Outer AABB (includes close strips).
-    by_layer.entry("extended_boundary".to_string()).or_default().push(
         Box::leak(Box::new(Shape::Poly(bb.as_polyline())))
     );
 
+    // Outer boundary (includes close strips).
+    by_layer.entry("extended_boundary".to_string()).or_default().push(
+        Box::leak(Box::new(Shape::Poly(outer_bb.as_polyline())))
+    );
+
     let mut drawing = dxf::build_drawing(&by_layer);
-    dxf::add_close_layers(&mut drawing, &closes, &bb);
+    dxf::add_close_layers(&mut drawing, &closes, &outer_bb);
     drawing.save_file(&output_path)
         .unwrap_or_else(|e| { eprintln!("Cannot write {}: {e}", output_path); std::process::exit(1) });
 
