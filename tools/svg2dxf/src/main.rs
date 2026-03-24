@@ -33,7 +33,10 @@ fn main() {
     let loops = feature_loops(&raw_shapes, &bb);
     eprintln!("Feature loops after boundary strip: {}", loops.len());
 
-let loop_shapes: Vec<Shape> = loops.into_iter().map(Shape::Poly).collect();
+    for (i, lp) in loops.iter().enumerate() {
+        eprintln!("  loop {i:2}: {} pts  ar={:.1}  bbox={:?}", lp.points.len(), lp.aspect_ratio(), lp.bbox());
+    }
+    let loop_shapes: Vec<Shape> = loops.into_iter().map(Shape::Poly).collect();
 
     // Circle detection + dedup.
     let shapes = detect_circles(loop_shapes, 0.05);

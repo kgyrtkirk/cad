@@ -121,14 +121,22 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
         makeContact(h0,modeD);
         plain(name,w0,h0,closeL,closeR,closeU,closeD,rot,$connect=undef);
     }else 
-    if(true && $part == name && $W>1) {
+    if($drillPlan == undef && $part == name && $W>1) {
         // drill plan for selected part is evaluated at the center
         // not perfect ; but something
-        W0=$W;
-        W1=.1;
-        $W=W1;
-        translate([0,0,18/2-W1/2])
-        plain(name,w0,h0,0,0,0,0,rot);
+        // W0=$W;
+        // W1=.1;
+        // $W=W1;
+        $drillPlan=true;
+        // translate([0,0,W0/2-W1/2])
+        E=.01/2;
+        difference()  {
+            plain(name,w0,h0,closeL,closeR,closeU,closeD,rot);
+            translate([0,0,$W/2+E])
+            cube([w0,h0,$W]);
+            translate([0,0,-$W/2-E])
+            cube([w0,h0,$W]);
+        }
     }else  {
 
 
@@ -143,10 +151,11 @@ module plain(name,w0,h0,closeL,closeR,closeU,closeD,rot=false) {
         color($front?[.4,.6,1]:[1,.8,.4])
         cube([w,h,$W]);
         //color([1,0,0]) 
-        if(!isProjection())
+        // if(!isProjection())
         {
             E=.1;
-            if(closeL>0) {
+            if(closeL>0) 
+            {
                 closeColor(closeL)
                 translate([-closeL,0,0])
                 cube([closeL-E,h,$W]);
