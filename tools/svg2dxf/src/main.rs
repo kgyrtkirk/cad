@@ -8,7 +8,7 @@ mod dxf;
 use std::collections::{BTreeMap, HashSet};
 use std::env;
 use std::fs;
-use geom::{Shape, detect_circles, shape_key};
+use geom::{Shape, detect_circles, detect_slots, shape_key};
 use xor::{Aabb, feature_loops};
 use close::{extract_closes, Edge};
 use classify::layer;
@@ -41,8 +41,11 @@ let loop_shapes: Vec<Shape> = loops.into_iter().map(Shape::Poly).collect();
     let (closes, loop_shapes) = extract_closes(loop_shapes, &bb);
     for ec in &closes { eprintln!("  close {}: {:.2}mm", ec.edge.label(), ec.width); }
 
-    // Circle detection + dedup.
+    // Circle and slot detection + dedup.
+    let panel_cx = (bb.min_x + bb.max_x) / 2.0;
+    let panel_cy = (bb.min_y + bb.max_y) / 2.0;
     let shapes = detect_circles(loop_shapes, 0.05);
+    let shapes = detect_slots(shapes, panel_cx, panel_cy);
     let mut seen = HashSet::new();
     let shapes: Vec<Shape> = shapes.into_iter().filter(|s| seen.insert(shape_key(s))).collect();
 
@@ -53,19 +56,7 @@ let loop_shapes: Vec<Shape> = loops.into_iter().map(Shape::Poly).collect();
     for shape in &shapes {
         by_layer.entry(layer(shape)).or_default().push(shape);
     }
-    for (l, v) in &by_layer {
-        eprintln!("  layer {l}: {} shapes", v.len());
-        if l == "unclassified" {
-            for s in v {
-                if let Shape::Poly(p) = s {
-                    if let Some((x0,y0,x1,y1)) = p.bbox() {
-                        eprintln!("    poly pts={} bbox=({:.2},{:.2})-({:.2},{:.2}) w={:.2} h={:.2}",
-                            p.points.len(), x0, y0, x1, y1, x1-x0, y1-y0);
-                    }
-                }
-            }
-        }
-    }
+    for (l, v) in &by_layer { eprintln!("  layer {l}: {} shapes", v.len()); }
 
     // Inner panel boundary (shrunk by close widths — the actual cut outline).
     let mut p_min_x = bb.min_x;

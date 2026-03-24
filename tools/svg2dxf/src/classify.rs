@@ -21,13 +21,18 @@ pub fn layer(shape: &Shape) -> String {
                 return "unclassified".to_string();
             }
             let ar = p.aspect_ratio();
-            // Narrow elongated closed shapes are grooves (aspect ratio > 8, width < 12mm).
             if let Some((min_x, min_y, max_x, max_y)) = p.bbox() {
                 let w = max_x - min_x;
                 let h = max_y - min_y;
                 let short = w.min(h);
+                let long  = w.max(h);
+                // Narrow elongated closed shapes are grooves — layer name includes width.
                 if ar > 8.0 && short < 12.0 {
-                    return "groove".to_string();
+                    return format!("groove_{}", short.round() as i64);
+                }
+                // Expanded drill slots: 8 mm wide, ~32 mm deep.
+                if (short - 8.0).abs() < 0.5 && (long - 32.0).abs() < 1.0 {
+                    return "drill_slot_8x32".to_string();
                 }
             }
             "unclassified".to_string()

@@ -102,6 +102,56 @@ fn try_fit_circle(poly: &Polyline, tol: f64) -> Option<Circle> {
     }
 }
 
+/// Expand 8mm-wide edge slots to 32mm-deep rectangles, anchoring on the panel-edge side.
+///
+/// Detection: closed poly with short bbox side in [7.5, 8.5] mm and long side < 40 mm.
+/// The shape is extended inward (toward the panel centre) to 32 mm depth.
+pub fn detect_slots(shapes: Vec<Shape>, panel_cx: f64, panel_cy: f64) -> Vec<Shape> {
+    shapes.into_iter().map(|shape| {
+        if let Shape::Poly(ref poly) = shape {
+            if let Some(expanded) = try_expand_slot(poly, panel_cx, panel_cy) {
+                return Shape::Poly(expanded);
+            }
+        }
+        shape
+    }).collect()
+}
+
+fn try_expand_slot(poly: &Polyline, pcx: f64, pcy: f64) -> Option<Polyline> {
+    if !poly.closed { return None; }
+    let (x0, y0, x1, y1) = poly.bbox()?;
+    let w = x1 - x0;
+    let h = y1 - y0;
+    let is_8 = |v: f64| (v - 8.0).abs() < 0.5;
+    if !is_8(w) && !is_8(h) { return None; }
+    let long = w.max(h);
+    if long > 40.0 { return None; }
+
+    let target = 32.0_f64;
+    let cx = (x0 + x1) / 2.0;
+    let cy = (y0 + y1) / 2.0;
+
+    let (nx0, ny0, nx1, ny1) = if is_8(h) {
+        // Horizontal slot — extend in X, anchor on the edge-side end.
+        if cx < pcx { (x0, y0, x0 + target, y1) }   // left-edge: anchor left
+        else         { (x1 - target, y0, x1, y1) }   // right-edge: anchor right
+    } else {
+        // Vertical slot — extend in Y.
+        if cy < pcy { (x0, y0, x1, y0 + target) }    // bottom-edge: anchor bottom
+        else        { (x0, y1 - target, x1, y1) }     // top-edge: anchor top
+    };
+
+    Some(Polyline {
+        points: vec![
+            Point { x: nx0, y: ny0 },
+            Point { x: nx1, y: ny0 },
+            Point { x: nx1, y: ny1 },
+            Point { x: nx0, y: ny1 },
+        ],
+        closed: true,
+    })
+}
+
 /// Replace polygon approximations of circles with Circle shapes.
 pub fn detect_circles(shapes: Vec<Shape>, tol: f64) -> Vec<Shape> {
     shapes

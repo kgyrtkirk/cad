@@ -50,17 +50,22 @@ pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing
     drawing
 }
 
-/// Pick a DXF color index for a close width so that equal widths share the same color.
-fn close_color(width: f64) -> u8 {
-    // Palette of visually distinct colors (DXF ACI indices).
-    const PALETTE: &[u8] = &[1, 2, 4, 5, 6, 30, 40, 140, 170, 200];
-    // Bucket the width to the nearest 0.05 mm to make a stable key.
-    let key = (width / 0.05).round() as u64;
-    PALETTE[(key as usize) % PALETTE.len()]
-}
-
 /// Add per-edge close layers: each layer gets the strip rectangle + a text annotation.
 pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Aabb) {
+    // Assign orange (30) or light-brown (34) per unique width, smallest width first.
+    const CLOSE_COLORS: &[u8] = &[30, 34]; // orange, light brown
+    let mut unique_widths: Vec<f64> = Vec::new();
+    for ec in closes {
+        if !unique_widths.iter().any(|&w| (w - ec.width).abs() < 0.01) {
+            unique_widths.push(ec.width);
+        }
+    }
+    unique_widths.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    let color_for = |w: f64| -> u8 {
+        let idx = unique_widths.iter().position(|&u| (u - w).abs() < 0.01).unwrap_or(0);
+        CLOSE_COLORS[idx % CLOSE_COLORS.len()]
+    };
+
     let text_h = 5.0_f64;       // text height mm
     let offset  = text_h * 1.5; // gap from panel edge
 
@@ -72,7 +77,7 @@ pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Aabb) 
 
         let mut layer = Layer::default();
         layer.name = layer_name.clone();
-        layer.color = Color::from_index(close_color(ec.width));
+        layer.color = Color::from_index(color_for(ec.width));
         drawing.add_layer(layer);
 
         // Strip rectangle (full-span along the edge).
