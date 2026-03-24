@@ -15,10 +15,16 @@ use classify::layer;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    if args.len() < 3 {
-        eprintln!("Usage: svg2dxf <input.svg> <output.dxf>");
+    if args.len() < 2 {
+        eprintln!("Usage: svg2dxf <input.svg> [output.dxf]");
         std::process::exit(1);
     }
+    let output_path = if args.len() >= 3 {
+        args[2].clone()
+    } else {
+        let p = std::path::Path::new(&args[1]);
+        p.with_extension("dxf").to_string_lossy().into_owned()
+    };
 
     let data = fs::read_to_string(&args[1])
         .unwrap_or_else(|e| { eprintln!("Cannot read {}: {e}", args[1]); std::process::exit(1) });
@@ -83,8 +89,8 @@ let loop_shapes: Vec<Shape> = loops.into_iter().map(Shape::Poly).collect();
 
     let mut drawing = dxf::build_drawing(&by_layer);
     dxf::add_close_layers(&mut drawing, &closes, &bb);
-    drawing.save_file(&args[2])
-        .unwrap_or_else(|e| { eprintln!("Cannot write {}: {e}", args[2]); std::process::exit(1) });
+    drawing.save_file(&output_path)
+        .unwrap_or_else(|e| { eprintln!("Cannot write {}: {e}", output_path); std::process::exit(1) });
 
-    eprintln!("Wrote {}", args[2]);
+    eprintln!("Wrote {}", output_path);
 }
