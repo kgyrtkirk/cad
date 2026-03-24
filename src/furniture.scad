@@ -1088,8 +1088,13 @@ module jointPartE() {
     L=80;
             translate([$W/2,$W/4,L/2]) {
             rotate(-90,[1,0,0])
-            cylinder(d=6,h=50);
+            cylinder(d=5,h=35);
             }
+            translate([$W/2,$W,L/2]) {
+            rotate(-90,[1,0,0])
+            cylinder(d=8,h=20);
+            }
+
             translate([$W,$W+34,L/2])
             rotate(90,[0,1,0])
             cylinder(d=15,h=1.5*$W,center=true);

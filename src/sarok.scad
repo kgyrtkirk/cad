@@ -194,11 +194,7 @@ module szekreny() {
         eXZ("xB",DEC_W,X_H+$W);
 
     }
-
-
 }
-
-
 
 module model() {
 posNeg() {
@@ -213,13 +209,14 @@ posNeg() {
 mode="print";
 //mode="P-cB2H250BYZ";
 //mode="P-cBOuterTopXY";
-// mode="P-cBBotXY";
+mode="P-cBlYZ";
 
 //cBOuterTopXY
 //x@OUTPUT:P-cBBotXY
 //x@OUTPUT:P-cBlYZ
 //x@OUTPUT:P-cBrYZ
 //@OUTPUT:P-cBBotXY
+//@OUTPUT:P-cBlYZ
 
 
 if(mode == "print") {

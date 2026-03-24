@@ -68,9 +68,8 @@ pub enum Shape {
 /// Try to fit a circle to a closed polygon.
 /// All vertices must lie within `tol` fractional deviation from the mean radius.
 fn try_fit_circle(poly: &Polyline, tol: f64) -> Option<Circle> {
-    // Require at least 6 vertices (rectangles have 4 corners equidistant from centroid
-    // and would otherwise pass the radius-deviation test).
-    if !poly.closed || poly.points.len() < 6 {
+    // Require at least 5 vertices (rectangles have 4 corners — keeping them out).
+    if !poly.closed || poly.points.len() < 5 {
         return None;
     }
     // Bounding-box aspect ratio must be close to 1 (circles are round).

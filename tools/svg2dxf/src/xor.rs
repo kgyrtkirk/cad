@@ -1,6 +1,6 @@
 use crate::geom::{Point, Polyline, Shape};
 
-const TOL: f64 = 0.01; // mm
+const TOL: f64 = 0.01; // mm tolerance for "on AABB edge" test
 
 // ── Aabb ──────────────────────────────────────────────────────────────────────
 
@@ -57,6 +57,18 @@ impl Line {
     }
 }
 
+
+/// Remove the last point if it duplicates the first (closed-path artifact from line expansion).
+fn dedup_endpoints(pts: &mut Vec<Point>) {
+    if pts.len() >= 2 {
+        let first = &pts[0];
+        let last  = &pts[pts.len() - 1];
+        if (first.x - last.x).abs() < TOL && (first.y - last.y).abs() < TOL {
+            pts.pop();
+        }
+    }
+}
+
 fn poly_to_lines(p: &Polyline) -> Vec<Line> {
     let n = p.points.len();
     let limit = if p.closed { n } else { n - 1 };
@@ -85,7 +97,8 @@ pub fn feature_loops(shapes: &[Shape], bb: &Aabb) -> Vec<Polyline> {
         for line in &lines {
             if line.is_on_aabb_edge(bb) {
                 // boundary segment — flush current run as a closed loop
-                if current.len() >= 2 {
+                dedup_endpoints(&mut current);
+                if current.len() >= 3 {
                     result.push(Polyline { points: std::mem::take(&mut current), closed: true });
                 } else {
                     current.clear();
@@ -98,8 +111,9 @@ pub fn feature_loops(shapes: &[Shape], bb: &Aabb) -> Vec<Polyline> {
             }
         }
 
-        // flush any trailing run (happens if the polyline ends on a non-boundary segment)
-        if current.len() >= 2 {
+        // flush any trailing run (interior shapes with no boundary segments at all)
+        dedup_endpoints(&mut current);
+        if current.len() >= 3 {
             result.push(Polyline { points: current, closed: true });
         }
     }
