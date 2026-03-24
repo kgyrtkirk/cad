@@ -8,8 +8,8 @@ use crate::geom::Shape;
 /// - Circle with diameter ≤ 2.0 → `drill_d{diam_rounded}`
 /// - Circle with diameter > 2.0 → `drill_d{diam_rounded}`  (all circles are drill holes)
 /// - Closed polyline with area < groove threshold and very elongated → `groove`
-/// - Otherwise closed → `cut`
-/// - Open polyline → `misc`
+/// - Otherwise closed → `unclassified`
+/// - Open polyline → `unclassified`
 pub fn layer(shape: &Shape) -> String {
     match shape {
         Shape::Circle(c) => {
@@ -18,11 +18,10 @@ pub fn layer(shape: &Shape) -> String {
         }
         Shape::Poly(p) => {
             if !p.closed {
-                return "misc".to_string();
+                return "unclassified".to_string();
             }
-            let area = p.area();
             let ar = p.aspect_ratio();
-            // Narrow elongated closed shapes are grooves (aspect ratio > 8, width < 10mm).
+            // Narrow elongated closed shapes are grooves (aspect ratio > 8, width < 12mm).
             if let Some((min_x, min_y, max_x, max_y)) = p.bbox() {
                 let w = max_x - min_x;
                 let h = max_y - min_y;
@@ -31,8 +30,7 @@ pub fn layer(shape: &Shape) -> String {
                     return "groove".to_string();
                 }
             }
-            let _ = area;
-            "cut".to_string()
+            "unclassified".to_string()
         }
     }
 }

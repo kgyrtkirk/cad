@@ -53,7 +53,19 @@ let loop_shapes: Vec<Shape> = loops.into_iter().map(Shape::Poly).collect();
     for shape in &shapes {
         by_layer.entry(layer(shape)).or_default().push(shape);
     }
-    for (l, v) in &by_layer { eprintln!("  layer {l}: {} shapes", v.len()); }
+    for (l, v) in &by_layer {
+        eprintln!("  layer {l}: {} shapes", v.len());
+        if l == "unclassified" {
+            for s in v {
+                if let Shape::Poly(p) = s {
+                    if let Some((x0,y0,x1,y1)) = p.bbox() {
+                        eprintln!("    poly pts={} bbox=({:.2},{:.2})-({:.2},{:.2}) w={:.2} h={:.2}",
+                            p.points.len(), x0, y0, x1, y1, x1-x0, y1-y0);
+                    }
+                }
+            }
+        }
+    }
 
     // Inner panel boundary (shrunk by close widths — the actual cut outline).
     let mut p_min_x = bb.min_x;
@@ -74,7 +86,7 @@ let loop_shapes: Vec<Shape> = loops.into_iter().map(Shape::Poly).collect();
     );
 
     // Outer AABB (includes close strips).
-    by_layer.entry("boundary".to_string()).or_default().push(
+    by_layer.entry("extended_boundary".to_string()).or_default().push(
         Box::leak(Box::new(Shape::Poly(bb.as_polyline())))
     );
 

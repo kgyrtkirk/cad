@@ -50,6 +50,15 @@ pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing
     drawing
 }
 
+/// Pick a DXF color index for a close width so that equal widths share the same color.
+fn close_color(width: f64) -> u8 {
+    // Palette of visually distinct colors (DXF ACI indices).
+    const PALETTE: &[u8] = &[1, 2, 4, 5, 6, 30, 40, 140, 170, 200];
+    // Bucket the width to the nearest 0.05 mm to make a stable key.
+    let key = (width / 0.05).round() as u64;
+    PALETTE[(key as usize) % PALETTE.len()]
+}
+
 /// Add per-edge close layers: each layer gets the strip rectangle + a text annotation.
 pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Aabb) {
     let text_h = 5.0_f64;       // text height mm
@@ -59,11 +68,11 @@ pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Aabb) 
     let cy = (bb.min_y + bb.max_y) / 2.0;
 
     for ec in closes {
-        let layer_name = format!("close_{}", ec.edge.label());
+        let layer_name = format!("close_{}_{:.2}", ec.edge.label(), ec.width);
 
         let mut layer = Layer::default();
         layer.name = layer_name.clone();
-        layer.color = Color::from_index(3); // green
+        layer.color = Color::from_index(close_color(ec.width));
         drawing.add_layer(layer);
 
         // Strip rectangle (full-span along the edge).
