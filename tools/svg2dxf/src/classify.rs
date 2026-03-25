@@ -1,6 +1,6 @@
 // Assign shapes to DXF layers based on geometry properties.
 
-use crate::geom::Shape;
+use crate::geom::{Shape, Rect};
 
 /// Layer name for a shape.
 ///
@@ -21,9 +21,9 @@ pub fn layer(shape: &Shape) -> String {
                 return "unclassified".to_string();
             }
             let ar = p.aspect_ratio();
-            if let Some((min_x, min_y, max_x, max_y)) = p.bbox() {
-                let w = max_x - min_x;
-                let h = max_y - min_y;
+            if let Some(Rect { x0, y0, x1, y1 }) = p.bbox() {
+                let w = x1 - x0;
+                let h = y1 - y0;
                 let short = w.min(h);
                 let long  = w.max(h);
                 // Narrow elongated closed shapes are grooves — layer name includes width.

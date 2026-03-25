@@ -5,7 +5,7 @@
 // thin dimension abuts one of the four AABB edges.  We collect all such loops,
 // group them by edge, and report one EdgeClose per edge.
 
-use crate::geom::{Polyline, Shape};
+use crate::geom::{Polyline, Shape, Rect};
 use crate::xor::Aabb;
 
 /// Rendering adds a 0.1 mm gap so all detected widths are 0.1 mm short.
@@ -31,7 +31,7 @@ pub struct EdgeClose {
 
 /// Classify one loop as an edge-close strip, or return None.
 fn as_edge_close(poly: &Polyline, bb: &Aabb) -> Option<EdgeClose> {
-    let (x0, y0, x1, y1) = poly.bbox()?;
+    let Rect { x0, y0, x1, y1 } = poly.bbox()?;
     let w = x1 - x0;
     let h = y1 - y0;
 

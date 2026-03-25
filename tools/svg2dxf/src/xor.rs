@@ -1,9 +1,10 @@
-use crate::geom::{Point, Polyline, Shape};
+use crate::geom::{Point, Polyline, Shape, Rect};
 
 const TOL: f64 = 0.01; // mm tolerance for "on AABB edge" test
 
 // ── Aabb ──────────────────────────────────────────────────────────────────────
 
+// FIXME: isn't this a Rect?
 pub struct Aabb {
     pub min_x: f64,
     pub min_y: f64,
@@ -16,11 +17,9 @@ impl Aabb {
         let mut a = Aabb { min_x: f64::INFINITY, min_y: f64::INFINITY,
                            max_x: f64::NEG_INFINITY, max_y: f64::NEG_INFINITY };
         for s in shapes {
-            if let Shape::Poly(p) = s {
-                for pt in &p.points {
-                    a.min_x = a.min_x.min(pt.x); a.min_y = a.min_y.min(pt.y);
-                    a.max_x = a.max_x.max(pt.x); a.max_y = a.max_y.max(pt.y);
-                }
+            if let Some(Rect { x0, y0, x1, y1 }) = s.bbox() {
+                a.min_x = a.min_x.min(x0); a.min_y = a.min_y.min(y0);
+                a.max_x = a.max_x.max(x1); a.max_y = a.max_y.max(y1);
             }
         }
         if a.min_x.is_infinite() { None } else { Some(a) }

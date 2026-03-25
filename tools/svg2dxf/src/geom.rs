@@ -1,4 +1,28 @@
-// Geometric primitives and circle detection from polygon approximations.
+// Geometric primitives and circle/slot detection from polygon approximations.
+
+#[derive(Debug, Clone, Copy)]
+pub struct Rect {
+    pub x0: f64,
+    pub y0: f64,
+    pub x1: f64,
+    pub y1: f64,
+}
+
+impl Rect {
+    pub fn area(&self) -> f64 {
+        (self.x1 - self.x0) * (self.y1 - self.y0)
+    }
+
+    pub fn expand(&self, margin: f64) -> Self {
+        Rect { x0: self.x0 - margin, y0: self.y0 - margin,
+               x1: self.x1 + margin, y1: self.y1 + margin }
+    }
+
+    pub fn contains(&self, other: Rect) -> bool {
+        other.x0 >= self.x0 && other.y0 >= self.y0 &&
+        other.x1 <= self.x1 && other.y1 <= self.y1
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct Point {
@@ -10,6 +34,17 @@ pub struct Point {
 pub struct Circle {
     pub center: Point,
     pub radius: f64,
+}
+
+impl Circle {
+    pub fn bbox(&self) -> Rect {
+        Rect {
+            x0: self.center.x - self.radius,
+            y0: self.center.y - self.radius,
+            x1: self.center.x + self.radius,
+            y1: self.center.y + self.radius,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -34,24 +69,20 @@ impl Polyline {
         (sum / 2.0).abs()
     }
 
-    pub fn bbox(&self) -> Option<(f64, f64, f64, f64)> {
-        if self.points.is_empty() {
-            return None;
-        }
-        let min_x = self.points.iter().map(|p| p.x).fold(f64::INFINITY, f64::min);
-        let max_x = self.points.iter().map(|p| p.x).fold(f64::NEG_INFINITY, f64::max);
-        let min_y = self.points.iter().map(|p| p.y).fold(f64::INFINITY, f64::min);
-        let max_y = self.points.iter().map(|p| p.y).fold(f64::NEG_INFINITY, f64::max);
-        Some((min_x, min_y, max_x, max_y))
+    pub fn bbox(&self) -> Option<Rect> {
+        if self.points.is_empty() { return None; }
+        let x0 = self.points.iter().map(|p| p.x).fold(f64::INFINITY,     f64::min);
+        let x1 = self.points.iter().map(|p| p.x).fold(f64::NEG_INFINITY, f64::max);
+        let y0 = self.points.iter().map(|p| p.y).fold(f64::INFINITY,     f64::min);
+        let y1 = self.points.iter().map(|p| p.y).fold(f64::NEG_INFINITY, f64::max);
+        Some(Rect { x0, y0, x1, y1 })
     }
 
     pub fn aspect_ratio(&self) -> f64 {
-        if let Some((min_x, min_y, max_x, max_y)) = self.bbox() {
-            let w = max_x - min_x;
-            let h = max_y - min_y;
-            if w.min(h) < 1e-6 {
-                return f64::INFINITY;
-            }
+        if let Some(r) = self.bbox() {
+            let w = r.x1 - r.x0;
+            let h = r.y1 - r.y0;
+            if w.min(h) < 1e-6 { return f64::INFINITY; }
             w.max(h) / w.min(h)
         } else {
             0.0
@@ -65,47 +96,39 @@ pub enum Shape {
     Poly(Polyline),
 }
 
+impl Shape {
+    pub fn bbox(&self) -> Option<Rect> {
+        match self {
+            Shape::Circle(c) => Some(c.bbox()),
+            Shape::Poly(p)   => p.bbox(),
+        }
+    }
+}
+
 /// Try to fit a circle to a closed polygon.
 /// All vertices must lie within `tol` fractional deviation from the mean radius.
 fn try_fit_circle(poly: &Polyline, tol: f64) -> Option<Circle> {
     // Require at least 5 vertices (rectangles have 4 corners — keeping them out).
-    if !poly.closed || poly.points.len() < 5 {
-        return None;
-    }
+    if !poly.closed || poly.points.len() < 5 { return None; }
     // Bounding-box aspect ratio must be close to 1 (circles are round).
-    if poly.aspect_ratio() > 1.5 {
-        return None;
-    }
+    if poly.aspect_ratio() > 1.5 { return None; }
     let n = poly.points.len() as f64;
     let cx = poly.points.iter().map(|p| p.x).sum::<f64>() / n;
     let cy = poly.points.iter().map(|p| p.y).sum::<f64>() / n;
-    let dists: Vec<f64> = poly
-        .points
-        .iter()
+    let dists: Vec<f64> = poly.points.iter()
         .map(|p| f64::hypot(p.x - cx, p.y - cy))
         .collect();
     let mean_r = dists.iter().sum::<f64>() / n;
-    if mean_r < 0.5 {
-        return None; // degenerate
-    }
-    let max_err = dists
-        .iter()
-        .map(|d| (d - mean_r).abs())
-        .fold(0.0_f64, f64::max);
+    if mean_r < 0.5 { return None; }
+    let max_err = dists.iter().map(|d| (d - mean_r).abs()).fold(0.0_f64, f64::max);
     if max_err / mean_r <= tol {
-        Some(Circle {
-            center: Point { x: cx, y: cy },
-            radius: mean_r,
-        })
+        Some(Circle { center: Point { x: cx, y: cy }, radius: mean_r })
     } else {
         None
     }
 }
 
 /// Expand 8mm-wide edge slots to 32mm-deep rectangles, anchoring on the panel-edge side.
-///
-/// Detection: closed poly with short bbox side in [7.5, 8.5] mm and long side < 40 mm.
-/// The shape is extended inward (toward the panel centre) to 32 mm depth.
 pub fn detect_slots(shapes: Vec<Shape>, panel_cx: f64, panel_cy: f64) -> Vec<Shape> {
     shapes.into_iter().map(|shape| {
         if let Shape::Poly(ref poly) = shape {
@@ -119,34 +142,29 @@ pub fn detect_slots(shapes: Vec<Shape>, panel_cx: f64, panel_cy: f64) -> Vec<Sha
 
 fn try_expand_slot(poly: &Polyline, pcx: f64, pcy: f64) -> Option<Polyline> {
     if !poly.closed { return None; }
-    let (x0, y0, x1, y1) = poly.bbox()?;
-    let w = x1 - x0;
-    let h = y1 - y0;
+    let r = poly.bbox()?;
+    let w = r.x1 - r.x0;
+    let h = r.y1 - r.y0;
     let is_8 = |v: f64| (v - 8.0).abs() < 0.5;
     if !is_8(w) && !is_8(h) { return None; }
-    let long = w.max(h);
-    if long > 40.0 { return None; }
+    if w.max(h) > 40.0 { return None; }
 
     let target = 32.0_f64;
-    let cx = (x0 + x1) / 2.0;
-    let cy = (y0 + y1) / 2.0;
+    let cx = (r.x0 + r.x1) / 2.0;
+    let cy = (r.y0 + r.y1) / 2.0;
 
     let (nx0, ny0, nx1, ny1) = if is_8(h) {
-        // Horizontal slot — extend in X, anchor on the edge-side end.
-        if cx < pcx { (x0, y0, x0 + target, y1) }   // left-edge: anchor left
-        else         { (x1 - target, y0, x1, y1) }   // right-edge: anchor right
+        if cx < pcx { (r.x0, r.y0, r.x0 + target, r.y1) }
+        else        { (r.x1 - target, r.y0, r.x1, r.y1) }
     } else {
-        // Vertical slot — extend in Y.
-        if cy < pcy { (x0, y0, x1, y0 + target) }    // bottom-edge: anchor bottom
-        else        { (x0, y1 - target, x1, y1) }     // top-edge: anchor top
+        if cy < pcy { (r.x0, r.y0, r.x1, r.y0 + target) }
+        else        { (r.x0, r.y1 - target, r.x1, r.y1) }
     };
 
     Some(Polyline {
         points: vec![
-            Point { x: nx0, y: ny0 },
-            Point { x: nx1, y: ny0 },
-            Point { x: nx1, y: ny1 },
-            Point { x: nx0, y: ny1 },
+            Point { x: nx0, y: ny0 }, Point { x: nx1, y: ny0 },
+            Point { x: nx1, y: ny1 }, Point { x: nx0, y: ny1 },
         ],
         closed: true,
     })
@@ -154,76 +172,12 @@ fn try_expand_slot(poly: &Polyline, pcx: f64, pcy: f64) -> Option<Polyline> {
 
 /// Replace polygon approximations of circles with Circle shapes.
 pub fn detect_circles(shapes: Vec<Shape>, tol: f64) -> Vec<Shape> {
-    shapes
-        .into_iter()
-        .map(|shape| {
-            if let Shape::Poly(ref poly) = shape {
-                if let Some(circle) = try_fit_circle(poly, tol) {
-                    return Shape::Circle(circle);
-                }
+    shapes.into_iter().map(|shape| {
+        if let Shape::Poly(ref poly) = shape {
+            if let Some(circle) = try_fit_circle(poly, tol) {
+                return Shape::Circle(circle);
             }
-            shape
-        })
-        .collect()
-}
-
-/// Canonical deduplication key — rotation-invariant, direction-invariant.
-pub fn shape_key(shape: &Shape) -> String {
-    match shape {
-        Shape::Circle(c) => format!(
-            "C:{:.2},{:.2},{:.2}",
-            c.center.x, c.center.y, c.radius
-        ),
-        Shape::Poly(p) => poly_key(p),
-    }
-}
-
-fn poly_key(poly: &Polyline) -> String {
-    if poly.points.is_empty() {
-        return String::new();
-    }
-    let pts: Vec<(i64, i64)> = poly
-        .points
-        .iter()
-        .map(|p| ((p.x * 100.0).round() as i64, (p.y * 100.0).round() as i64))
-        .collect();
-
-    let n = pts.len();
-    let min_idx = pts
-        .iter()
-        .enumerate()
-        .min_by_key(|(_, p)| *p)
-        .map(|(i, _)| i)
-        .unwrap_or(0);
-
-    if poly.closed && n > 2 {
-        let fwd: String = (0..n)
-            .map(|i| {
-                let (x, y) = pts[(i + min_idx) % n];
-                format!("{},{}", x, y)
-            })
-            .collect::<Vec<_>>()
-            .join("|");
-        let bwd: String = (0..n)
-            .map(|i| {
-                let (x, y) = pts[(n + min_idx - i) % n];
-                format!("{},{}", x, y)
-            })
-            .collect::<Vec<_>>()
-            .join("|");
-        format!("PC:{}", if fwd <= bwd { fwd } else { bwd })
-    } else {
-        let fwd: String = pts
-            .iter()
-            .map(|(x, y)| format!("{},{}", x, y))
-            .collect::<Vec<_>>()
-            .join("|");
-        let bwd: String = pts
-            .iter()
-            .rev()
-            .map(|(x, y)| format!("{},{}", x, y))
-            .collect::<Vec<_>>()
-            .join("|");
-        format!("PO:{}", if fwd <= bwd { fwd } else { bwd })
-    }
+        }
+        shape
+    }).collect()
 }
