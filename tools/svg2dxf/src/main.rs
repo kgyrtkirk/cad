@@ -84,9 +84,6 @@ fn main() {
 
     // 0. Discard tiled copies — keep only shapes belonging to one tile.
     let raw_shapes = keep_one_tile(raw_shapes);
-    for s in &raw_shapes { if let Shape::Poly(p) = s { if let Some((x0,y0,x1,y1)) = p.bbox() {
-        eprintln!("  raw poly pts={} w={:.1} h={:.1} @ ({:.1},{:.1})", p.points.len(), x1-x0, y1-y0, x0, y0);
-    }}}
 
     // 1. Compute outer AABB (includes close strips) for close detection.
     let outer_bb = Aabb::from_shapes(&raw_shapes)
