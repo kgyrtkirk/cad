@@ -1351,9 +1351,11 @@ module drawer(h,type1="def",bottomDrawer=false) {
     o_y=($drawerState=="CLOSED" ? 0 : id-50);
     
     translate([0,$d+o_y,-h])
-    if($positive) {
+    //if($positive) 
+    {
         
-        if($fronts) {            
+        if($fronts) 
+        {            
 //            color([0,1,1])
             {
                 translate([FRONT_SP/2,0,FRONT_SP/2])

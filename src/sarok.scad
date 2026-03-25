@@ -214,7 +214,7 @@ mode="print";
 //mode="P-cB2H250BYZ";
 //mode="P-cBOuterTopXY";
 
-// mode="P-cBlYZ";
+mode="P-DF100XZ";
 
 //cBOuterTopXY
 //x@OUTPUT:P-cBBotXY
@@ -222,6 +222,9 @@ mode="print";
 //x@OUTPUT:P-cBrYZ
 //@OUTPUT:P-cBBotXY
 //@OUTPUT:P-cBlYZ
+//@OUTPUT:P-x1L630XY
+//@OUTPUT:P-DF100XZ
+
 
 
 if(mode == "print") {
@@ -238,14 +241,14 @@ scale([1,1,1]*s) {
 } else 
 //lse 
  if(mode[0] == "P" && mode[1]=="-") {
-    $fronts=false;
+    $fronts=true;
     $machines=false;
     $jointsVisible=false;
     
     $part=substr(mode,2);
 
 
-//    projection(false)
+   projection(false)
    orient(mode)
 //    rotate(90,[0,1,0]) 
         model();
