@@ -5,6 +5,7 @@ const TOL: f64 = 0.01; // mm tolerance for "on AABB edge" test
 // ── Aabb ──────────────────────────────────────────────────────────────────────
 
 // FIXME: isn't this a Rect?
+// FIXME: bad placement; should be inside geom
 pub struct Aabb {
     pub min_x: f64,
     pub min_y: f64,
@@ -40,6 +41,7 @@ impl Aabb {
 
 // ── Line ──────────────────────────────────────────────────────────────────────
 
+// FIXME: bad placement; should be inside geom
 struct Line {
     start: Point,
     end:   Point,
@@ -68,6 +70,7 @@ fn dedup_endpoints(pts: &mut Vec<Point>) {
     }
 }
 
+// FIXME: impl Into or From  for Polyline
 fn poly_to_lines(p: &Polyline) -> Vec<Line> {
     let n = p.points.len();
     let limit = if p.closed { n } else { n - 1 };

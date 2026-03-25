@@ -1,7 +1,9 @@
 // Geometric primitives and circle/slot detection from polygon approximations.
 
+// FIXME: isn't Rect a Shape?
 #[derive(Debug, Clone, Copy)]
 pub struct Rect {
+    // FIXME: represent with 2 points
     pub x0: f64,
     pub y0: f64,
     pub x1: f64,
