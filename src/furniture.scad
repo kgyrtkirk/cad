@@ -232,6 +232,19 @@ module eYZ(name, dY, dZ, rot=false) {
 }
 
 module eFRONT(name, dX, dZ, rot=false) {
+
+    module capriCut() {
+        // 138 x 33 x 13.5
+        // holes 128
+        difference() {
+            cube([138,13.5*2,33],center=true);
+            symX([64,0,0]) {
+                rotate(90,[1,0,0])
+                cylinder(h = 2*$W, d= 5);
+            }
+        }
+    }
+
     O=26;
     if($handle=="top") {
         if($positive) {
@@ -244,19 +257,17 @@ module eFRONT(name, dX, dZ, rot=false) {
     } else {
 
         if($handle == "capri") {
-            // 138 x 33 x 13.5
-            // holes 128
-            if($positive) {
+            if(!$positive) {
+                translate([dX/2,$W,dZ-min(dZ/2,49)]) 
+                capriCut();
+            }
+        }
 
-            }else {
-                translate([dX/2,$W,dZ-min(dZ/2,99)]) 
-                difference() {
-                    cube([138,13.5*2,33],center=true);
-                    symX([64,0,0]) {
-                        rotate(90,[1,0,0])
-                        cylinder(h = 2*$W, d= 5);
-                    }
-                }
+        if($handle == "capriE") {
+            if(!$positive) {
+                translate([dX-49,$W,64+49]) 
+                rotate(90,[0,1,0])
+                capriCut();
             }
         }
 
@@ -365,6 +376,7 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
                 translate(cL)
                 cube1([ww,W,hh],glass);
                 translate(cR)
+                mirror([1,0,0])
                 cube1([ww,W,hh],glass);
                 echo(doorLabel,name,ww,hh);
                 echo(doorLabel,name,ww,hh);

@@ -26,6 +26,12 @@ pub fn layer(shape: &Shape) -> String {
                 let h = y1 - y0;
                 let short = w.min(h);
                 let long  = w.max(h);
+
+                // drill slots
+                if 4.5 < short && short<11.0 && long<80.0 {
+                    return format!("drill_slot_{}x{}", short.round() as i64, long.round() as i64);
+                }
+
                 // Narrow elongated closed shapes are grooves — layer name includes width.
                 if ar > 8.0 && short < 12.0 {
                     return format!("groove_{}", short.round() as i64);

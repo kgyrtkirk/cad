@@ -144,6 +144,7 @@ module fdm_printer() {
 }
 
 
+
 module szekreny() {
     A1_H=1500;
     A2_H=MAX_H-A1_H;
@@ -169,7 +170,7 @@ module szekreny() {
         shelf(U_SIZE*1/3)
         shelf(U_SIZE*2/3)
         shelf(U_SIZE)
-        doors(name = "asd", h = U_SIZE);
+        doors($handle="capriE",name = "asd", h = U_SIZE, clips=[100,-100]);
     };
 
     /**
@@ -220,22 +221,29 @@ mode="print";
 
 //mode="P-DF100XZ";
 
-//cBOuterTopXY
-//x@OUTPUT:P-cBBotXY
-//x@OUTPUT:P-cBlYZ
-//x@OUTPUT:P-cBrYZ
-//@OUTPUT:P-cBBotXY
-//@OUTPUT:P-cBlYZ
-//@OUTPUT:P-x1L630XY
-//@OUTPUT:P-DF100XZ
+
 //@OUTPUT:P-cAArYZ
 //@OUTPUT:P-cAAlYZ
+//@OUTPUT:P-cAABotXY
+//@OUTPUT:P-cAATopXY
+
+//@OUTPUT:P-cABrYZ
+//@OUTPUT:P-cABlYZ
+//@OUTPUT:P-cABBotXY
+//@OUTPUT:P-cABTopXY
 //@OUTPUT:P-cABDoorXZ
-// cAAXZ
-// cAABotXY
-// cAATopXY
 
+//@OUTPUT:P-cBlYZ
+//@OUTPUT:P-cBrYZ
+//@OUTPUT:P-cBBotXY
+//@OUTPUT:P-cBOuterTopXY
 
+//@OUTPUT:P-DF100XZ
+//@OUTPUT:P-DF200XZ
+//@OUTPUT:P-DF400XZ
+
+//@OUTPUT:P-x1L630XY
+//@OUTPUT:P-xBXZ
 
 
 if(mode == "print") {
