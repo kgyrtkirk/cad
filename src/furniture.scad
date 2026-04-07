@@ -1102,6 +1102,7 @@ module jointPartC(off) {
             cylinder(d=5,h=70);
             }
 
+        if($machines)
             translate([$W/2,-$W/4,off]) {
             rotate(-90,[1,0,0])
             cylinder(d=7,h=$W+$W/4+5);
