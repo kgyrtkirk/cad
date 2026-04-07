@@ -237,7 +237,18 @@ module eFRONT(name, dX, dZ, rot=false) {
         // 138 x 33 x 13.5
         // holes 128
         difference() {
+            if(true) {
+
+                hull() 
+                symX([138-8,0,0]/2)
+                symZ([0,0,33-8]/2)
+                rotate(90, [1,0,0]) 
+                cylinder($fn=16, d=8, h=13.5*2,center=true);
+//            cube([138,13.5*2,33],center=true);
+            }
+            else {
             cube([138,13.5*2,33],center=true);
+            }
             symX([64,0,0]) {
                 rotate(90,[1,0,0])
                 cylinder(h = 2*$W, d= 5);
