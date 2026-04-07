@@ -41,6 +41,7 @@ $openDoors=true;
 $drawerState="OPEN";
 $drawerBoxes=true;
 
+$drillPlan=undef;
 $part=undef;
 
 
@@ -108,7 +109,7 @@ module internalSeparator(ratio, height) {
 // 2620
 REAL_MAX_H=2620;
 FOOT=72;
-MAX_H=REAL_MAX_H-FOOT-30; // foot not included!
+MAX_H=REAL_MAX_H-FOOT-40; // foot not included!
 DEPTH=630;
 module actor() {
     HEIGHT=1700;
@@ -149,6 +150,7 @@ module szekreny() {
     W_A=800;
     W_B=800;
 
+    $handle="capri";
 
     cabinet(name = "cAA", w = W_A, h = A1_H, d = DEPTH,foot=FOOT,back=["internal",8]){ 
         cTop()
@@ -214,7 +216,7 @@ mode="print";
 //mode="P-cB2H250BYZ";
 //mode="P-cBOuterTopXY";
 
-mode="P-DF100XZ";
+//mode="P-DF100XZ";
 
 //cBOuterTopXY
 //x@OUTPUT:P-cBBotXY
@@ -224,6 +226,13 @@ mode="P-DF100XZ";
 //@OUTPUT:P-cBlYZ
 //@OUTPUT:P-x1L630XY
 //@OUTPUT:P-DF100XZ
+//@OUTPUT:P-cAArYZ
+//@OUTPUT:P-cAAlYZ
+//@OUTPUT:P-cABDoorXZ
+// cAAXZ
+// cAABotXY
+// cAATopXY
+
 
 
 
@@ -244,6 +253,8 @@ scale([1,1,1]*s) {
     $fronts=true;
     $machines=false;
     $jointsVisible=false;
+    $openDoors=false;
+    $drawerState="OPEN";
     
     $part=substr(mode,2);
 

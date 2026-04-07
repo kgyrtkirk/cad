@@ -242,6 +242,24 @@ module eFRONT(name, dX, dZ, rot=false) {
         translate([0,0,0])
         eXZ($close="oULR",name,dX,dZ-O,rot);
     } else {
+
+        if($handle == "capri") {
+            // 138 x 33 x 13.5
+            // holes 128
+            if($positive) {
+
+            }else {
+                translate([dX/2,$W,dZ-min(dZ/2,99)]) 
+                difference() {
+                    cube([138,13.5*2,33],center=true);
+                    symX([64,0,0]) {
+                        rotate(90,[1,0,0])
+                        cylinder(h = 2*$W, d= 5);
+                    }
+                }
+            }
+        }
+
         eXZ($close="OULR",name,dX,dZ,rot);
     }
 }
@@ -330,7 +348,7 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
     cL=[w/4,W/2,h/2];
     cR=cL+[w/2,0,0];
     translate([0,d,0])
-    if($positive) {
+    if(true) {
         doorLabel=glass?"__GLASSDOOR: ":"__DOOR: ";
         
         if($fronts)
@@ -360,24 +378,29 @@ module doors0(name,w,h,d,cnt=2,clips=[50,-50],glass=false) {
                 echo(doorLabel,name,ww,hh);
             }
         }
-    }else{
-        
+    }
+    if(!$positive) {
             C0=[    20,
                     32,
             ];
             C1=prefix(0,C0);
         
-        HOLE_D=5;
+        HOLE_D=2;
         for(y0 =clips) {
             y=(y0<0) ? y0+h  : y0;
         translate([w/2,0,0])
+            symX([w/2-W/2,0,y]) {
+                K=5;
+                D=35;
+                rotate(90,[1,0,0])
+                translate([W/2-FRONT_SP/2-K-D/2,0,-$W/4]) 
+                cylinder(h = $W/2+.1, d=D,center=true);
             for(x=C1)
-                symX([w/2-W/2,0,0])
-                translate([0,-x,y]) {
-                rotate(90,[0,1,0])
-                cylinder(d=HOLE_D,h=W+.1,center=true);
-                    
+                translate([0,-x,0]) {
+                    rotate(90,[0,1,0])
+                    cylinder(d=HOLE_D,h=W+.1,center=true);
                 }
+            }
             }
     }
 }
@@ -796,7 +819,7 @@ module cTop(outer=false) {
     W=$W;
     if(!outer) {
         translate([W,0,-W])
-        eXY(str($name,"Top"),$w-2*W,$d,$connect=[["l","sTET"],["r","sTET"]]);
+        eXY(str($name,"Top"),$w-2*W,$d,$connect=[["l",":sTET"],["r",":sTET"]]);
     }else {
 //        translate([0,-W,-0])
         eXY($close="LRF",str($name,"OuterTop"),$w,$d+W,$connect=[["l",">:sTET"],["r",">:sTET"]]);
@@ -926,7 +949,7 @@ module shelf(h,SHELF_INSET=12,external=false,alignTop=false,rot=false) {
     w=$w-2*$W;
 //    color([0,1,1])
     translate([$W,BACK_WIDTH,-h-(alignTop?$W:0)])
-    eXY(str($name,"Shelf",external?"Ex":"",w),w,depth,rot=rot,$connect=[["l","O"],["r","O"]]);
+    eXY(str($name,"Shelf",external?"Ex":"",w),w,depth,rot=rot,$connect=[["l","O"],["r","O"]],$close="F");
     
 
     translate([0,0,external?-h:0])
@@ -1309,7 +1332,8 @@ module jointsZ(len,center=false,mode="TET") {
 
 
 module drawer(h,type1="def",bottomDrawer=false) {
-    name=str($name,$partIndex,"H",h);
+//    name=str($name,$partIndex,"H",h);
+    name=str($name,"H",h);
     $partIndex=$partIndex+1;
 
     FRONT_SP=2;
