@@ -31,12 +31,18 @@ fn keep_one_tile(shapes: Vec<Shape>) -> Vec<Shape> {
     let tile = largest.expand(TILE_MARGIN);
 
     let before = shapes.len();
-    let result: Vec<Shape> = shapes.into_iter()
+    let result: Vec<Shape> = shapes.iter()
         .filter(|s| s.bbox().map_or(false, |r| tile.contains(r)))
+        .cloned()
         .collect();
 
-    if result.len() < before {
-        eprintln!("Tile dedup: kept {} of {} shapes", result.len(), before);
+    let after = result.len();
+    if after < before {
+        if before % after != 0 {
+            eprintln!("Tile dedup: {before} → {after} shapes, not a clean multiple — skipping");
+            return shapes;
+        }
+        eprintln!("Tile dedup: kept {after} of {before} shapes ({}x repeat)", before / after);
     }
     result
 }
@@ -75,12 +81,12 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
     let shapes = detect_slots(shapes, panel_cx, panel_cy);
     eprintln!("After detection: {}", shapes.len());
 
-    // 6. Translate everything so the panel's bottom-left corner sits at the origin.
-    let (dx, dy) = (-bb.min_x, -bb.min_y);
+    // 6. Translate everything so the outer boundary's bottom-left sits at the origin.
+    let (dx, dy) = (-outer_bb.min_x, -outer_bb.min_y);
     let shapes: Vec<Shape> = shapes.into_iter().map(|s| s.translate(dx, dy)).collect();
     let bb       = bb.translate(dx, dy);
     let outer_bb = outer_bb.translate(dx, dy);
-    eprintln!("Translated by ({dx:.2}, {dy:.2}) — panel now at origin");
+    eprintln!("Translated by ({dx:.2}, {dy:.2}) — outer_bb now at origin");
 
     // 7. Layer assignment.
     let mut by_layer: BTreeMap<String, Vec<&Shape>> = BTreeMap::new();

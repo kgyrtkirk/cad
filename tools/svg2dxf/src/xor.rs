@@ -94,6 +94,7 @@ fn poly_to_lines(p: &Polyline) -> Vec<Line> {
 ///   new object starts after each null
 pub fn feature_loops(shapes: &[Shape], bb: &Aabb) -> Vec<Polyline> {
     let mut result = Vec::new();
+    let mut discarded: Vec<Vec<Point>> = Vec::new();
 
     for shape in shapes {
         let Shape::Poly(poly) = shape else { continue };
@@ -107,6 +108,8 @@ pub fn feature_loops(shapes: &[Shape], bb: &Aabb) -> Vec<Polyline> {
                 dedup_endpoints(&mut current);
                 if current.len() >= 3 {
                     result.push(Polyline { points: std::mem::take(&mut current), closed: true });
+                } else if current.len() == 2 {
+                    discarded.push(std::mem::take(&mut current));
                 } else {
                     current.clear();
                 }
@@ -118,11 +121,24 @@ pub fn feature_loops(shapes: &[Shape], bb: &Aabb) -> Vec<Polyline> {
             }
         }
 
-        // flush any trailing run (interior shapes with no boundary segments at all)
+        // flush trailing run
         dedup_endpoints(&mut current);
         if current.len() >= 3 {
-            result.push(Polyline { points: current, closed: true });
+            result.push(Polyline { points: std::mem::take(&mut current), closed: true });
+        } else if current.len() == 2 {
+            discarded.push(std::mem::take(&mut current));
         }
+
+    }
+    // Stitch exactly 2 discarded single-segment runs into a closed loop.
+    // This recovers shapes like full-width grooves whose short ends sit on the boundary.
+    match discarded.len() {
+        0 => {}
+        2 => {
+            let pts: Vec<Point> = discarded.into_iter().flatten().collect();
+            result.push(Polyline { points: pts, closed: true });
+        }
+        n => eprintln!("WARNING: {n} discarded 2-pt runs from one polygon — cannot stitch"),
     }
 
     result
