@@ -525,7 +525,7 @@ module cutCornerShelf0(name,w,d,c) {
 
 function internalOff(back) = is_list(back) && back[0]=="internal" ? back[1] : -1;
 
-module cabinet(name,w,h,d,foot=0,back=["internal",0],extraHL=0,extraHR=0,extraDL=0,extraDR=0,sideClose="oUF",bottom=true) {
+module cabinet(name,w,h,d,foot=0,back=["internal",0],extraHL=0,extraHR=0,extraDL=0,extraDR=0,sideClose="oUF",bottom=true,backAdd=0) {
 
     dBack = (back=="full") ? $W : 0;
     internalDepthLoss=internalOff(back)>=0?internalOff(back)+3:0;
@@ -541,13 +541,14 @@ module cabinet(name,w,h,d,foot=0,back=["internal",0],extraHL=0,extraHR=0,extraDL
         eXZ($close="LROU",
             str(name,"-Fback"),w,h+foot);
     } else if(internalOff(back)>=0) {
-        bw=w-15;
-        bh=h-15;
+        bw=w-$W+1;
+        bh=h-$W+1+backAdd;
         color([1,0,0])
-        translate([7.5, internalOff(back), foot+7.5])
+        translate([$W/2-.5, internalOff(back), foot+$W/2-.5])
         if($positive) {
-            eXZ($W=3,str(name,"-back"),bw,bh);
-            echo(str(name,"-back"),str(bh-1,"x",bw-1));
+            translate([1,0,1]) 
+            eXZ($W=3,str(name,"-back"),bw-2,bh-2);
+            /// echo(str(name,"-back"),str(bh-1,"x",bw-1));
         } else {
             cube([bw,3,bh]);
         }
@@ -841,7 +842,7 @@ module cTop(outer=false) {
     W=$W;
     if(!outer) {
         translate([W,0,-W])
-        eXY(str($name,"Top"),$w-2*W,$d,$connect=[["l",":sTET"],["r",":sTET"]]);
+        eXY($close="F",str($name,"Top"),$w-2*W,$d,$connect=[["l",":sTET"],["r",":sTET"]]);
     }else {
 //        translate([0,-W,-0])
         eXY($close="LRF",str($name,"OuterTop"),$w,$d+W,$connect=[["l",">:sTET"],["r",">:sTET"]]);
@@ -1295,7 +1296,7 @@ module jointsZ(len,center=false,mode="TET") {
     } else
     if(mode[0] == ":") {
         m=substr(mode,1);
-        PROTECT_LEN=2*28;
+        PROTECT_LEN=28;
         translate([0,0,PROTECT_LEN])
         jointsZ(len=len-2*PROTECT_LEN,center=center,mode=m);
 

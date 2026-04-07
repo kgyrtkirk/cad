@@ -23,17 +23,17 @@ $INSBASE
   9
 $EXTMIN
  10
--631.8364838096267
+-631.907780825115
  20
--631.840652487866
+-631.9078158632749
  30
 0
   9
 $EXTMAX
  10
-627.9768393674468
+627.9858873418686
  20
-627.9726706892075
+627.9858523037087
  30
 0
   9
@@ -111,7 +111,7 @@ $DISPSILH
   9
 $DIMSCALE
  40
-10
+1
   9
 $DIMASZ
  40
@@ -147,7 +147,7 @@ $DIMTM
   9
 $DIMTXT
  40
-22
+0.18
   9
 $DIMCEN
  40
@@ -223,7 +223,7 @@ $DIMALTF
   9
 $DIMLFAC
  40
-10
+1
   9
 $DIMTOFL
  70
@@ -327,7 +327,7 @@ $DIMALTTD
   9
 $DIMTXSTY
   7
-standard
+STANDARD
   9
 $DIMAUNIT
  70
@@ -347,7 +347,7 @@ $DIMAZIN
   9
 $DIMDSEP
  70
-    0
+   44
   9
 $DIMATFIT
  70
@@ -809,12 +809,6 @@ $SNAPSTYLE
  70
     0
   9
-$GRIDUNIT
- 10
-0
- 20
-0
-  9
 $PLIMMIN
  10
 0
@@ -1121,9 +1115,9 @@ AcDbViewportTableRecord
  21
 1
  12
-398.3293380286026
+532.0029344764066
  22
-830.7622152719829
+811.9636623860024
  13
 0
  23
@@ -1149,7 +1143,7 @@ AcDbViewportTableRecord
  37
 0
  40
-2069.402759552706
+2352.910937611396
  41
 0.5636123928806855
  42
@@ -2327,50 +2321,6 @@ AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-drill_slot_5x48
- 70
-    0
- 62
-    5
-  6
-CONTINUOUS
-370
-   -3
-390
-F
-  0
-LAYER
-  5
-4E
-330
-2
-100
-AcDbSymbolTableRecord
-100
-AcDbLayerTableRecord
-  2
-drill_slot_8x32
- 70
-    0
- 62
-    1
-  6
-CONTINUOUS
-370
-   -3
-390
-F
-  0
-LAYER
-  5
-4F
-330
-2
-100
-AcDbSymbolTableRecord
-100
-AcDbLayerTableRecord
-  2
 extended_boundary
  70
     0
@@ -2385,7 +2335,7 @@ F
   0
 LAYER
   5
-50
+4E
 330
 2
 100
@@ -2407,7 +2357,7 @@ F
   0
 LAYER
   5
-51
+4F
 330
 2
 100
@@ -2429,7 +2379,7 @@ F
   0
 LAYER
   5
-52
+50
 330
 2
 100
@@ -2465,7 +2415,7 @@ AcDbSymbolTable
   0
 STYLE
   5
-53
+51
 330
 2
 100
@@ -2549,7 +2499,7 @@ ACAD
   0
 APPID
   5
-54
+52
 330
 9
 100
@@ -2581,7 +2531,7 @@ AcDbDimStyleTable
   0
 DIMSTYLE
 105
-55
+53
 330
 A
 100
@@ -2593,7 +2543,7 @@ Standard
  70
     0
  40
-10
+1
  41
 0.18
  42
@@ -2613,7 +2563,7 @@ Standard
  49
 1
 140
-22
+0.18
 141
 0.09
 142
@@ -2621,7 +2571,7 @@ Standard
 143
 25.4
 144
-10
+1
 145
 0
 146
@@ -2855,7 +2805,7 @@ ENTITIES
   0
 CIRCLE
   5
-56
+54
 100
 AcDbEntity
   8
@@ -2869,7 +2819,29 @@ ByLayer
 100
 AcDbCircle
  10
-534
+68
+ 20
+9.000005125998999
+ 40
+2.500092472186
+  0
+CIRCLE
+  5
+55
+100
+AcDbEntity
+  8
+drill_d5
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+562
  20
 9.000005125998999
  40
@@ -2877,11 +2849,33 @@ AcDbCircle
   0
 CIRCLE
   5
+56
+100
+AcDbEntity
+  8
+drill_d8
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+590
+ 20
+8.999992370605
+ 40
+4.000536316478
+  0
+CIRCLE
+  5
 57
 100
 AcDbEntity
   8
-drill_d5
+drill_d8
   6
 ByLayer
  62
@@ -2893,9 +2887,9 @@ AcDbCircle
  10
 96
  20
-9.000005125998999
+8.999992370605
  40
-2.500092472186
+3.999845713614
   0
 CIRCLE
   5
@@ -2913,11 +2907,11 @@ ByLayer
 100
 AcDbCircle
  10
-562
+40
  20
 8.999992370605
  40
-4.000536316478
+3.999845713614
   0
 CIRCLE
   5
@@ -2935,51 +2929,7 @@ ByLayer
 100
 AcDbCircle
  10
-68
- 20
-8.999992370605
- 40
-3.999845713614
-  0
-CIRCLE
-  5
-5A
-100
-AcDbEntity
-  8
-drill_d8
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-124
- 20
-8.999992370605
- 40
-3.999845713614
-  0
-CIRCLE
-  5
-5B
-100
-AcDbEntity
-  8
-drill_d8
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-506
+534
  20
 8.999992370605
  40
@@ -2987,235 +2937,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-5C
-100
-AcDbEntity
-  8
-drill_slot_5x48
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbPolyline
- 90
-    4
- 70
-    1
- 43
-0
- 10
-0
- 20
-590.497985839844
- 10
-47.5
- 20
-590.497985839844
- 10
-47.5
- 20
-585.502014160156
- 10
-0
- 20
-585.502014160156
-  0
-LWPOLYLINE
-  5
-5D
-100
-AcDbEntity
-  8
-drill_slot_5x48
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbPolyline
- 90
-    4
- 70
-    1
- 43
-0
- 10
-0
- 20
-42.497898101807
- 10
-47.5
- 20
-42.497898101807
- 10
-47.5
- 20
-37.502101898193
- 10
-0
- 20
-37.502101898193
-  0
-LWPOLYLINE
-  5
-5E
-100
-AcDbEntity
-  8
-drill_slot_8x32
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbPolyline
- 90
-    4
- 70
-    1
- 43
-0
- 10
-0
- 20
-612.002014160156
- 10
-32
- 20
-612.002014160156
- 10
-32
- 20
-619.997985839844
- 10
-0
- 20
-619.997985839844
-  0
-LWPOLYLINE
-  5
-5F
-100
-AcDbEntity
-  8
-drill_slot_8x32
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbPolyline
- 90
-    4
- 70
-    1
- 43
-0
- 10
-0
- 20
-556.002014160156
- 10
-32
- 20
-556.002014160156
- 10
-32
- 20
-563.997985839844
- 10
-0
- 20
-563.997985839844
-  0
-LWPOLYLINE
-  5
-60
-100
-AcDbEntity
-  8
-drill_slot_8x32
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbPolyline
- 90
-    4
- 70
-    1
- 43
-0
- 10
-0
- 20
-64.00209808349599
- 10
-32
- 20
-64.00209808349599
- 10
-32
- 20
-71.99790191650401
- 10
-0
- 20
-71.99790191650401
-  0
-LWPOLYLINE
-  5
-61
-100
-AcDbEntity
-  8
-drill_slot_8x32
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbPolyline
- 90
-    4
- 70
-    1
- 43
-0
- 10
-0
- 20
-8.002059936523001
- 10
-32
- 20
-8.002059936523001
- 10
-32
- 20
-15.997900009155
- 10
-0
- 20
-15.997900009155
-  0
-LWPOLYLINE
-  5
-62
+5A
 100
 AcDbEntity
   8
@@ -3253,7 +2975,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-63
+5B
 100
 AcDbEntity
   8
@@ -3291,7 +3013,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-64
+5C
 100
 AcDbEntity
   8
@@ -3377,7 +3099,7 @@ AcDbPolyline
   0
 CIRCLE
   5
-65
+5D
 100
 AcDbEntity
   8
@@ -3391,15 +3113,15 @@ ByLayer
 100
 AcDbCircle
  10
--1.929822221089921
+-1.960946741623161
  20
--1.933990899329331
+-1.96098177978314
  40
-629.9066615885367
+629.9468340834918
   0
 MTEXT
   5
-66
+5E
 100
 AcDbEntity
   8
@@ -3413,9 +3135,9 @@ ByLayer
 100
 AcDbMText
  10
-301.8036943179345
+282.287271354828
  20
-584.0343456989318
+589.391006125465
  30
 0
  40
@@ -3475,7 +3197,7 @@ AcDbDictionary
   0
 PLOTSETTINGS
   5
-67
+5F
 100
 AcDbPlotSettings
   6

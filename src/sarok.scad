@@ -144,8 +144,6 @@ module fdm_printer() {
     children();
 }
 
-
-
 module szekreny() {
     A1_H=1500;
     A2_H=MAX_H-A1_H;
@@ -170,7 +168,6 @@ module szekreny() {
         cTop()
         shelf(U_SIZE*1/3)
         shelf(U_SIZE*2/3)
-        shelf(U_SIZE)
         doors($handle="capriE",name = "asd", h = U_SIZE, clips=[100,-100]);
     };
 
@@ -184,7 +181,7 @@ module szekreny() {
     {
         X_H=420;
         DEC_W=DEPTH;
-        cabinet(name = "cB", w = W_B, h = 1000, d = DEPTH,foot=FOOT,back=["internal",8],sideClose="UF") {
+        cabinet(name = "cB", w = W_B, h = 1000, d = DEPTH,foot=FOOT,back=["internal",8],sideClose="UF",backAdd=$W) {
             fdm_printer()
             air_filter()
             cTop(outer=true)
@@ -198,7 +195,7 @@ module szekreny() {
         }
         for(i=[0:1])
         translate([0,0,MAX_H+FOOT-$W-i*X_H]) 
-        cutCornerShelf(name = "x1", w = DEC_W-2, d = DEPTH-2,cL=DEPTH,type="round",$connect=[["r","TCT"]]);
+        cutCornerShelf(name = "x1", w = DEC_W-2, d = DEPTH-2,cL=DEPTH,type="round",$connect=[["r",i==1?":CC":"::::CC"]]);
         translate([0,0,MAX_H+FOOT-$W-X_H+$W]) 
         eXZ("xB",DEC_W,X_H-$W, $close="L", $connect=[["b",":TET"],["f",":TET"]]);
 
@@ -217,7 +214,7 @@ posNeg() {
 }
 
 mode="print";
-//mode="P-cB2H250BYZ";
+mode="P-cAATopXY";
 //mode="P-cBOuterTopXY";
 
 //mode="P-DF100XZ";
