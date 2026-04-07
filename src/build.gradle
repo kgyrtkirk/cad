@@ -197,12 +197,14 @@ projMap.each { inputName,modes ->
 		}
 
 
-		allScad.dependsOn(t2)
+		allScad.dependsOn(t)
+/*		allScad.dependsOn(t2)
 		allScad.dependsOn(tEps)
 		allScad.dependsOn(t3)
 		allScad.dependsOn(t4)
 		allPdf.dependsOn(t2)
 		allPdf.dependsOn(t3)
+*/
 //		allDxf.dependsOn(t3)
 	}
 }

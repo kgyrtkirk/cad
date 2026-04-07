@@ -194,13 +194,14 @@ module szekreny() {
             ;
         }
         for(i=[0:1])
-        translate([0,$W,MAX_H+FOOT-$W-i*X_H]) 
-        cutCornerShelf(name = "x1", w = DEC_W, d = DEPTH-$W,cL=DEPTH,type="round");
-        translate([0,0,MAX_H+FOOT-$W-X_H]) 
-        eXZ("xB",DEC_W,X_H+$W);
+        translate([0,0,MAX_H+FOOT-$W-i*X_H]) 
+        cutCornerShelf(name = "x1", w = DEC_W, d = DEPTH,cL=DEPTH,type="round", $close="FL",$connect=[["r","TCT"]]);
+        translate([0,0,MAX_H+FOOT-$W-X_H+$W]) 
+        eXZ("xB",DEC_W,X_H-$W, $close="L", $connect=[["b",":TET"],["f",":TET"]]);
 
     }
 }
+
 
 module model() {
 posNeg() {

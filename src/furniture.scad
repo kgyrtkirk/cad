@@ -1272,7 +1272,7 @@ module jointsZ(len,center=false,mode="TET") {
     } else
     if(mode[0] == ":") {
         m=substr(mode,1);
-        PROTECT_LEN=50;
+        PROTECT_LEN=2*28;
         translate([0,0,PROTECT_LEN])
         jointsZ(len=len-2*PROTECT_LEN,center=center,mode=m);
 
