@@ -140,6 +140,12 @@ task allScad() {}
 task allPdf() {}
 task allDxf() {}
 
+def svg2dxfBinary = new File(projectDir, "../tools/svg2dxf/target/release/svg2dxf")
+task buildSvg2dxf(type: Exec) {
+	workingDir new File(projectDir, "../tools/svg2dxf")
+	commandLine "cargo", "build", "--release"
+}
+
 partMap.each { inputName,modes ->
 	modes.each { mode ->
 		//println "${inputName} ; ${mode}"
@@ -205,7 +211,15 @@ projMap.each { inputName,modes ->
 		allPdf.dependsOn(t2)
 		allPdf.dependsOn(t3)
 */
-//		allDxf.dependsOn(t3)
+		def dxfOut = new File(outputDir, "${outputName}.dxf")
+		def tDxf = task("svg2dxf_${outputName}", type: Exec) {
+			dependsOn t
+			dependsOn buildSvg2dxf
+			inputs.file sFile
+			outputs.file dxfOut
+			commandLine svg2dxfBinary.absolutePath, sFile, dxfOut
+		}
+		allDxf.dependsOn(tDxf)
 	}
 }
 

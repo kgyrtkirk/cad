@@ -75,7 +75,14 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
     let shapes = detect_slots(shapes, panel_cx, panel_cy);
     eprintln!("After detection: {}", shapes.len());
 
-    // 6. Layer assignment.
+    // 6. Translate everything so the outer boundary's bottom-left sits at the origin.
+    let (dx, dy) = (-outer_bb.min_x, -outer_bb.min_y);
+    let shapes: Vec<Shape> = shapes.into_iter().map(|s| s.translate(dx, dy)).collect();
+    let bb       = bb.translate(dx, dy);
+    let outer_bb = outer_bb.translate(dx, dy);
+    eprintln!("Translated by ({dx:.2}, {dy:.2}) — outer_bb now at origin");
+
+    // 7. Layer assignment.
     let mut by_layer: BTreeMap<String, Vec<&Shape>> = BTreeMap::new();
     for shape in &shapes {
         by_layer.entry(layer(shape)).or_default().push(shape);

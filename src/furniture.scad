@@ -438,7 +438,6 @@ module space(h) {
         children();
 }
 
-
 module cutCornerShelf(name,w,d,cR=0,cL=0,rot=false,type="straight") {
 
     n2=cL>0?str(name, "L",cL):name;

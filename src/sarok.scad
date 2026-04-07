@@ -143,6 +143,7 @@ module fdm_printer() {
     children();
 }
 
+
 module szekreny() {
     A1_H=1500;
     A2_H=MAX_H-A1_H;
@@ -195,7 +196,7 @@ module szekreny() {
         }
         for(i=[0:1])
         translate([0,0,MAX_H+FOOT-$W-i*X_H]) 
-        cutCornerShelf(name = "x1", w = DEC_W, d = DEPTH,cL=DEPTH,type="round", $close="FL",$connect=[["r","TCT"]]);
+        cutCornerShelf(name = "x1", w = DEC_W-2, d = DEPTH-2,cL=DEPTH,type="round",$connect=[["r","TCT"]]);
         translate([0,0,MAX_H+FOOT-$W-X_H+$W]) 
         eXZ("xB",DEC_W,X_H-$W, $close="L", $connect=[["b",":TET"],["f",":TET"]]);
 

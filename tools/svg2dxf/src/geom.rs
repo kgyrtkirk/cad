@@ -105,6 +105,19 @@ impl Shape {
             Shape::Poly(p)   => p.bbox(),
         }
     }
+
+    pub fn translate(&self, dx: f64, dy: f64) -> Shape {
+        match self {
+            Shape::Circle(c) => Shape::Circle(Circle {
+                center: Point { x: c.center.x + dx, y: c.center.y + dy },
+                radius: c.radius,
+            }),
+            Shape::Poly(p) => Shape::Poly(Polyline {
+                points: p.points.iter().map(|pt| Point { x: pt.x + dx, y: pt.y + dy }).collect(),
+                closed: p.closed,
+            }),
+        }
+    }
 }
 
 /// Try to fit a circle to a closed polygon.

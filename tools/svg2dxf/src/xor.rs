@@ -26,6 +26,11 @@ impl Aabb {
         if a.min_x.is_infinite() { None } else { Some(a) }
     }
 
+    pub fn translate(&self, dx: f64, dy: f64) -> Aabb {
+        Aabb { min_x: self.min_x + dx, min_y: self.min_y + dy,
+               max_x: self.max_x + dx, max_y: self.max_y + dy }
+    }
+
     pub fn as_polyline(&self) -> Polyline {
         Polyline {
             points: vec![
