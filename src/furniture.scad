@@ -1450,9 +1450,10 @@ if(nBeams>0)
 
                     iz=h-zLossTop-zLossBot;
 
-                    $close="Olru";
+                    $close="Olr";
 
                     translate([0,0, zLossBot]) {
+
 
                         translate([qx,-$W,0])
                         eXZ(str(name,"A"),ix,iz);
@@ -1466,7 +1467,7 @@ if(nBeams>0)
                         eYZ(str(name,"B"),id-2*$W,iz);
 
                         translate([qx+$W,-id+$W,0])
-                        eXY(str(name,"-floor"),$W=$floorW,ix-2*$W,id-2*$W);
+                        eXY(str(name,"-floor"),$W=$floorW,ix-2*$W,id-2*$W, $close="");
                     }
 
 

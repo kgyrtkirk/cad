@@ -98,6 +98,7 @@ module doubleSided(a) {
     children(2);
 }
 
+
 module internalSeparator(ratio, height) {
     translate([$W,($d-$W)*ratio,-height+$W]) 
     eXZ(str($name,"intSep"),$w-$W-$W,height-$W-$W,$connect=[["l","cTT"],["r","cTT"],["f","cTT"],["b","cTT"]]);
@@ -240,7 +241,6 @@ mode="print";
 
 //@OUTPUT:P-DF100XZ
 //@OUTPUT:P-DF200XZ
-//@OUTPUT:P-DF400XZ
 
 //@OUTPUT:P-x1L630XY
 //@OUTPUT:P-xBXZ
