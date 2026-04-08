@@ -26,7 +26,7 @@
       overflow: hidden;
     }
 
-    #sidebar h1 {
+    #sidebar h1, #sidebar h2 {
       font-size: 12px;
       padding: 10px 12px 8px;
       color: #888;
@@ -53,6 +53,31 @@
     #file-list li:hover { background: #252525; color: #eee; }
     #file-list li.active { background: #1d3a5f; color: #7cb9ff; }
 
+    #layers-section { display: none; }
+
+    #layer-list {
+      list-style: none;
+      overflow-y: auto;
+      max-height: 40vh;
+    }
+
+    #layer-list li {
+      padding: 5px 12px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      border-bottom: 1px solid #1e1e1e;
+      color: #aaa;
+    }
+
+    #layer-list li label {
+      cursor: pointer;
+      flex: 1;
+      word-break: break-all;
+    }
+
+    #layer-list input[type=checkbox] { cursor: pointer; accent-color: #7cb9ff; }
+
     #main {
       flex: 1;
       display: flex;
@@ -76,22 +101,29 @@
 
     #viewer {
       flex: 1;
-      overflow: auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      overflow: hidden;
       background: #111;
+      position: relative;
+      cursor: grab;
     }
 
+    #viewer.dragging { cursor: grabbing; }
+
     #viewer svg {
+      position: absolute;
+      top: 0; left: 0;
       width: 100%;
       height: 100%;
       background: #fff;
+      transform-origin: 0 0;
     }
 
     #placeholder {
       color: #444;
       text-align: center;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
     }
 
     #placeholder p { margin-top: 8px; font-size: 11px; }
@@ -100,6 +132,7 @@
       color: #e06c75;
       padding: 20px;
       display: none;
+      position: absolute;
     }
   </style>
 </head>
@@ -108,16 +141,19 @@
 <nav id="sidebar">
   <h1>DXF Files</h1>
   <ul id="file-list"></ul>
+  <div id="layers-section">
+    <h2>Layers</h2>
+    <ul id="layer-list"></ul>
+  </div>
 </nav>
 
 <div id="main">
   <div id="toolbar">
     <span id="current-file">no file selected</span>
+    <span id="zoom-label"></span>
   </div>
   <div id="viewer">
-    <div id="placeholder">
-      &#9632; select a file
-    </div>
+    <div id="placeholder">&#9632; select a file</div>
     <div id="error"></div>
   </div>
 </div>
@@ -125,13 +161,16 @@
 <script type="module">
   import { Helper } from './dxf.bundle.js';
 
-  const list        = document.getElementById('file-list');
-  const viewer      = document.getElementById('viewer');
-  const placeholder = document.getElementById('placeholder');
-  const errorDiv    = document.getElementById('error');
-  const currentFile = document.getElementById('current-file');
+  const list          = document.getElementById('file-list');
+  const viewer        = document.getElementById('viewer');
+  const placeholder   = document.getElementById('placeholder');
+  const errorDiv      = document.getElementById('error');
+  const currentFile   = document.getElementById('current-file');
+  const zoomLabel     = document.getElementById('zoom-label');
+  const layersSection = document.getElementById('layers-section');
+  const layerList     = document.getElementById('layer-list');
 
-  // Load file list from files.txt (one filename per line)
+  // ── File list ────────────────────────────────────────────────────────────────
   const filesResp = await fetch('./files.txt');
   const files = (await filesResp.text()).split('\n').map(s => s.trim()).filter(s => s.endsWith('.dxf'));
 
@@ -143,6 +182,56 @@
     list.appendChild(li);
   });
 
+  // ── Zoom / pan ───────────────────────────────────────────────────────────────
+  let scale = 1, tx = 0, ty = 0;
+  let dragging = false, dragX0, dragY0, tx0, ty0;
+  let currentSvg = null;
+
+  function applyTransform() {
+    if (!currentSvg) return;
+    currentSvg.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
+    zoomLabel.textContent = `${Math.round(scale * 100)}%`;
+  }
+
+  function resetTransform() {
+    scale = 1; tx = 0; ty = 0;
+    applyTransform();
+  }
+
+  viewer.addEventListener('wheel', e => {
+    if (!currentSvg) return;
+    e.preventDefault();
+    const rect = viewer.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+    tx = mx - (mx - tx) * factor;
+    ty = my - (my - ty) * factor;
+    scale *= factor;
+    applyTransform();
+  }, { passive: false });
+
+  viewer.addEventListener('mousedown', e => {
+    if (!currentSvg) return;
+    dragging = true;
+    dragX0 = e.clientX; dragY0 = e.clientY;
+    tx0 = tx; ty0 = ty;
+    viewer.classList.add('dragging');
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    tx = tx0 + (e.clientX - dragX0);
+    ty = ty0 + (e.clientY - dragY0);
+    applyTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    dragging = false;
+    viewer.classList.remove('dragging');
+  });
+
+  // ── Load DXF ─────────────────────────────────────────────────────────────────
   async function loadFile(name, li) {
     list.querySelectorAll('li').forEach(el => el.classList.remove('active'));
     li.classList.add('active');
@@ -152,6 +241,10 @@
     errorDiv.style.display = 'none';
     const old = viewer.querySelector('svg');
     if (old) old.remove();
+    currentSvg = null;
+    zoomLabel.textContent = '';
+    layersSection.style.display = 'none';
+    layerList.innerHTML = '';
 
     try {
       const resp = await fetch(`./${encodeURIComponent(name)}`);
@@ -161,18 +254,36 @@
       const helper = new Helper(text);
       const svgString = helper.toSVG();
 
-      const wrapper = document.createElement('div');
-      wrapper.style.cssText = 'width:100%;height:100%;';
-      wrapper.innerHTML = svgString;
-      const svg = wrapper.querySelector('svg');
+      const tmp = document.createElement('div');
+      tmp.innerHTML = svgString;
+      const svg = tmp.querySelector('svg');
       if (!svg) throw new Error('toSVG returned no SVG element');
 
-      // Make SVG fill the viewer
       svg.removeAttribute('width');
       svg.removeAttribute('height');
-      svg.style.cssText = 'width:100%;height:100%;background:#fff;';
 
       viewer.appendChild(svg);
+      currentSvg = svg;
+      resetTransform();
+
+      // ── Layers ──────────────────────────────────────────────────────────────
+      const groups = [...svg.querySelectorAll(':scope > g[id]')];
+      if (groups.length > 0) {
+        layersSection.style.display = '';
+        groups.forEach(g => {
+          const item = document.createElement('li');
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = true;
+          cb.addEventListener('change', () => { g.style.display = cb.checked ? '' : 'none'; });
+          const label = document.createElement('label');
+          label.textContent = g.id;
+          item.appendChild(cb);
+          item.appendChild(label);
+          layerList.appendChild(item);
+        });
+      }
+
     } catch (err) {
       errorDiv.textContent = String(err);
       errorDiv.style.display = 'block';
