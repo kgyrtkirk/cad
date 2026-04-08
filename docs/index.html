@@ -17,7 +17,7 @@
     }
 
     #sidebar {
-      width: 200px;
+      width: 220px;
       flex-shrink: 0;
       background: #1a1a1a;
       border-right: 1px solid #333;
@@ -26,19 +26,21 @@
       overflow: hidden;
     }
 
-    #sidebar h1, #sidebar h2 {
-      font-size: 12px;
-      padding: 10px 12px 8px;
-      color: #888;
+    .section-header {
+      font-size: 11px;
+      padding: 8px 12px;
+      color: #666;
       border-bottom: 1px solid #2a2a2a;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
+      flex-shrink: 0;
     }
 
     #file-list {
       list-style: none;
       overflow-y: auto;
       flex: 1;
+      min-height: 0;
     }
 
     #file-list li {
@@ -53,16 +55,21 @@
     #file-list li:hover { background: #252525; color: #eee; }
     #file-list li.active { background: #1d3a5f; color: #7cb9ff; }
 
-    #layers-section { display: none; }
+    #layers-panel {
+      flex-direction: column;
+      border-top: 1px solid #333;
+      min-height: 0;
+      flex-shrink: 0;
+      max-height: 45vh;
+    }
 
     #layer-list {
       list-style: none;
       overflow-y: auto;
-      max-height: 40vh;
     }
 
     #layer-list li {
-      padding: 5px 12px;
+      padding: 4px 10px;
       display: flex;
       align-items: center;
       gap: 7px;
@@ -74,9 +81,18 @@
       cursor: pointer;
       flex: 1;
       word-break: break-all;
+      font-size: 12px;
     }
 
-    #layer-list input[type=checkbox] { cursor: pointer; accent-color: #7cb9ff; }
+    #layer-list input[type=checkbox] { cursor: pointer; accent-color: #7cb9ff; flex-shrink: 0; }
+
+    .layer-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      border: 1px solid #444;
+    }
 
     #main {
       flex: 1;
@@ -95,23 +111,41 @@
       align-items: center;
       gap: 16px;
       min-height: 32px;
+      flex-shrink: 0;
     }
 
     #current-file { color: #7cb9ff; }
 
+    #download-btn {
+      color: #888;
+      text-decoration: none;
+      border: 1px solid #333;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+
+    #download-btn:hover { color: #ccc; border-color: #555; }
+
     #viewer {
       flex: 1;
       position: relative;
-      background: #111;
+      background: #fff;
     }
 
     #placeholder {
-      color: #444;
+      color: #999;
       text-align: center;
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       pointer-events: none;
+      background: #fff;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     #error {
@@ -119,16 +153,17 @@
       padding: 20px;
       display: none;
       position: absolute;
+      z-index: 10;
     }
   </style>
 </head>
 <body>
 
 <nav id="sidebar">
-  <h1>DXF Files</h1>
+  <div class="section-header">DXF Files</div>
   <ul id="file-list"></ul>
-  <div id="layers-section">
-    <h2>Layers</h2>
+  <div id="layers-panel" style="display:none">
+    <div class="section-header">Layers</div>
     <ul id="layer-list"></ul>
   </div>
 </nav>
@@ -136,9 +171,10 @@
 <div id="main">
   <div id="toolbar">
     <span id="current-file">no file selected</span>
+    <a id="download-btn" href="#" download style="display:none">download</a>
   </div>
   <div id="viewer">
-    <div id="placeholder">&#9632; select a file</div>
+    <div id="placeholder">select a file</div>
     <div id="error"></div>
   </div>
 </div>
@@ -146,18 +182,21 @@
 <script type="module">
   import { DxfViewer, Color } from './dxf.bundle.js';
 
-  const fileList      = document.getElementById('file-list');
-  const viewerEl      = document.getElementById('viewer');
-  const placeholder   = document.getElementById('placeholder');
-  const errorDiv      = document.getElementById('error');
-  const currentFile   = document.getElementById('current-file');
-  const layersSection = document.getElementById('layers-section');
-  const layerList     = document.getElementById('layer-list');
+  const FONTS = ['./fonts/Roboto-Regular.woff'];
+
+  const fileList     = document.getElementById('file-list');
+  const viewerEl     = document.getElementById('viewer');
+  const placeholder  = document.getElementById('placeholder');
+  const errorDiv     = document.getElementById('error');
+  const currentFile  = document.getElementById('current-file');
+  const downloadBtn  = document.getElementById('download-btn');
+  const layersPanel  = document.getElementById('layers-panel');
+  const layerList    = document.getElementById('layer-list');
 
   const viewer = new DxfViewer(viewerEl, {
     autoResize: true,
     clearColor: new Color('#ffffff'),
-    blackWhiteInversion: false,
+    colorCorrection: true,
   });
 
   // ── File list ────────────────────────────────────────────────────────────────
@@ -178,36 +217,81 @@
     li.classList.add('active');
     currentFile.textContent = name;
 
-    placeholder.style.display = 'none';
     errorDiv.style.display = 'none';
-    layersSection.style.display = 'none';
+    downloadBtn.style.display = 'none';
+    layersPanel.style.display = 'none';
     layerList.innerHTML = '';
 
     try {
-      await viewer.Load({ url: `./${encodeURIComponent(name)}` });
-
-      // ── Layers ──────────────────────────────────────────────────────────────
-      const layers = [...viewer.GetLayers()];
-      if (layers.length > 0) {
-        layersSection.style.display = '';
-        layers.forEach(({ name: layerName }) => {
-          const item = document.createElement('li');
-          const cb = document.createElement('input');
-          cb.type = 'checkbox';
-          cb.checked = true;
-          cb.addEventListener('change', () => viewer.ShowLayer(layerName, cb.checked));
-          const label = document.createElement('label');
-          label.textContent = layerName;
-          item.appendChild(cb);
-          item.appendChild(label);
-          layerList.appendChild(item);
-        });
-      }
-
+      const url = `./${encodeURIComponent(name)}`;
+      await viewer.Load({ url, fonts: FONTS });
+      placeholder.style.display = 'none';
+      downloadBtn.href = url;
+      downloadBtn.download = name;
+      downloadBtn.style.display = '';
+      buildLayerList();
     } catch (err) {
       errorDiv.textContent = String(err);
       errorDiv.style.display = 'block';
     }
+  }
+
+  // ── Layer list ───────────────────────────────────────────────────────────────
+  function layerColor(color) {
+    return '#' + color.toString(16).padStart(6, '0');
+  }
+
+  function buildLayerList() {
+    layerList.innerHTML = '';
+    const layers = [...viewer.GetLayers()].map(l => ({ ...l, isVisible: true }));
+    if (layers.length === 0) return;
+
+    // "All" toggle row
+    const allItem = document.createElement('li');
+    const allCb = document.createElement('input');
+    allCb.type = 'checkbox';
+    allCb.checked = true;
+    allCb.addEventListener('change', () => {
+      layers.forEach(l => {
+        l.isVisible = allCb.checked;
+        viewer.ShowLayer(l.name, l.isVisible);
+      });
+      layerList.querySelectorAll('input[data-layer]').forEach(cb => { cb.checked = allCb.checked; });
+    });
+    const allLabel = document.createElement('label');
+    allLabel.textContent = 'All layers';
+    allLabel.style.fontStyle = 'italic';
+    allItem.appendChild(allCb);
+    allItem.appendChild(allLabel);
+    layerList.appendChild(allItem);
+
+    layers.forEach(layer => {
+      const item = document.createElement('li');
+
+      const swatch = document.createElement('span');
+      swatch.className = 'layer-swatch';
+      swatch.style.background = layerColor(layer.color);
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = true;
+      cb.dataset.layer = layer.name;
+      cb.addEventListener('change', () => {
+        layer.isVisible = cb.checked;
+        viewer.ShowLayer(layer.name, cb.checked);
+        allCb.checked = layers.every(l => l.isVisible);
+      });
+
+      const label = document.createElement('label');
+      label.textContent = layer.displayName;
+
+      item.appendChild(swatch);
+      item.appendChild(cb);
+      item.appendChild(label);
+      layerList.appendChild(item);
+    });
+
+    layersPanel.style.display = 'flex';
   }
 </script>
 </body>

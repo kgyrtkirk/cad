@@ -25,7 +25,7 @@ $EXTMIN
  10
 -631.907780825115
  20
--631.9078158632749
+-631.907815863275
  30
 0
   9
@@ -33,7 +33,7 @@ $EXTMAX
  10
 627.9858873418686
  20
-627.9858523037087
+627.9858523037086
  30
 0
   9
@@ -1115,7 +1115,7 @@ AcDbViewportTableRecord
  21
 1
  12
-532.0029344764066
+532.7784489581505
  22
 811.9636623860024
  13
@@ -1143,9 +1143,9 @@ AcDbViewportTableRecord
  37
 0
  40
-2352.910937611396
+2380.829458954181
  41
-0.5636123928806855
+0.5570032573289903
  42
 50
  43
@@ -2347,7 +2347,7 @@ megj
  70
     0
  62
-    7
+    5
   6
 CONTINUOUS
 370
@@ -2389,7 +2389,7 @@ AcDbLayerTableRecord
   2
 unclassified
  70
-    1
+    0
  62
     6
   6
@@ -2423,7 +2423,7 @@ AcDbSymbolTableRecord
 100
 AcDbTextStyleTableRecord
   2
-Standard
+STANDARD
  70
     0
  40
@@ -2437,7 +2437,7 @@ Standard
  42
 1
   3
-txt
+STANDARD
   4
 
   0
@@ -2633,7 +2633,7 @@ Standard
 277
     2
 278
-    0
+   44
 279
     0
 280
@@ -2655,7 +2655,7 @@ Standard
 289
     3
 340
-standard
+STANDARD
 341
 
 371
@@ -3151,7 +3151,7 @@ AcDbMText
   1
 ez az el 2mm elzarva
   7
-
+STANDARD
 210
 0
 220

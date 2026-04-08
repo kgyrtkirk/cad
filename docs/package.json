@@ -2,11 +2,12 @@
   "name": "sarok1-viewer",
   "private": true,
   "scripts": {
-    "build": "esbuild --bundle --format=esm --platform=browser --outfile=dxf.bundle.js bundle-entry.js",
+    "build": "esbuild --bundle --format=esm --platform=browser --outfile=dxf.bundle.js bundle-entry.js && cp node_modules/roboto-fontface/fonts/roboto/Roboto-Regular.woff fonts/Roboto-Regular.woff",
     "dev": "npm run build && npx serve ."
   },
   "dependencies": {
-    "dxf-viewer": "file:./dxf-viewer"
+    "dxf-viewer": "^1.0.47",
+    "roboto-fontface": "^0.10.0"
   },
   "devDependencies": {
     "esbuild": "^0.25.0"
