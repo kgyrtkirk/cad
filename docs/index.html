@@ -116,7 +116,7 @@
 
     #current-file { color: #7cb9ff; }
 
-    #download-btn {
+    #download-btn, .dl-btn {
       color: #888;
       text-decoration: none;
       border: 1px solid #333;
@@ -125,7 +125,7 @@
       font-size: 11px;
     }
 
-    #download-btn:hover { color: #ccc; border-color: #555; }
+    #download-btn:hover, .dl-btn:hover { color: #ccc; border-color: #555; }
 
     #viewer {
       flex: 1;
@@ -172,6 +172,7 @@
   <div id="toolbar">
     <span id="current-file">no file selected</span>
     <a id="download-btn" href="#" download style="display:none">download</a>
+    <a class="dl-btn" href="./sarok1.zip" download>download all</a>
   </div>
   <div id="viewer">
     <div id="placeholder">select a file</div>
