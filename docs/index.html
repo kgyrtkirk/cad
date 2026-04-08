@@ -101,21 +101,8 @@
 
     #viewer {
       flex: 1;
-      overflow: hidden;
-      background: #111;
       position: relative;
-      cursor: grab;
-    }
-
-    #viewer.dragging { cursor: grabbing; }
-
-    #viewer svg {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: #fff;
-      transform-origin: 0 0;
+      background: #111;
     }
 
     #placeholder {
@@ -124,9 +111,8 @@
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
+      pointer-events: none;
     }
-
-    #placeholder p { margin-top: 8px; font-size: 11px; }
 
     #error {
       color: #e06c75;
@@ -150,7 +136,6 @@
 <div id="main">
   <div id="toolbar">
     <span id="current-file">no file selected</span>
-    <span id="zoom-label"></span>
   </div>
   <div id="viewer">
     <div id="placeholder">&#9632; select a file</div>
@@ -159,16 +144,21 @@
 </div>
 
 <script type="module">
-  import { Helper } from './dxf.bundle.js';
+  import { DxfViewer, Color } from './dxf.bundle.js';
 
-  const list          = document.getElementById('file-list');
-  const viewer        = document.getElementById('viewer');
+  const fileList      = document.getElementById('file-list');
+  const viewerEl      = document.getElementById('viewer');
   const placeholder   = document.getElementById('placeholder');
   const errorDiv      = document.getElementById('error');
   const currentFile   = document.getElementById('current-file');
-  const zoomLabel     = document.getElementById('zoom-label');
   const layersSection = document.getElementById('layers-section');
   const layerList     = document.getElementById('layer-list');
+
+  const viewer = new DxfViewer(viewerEl, {
+    autoResize: true,
+    clearColor: new Color('#ffffff'),
+    blackWhiteInversion: false,
+  });
 
   // ── File list ────────────────────────────────────────────────────────────────
   const filesResp = await fetch('./files.txt');
@@ -179,105 +169,35 @@
     li.textContent = name.replace(/\.dxf$/, '');
     li.title = name;
     li.addEventListener('click', () => loadFile(name, li));
-    list.appendChild(li);
-  });
-
-  // ── Zoom / pan ───────────────────────────────────────────────────────────────
-  let scale = 1, tx = 0, ty = 0;
-  let dragging = false, dragX0, dragY0, tx0, ty0;
-  let currentSvg = null;
-
-  function applyTransform() {
-    if (!currentSvg) return;
-    currentSvg.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
-    zoomLabel.textContent = `${Math.round(scale * 100)}%`;
-  }
-
-  function resetTransform() {
-    scale = 1; tx = 0; ty = 0;
-    applyTransform();
-  }
-
-  viewer.addEventListener('wheel', e => {
-    if (!currentSvg) return;
-    e.preventDefault();
-    const rect = viewer.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
-    tx = mx - (mx - tx) * factor;
-    ty = my - (my - ty) * factor;
-    scale *= factor;
-    applyTransform();
-  }, { passive: false });
-
-  viewer.addEventListener('mousedown', e => {
-    if (!currentSvg) return;
-    dragging = true;
-    dragX0 = e.clientX; dragY0 = e.clientY;
-    tx0 = tx; ty0 = ty;
-    viewer.classList.add('dragging');
-  });
-
-  window.addEventListener('mousemove', e => {
-    if (!dragging) return;
-    tx = tx0 + (e.clientX - dragX0);
-    ty = ty0 + (e.clientY - dragY0);
-    applyTransform();
-  });
-
-  window.addEventListener('mouseup', () => {
-    dragging = false;
-    viewer.classList.remove('dragging');
+    fileList.appendChild(li);
   });
 
   // ── Load DXF ─────────────────────────────────────────────────────────────────
   async function loadFile(name, li) {
-    list.querySelectorAll('li').forEach(el => el.classList.remove('active'));
+    fileList.querySelectorAll('li').forEach(el => el.classList.remove('active'));
     li.classList.add('active');
     currentFile.textContent = name;
 
     placeholder.style.display = 'none';
     errorDiv.style.display = 'none';
-    const old = viewer.querySelector('svg');
-    if (old) old.remove();
-    currentSvg = null;
-    zoomLabel.textContent = '';
     layersSection.style.display = 'none';
     layerList.innerHTML = '';
 
     try {
-      const resp = await fetch(`./${encodeURIComponent(name)}`);
-      if (!resp.ok) throw new Error(`HTTP ${resp.status} fetching ${name}`);
-      const text = await resp.text();
-
-      const helper = new Helper(text);
-      const svgString = helper.toSVG();
-
-      const tmp = document.createElement('div');
-      tmp.innerHTML = svgString;
-      const svg = tmp.querySelector('svg');
-      if (!svg) throw new Error('toSVG returned no SVG element');
-
-      svg.removeAttribute('width');
-      svg.removeAttribute('height');
-
-      viewer.appendChild(svg);
-      currentSvg = svg;
-      resetTransform();
+      await viewer.Load({ url: `./${encodeURIComponent(name)}` });
 
       // ── Layers ──────────────────────────────────────────────────────────────
-      const groups = [...svg.querySelectorAll(':scope > g[id]')];
-      if (groups.length > 0) {
+      const layers = [...viewer.GetLayers()];
+      if (layers.length > 0) {
         layersSection.style.display = '';
-        groups.forEach(g => {
+        layers.forEach(({ name: layerName }) => {
           const item = document.createElement('li');
           const cb = document.createElement('input');
           cb.type = 'checkbox';
           cb.checked = true;
-          cb.addEventListener('change', () => { g.style.display = cb.checked ? '' : 'none'; });
+          cb.addEventListener('change', () => viewer.ShowLayer(layerName, cb.checked));
           const label = document.createElement('label');
-          label.textContent = g.id;
+          label.textContent = layerName;
           item.appendChild(cb);
           item.appendChild(label);
           layerList.appendChild(item);

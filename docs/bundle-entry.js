@@ -1,1 +1,2 @@
-export { Helper } from 'dxf';
+export { DxfViewer } from 'dxf-viewer';
+export { Color } from 'three';
