@@ -567,7 +567,7 @@ module cabinet(name,w,h,d,foot=0,back=["internal",0],extraHL=0,extraHR=0,extraDL
             if(foot>0) {
                 // foot front element
                 translate([$W,d-2*$W,0])
-                eXZ($close="oU",name,w-2*$W,foot);
+                eXZ($close="oU",name,w-2*$W,foot,$connect=[["l","cT"],["r","cT"]]);
             }
             
             if(bottom)
@@ -1160,18 +1160,26 @@ module jointPartE() {
         %cube([2*$W,4,2],center=true);
 
 }
-module jointPartT() {
+
+module jointPartT0() {
         echo(str("PART:DUBEL"));
-        echo(str("PART:DUBEL"));
-    L=80;
-    for(k=[-1,1]) {
-        translate([$W/2,$W/4,L/2+k*28])
+        {
+        translate([$W/2,$W/4,0])
         rotate(-90,[1,0,0])
         cylinder(d=8,h=40);
         // marker
+        translate([$W/2,$W+20,0])
         if($machines)
-        translate([$W/2,$W+20,L/2+k*28])
         %cube([2*$W,2,2],center=true);
+        }
+}
+
+module jointPartT() {
+    L=80;
+    for(k=[-1,1]) {
+       translate([0,0,L/2+k*28]) 
+       jointPartT0();
+
     }
 }
 
@@ -1235,6 +1243,9 @@ module joint(orient="XY",type="TET",center=false) {
         } else 
         if(type == "TT") {
             jointPartT();
+        } else if(type == "T") {
+            translate([0,0,L/2]) 
+            jointPartT0();
         } else {
             assert(false, str("joint type unknwon:",type)            );
         }
