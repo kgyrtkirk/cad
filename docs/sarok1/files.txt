@@ -1,11 +1,11 @@
 files.txt
 index.html
+package.json
 prot.tgz
 sarok
 sarok@P-cAABotXY.dxf
 sarok@P-cAAlYZ.dxf
 sarok@P-cAATopXY.dxf
-sarok@P-cAATopXY.dxf~
 sarok@P-cABBotXY.dxf
 sarok@P-cABDoorXZ.dxf
 sarok@P-cABlYZ.dxf
@@ -14,11 +14,8 @@ sarok@P-cBBotXY.dxf
 sarok@P-cBlYZ.dxf
 sarok@P-cBOuterTopXY.dxf
 sarok@P-DF100XZ.dxf
-sarok@P-DF100XZ.dxf~
 sarok@P-DF200XZ.dxf
-sarok@P-DF200XZ.dxf~
 sarok@P-x1L630XY.dxf
-sarok@P-x1L630XY.dxf~
 sarok@P-xBXZ.dxf
 sarok@R-cAArYZ.dxf
 sarok@R-cABrYZ.dxf
