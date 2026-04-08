@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>sarok1 – DXF Viewer</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      display: flex;
+      height: 100vh;
+      font-family: monospace;
+      font-size: 13px;
+      background: #111;
+      color: #ccc;
+    }
+
+    #sidebar {
+      width: 200px;
+      flex-shrink: 0;
+      background: #1a1a1a;
+      border-right: 1px solid #333;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #sidebar h1 {
+      font-size: 12px;
+      padding: 10px 12px 8px;
+      color: #888;
+      border-bottom: 1px solid #2a2a2a;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    #file-list {
+      list-style: none;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    #file-list li {
+      padding: 7px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #1e1e1e;
+      color: #aaa;
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    #file-list li:hover { background: #252525; color: #eee; }
+    #file-list li.active { background: #1d3a5f; color: #7cb9ff; }
+
+    #main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #toolbar {
+      padding: 6px 12px;
+      background: #181818;
+      border-bottom: 1px solid #2a2a2a;
+      color: #555;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-height: 32px;
+    }
+
+    #current-file { color: #7cb9ff; }
+
+    #viewer {
+      flex: 1;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #111;
+    }
+
+    #viewer svg {
+      width: 100%;
+      height: 100%;
+      background: #fff;
+    }
+
+    #placeholder {
+      color: #444;
+      text-align: center;
+    }
+
+    #placeholder p { margin-top: 8px; font-size: 11px; }
+
+    #error {
+      color: #e06c75;
+      padding: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <h1>DXF Files</h1>
+  <ul id="file-list"></ul>
+</nav>
+
+<div id="main">
+  <div id="toolbar">
+    <span id="current-file">no file selected</span>
+  </div>
+  <div id="viewer">
+    <div id="placeholder">
+      &#9632; select a file
+    </div>
+    <div id="error"></div>
+  </div>
+</div>
+
+<script type="module">
+  import { parseString, toSVG } from 'https://esm.sh/dxf@3.7.4';
+
+  const list        = document.getElementById('file-list');
+  const viewer      = document.getElementById('viewer');
+  const placeholder = document.getElementById('placeholder');
+  const errorDiv    = document.getElementById('error');
+  const currentFile = document.getElementById('current-file');
+
+  // Load file list from files.txt (one filename per line)
+  const filesResp = await fetch('./files.txt');
+  const files = (await filesResp.text()).split('\n').map(s => s.trim()).filter(s => s.endsWith('.dxf'));
+
+  files.forEach(name => {
+    const li = document.createElement('li');
+    li.textContent = name.replace(/^sarok@P-/, '').replace(/\.dxf$/, '');
+    li.title = name;
+    li.addEventListener('click', () => loadFile(name, li));
+    list.appendChild(li);
+  });
+
+  async function loadFile(name, li) {
+    list.querySelectorAll('li').forEach(el => el.classList.remove('active'));
+    li.classList.add('active');
+    currentFile.textContent = name;
+
+    placeholder.style.display = 'none';
+    errorDiv.style.display = 'none';
+    const old = viewer.querySelector('svg');
+    if (old) old.remove();
+
+    try {
+      const resp = await fetch(`./${encodeURIComponent(name)}`);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status} fetching ${name}`);
+      const text = await resp.text();
+
+      const parsed = parseString(text);
+      const svgString = toSVG(parsed);
+
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'width:100%;height:100%;';
+      wrapper.innerHTML = svgString;
+      const svg = wrapper.querySelector('svg');
+      if (!svg) throw new Error('toSVG returned no SVG element');
+
+      // Make SVG fill the viewer
+      svg.removeAttribute('width');
+      svg.removeAttribute('height');
+      svg.style.cssText = 'width:100%;height:100%;background:#fff;';
+
+      viewer.appendChild(svg);
+    } catch (err) {
+      errorDiv.textContent = String(err);
+      errorDiv.style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>
