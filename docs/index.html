@@ -137,7 +137,7 @@
 
   files.forEach(name => {
     const li = document.createElement('li');
-    li.textContent = name.replace(/^sarok@P-/, '').replace(/\.dxf$/, '');
+    li.textContent = name.replace(/\.dxf$/, '');
     li.title = name;
     li.addEventListener('click', () => loadFile(name, li));
     list.appendChild(li);
