@@ -214,25 +214,24 @@ posNeg() {
 }
 
 mode="print";
-mode="P-cAATopXY";
+//mode="R-cAArYZ";
 //mode="P-cBOuterTopXY";
 
 //mode="P-DF100XZ";
 
-
-//@OUTPUT:P-cAArYZ
 //@OUTPUT:P-cAAlYZ
+//@OUTPUT:R-cAArYZ
 //@OUTPUT:P-cAABotXY
 //@OUTPUT:P-cAATopXY
 
-//@OUTPUT:P-cABrYZ
 //@OUTPUT:P-cABlYZ
+//@OUTPUT:R-cABrYZ
 //@OUTPUT:P-cABBotXY
 //@OUTPUT:P-cABTopXY
 //@OUTPUT:P-cABDoorXZ
 
 //@OUTPUT:P-cBlYZ
-//@OUTPUT:P-cBrYZ
+//@OUTPUT:R-cBrYZ
 //@OUTPUT:P-cBBotXY
 //@OUTPUT:P-cBOuterTopXY
 
@@ -241,6 +240,15 @@ mode="P-cAATopXY";
 
 //@OUTPUT:P-x1L630XY
 //@OUTPUT:P-xBXZ
+
+    module mx(mirror) {
+        if(mirror) {
+            mirror([1,0,0])
+            children();
+        }else {
+            children();
+        }
+    }
 
 
 if(mode == "print") {
@@ -256,7 +264,7 @@ scale([1,1,1]*s) {
 
 } else 
 //lse 
- if(mode[0] == "P" && mode[1]=="-") {
+ if((mode[0] == "P" || mode[0] == "R") && mode[1]=="-") {
     $fronts=true;
     $machines=false;
     $jointsVisible=false;
@@ -266,8 +274,9 @@ scale([1,1,1]*s) {
     $part=substr(mode,2);
 
 
-   projection(false)
-   orient(mode)
+    projection(false)
+    mx(mode[0]=="R")
+    orient(mode)
 //    rotate(90,[0,1,0]) 
         model();
 //        previewLU();

@@ -122,7 +122,7 @@ new File('.').eachFileMatch FILES, ~/.*\.scad/, { File f ->
 			return;
 		def part = it-"//@OUTPUT:";
 	println "${baseName}:${part}"
-		if( part =~ "P.*") {
+		if( part =~ "[PR].*") {
 			projects.add(part);
 		} else {
 			objects += [part];
