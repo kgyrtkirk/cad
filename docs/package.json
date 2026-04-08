@@ -6,7 +6,7 @@
     "dev": "npm run build && npx serve ."
   },
   "dependencies": {
-    "dxf-viewer": "^1.0.47",
+    "dxf-viewer": "https://registry.npmjs.org/dxf-viewer/-/dxf-viewer-1.0.47.tgz",
     "roboto-fontface": "^0.10.0"
   },
   "devDependencies": {
