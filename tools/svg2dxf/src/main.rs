@@ -95,12 +95,12 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
     }
     for (l, v) in &by_layer { eprintln!("  layer {l}: {} shapes", v.len()); }
 
-    // Panel boundary (inner — the actual cut outline).
-    by_layer.entry("panel".to_string()).or_default().push(
+    // Inner boundary (informational — raw panel outline before close strips).
+    by_layer.entry("RAW_PANEL".to_string()).or_default().push(
         Box::leak(Box::new(Shape::Poly(bb.as_polyline())))
     );
-    // Outer boundary (includes close strips).
-    by_layer.entry("extended_boundary".to_string()).or_default().push(
+    // Outer boundary (includes close strips) — this is the PANEL the machine uses.
+    by_layer.entry("PANEL".to_string()).or_default().push(
         Box::leak(Box::new(Shape::Poly(outer_bb.as_polyline())))
     );
 

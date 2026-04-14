@@ -32,9 +32,9 @@ pub fn layer(shape: &Shape) -> String {
                     return format!("drill_slot_{}x{}", short.round() as i64, long.round() as i64);
                 }
 
-                // Narrow elongated closed shapes are grooves — layer name includes width.
+                // Narrow elongated closed shapes are grooves — SAW layer (depth set on entity).
                 if ar > 8.0 && short < 12.0 {
-                    return format!("groove_{}", short.round() as i64);
+                    return "SAW".to_string();
                 }
                 // Expanded drill slots: 8 mm wide, ~32 mm deep.
                 if (short - 8.0).abs() < 0.5 && (long - 32.0).abs() < 1.0 {

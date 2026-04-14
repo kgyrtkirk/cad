@@ -22,8 +22,9 @@ use crate::xor::Aabb;
 fn layer_color(name: &str) -> u8 {
     // Fixed colours for well-known layers.
     match name {
-        "panel"             => return 200, // purple
-        "extended_boundary" => return 8,   // dark grey
+        "PANEL"     => return 200, // purple
+        "RAW_PANEL" => return 8,   // dark grey
+        "SAW"       => return 30,  // orange
         _ => {}
     }
     // Close layers: colour by thickness — thin=orange, thick=light-brown.
@@ -82,6 +83,7 @@ pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing
                     let mut circle = Circle::default();
                     circle.center = DxfPoint::new(c.center.x, c.center.y, 0.0);
                     circle.radius = c.radius;
+                    circle.thickness = 13.0; // drill depth mm
                     let mut entity = Entity::new(EntityType::Circle(circle));
                     entity.common.layer = layer_name.clone();
                     drawing.add_entity(entity);
@@ -90,6 +92,11 @@ pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing
                     let mut poly = Polyline::default();
                     // flag bit 1 = closed
                     poly.flags = if p.closed { 1 } else { 0 };
+                    poly.thickness = match layer_name.as_str() {
+                        "PANEL" => 18.0, // board thickness mm
+                        n if n.starts_with("SAW") => 8.0, // groove depth mm
+                        _ => 0.0,
+                    };
                     for pt in &p.points {
                         let v = Vertex::new(DxfPoint::new(pt.x, pt.y, 0.0));
                         poly.add_vertex(&mut drawing, v);
