@@ -214,7 +214,7 @@ posNeg() {
 }
 
 mode="print";
-//mode="R-cAArYZ";
+mode="R-cAArYZ";
 //mode="P-cBOuterTopXY";
 
 //mode="P-DF100XZ";
