@@ -51,7 +51,14 @@ pub fn layer(shape: &Shape, panel: &Rect) -> String {
             }
             "unclassified".to_string()
         }
-        Shape::Arc(_)  => "ARC_CUT".to_string(),
-        Shape::Rect(_) => "unclassified".to_string(),
+        Shape::Arc(_) => "ARC_CUT".to_string(),
+        Shape::Rect(r) => {
+            let w = r.max.x - r.min.x;
+            let h = r.max.y - r.min.y;
+            let short = w.min(h);
+            let long  = w.max(h);
+            let ar    = if short < 1e-6 { f64::INFINITY } else { long / short };
+            if ar > 8.0 && short < 12.0 { "SAW".to_string() } else { "unclassified".to_string() }
+        }
     }
 }

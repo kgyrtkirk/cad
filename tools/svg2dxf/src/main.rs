@@ -8,7 +8,7 @@ mod dxf;
 use std::collections::BTreeMap;
 use std::env;
 use std::fs;
-use geom::{Rect, Shape, detect_arcs, detect_circles, detect_slots};
+use geom::{Rect, Shape, detect_arcs, detect_circles, detect_saw_rects, detect_slots};
 use xor::feature_loops;
 use close::extract_closes;
 use classify::layer;
@@ -79,6 +79,7 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
     let panel_cy = (bb.min.y + bb.max.y) / 2.0;
     let shapes = detect_circles(loop_shapes, 0.05);
     let shapes = detect_slots(shapes, panel_cx, panel_cy);
+    let shapes = detect_saw_rects(shapes);
     let shapes = detect_arcs(shapes, &bb, 0.05);
     eprintln!("After detection: {}", shapes.len());
 

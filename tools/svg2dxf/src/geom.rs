@@ -301,6 +301,43 @@ fn try_expand_slot(poly: &Polyline, pcx: f64, pcy: f64) -> Option<Polyline> {
     })
 }
 
+/// True if `poly` is a closed 4-point axis-aligned rectangle.
+fn is_axis_aligned_rect(poly: &Polyline) -> bool {
+    if !poly.closed || poly.points.len() != 4 { return false; }
+    let r = match poly.bbox() { Some(r) => r, None => return false };
+    const TOL: f64 = 0.01;
+    poly.points.iter().all(|p| {
+        let on_x = (p.x - r.min.x).abs() < TOL || (p.x - r.max.x).abs() < TOL;
+        let on_y = (p.y - r.min.y).abs() < TOL || (p.y - r.max.y).abs() < TOL;
+        on_x && on_y
+    })
+}
+
+/// Convert 4-point axis-aligned closed polylines that match the SAW profile
+/// (aspect ratio > 8, short side < 12 mm) into `Shape::Rect`.
+///
+/// This runs after `detect_slots` so expanded 8×32 slot stubs are left as
+/// `Shape::Poly` and continue to be classified by abutting-edge rules.
+pub fn detect_saw_rects(shapes: Vec<Shape>) -> Vec<Shape> {
+    shapes.into_iter().map(|shape| {
+        if let Shape::Poly(ref poly) = shape {
+            if is_axis_aligned_rect(poly) {
+                if let Some(r) = poly.bbox() {
+                    let w = r.max.x - r.min.x;
+                    let h = r.max.y - r.min.y;
+                    let short = w.min(h);
+                    let long  = w.max(h);
+                    let ar    = if short < 1e-6 { f64::INFINITY } else { long / short };
+                    if ar > 8.0 && short < 12.0 {
+                        return Shape::Rect(r);
+                    }
+                }
+            }
+        }
+        shape
+    }).collect()
+}
+
 /// Replace polygon approximations of circles with Circle shapes.
 pub fn detect_circles(shapes: Vec<Shape>, tol: f64) -> Vec<Shape> {
     shapes.into_iter().map(|shape| {
@@ -381,6 +418,8 @@ pub fn detect_arcs(shapes: Vec<Shape>, panel: &Rect, tol: f64) -> Vec<Shape> {
     const BOUNDARY_TOL: f64 = 0.5;
     shapes.into_iter().map(|shape| {
         if let Shape::Poly(ref poly) = shape {
+            // 4-point shapes are always rectangles, never arc approximations.
+            if poly.points.len() <= 4 { return shape; }
             let first = poly.points.first().copied();
             let last  = poly.points.last().copied();
             if let (Some(f), Some(l)) = (first, last) {

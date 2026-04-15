@@ -31,7 +31,6 @@ fn layer_color(name: &str) -> u8 {
         "REAR"       => return 6,   // magenta
         "ARC_CUT"    => return 40,  // orange
         "HANDLE_CUT" => return 2,   // yellow
-        "BACK"       => return 170, // violet
         _ => {}
     }
     // Close layers: colour by thickness — thin=orange, thick=light-brown.
@@ -83,7 +82,6 @@ fn layer_thickness(layer_name: &str, top_thickness: f64) -> f64 {
         "LEFT"|"RIGHT"|"FRONT"|"REAR" =>  9.0,         // Z: mid-board mm
         "ARC_CUT"                     => 18.0,         // routed arc depth mm
         "HANDLE_CUT"                  => 13.5,         // handle recess depth mm
-        "BACK"                        => 13.5,         // back-face drill depth mm
         _ => 0.0,
     }
 }
