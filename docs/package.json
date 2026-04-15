@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "esbuild --bundle --format=esm --platform=browser --outfile=dxf.bundle.js bundle-entry.js && mkdir -p fonts && cp node_modules/roboto-fontface/fonts/roboto/Roboto-Regular.woff fonts/Roboto-Regular.woff && zip -j sarok1.zip *.dxf",
-    "dev": "npm run build && npx serve ."
+    "dev": "npm run build && npx serve .",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "dxf-viewer": "https://registry.npmjs.org/dxf-viewer/-/dxf-viewer-1.0.47.tgz",

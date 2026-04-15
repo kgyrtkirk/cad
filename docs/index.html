@@ -198,6 +198,7 @@
     autoResize: true,
     clearColor: new Color('#ffffff'),
     colorCorrection: true,
+    retainParsedDxf: true,
   });
 
   // ── File list ────────────────────────────────────────────────────────────────
@@ -246,7 +247,7 @@
     const map = new Map();
     if (!dxf || !dxf.entities) return map;
     for (const e of dxf.entities) {
-      if (e.thickness != null && e.layer) {
+      if (e.thickness != null && e.thickness !== 0 && e.layer) {
         map.set(e.layer, e.thickness);
       }
     }
