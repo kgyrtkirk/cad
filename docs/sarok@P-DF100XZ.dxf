@@ -333,11 +333,11 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461146.326157407369
+2461146.521967592649
   9
 $TDUPDATE
  40
-2461146.326157407369
+2461146.521967592649
   9
 $TDINDWG
  40
@@ -971,11 +971,11 @@ AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-drill_d5
+TOP
  70
      0
  62
-   100
+     4
   6
 CONTINUOUS
   0
@@ -1407,7 +1407,7 @@ CIRCLE
   5
 1F
   8
-drill_d5
+TOP
  39
 13.0
  10
@@ -1423,7 +1423,7 @@ CIRCLE
   5
 20
   8
-drill_d5
+TOP
  39
 13.0
  10
