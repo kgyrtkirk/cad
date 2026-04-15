@@ -333,11 +333,11 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461146.521967592649
+2461146.665937500075
   9
 $TDUPDATE
  40
-2461146.521967592649
+2461146.665937500075
   9
 $TDINDWG
  40
@@ -401,7 +401,7 @@ $HANDLING
   9
 $HANDSEED
   5
-58
+55
   9
 $SURFTAB1
  70
@@ -1003,59 +1003,11 @@ AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-close_B_2.00
+close
  70
      0
  62
-    30
-  6
-CONTINUOUS
-  0
-LAYER
-  5
-40
-100
-AcDbSymbolTableRecord
-100
-AcDbLayerTableRecord
-  2
-close_L_2.00
- 70
-     0
- 62
-    30
-  6
-CONTINUOUS
-  0
-LAYER
-  5
-48
-100
-AcDbSymbolTableRecord
-100
-AcDbLayerTableRecord
-  2
-close_R_2.00
- 70
-     0
- 62
-    30
-  6
-CONTINUOUS
-  0
-LAYER
-  5
-50
-100
-AcDbSymbolTableRecord
-100
-AcDbLayerTableRecord
-  2
-close_T_2.00
- 70
-     0
- 62
-    30
+     5
   6
 CONTINUOUS
   0
@@ -1819,7 +1771,7 @@ POLYLINE
   5
 3D
   8
-close_B_2.00
+close
  66
      1
  10
@@ -1911,7 +1863,7 @@ TEXT
   5
 3F
   8
-close_B_2.00
+close
  10
 397.0
  20
@@ -1921,7 +1873,7 @@ close_B_2.00
  40
 5.0
   1
-B: 2.00mm
+FRONT: 2.00mm
  72
      1
  11
@@ -1935,9 +1887,9 @@ B: 2.00mm
   0
 POLYLINE
   5
-45
+44
   8
-close_L_2.00
+close
  66
      1
  10
@@ -1951,13 +1903,31 @@ close_L_2.00
   0
 VERTEX
   5
-41
+40
   8
 0
 100
 AcDbVertex
  10
 -2.0
+ 20
+-2.0
+ 30
+0.0
+ 70
+     0
+ 50
+0.0
+  0
+VERTEX
+  5
+41
+  8
+0
+100
+AcDbVertex
+ 10
+-0.000009918213
  20
 -2.0
  30
@@ -1977,7 +1947,7 @@ AcDbVertex
  10
 -0.000009918213
  20
--2.0
+96.0
  30
 0.0
  70
@@ -1993,24 +1963,6 @@ VERTEX
 100
 AcDbVertex
  10
--0.000009918213
- 20
-96.0
- 30
-0.0
- 70
-     0
- 50
-0.0
-  0
-VERTEX
-  5
-44
-  8
-0
-100
-AcDbVertex
- 10
 -2.0
  20
 96.0
@@ -2023,13 +1975,13 @@ AcDbVertex
   0
 SEQEND
   5
-46
+45
   0
 TEXT
   5
-47
+46
   8
-close_L_2.00
+close
  10
 -9.5
  20
@@ -2039,7 +1991,7 @@ close_L_2.00
  40
 5.0
   1
-L: 2.00mm
+LEFT: 2.00mm
  72
      1
  11
@@ -2053,9 +2005,9 @@ L: 2.00mm
   0
 POLYLINE
   5
-4D
+4B
   8
-close_R_2.00
+close
  66
      1
  10
@@ -2069,7 +2021,7 @@ close_R_2.00
   0
 VERTEX
   5
-49
+47
   8
 0
 100
@@ -2078,6 +2030,42 @@ AcDbVertex
 793.999975585937
  20
 -2.0
+ 30
+0.0
+ 70
+     0
+ 50
+0.0
+  0
+VERTEX
+  5
+48
+  8
+0
+100
+AcDbVertex
+ 10
+796.0
+ 20
+-2.0
+ 30
+0.0
+ 70
+     0
+ 50
+0.0
+  0
+VERTEX
+  5
+49
+  8
+0
+100
+AcDbVertex
+ 10
+796.0
+ 20
+96.0
  30
 0.0
  70
@@ -2093,42 +2081,6 @@ VERTEX
 100
 AcDbVertex
  10
-796.0
- 20
--2.0
- 30
-0.0
- 70
-     0
- 50
-0.0
-  0
-VERTEX
-  5
-4B
-  8
-0
-100
-AcDbVertex
- 10
-796.0
- 20
-96.0
- 30
-0.0
- 70
-     0
- 50
-0.0
-  0
-VERTEX
-  5
-4C
-  8
-0
-100
-AcDbVertex
- 10
 793.999975585937
  20
 96.0
@@ -2141,13 +2093,13 @@ AcDbVertex
   0
 SEQEND
   5
-4E
+4C
   0
 TEXT
   5
-4F
+4D
   8
-close_R_2.00
+close
  10
 803.5
  20
@@ -2157,7 +2109,7 @@ close_R_2.00
  40
 5.0
   1
-R: 2.00mm
+RIGHT: 2.00mm
  72
      1
  11
@@ -2171,9 +2123,9 @@ R: 2.00mm
   0
 POLYLINE
   5
-55
+52
   8
-close_T_2.00
+close
  66
      1
  10
@@ -2187,7 +2139,7 @@ close_T_2.00
   0
 VERTEX
   5
-51
+4E
   8
 0
 100
@@ -2205,7 +2157,7 @@ AcDbVertex
   0
 VERTEX
   5
-52
+4F
   8
 0
 100
@@ -2223,7 +2175,7 @@ AcDbVertex
   0
 VERTEX
   5
-53
+50
   8
 0
 100
@@ -2241,7 +2193,7 @@ AcDbVertex
   0
 VERTEX
   5
-54
+51
   8
 0
 100
@@ -2259,13 +2211,13 @@ AcDbVertex
   0
 SEQEND
   5
-56
+53
   0
 TEXT
   5
-57
+54
   8
-close_T_2.00
+close
  10
 397.0
  20
@@ -2275,7 +2227,7 @@ close_T_2.00
  40
 5.0
   1
-T: 2.00mm
+REAR: 2.00mm
  72
      1
  11
