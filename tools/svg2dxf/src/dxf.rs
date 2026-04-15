@@ -24,7 +24,12 @@ fn layer_color(name: &str) -> u8 {
     match name {
         "PANEL"     => return 200, // purple
         "RAW_PANEL" => return 8,   // dark grey
+        "TOP"       => return 4,   // cyan
         "SAW"       => return 30,  // orange
+        "LEFT"      => return 1,   // red
+        "RIGHT"     => return 3,   // green
+        "FRONT"     => return 5,   // blue
+        "REAR"      => return 6,   // magenta
         _ => {}
     }
     // Close layers: colour by thickness — thin=orange, thick=light-brown.
@@ -93,8 +98,10 @@ pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing
                     // flag bit 1 = closed
                     poly.flags = if p.closed { 1 } else { 0 };
                     poly.thickness = match layer_name.as_str() {
-                        "PANEL" => 18.0, // board thickness mm
-                        n if n.starts_with("SAW") => 8.0, // groove depth mm
+                        "PANEL"                    => 18.0, // board thickness mm
+                        "TOP"                      => 13.0, // top-face slot depth mm
+                        n if n.starts_with("SAW")  =>  8.0, // groove depth mm
+                        "LEFT"|"RIGHT"|"FRONT"|"REAR" => 9.0, // Z: mid-board mm
                         _ => 0.0,
                     };
                     for pt in &p.points {

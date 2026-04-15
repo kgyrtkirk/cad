@@ -89,9 +89,11 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
     eprintln!("Translated by ({dx:.2}, {dy:.2}) — panel now at origin");
 
     // 7. Layer assignment.
+    let panel_w = bb.max_x - bb.min_x;
+    let panel_h = bb.max_y - bb.min_y;
     let mut by_layer: BTreeMap<String, Vec<&Shape>> = BTreeMap::new();
     for shape in &shapes {
-        by_layer.entry(layer(shape)).or_default().push(shape);
+        by_layer.entry(layer(shape, panel_w, panel_h)).or_default().push(shape);
     }
     for (l, v) in &by_layer { eprintln!("  layer {l}: {} shapes", v.len()); }
 
