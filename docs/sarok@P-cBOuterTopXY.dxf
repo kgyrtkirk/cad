@@ -333,11 +333,11 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461139.397662037052
+2461146.326157407369
   9
 $TDUPDATE
  40
-2461139.397662037052
+2461146.326157407369
   9
 $TDINDWG
  40
@@ -939,27 +939,27 @@ AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-drill_d5
+PANEL
  70
      0
  62
-   100
+   200
   6
 CONTINUOUS
   0
 LAYER
   5
-15
+17
 100
 AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-drill_d8
+RAW_PANEL
  70
      0
  62
-   140
+     8
   6
 CONTINUOUS
   0
@@ -971,11 +971,11 @@ AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-extended_boundary
+SAW
  70
      0
  62
-     8
+    30
   6
 CONTINUOUS
   0
@@ -987,27 +987,27 @@ AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-groove_3
+drill_d5
  70
      0
  62
-     3
+   100
   6
 CONTINUOUS
   0
 LAYER
   5
-2C
+2A
 100
 AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-panel
+drill_d8
  70
      0
  62
-   200
+   140
   6
 CONTINUOUS
   0
@@ -1217,179 +1217,105 @@ SECTION
   2
 ENTITIES
   0
-CIRCLE
+POLYLINE
+  5
+15
+  8
+PANEL
+ 66
+     1
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+ 39
+18.0
+ 70
+     1
+  0
+VERTEX
   5
 11
   8
-drill_d5
+0
+100
+AcDbVertex
  10
-7.0
+-2.0
  20
-580.0
+0.0
  30
 0.0
- 40
-2.500168587075
+ 70
+     0
+ 50
+0.0
   0
-CIRCLE
+VERTEX
   5
 12
   8
-drill_d5
+0
+100
+AcDbVertex
  10
-789.0
+798.0
  20
-580.0
+0.0
  30
 0.0
- 40
-2.500880902926
+ 70
+     0
+ 50
+0.0
   0
-CIRCLE
+VERTEX
   5
 13
   8
-drill_d5
+0
+100
+AcDbVertex
  10
-7.0
+798.0
  20
-68.0
+648.0
  30
 0.0
- 40
-2.500095759442
+ 70
+     0
+ 50
+0.0
   0
-CIRCLE
+VERTEX
   5
 14
   8
-drill_d5
+0
+100
+AcDbVertex
  10
-789.0
+-2.0
  20
-68.0
+648.0
  30
 0.0
- 40
-2.500808116768
+ 70
+     0
+ 50
+0.0
   0
-CIRCLE
+SEQEND
   5
 16
-  8
-drill_d8
- 10
-789.0
- 20
-608.0
- 30
-0.0
- 40
-4.000390701949
-  0
-CIRCLE
-  5
-17
-  8
-drill_d8
- 10
-7.0
- 20
-608.0
- 30
-0.0
- 40
-3.999700048797
-  0
-CIRCLE
-  5
-18
-  8
-drill_d8
- 10
-789.0
- 20
-552.0
- 30
-0.0
- 40
-4.000390701949
-  0
-CIRCLE
-  5
-19
-  8
-drill_d8
- 10
-7.0
- 20
-552.0
- 30
-0.0
- 40
-3.999700048797
-  0
-CIRCLE
-  5
-1A
-  8
-drill_d8
- 10
-7.0
- 20
-96.0
- 30
-0.0
- 40
-3.999840318428
-  0
-CIRCLE
-  5
-1B
-  8
-drill_d8
- 10
-789.0
- 20
-96.0
- 30
-0.0
- 40
-4.000530923154
-  0
-CIRCLE
-  5
-1C
-  8
-drill_d8
- 10
-7.0
- 20
-40.0
- 30
-0.0
- 40
-3.999840318428
-  0
-CIRCLE
-  5
-1D
-  8
-drill_d8
- 10
-789.0
- 20
-40.0
- 30
-0.0
- 40
-4.000530923154
   0
 POLYLINE
   5
-23
+1C
   8
-extended_boundary
+RAW_PANEL
  66
      1
  10
@@ -1403,15 +1329,109 @@ extended_boundary
   0
 VERTEX
   5
+18
+  8
+0
+100
+AcDbVertex
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+ 70
+     0
+ 50
+0.0
+  0
+VERTEX
+  5
+19
+  8
+0
+100
+AcDbVertex
+ 10
+796.0
+ 20
+0.0
+ 30
+0.0
+ 70
+     0
+ 50
+0.0
+  0
+VERTEX
+  5
+1A
+  8
+0
+100
+AcDbVertex
+ 10
+796.0
+ 20
+646.0
+ 30
+0.0
+ 70
+     0
+ 50
+0.0
+  0
+VERTEX
+  5
+1B
+  8
+0
+100
+AcDbVertex
+ 10
+0.0
+ 20
+646.0
+ 30
+0.0
+ 70
+     0
+ 50
+0.0
+  0
+SEQEND
+  5
+1D
+  0
+POLYLINE
+  5
+23
+  8
+SAW
+ 66
+     1
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+ 39
+8.0
+ 70
+     1
+  0
+VERTEX
+  5
 1F
   8
 0
 100
 AcDbVertex
  10
--2.0
+6.5
  20
-0.0
+8.0
  30
 0.0
  70
@@ -1427,9 +1447,9 @@ VERTEX
 100
 AcDbVertex
  10
-798.0
+6.5
  20
-0.0
+11.0
  30
 0.0
  70
@@ -1445,9 +1465,9 @@ VERTEX
 100
 AcDbVertex
  10
-798.0
+789.5
  20
-648.0
+11.0
  30
 0.0
  70
@@ -1463,9 +1483,9 @@ VERTEX
 100
 AcDbVertex
  10
--2.0
+789.5
  20
-648.0
+8.0
  30
 0.0
  70
@@ -1477,189 +1497,197 @@ SEQEND
   5
 24
   0
-POLYLINE
-  5
-2A
-  8
-groove_3
- 66
-     1
- 10
-0.0
- 20
-0.0
- 30
-0.0
- 70
-     1
-  0
-VERTEX
+CIRCLE
   5
 26
   8
-0
-100
-AcDbVertex
+drill_d5
+ 39
+13.0
  10
-6.5
+7.0
  20
-8.0
+580.0
  30
 0.0
- 70
-     0
- 50
-0.0
+ 40
+2.500168587075
   0
-VERTEX
+CIRCLE
   5
 27
   8
-0
-100
-AcDbVertex
+drill_d5
+ 39
+13.0
  10
-6.5
+789.0
  20
-11.0
+580.0
  30
 0.0
- 70
-     0
- 50
-0.0
+ 40
+2.500880902926
   0
-VERTEX
+CIRCLE
   5
 28
   8
-0
-100
-AcDbVertex
+drill_d5
+ 39
+13.0
  10
-789.5
+7.0
  20
-11.0
+68.0
  30
 0.0
- 70
-     0
- 50
-0.0
+ 40
+2.500095759442
   0
-VERTEX
+CIRCLE
   5
 29
   8
-0
-100
-AcDbVertex
+drill_d5
+ 39
+13.0
  10
-789.5
+789.0
  20
-8.0
+68.0
  30
 0.0
- 70
-     0
- 50
-0.0
+ 40
+2.500808116768
   0
-SEQEND
+CIRCLE
   5
 2B
-  0
-POLYLINE
-  5
-31
   8
-panel
- 66
-     1
+drill_d8
+ 39
+13.0
  10
-0.0
+789.0
  20
-0.0
+608.0
  30
 0.0
- 70
-     1
+ 40
+4.000390701949
   0
-VERTEX
+CIRCLE
+  5
+2C
+  8
+drill_d8
+ 39
+13.0
+ 10
+7.0
+ 20
+608.0
+ 30
+0.0
+ 40
+3.999700048797
+  0
+CIRCLE
   5
 2D
   8
-0
-100
-AcDbVertex
+drill_d8
+ 39
+13.0
  10
-0.0
+789.0
  20
-0.0
+552.0
  30
 0.0
- 70
-     0
- 50
-0.0
+ 40
+4.000390701949
   0
-VERTEX
+CIRCLE
   5
 2E
   8
-0
-100
-AcDbVertex
+drill_d8
+ 39
+13.0
  10
-796.0
+7.0
  20
-0.0
+552.0
  30
 0.0
- 70
-     0
- 50
-0.0
+ 40
+3.999700048797
   0
-VERTEX
+CIRCLE
   5
 2F
   8
-0
-100
-AcDbVertex
+drill_d8
+ 39
+13.0
  10
-796.0
+7.0
  20
-646.0
+96.0
  30
 0.0
- 70
-     0
- 50
-0.0
+ 40
+3.999840318428
   0
-VERTEX
+CIRCLE
   5
 30
   8
-0
-100
-AcDbVertex
+drill_d8
+ 39
+13.0
  10
-0.0
+789.0
  20
-646.0
+96.0
  30
 0.0
- 70
-     0
- 50
-0.0
+ 40
+4.000530923154
   0
-SEQEND
+CIRCLE
+  5
+31
+  8
+drill_d8
+ 39
+13.0
+ 10
+7.0
+ 20
+40.0
+ 30
+0.0
+ 40
+3.999840318428
+  0
+CIRCLE
   5
 32
+  8
+drill_d8
+ 39
+13.0
+ 10
+789.0
+ 20
+40.0
+ 30
+0.0
+ 40
+4.000530923154
   0
 POLYLINE
   5
