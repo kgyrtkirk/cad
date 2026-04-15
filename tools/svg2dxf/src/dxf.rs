@@ -124,22 +124,22 @@ pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing
     drawing
 }
 
-/// Add per-edge close layers: each layer gets the strip rectangle + a text annotation.
+/// Add all close strips into a single `close` layer: one rectangle + text annotation per edge.
 pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Rect) {
-    let text_h = 5.0_f64;       // text height mm
-    let offset  = text_h * 1.5; // gap from panel edge
+    if closes.is_empty() { return; }
 
+    let layer_name = "close";
+    let mut layer = Layer::default();
+    layer.name = layer_name.to_string();
+    layer.color = Color::from_index(layer_color(layer_name));
+    drawing.add_layer(layer);
+
+    let text_h = 5.0_f64;
+    let offset  = text_h * 1.5;
     let cx = (bb.min.x + bb.max.x) / 2.0;
     let cy = (bb.min.y + bb.max.y) / 2.0;
 
     for ec in closes {
-        let layer_name = format!("close_{}_{:.2}", ec.edge.label(), ec.width);
-
-        let mut layer = Layer::default();
-        layer.name = layer_name.clone();
-        layer.color = Color::from_index(layer_color(&layer_name));
-        drawing.add_layer(layer);
-
         // Strip rectangle (full-span along the edge).
         let rect: &[(f64, f64)] = &match ec.edge {
             Edge::Left  => [(bb.min.x,             bb.min.y), (bb.min.x + ec.width, bb.min.y),
@@ -157,7 +157,7 @@ pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Rect) 
             poly.add_vertex(drawing, Vertex::new(DxfPoint::new(x, y, 0.0)));
         }
         let mut ent = Entity::new(EntityType::Polyline(poly));
-        ent.common.layer = layer_name.clone();
+        ent.common.layer = layer_name.to_string();
         drawing.add_entity(ent);
 
         // Text annotation outside the panel edge.
@@ -175,7 +175,7 @@ pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Rect) 
         text.vertical_text_justification   = VerticalTextJustification::Middle;
         text.second_alignment_point        = DxfPoint::new(tx, ty, 0.0);
         let mut ent = Entity::new(EntityType::Text(text));
-        ent.common.layer = layer_name.clone();
+        ent.common.layer = layer_name.to_string();
         drawing.add_entity(ent);
     }
 }
