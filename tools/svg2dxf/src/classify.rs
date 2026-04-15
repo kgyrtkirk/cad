@@ -1,21 +1,18 @@
 // Assign shapes to DXF layers based on geometry properties.
 
-use crate::geom::Shape;
+use crate::geom::{Rect, Shape};
 
 /// Layer name for a shape.
 ///
-/// `panel_w` and `panel_h` are the panel dimensions after origin translation (used to
-/// determine which side face an edge slot belongs to).
+/// `panel` is the inner panel bounding rect after origin translation.
 ///
 /// Rules:
-/// - Circle → `TOP` (vertical drilling; depth encoded as entity thickness)
+/// - Circle → `TOP`
+/// - Closed poly, 8 mm wide × 32 mm deep abutting a panel edge → `LEFT`/`RIGHT`/`FRONT`/`REAR`
 /// - Closed poly, 4.5 < short < 11 mm, long < 80 mm → `TOP` (top-face slot)
 /// - Closed poly, aspect ratio > 8, short < 12 mm → `SAW` (groove)
-/// - Closed poly, 8 mm wide × 32 mm deep abutting a panel edge → `LEFT`/`RIGHT`/`FRONT`/`REAR`
-/// - Panel inner AABB → `RAW_PANEL`
-/// - Outer AABB (incl. close strips) → `PANEL`
 /// - Anything else → `unclassified`
-pub fn layer(shape: &Shape, panel_w: f64, panel_h: f64) -> String {
+pub fn layer(shape: &Shape, panel: &Rect) -> String {
     match shape {
         Shape::Circle(_) => "TOP".to_string(),
         Shape::Poly(p) => {
@@ -29,6 +26,14 @@ pub fn layer(shape: &Shape, panel_w: f64, panel_h: f64) -> String {
                 let short = w.min(h);
                 let long  = w.max(h);
 
+                // Edge slots (8 mm wide × 32 mm deep): assign to the matching side face layer.
+                if (short - 8.0).abs() < 0.5 && (long - 32.0).abs() < 1.0 {
+                    return match panel.abutting_edge(r, 1.0) {
+                        Some(edge) => edge.label(),
+                        None       => "unclassified",
+                    }.to_string();
+                }
+
                 // Top-face slots (small oblong features drilled from above).
                 if 4.5 < short && short < 11.0 && long < 80.0 {
                     return "TOP".to_string();
@@ -38,25 +43,9 @@ pub fn layer(shape: &Shape, panel_w: f64, panel_h: f64) -> String {
                 if ar > 8.0 && short < 12.0 {
                     return "SAW".to_string();
                 }
-
-                // Edge slots (8 mm wide × 32 mm deep): assign to the matching side face layer.
-                if (short - 8.0).abs() < 0.5 && (long - 32.0).abs() < 1.0 {
-                    return edge_slot_layer(r.min.x, r.min.y, r.max.x, r.max.y, panel_w, panel_h).to_string();
-                }
             }
             "unclassified".to_string()
         }
         Shape::Rect(_) => "unclassified".to_string(),
     }
-}
-
-/// Determine which side-face layer an edge slot belongs to by checking which panel
-/// edge the slot rectangle abuts (within 1 mm tolerance after origin translation).
-fn edge_slot_layer(x0: f64, y0: f64, x1: f64, y1: f64, panel_w: f64, panel_h: f64) -> &'static str {
-    const TOL: f64 = 1.0;
-    if x0.abs() < TOL          { "LEFT"  }
-    else if (x1 - panel_w).abs() < TOL { "RIGHT" }
-    else if y0.abs() < TOL          { "FRONT" }
-    else if (y1 - panel_h).abs() < TOL { "REAR"  }
-    else                            { "unclassified" }
 }

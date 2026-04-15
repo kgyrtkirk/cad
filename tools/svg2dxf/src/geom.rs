@@ -191,6 +191,27 @@ impl From<&Polyline> for Vec<Line> {
     }
 }
 
+/// Which edge of a panel an object abuts — matches the DXF layer names used by the CNC machine.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Edge { Front, Left, Right, Rear }
+
+impl Edge {
+    pub fn label(self) -> &'static str {
+        match self { Edge::Front => "FRONT", Edge::Left => "LEFT", Edge::Right => "RIGHT", Edge::Rear => "REAR" }
+    }
+}
+
+impl Rect {
+    /// Returns which edge of `self` the rect `other` abuts, within `tol` mm.
+    pub fn abutting_edge(&self, other: Rect, tol: f64) -> Option<Edge> {
+        if (other.min.x - self.min.x).abs() < tol { return Some(Edge::Left); }
+        if (other.max.x - self.max.x).abs() < tol { return Some(Edge::Right); }
+        if (other.min.y - self.min.y).abs() < tol { return Some(Edge::Front); }
+        if (other.max.y - self.max.y).abs() < tol { return Some(Edge::Rear); }
+        None
+    }
+}
+
 /// Try to fit a circle to a closed polygon.
 /// All vertices must lie within `tol` fractional deviation from the mean radius.
 fn try_fit_circle(poly: &Polyline, tol: f64) -> Option<Circle> {

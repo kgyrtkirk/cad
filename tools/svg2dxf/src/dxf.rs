@@ -6,8 +6,8 @@ use dxf::entities::{Circle, Polyline, Vertex, Text, Entity, EntityType};
 use dxf::enums::{HorizontalTextJustification, VerticalTextJustification};
 use dxf::tables::Layer;
 use dxf::{Color, Point as DxfPoint};
-use crate::geom::{Polyline as GPolyline, Rect, Shape};
-use crate::close::{EdgeClose, Edge};
+use crate::geom::{Edge, Polyline as GPolyline, Rect, Shape};
+use crate::close::EdgeClose;
 
 /// Single source of truth for layer colours.
 ///
@@ -142,14 +142,14 @@ pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Rect) 
 
         // Strip rectangle (full-span along the edge).
         let rect: &[(f64, f64)] = &match ec.edge {
-            Edge::Left   => [(bb.min.x,             bb.min.y), (bb.min.x + ec.width, bb.min.y),
-                             (bb.min.x + ec.width,  bb.max.y), (bb.min.x,            bb.max.y)],
-            Edge::Right  => [(bb.max.x - ec.width,  bb.min.y), (bb.max.x,            bb.min.y),
-                             (bb.max.x,             bb.max.y), (bb.max.x - ec.width, bb.max.y)],
-            Edge::Bottom => [(bb.min.x, bb.min.y),             (bb.max.x, bb.min.y),
-                             (bb.max.x, bb.min.y + ec.width),  (bb.min.x, bb.min.y + ec.width)],
-            Edge::Top    => [(bb.min.x, bb.max.y - ec.width),  (bb.max.x, bb.max.y - ec.width),
-                             (bb.max.x, bb.max.y),             (bb.min.x, bb.max.y)],
+            Edge::Left  => [(bb.min.x,             bb.min.y), (bb.min.x + ec.width, bb.min.y),
+                            (bb.min.x + ec.width,  bb.max.y), (bb.min.x,            bb.max.y)],
+            Edge::Right => [(bb.max.x - ec.width,  bb.min.y), (bb.max.x,            bb.min.y),
+                            (bb.max.x,             bb.max.y), (bb.max.x - ec.width, bb.max.y)],
+            Edge::Front => [(bb.min.x, bb.min.y),             (bb.max.x, bb.min.y),
+                            (bb.max.x, bb.min.y + ec.width),  (bb.min.x, bb.min.y + ec.width)],
+            Edge::Rear  => [(bb.min.x, bb.max.y - ec.width),  (bb.max.x, bb.max.y - ec.width),
+                            (bb.max.x, bb.max.y),             (bb.min.x, bb.max.y)],
         };
         let mut poly = Polyline::default();
         poly.flags = 1; // closed
@@ -162,10 +162,10 @@ pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Rect) 
 
         // Text annotation outside the panel edge.
         let (tx, ty) = match ec.edge {
-            Edge::Left   => (bb.min.x - offset, cy),
-            Edge::Right  => (bb.max.x + offset, cy),
-            Edge::Bottom => (cx, bb.min.y - offset),
-            Edge::Top    => (cx, bb.max.y + offset),
+            Edge::Left  => (bb.min.x - offset, cy),
+            Edge::Right => (bb.max.x + offset, cy),
+            Edge::Front => (cx, bb.min.y - offset),
+            Edge::Rear  => (cx, bb.max.y + offset),
         };
         let mut text = Text::default();
         text.value           = format!("{}: {:.2}mm", ec.edge.label(), ec.width);

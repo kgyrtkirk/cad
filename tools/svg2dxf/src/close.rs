@@ -5,7 +5,7 @@
 // thin dimension abuts one of the four AABB edges.  We collect all such loops,
 // group them by edge, and report one EdgeClose per edge.
 
-use crate::geom::{Polyline, Rect, Shape};
+use crate::geom::{Edge, Rect, Shape};
 
 /// Rendering adds a 0.1 mm gap so all detected widths are 0.1 mm short.
 const CLOSE_GAP_CORRECTION: f64 = 0.1;
@@ -13,40 +13,22 @@ const CLOSE_GAP_CORRECTION: f64 = 0.1;
 const MAX_CLOSE_MM: f64 = 5.0;
 const TOL: f64 = 0.05;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum Edge { Bottom, Left, Right, Top }
-
-impl Edge {
-    pub fn label(self) -> &'static str {
-        match self { Edge::Bottom => "B", Edge::Left => "L", Edge::Right => "R", Edge::Top => "T" }
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct EdgeClose {
     pub edge:  Edge,
     pub width: f64,   // mm
 }
 
-/// Classify one loop as an edge-close strip, or return None.
-fn as_edge_close(poly: &Polyline, bb: &Rect) -> Option<EdgeClose> {
-    let r = poly.bbox()?;
-    let w = r.max.x - r.min.x;
-    let h = r.max.y - r.min.y;
-
-    if (r.min.x - bb.min.x).abs() < TOL && w < MAX_CLOSE_MM {
-        return Some(EdgeClose { edge: Edge::Left,   width: w + CLOSE_GAP_CORRECTION });
-    }
-    if (r.max.x - bb.max.x).abs() < TOL && w < MAX_CLOSE_MM {
-        return Some(EdgeClose { edge: Edge::Right,  width: w + CLOSE_GAP_CORRECTION });
-    }
-    if (r.min.y - bb.min.y).abs() < TOL && h < MAX_CLOSE_MM {
-        return Some(EdgeClose { edge: Edge::Bottom, width: h + CLOSE_GAP_CORRECTION });
-    }
-    if (r.max.y - bb.max.y).abs() < TOL && h < MAX_CLOSE_MM {
-        return Some(EdgeClose { edge: Edge::Top,    width: h + CLOSE_GAP_CORRECTION });
-    }
-    None
+/// Classify one shape as an edge-close strip, or return None.
+fn as_edge_close(shape: &Shape, bb: &Rect) -> Option<EdgeClose> {
+    let r = shape.bbox()?;
+    let edge = bb.abutting_edge(r, TOL)?;
+    let width = match edge {
+        Edge::Left | Edge::Right => r.max.x - r.min.x,
+        Edge::Front | Edge::Rear => r.max.y - r.min.y,
+    };
+    if width >= MAX_CLOSE_MM { return None; }
+    Some(EdgeClose { edge, width: width + CLOSE_GAP_CORRECTION })
 }
 
 /// Partition shapes into (edge-close annotations, everything else).
@@ -56,13 +38,11 @@ pub fn extract_closes(shapes: Vec<Shape>, bb: &Rect) -> (Vec<EdgeClose>, Vec<Sha
     let mut rest = Vec::new();
 
     for shape in shapes {
-        if let Shape::Poly(ref poly) = shape {
-            if let Some(ec) = as_edge_close(poly, bb) {
-                // Keep the largest observed width for this edge (fragments should agree).
-                let entry = closes.entry(ec.edge).or_insert(0.0);
-                if ec.width > *entry { *entry = ec.width; }
-                continue; // don't add to rest
-            }
+        if let Some(ec) = as_edge_close(&shape, bb) {
+            // Keep the largest observed width for this edge (fragments should agree).
+            let entry = closes.entry(ec.edge).or_insert(0.0);
+            if ec.width > *entry { *entry = ec.width; }
+            continue; // don't add to rest
         }
         rest.push(shape);
     }

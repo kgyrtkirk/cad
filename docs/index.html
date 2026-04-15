@@ -230,7 +230,7 @@
       downloadBtn.href = url;
       downloadBtn.download = name;
       downloadBtn.style.display = '';
-      buildLayerList();
+      buildLayerList(thicknessPerLayer(viewer.GetDxf()));
     } catch (err) {
       errorDiv.textContent = String(err);
       errorDiv.style.display = 'block';
@@ -242,7 +242,18 @@
     return '#' + color.toString(16).padStart(6, '0');
   }
 
-  function buildLayerList() {
+  function thicknessPerLayer(dxf) {
+    const map = new Map();
+    if (!dxf || !dxf.entities) return map;
+    for (const e of dxf.entities) {
+      if (e.thickness != null && e.layer) {
+        map.set(e.layer, e.thickness);
+      }
+    }
+    return map;
+  }
+
+  function buildLayerList(thicknessMap = new Map()) {
     layerList.innerHTML = '';
     const layers = [...viewer.GetLayers()].map(l => ({ ...l, isVisible: true }));
     if (layers.length === 0) return;
@@ -284,7 +295,8 @@
       });
 
       const label = document.createElement('label');
-      label.textContent = layer.displayName;
+      const t = thicknessMap.get(layer.name);
+      label.textContent = t != null ? `${layer.displayName} (${t}mm)` : layer.displayName;
 
       item.appendChild(swatch);
       item.appendChild(cb);
