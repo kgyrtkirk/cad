@@ -46,6 +46,7 @@ pub fn layer(shape: &Shape, panel: &Rect) -> String {
             }
             "unclassified".to_string()
         }
+        Shape::Arc(_)  => "ARC_CUT".to_string(),
         Shape::Rect(_) => "unclassified".to_string(),
     }
 }

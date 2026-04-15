@@ -114,8 +114,27 @@ impl Polyline {
 }
 
 #[derive(Debug, Clone)]
+pub struct Arc {
+    pub center:      Point,
+    pub radius:      f64,
+    pub start_angle: f64, // degrees, CCW from +X axis (DXF convention)
+    pub end_angle:   f64, // degrees, CCW from +X axis
+}
+
+impl Arc {
+    pub fn bbox(&self) -> Rect {
+        // Conservative: full circle bounding box. Arc is always contained within it.
+        Rect::new(
+            self.center.x - self.radius, self.center.y - self.radius,
+            self.center.x + self.radius, self.center.y + self.radius,
+        )
+    }
+}
+
+#[derive(Debug, Clone)]
 pub enum Shape {
     Circle(Circle),
+    Arc(Arc),
     Poly(Polyline),
     Rect(Rect),
 }
@@ -124,6 +143,7 @@ impl Shape {
     pub fn bbox(&self) -> Option<Rect> {
         match self {
             Shape::Circle(c) => Some(c.bbox()),
+            Shape::Arc(a)    => Some(a.bbox()),
             Shape::Poly(p)   => p.bbox(),
             Shape::Rect(r)   => Some(*r),
         }
@@ -134,6 +154,10 @@ impl Shape {
             Shape::Circle(c) => Shape::Circle(Circle {
                 center: Point { x: c.center.x + dx, y: c.center.y + dy },
                 radius: c.radius,
+            }),
+            Shape::Arc(a) => Shape::Arc(Arc {
+                center: Point { x: a.center.x + dx, y: a.center.y + dy },
+                ..*a
             }),
             Shape::Poly(p) => Shape::Poly(Polyline {
                 points: p.points.iter().map(|pt| Point { x: pt.x + dx, y: pt.y + dy }).collect(),
@@ -283,6 +307,88 @@ pub fn detect_circles(shapes: Vec<Shape>, tol: f64) -> Vec<Shape> {
         if let Shape::Poly(ref poly) = shape {
             if let Some(circle) = try_fit_circle(poly, tol) {
                 return Shape::Circle(circle);
+            }
+        }
+        shape
+    }).collect()
+}
+
+/// Fit a circle to an arbitrary point set using the Kasa algebraic method.
+///
+/// Returns `(center, radius)` if all points lie within `tol` fractional error of
+/// the fitted circle. Unlike the centroid approach, Kasa is unbiased for partial arcs.
+fn kasa_fit(pts: &[Point], tol: f64) -> Option<(Point, f64)> {
+    if pts.len() < 3 { return None; }
+    let n = pts.len() as f64;
+    // Shift to centroid of points for numerical stability.
+    let mx = pts.iter().map(|p| p.x).sum::<f64>() / n;
+    let my = pts.iter().map(|p| p.y).sum::<f64>() / n;
+    let (mut sxx, mut syy, mut sxy) = (0.0_f64, 0.0_f64, 0.0_f64);
+    let (mut sxxx, mut syyy, mut sxyy, mut sxxy) = (0.0_f64, 0.0_f64, 0.0_f64, 0.0_f64);
+    for p in pts {
+        let (x, y) = (p.x - mx, p.y - my);
+        sxx += x*x; syy += y*y; sxy += x*y;
+        sxxx += x*x*x; syyy += y*y*y; sxyy += x*y*y; sxxy += x*x*y;
+    }
+    let det = sxx * syy - sxy * sxy;
+    if det.abs() < 1e-10 { return None; } // collinear
+    let rhs1 = 0.5 * (sxxx + sxyy);
+    let rhs2 = 0.5 * (syyy + sxxy);
+    let a = (rhs1 * syy - rhs2 * sxy) / det;
+    let b = (sxx * rhs2 - sxy * rhs1) / det;
+    let cx = a + mx;
+    let cy = b + my;
+    let r = f64::sqrt(a*a + b*b + (sxx + syy) / n);
+    if r < 0.5 { return None; }
+    let max_err = pts.iter()
+        .map(|p| (f64::hypot(p.x - cx, p.y - cy) - r).abs())
+        .fold(0.0_f64, f64::max);
+    if max_err / r > tol { return None; }
+    Some((Point { x: cx, y: cy }, r))
+}
+
+/// Fit an Arc to a polyline whose endpoints lie on the panel boundary.
+fn try_fit_arc(poly: &Polyline, tol: f64) -> Option<Arc> {
+    if poly.points.len() < 3 { return None; }
+    let (center, radius) = kasa_fit(&poly.points, tol)?;
+    let first = *poly.points.first().unwrap();
+    let last  = *poly.points.last().unwrap();
+    let a0 = f64::atan2(first.y - center.y, first.x - center.x).to_degrees();
+    let a1 = f64::atan2(last.y  - center.y, last.x  - center.x).to_degrees();
+    // Determine winding: positive signed area = CCW in Y-up coords.
+    let signed_area: f64 = {
+        let pts = &poly.points;
+        let m = pts.len();
+        let mut s = 0.0_f64;
+        for i in 0..m { let j = (i + 1) % m; s += pts[i].x * pts[j].y - pts[j].x * pts[i].y; }
+        s
+    };
+    let (start_angle, end_angle) = if signed_area >= 0.0 { (a0, a1) } else { (a1, a0) };
+    Some(Arc { center, radius, start_angle, end_angle })
+}
+
+fn is_on_boundary(p: Point, panel: &Rect, tol: f64) -> bool {
+    (p.x - panel.min.x).abs() < tol || (p.x - panel.max.x).abs() < tol ||
+    (p.y - panel.min.y).abs() < tol || (p.y - panel.max.y).abs() < tol
+}
+
+/// Replace polygon approximations of panel-edge arcs with Arc shapes.
+///
+/// Only polylines whose first and last points lie on the panel boundary are
+/// candidates — these are open arc cuts that were split at the boundary by
+/// `feature_loops`.
+pub fn detect_arcs(shapes: Vec<Shape>, panel: &Rect, tol: f64) -> Vec<Shape> {
+    const BOUNDARY_TOL: f64 = 0.5;
+    shapes.into_iter().map(|shape| {
+        if let Shape::Poly(ref poly) = shape {
+            let first = poly.points.first().copied();
+            let last  = poly.points.last().copied();
+            if let (Some(f), Some(l)) = (first, last) {
+                if is_on_boundary(f, panel, BOUNDARY_TOL) && is_on_boundary(l, panel, BOUNDARY_TOL) {
+                    if let Some(arc) = try_fit_arc(poly, tol) {
+                        return Shape::Arc(arc);
+                    }
+                }
             }
         }
         shape

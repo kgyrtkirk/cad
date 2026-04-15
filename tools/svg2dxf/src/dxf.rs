@@ -2,11 +2,11 @@
 
 use std::collections::BTreeMap;
 use dxf::Drawing;
-use dxf::entities::{Circle, Polyline, Vertex, Text, Entity, EntityType};
+use dxf::entities::{Arc as DxfArc, Circle, Polyline, Vertex, Text, Entity, EntityType};
 use dxf::enums::{HorizontalTextJustification, VerticalTextJustification};
 use dxf::tables::Layer;
 use dxf::{Color, Point as DxfPoint};
-use crate::geom::{Edge, Polyline as GPolyline, Rect, Shape};
+use crate::geom::{Arc as GArc, Edge, Polyline as GPolyline, Rect, Shape};
 use crate::close::EdgeClose;
 
 /// Single source of truth for layer colours.
@@ -22,13 +22,14 @@ fn layer_color(name: &str) -> u8 {
     // Fixed colours for well-known layers.
     match name {
         "PANEL"     => return 200, // purple
-        "RAW_PANEL" => return 8,   // dark grey
+        "raw_panel" => return 8,   // dark grey
         "TOP"       => return 4,   // cyan
         "SAW"       => return 30,  // orange
         "LEFT"      => return 1,   // red
         "RIGHT"     => return 3,   // green
         "FRONT"     => return 5,   // blue
         "REAR"      => return 6,   // magenta
+        "ARC_CUT"   => return 40,  // orange
         _ => {}
     }
     // Close layers: colour by thickness — thin=orange, thick=light-brown.
@@ -78,6 +79,7 @@ fn layer_thickness(layer_name: &str) -> f64 {
         "TOP"                         => 13.0, // top-face slot depth mm
         n if n.starts_with("SAW")     =>  8.0, // groove depth mm
         "LEFT"|"RIGHT"|"FRONT"|"REAR" =>  9.0, // Z: mid-board mm
+        "ARC_CUT"                     => 13.0, // routed arc depth mm
         _ => 0.0,
     }
 }
@@ -112,6 +114,17 @@ pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing
                     circle.radius = c.radius;
                     circle.thickness = 13.0; // drill depth mm
                     let mut entity = Entity::new(EntityType::Circle(circle));
+                    entity.common.layer = layer_name.clone();
+                    drawing.add_entity(entity);
+                }
+                Shape::Arc(GArc { center, radius, start_angle, end_angle }) => {
+                    let mut arc = DxfArc::default();
+                    arc.center = DxfPoint::new(center.x, center.y, 0.0);
+                    arc.radius = *radius;
+                    arc.start_angle = *start_angle;
+                    arc.end_angle   = *end_angle;
+                    arc.thickness   = layer_thickness(layer_name);
+                    let mut entity = Entity::new(EntityType::Arc(arc));
                     entity.common.layer = layer_name.clone();
                     drawing.add_entity(entity);
                 }
