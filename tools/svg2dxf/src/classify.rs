@@ -1,6 +1,6 @@
 // Assign shapes to DXF layers based on geometry properties.
 
-use crate::geom::{Shape, Rect};
+use crate::geom::Shape;
 
 /// Layer name for a shape.
 ///
@@ -23,9 +23,9 @@ pub fn layer(shape: &Shape, panel_w: f64, panel_h: f64) -> String {
                 return "unclassified".to_string();
             }
             let ar = p.aspect_ratio();
-            if let Some(Rect { x0, y0, x1, y1 }) = p.bbox() {
-                let w = x1 - x0;
-                let h = y1 - y0;
+            if let Some(r) = p.bbox() {
+                let w = r.max.x - r.min.x;
+                let h = r.max.y - r.min.y;
                 let short = w.min(h);
                 let long  = w.max(h);
 
@@ -41,11 +41,12 @@ pub fn layer(shape: &Shape, panel_w: f64, panel_h: f64) -> String {
 
                 // Edge slots (8 mm wide × 32 mm deep): assign to the matching side face layer.
                 if (short - 8.0).abs() < 0.5 && (long - 32.0).abs() < 1.0 {
-                    return edge_slot_layer(x0, y0, x1, y1, panel_w, panel_h).to_string();
+                    return edge_slot_layer(r.min.x, r.min.y, r.max.x, r.max.y, panel_w, panel_h).to_string();
                 }
             }
             "unclassified".to_string()
         }
+        Shape::Rect(_) => "unclassified".to_string(),
     }
 }
 

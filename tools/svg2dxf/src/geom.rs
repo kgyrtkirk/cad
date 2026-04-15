@@ -1,35 +1,56 @@
 // Geometric primitives and circle/slot detection from polygon approximations.
 
-// FIXME: isn't Rect a Shape?
 #[derive(Debug, Clone, Copy)]
-pub struct Rect {
-    // FIXME: represent with 2 points
-    pub x0: f64,
-    pub y0: f64,
-    pub x1: f64,
-    pub y1: f64,
-}
-
-impl Rect {
-    pub fn area(&self) -> f64 {
-        (self.x1 - self.x0) * (self.y1 - self.y0)
-    }
-
-    pub fn expand(&self, margin: f64) -> Self {
-        Rect { x0: self.x0 - margin, y0: self.y0 - margin,
-               x1: self.x1 + margin, y1: self.y1 + margin }
-    }
-
-    pub fn contains(&self, other: Rect) -> bool {
-        other.x0 >= self.x0 && other.y0 >= self.y0 &&
-        other.x1 <= self.x1 && other.y1 <= self.y1
-    }
-}
-
-#[derive(Debug, Clone)]
 pub struct Point {
     pub x: f64,
     pub y: f64,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct Rect {
+    pub min: Point,
+    pub max: Point,
+}
+
+impl Rect {
+    pub fn new(x0: f64, y0: f64, x1: f64, y1: f64) -> Self {
+        Rect { min: Point { x: x0, y: y0 }, max: Point { x: x1, y: y1 } }
+    }
+
+    pub fn area(&self) -> f64 {
+        (self.max.x - self.min.x) * (self.max.y - self.min.y)
+    }
+
+    pub fn expand(&self, margin: f64) -> Self {
+        Rect {
+            min: Point { x: self.min.x - margin, y: self.min.y - margin },
+            max: Point { x: self.max.x + margin, y: self.max.y + margin },
+        }
+    }
+
+    pub fn contains(&self, other: Rect) -> bool {
+        other.min.x >= self.min.x && other.min.y >= self.min.y &&
+        other.max.x <= self.max.x && other.max.y <= self.max.y
+    }
+
+    pub fn translate(&self, dx: f64, dy: f64) -> Self {
+        Rect {
+            min: Point { x: self.min.x + dx, y: self.min.y + dy },
+            max: Point { x: self.max.x + dx, y: self.max.y + dy },
+        }
+    }
+
+    pub fn as_polyline(&self) -> Polyline {
+        Polyline {
+            points: vec![
+                Point { x: self.min.x, y: self.min.y },
+                Point { x: self.max.x, y: self.min.y },
+                Point { x: self.max.x, y: self.max.y },
+                Point { x: self.min.x, y: self.max.y },
+            ],
+            closed: true,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -40,12 +61,12 @@ pub struct Circle {
 
 impl Circle {
     pub fn bbox(&self) -> Rect {
-        Rect {
-            x0: self.center.x - self.radius,
-            y0: self.center.y - self.radius,
-            x1: self.center.x + self.radius,
-            y1: self.center.y + self.radius,
-        }
+        Rect::new(
+            self.center.x - self.radius,
+            self.center.y - self.radius,
+            self.center.x + self.radius,
+            self.center.y + self.radius,
+        )
     }
 }
 
@@ -77,13 +98,13 @@ impl Polyline {
         let x1 = self.points.iter().map(|p| p.x).fold(f64::NEG_INFINITY, f64::max);
         let y0 = self.points.iter().map(|p| p.y).fold(f64::INFINITY,     f64::min);
         let y1 = self.points.iter().map(|p| p.y).fold(f64::NEG_INFINITY, f64::max);
-        Some(Rect { x0, y0, x1, y1 })
+        Some(Rect::new(x0, y0, x1, y1))
     }
 
     pub fn aspect_ratio(&self) -> f64 {
         if let Some(r) = self.bbox() {
-            let w = r.x1 - r.x0;
-            let h = r.y1 - r.y0;
+            let w = r.max.x - r.min.x;
+            let h = r.max.y - r.min.y;
             if w.min(h) < 1e-6 { return f64::INFINITY; }
             w.max(h) / w.min(h)
         } else {
@@ -96,6 +117,7 @@ impl Polyline {
 pub enum Shape {
     Circle(Circle),
     Poly(Polyline),
+    Rect(Rect),
 }
 
 impl Shape {
@@ -103,6 +125,7 @@ impl Shape {
         match self {
             Shape::Circle(c) => Some(c.bbox()),
             Shape::Poly(p)   => p.bbox(),
+            Shape::Rect(r)   => Some(*r),
         }
     }
 
@@ -116,7 +139,55 @@ impl Shape {
                 points: p.points.iter().map(|pt| Point { x: pt.x + dx, y: pt.y + dy }).collect(),
                 closed: p.closed,
             }),
+            Shape::Rect(r) => Shape::Rect(r.translate(dx, dy)),
         }
+    }
+}
+
+impl Rect {
+    /// Compute the bounding box of a slice of shapes.
+    pub fn from_shapes(shapes: &[Shape]) -> Option<Self> {
+        let mut x0 = f64::INFINITY;
+        let mut y0 = f64::INFINITY;
+        let mut x1 = f64::NEG_INFINITY;
+        let mut y1 = f64::NEG_INFINITY;
+        for s in shapes {
+            if let Some(r) = s.bbox() {
+                x0 = x0.min(r.min.x); y0 = y0.min(r.min.y);
+                x1 = x1.max(r.max.x); y1 = y1.max(r.max.y);
+            }
+        }
+        if x0.is_infinite() { None } else { Some(Rect::new(x0, y0, x1, y1)) }
+    }
+}
+
+/// A directed line segment between two points.
+pub struct Line {
+    pub start: Point,
+    pub end:   Point,
+}
+
+impl Line {
+    /// True if this segment lies entirely on one of the four edges of `r`.
+    pub fn is_on_rect_edge(&self, r: &Rect) -> bool {
+        const TOL: f64 = 0.01;
+        let a = &self.start;
+        let b = &self.end;
+        ((a.x - r.min.x).abs() < TOL && (b.x - r.min.x).abs() < TOL) ||
+        ((a.x - r.max.x).abs() < TOL && (b.x - r.max.x).abs() < TOL) ||
+        ((a.y - r.min.y).abs() < TOL && (b.y - r.min.y).abs() < TOL) ||
+        ((a.y - r.max.y).abs() < TOL && (b.y - r.max.y).abs() < TOL)
+    }
+}
+
+impl From<&Polyline> for Vec<Line> {
+    fn from(p: &Polyline) -> Vec<Line> {
+        let n = p.points.len();
+        let limit = if p.closed { n } else { n - 1 };
+        (0..limit).map(|i| Line {
+            start: p.points[i],
+            end:   p.points[(i + 1) % n],
+        }).collect()
     }
 }
 
@@ -158,22 +229,22 @@ pub fn detect_slots(shapes: Vec<Shape>, panel_cx: f64, panel_cy: f64) -> Vec<Sha
 fn try_expand_slot(poly: &Polyline, pcx: f64, pcy: f64) -> Option<Polyline> {
     if !poly.closed { return None; }
     let r = poly.bbox()?;
-    let w = r.x1 - r.x0;
-    let h = r.y1 - r.y0;
+    let w = r.max.x - r.min.x;
+    let h = r.max.y - r.min.y;
     let is_8 = |v: f64| (v - 8.0).abs() < 0.5;
     if !is_8(w) && !is_8(h) { return None; }
     if w.max(h) > 40.0 { return None; }
 
     let target = 32.0_f64;
-    let cx = (r.x0 + r.x1) / 2.0;
-    let cy = (r.y0 + r.y1) / 2.0;
+    let cx = (r.min.x + r.max.x) / 2.0;
+    let cy = (r.min.y + r.max.y) / 2.0;
 
     let (nx0, ny0, nx1, ny1) = if is_8(h) {
-        if cx < pcx { (r.x0, r.y0, r.x0 + target, r.y1) }
-        else        { (r.x1 - target, r.y0, r.x1, r.y1) }
+        if cx < pcx { (r.min.x, r.min.y, r.min.x + target, r.max.y) }
+        else        { (r.max.x - target, r.min.y, r.max.x, r.max.y) }
     } else {
-        if cy < pcy { (r.x0, r.y0, r.x1, r.y0 + target) }
-        else        { (r.x0, r.y1 - target, r.x1, r.y1) }
+        if cy < pcy { (r.min.x, r.min.y, r.max.x, r.min.y + target) }
+        else        { (r.min.x, r.max.y - target, r.max.x, r.max.y) }
     };
 
     Some(Polyline {

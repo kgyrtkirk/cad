@@ -6,9 +6,8 @@ use dxf::entities::{Circle, Polyline, Vertex, Text, Entity, EntityType};
 use dxf::enums::{HorizontalTextJustification, VerticalTextJustification};
 use dxf::tables::Layer;
 use dxf::{Color, Point as DxfPoint};
-use crate::geom::Shape;
+use crate::geom::{Polyline as GPolyline, Rect, Shape};
 use crate::close::{EdgeClose, Edge};
-use crate::xor::Aabb;
 
 /// Single source of truth for layer colours.
 ///
@@ -73,6 +72,29 @@ fn layer_color(name: &str) -> u8 {
     PALETTE[(hash as usize) % PALETTE.len()]
 }
 
+fn layer_thickness(layer_name: &str) -> f64 {
+    match layer_name {
+        "PANEL"                       => 18.0, // board thickness mm
+        "TOP"                         => 13.0, // top-face slot depth mm
+        n if n.starts_with("SAW")     =>  8.0, // groove depth mm
+        "LEFT"|"RIGHT"|"FRONT"|"REAR" =>  9.0, // Z: mid-board mm
+        _ => 0.0,
+    }
+}
+
+fn add_polyline_entity(drawing: &mut Drawing, p: &GPolyline, layer_name: &str) {
+    let mut poly = Polyline::default();
+    poly.flags = if p.closed { 1 } else { 0 };
+    poly.thickness = layer_thickness(layer_name);
+    for pt in &p.points {
+        let v = Vertex::new(DxfPoint::new(pt.x, pt.y, 0.0));
+        poly.add_vertex(drawing, v);
+    }
+    let mut entity = Entity::new(EntityType::Polyline(poly));
+    entity.common.layer = layer_name.to_string();
+    drawing.add_entity(entity);
+}
+
 pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing {
     let mut drawing = Drawing::new();
 
@@ -93,25 +115,8 @@ pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing
                     entity.common.layer = layer_name.clone();
                     drawing.add_entity(entity);
                 }
-                Shape::Poly(p) => {
-                    let mut poly = Polyline::default();
-                    // flag bit 1 = closed
-                    poly.flags = if p.closed { 1 } else { 0 };
-                    poly.thickness = match layer_name.as_str() {
-                        "PANEL"                    => 18.0, // board thickness mm
-                        "TOP"                      => 13.0, // top-face slot depth mm
-                        n if n.starts_with("SAW")  =>  8.0, // groove depth mm
-                        "LEFT"|"RIGHT"|"FRONT"|"REAR" => 9.0, // Z: mid-board mm
-                        _ => 0.0,
-                    };
-                    for pt in &p.points {
-                        let v = Vertex::new(DxfPoint::new(pt.x, pt.y, 0.0));
-                        poly.add_vertex(&mut drawing, v);
-                    }
-                    let mut entity = Entity::new(EntityType::Polyline(poly));
-                    entity.common.layer = layer_name.clone();
-                    drawing.add_entity(entity);
-                }
+                Shape::Poly(p) => add_polyline_entity(&mut drawing, p, layer_name),
+                Shape::Rect(r) => add_polyline_entity(&mut drawing, &r.as_polyline(), layer_name),
             }
         }
     }
@@ -120,12 +125,12 @@ pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing
 }
 
 /// Add per-edge close layers: each layer gets the strip rectangle + a text annotation.
-pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Aabb) {
+pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Rect) {
     let text_h = 5.0_f64;       // text height mm
     let offset  = text_h * 1.5; // gap from panel edge
 
-    let cx = (bb.min_x + bb.max_x) / 2.0;
-    let cy = (bb.min_y + bb.max_y) / 2.0;
+    let cx = (bb.min.x + bb.max.x) / 2.0;
+    let cy = (bb.min.y + bb.max.y) / 2.0;
 
     for ec in closes {
         let layer_name = format!("close_{}_{:.2}", ec.edge.label(), ec.width);
@@ -137,14 +142,14 @@ pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Aabb) 
 
         // Strip rectangle (full-span along the edge).
         let rect: &[(f64, f64)] = &match ec.edge {
-            Edge::Left   => [(bb.min_x,             bb.min_y), (bb.min_x + ec.width, bb.min_y),
-                             (bb.min_x + ec.width,  bb.max_y), (bb.min_x,            bb.max_y)],
-            Edge::Right  => [(bb.max_x - ec.width,  bb.min_y), (bb.max_x,            bb.min_y),
-                             (bb.max_x,             bb.max_y), (bb.max_x - ec.width, bb.max_y)],
-            Edge::Bottom => [(bb.min_x, bb.min_y),             (bb.max_x, bb.min_y),
-                             (bb.max_x, bb.min_y + ec.width),  (bb.min_x, bb.min_y + ec.width)],
-            Edge::Top    => [(bb.min_x, bb.max_y - ec.width),  (bb.max_x, bb.max_y - ec.width),
-                             (bb.max_x, bb.max_y),             (bb.min_x, bb.max_y)],
+            Edge::Left   => [(bb.min.x,             bb.min.y), (bb.min.x + ec.width, bb.min.y),
+                             (bb.min.x + ec.width,  bb.max.y), (bb.min.x,            bb.max.y)],
+            Edge::Right  => [(bb.max.x - ec.width,  bb.min.y), (bb.max.x,            bb.min.y),
+                             (bb.max.x,             bb.max.y), (bb.max.x - ec.width, bb.max.y)],
+            Edge::Bottom => [(bb.min.x, bb.min.y),             (bb.max.x, bb.min.y),
+                             (bb.max.x, bb.min.y + ec.width),  (bb.min.x, bb.min.y + ec.width)],
+            Edge::Top    => [(bb.min.x, bb.max.y - ec.width),  (bb.max.x, bb.max.y - ec.width),
+                             (bb.max.x, bb.max.y),             (bb.min.x, bb.max.y)],
         };
         let mut poly = Polyline::default();
         poly.flags = 1; // closed
@@ -157,10 +162,10 @@ pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Aabb) 
 
         // Text annotation outside the panel edge.
         let (tx, ty) = match ec.edge {
-            Edge::Left   => (bb.min_x - offset, cy),
-            Edge::Right  => (bb.max_x + offset, cy),
-            Edge::Bottom => (cx, bb.min_y - offset),
-            Edge::Top    => (cx, bb.max_y + offset),
+            Edge::Left   => (bb.min.x - offset, cy),
+            Edge::Right  => (bb.max.x + offset, cy),
+            Edge::Bottom => (cx, bb.min.y - offset),
+            Edge::Top    => (cx, bb.max.y + offset),
         };
         let mut text = Text::default();
         text.value           = format!("{}: {:.2}mm", ec.edge.label(), ec.width);

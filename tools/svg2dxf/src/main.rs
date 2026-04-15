@@ -8,8 +8,8 @@ mod dxf;
 use std::collections::BTreeMap;
 use std::env;
 use std::fs;
-use geom::{Shape, detect_circles, detect_slots};
-use xor::{Aabb, feature_loops};
+use geom::{Rect, Shape, detect_circles, detect_slots};
+use xor::feature_loops;
 use close::extract_closes;
 use classify::layer;
 
@@ -57,16 +57,16 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
     // 0. Discard tiled copies — keep only shapes belonging to one tile.
     let raw_shapes = keep_one_tile(raw_shapes);
 
-    // 1. Compute outer AABB (includes close strips) for close detection.
-    let outer_bb = Aabb::from_shapes(&raw_shapes)
+    // 1. Compute outer bounding rect (includes close strips) for close detection.
+    let outer_bb = Rect::from_shapes(&raw_shapes)
         .ok_or("No geometry found")?;
 
     // 2. Extract close strips — they live on the outer boundary.
     let (closes, remaining) = extract_closes(raw_shapes, &outer_bb);
     for ec in &closes { eprintln!("  close {}: {:.2}mm", ec.edge.label(), ec.width); }
 
-    // 3. Inner panel AABB — computed without the close strips.
-    let bb = Aabb::from_shapes(&remaining)
+    // 3. Inner panel bounding rect — computed without the close strips.
+    let bb = Rect::from_shapes(&remaining)
         .ok_or("No geometry after close removal")?;
 
     // 4. Extract individual feature loops by dropping segments on the panel boundary.
@@ -75,22 +75,22 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
     let loop_shapes: Vec<Shape> = loops.into_iter().map(Shape::Poly).collect();
 
     // 5. Circle and slot detection.
-    let panel_cx = (bb.min_x + bb.max_x) / 2.0;
-    let panel_cy = (bb.min_y + bb.max_y) / 2.0;
+    let panel_cx = (bb.min.x + bb.max.x) / 2.0;
+    let panel_cy = (bb.min.y + bb.max.y) / 2.0;
     let shapes = detect_circles(loop_shapes, 0.05);
     let shapes = detect_slots(shapes, panel_cx, panel_cy);
     eprintln!("After detection: {}", shapes.len());
 
     // 6. Translate everything so the panel's bottom-left corner sits at the origin.
-    let (dx, dy) = (-bb.min_x, -bb.min_y);
+    let (dx, dy) = (-bb.min.x, -bb.min.y);
     let shapes: Vec<Shape> = shapes.into_iter().map(|s| s.translate(dx, dy)).collect();
     let bb       = bb.translate(dx, dy);
     let outer_bb = outer_bb.translate(dx, dy);
     eprintln!("Translated by ({dx:.2}, {dy:.2}) — panel now at origin");
 
     // 7. Layer assignment.
-    let panel_w = bb.max_x - bb.min_x;
-    let panel_h = bb.max_y - bb.min_y;
+    let panel_w = bb.max.x - bb.min.x;
+    let panel_h = bb.max.y - bb.min.y;
     let mut by_layer: BTreeMap<String, Vec<&Shape>> = BTreeMap::new();
     for shape in &shapes {
         by_layer.entry(layer(shape, panel_w, panel_h)).or_default().push(shape);
@@ -99,11 +99,11 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
 
     // Inner boundary (informational — raw panel outline before close strips).
     by_layer.entry("RAW_PANEL".to_string()).or_default().push(
-        Box::leak(Box::new(Shape::Poly(bb.as_polyline())))
+        Box::leak(Box::new(Shape::Rect(bb)))
     );
     // Outer boundary (includes close strips) — this is the PANEL the machine uses.
     by_layer.entry("PANEL".to_string()).or_default().push(
-        Box::leak(Box::new(Shape::Poly(outer_bb.as_polyline())))
+        Box::leak(Box::new(Shape::Rect(outer_bb)))
     );
 
     let mut drawing = dxf::build_drawing(&by_layer);
