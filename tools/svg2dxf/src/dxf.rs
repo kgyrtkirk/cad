@@ -28,8 +28,10 @@ fn layer_color(name: &str) -> u8 {
         "LEFT"      => return 1,   // red
         "RIGHT"     => return 3,   // green
         "FRONT"     => return 5,   // blue
-        "REAR"      => return 6,   // magenta
-        "ARC_CUT"   => return 40,  // orange
+        "REAR"       => return 6,   // magenta
+        "ARC_CUT"    => return 40,  // orange
+        "HANDLE_CUT" => return 2,   // yellow
+        "BACK"       => return 170, // violet
         _ => {}
     }
     // Close layers: colour by thickness — thin=orange, thick=light-brown.
@@ -73,21 +75,23 @@ fn layer_color(name: &str) -> u8 {
     PALETTE[(hash as usize) % PALETTE.len()]
 }
 
-fn layer_thickness(layer_name: &str) -> f64 {
+fn layer_thickness(layer_name: &str, top_thickness: f64) -> f64 {
     match layer_name {
-        "PANEL"                       => 18.0, // board thickness mm
-        "TOP"                         => 13.0, // top-face slot depth mm
-        n if n.starts_with("SAW")     =>  8.0, // groove depth mm
-        "LEFT"|"RIGHT"|"FRONT"|"REAR" =>  9.0, // Z: mid-board mm
-        "ARC_CUT"                     => 13.0, // routed arc depth mm
+        "PANEL"                       => 18.0,         // board thickness mm
+        "TOP"                         => top_thickness, // top-face drilling depth mm
+        n if n.starts_with("SAW")     =>  8.0,         // groove depth mm
+        "LEFT"|"RIGHT"|"FRONT"|"REAR" =>  9.0,         // Z: mid-board mm
+        "ARC_CUT"                     => 18.0,         // routed arc depth mm
+        "HANDLE_CUT"                  => 13.5,         // handle recess depth mm
+        "BACK"                        => 13.5,         // back-face drill depth mm
         _ => 0.0,
     }
 }
 
-fn add_polyline_entity(drawing: &mut Drawing, p: &GPolyline, layer_name: &str) {
+fn add_polyline_entity(drawing: &mut Drawing, p: &GPolyline, layer_name: &str, top_thickness: f64) {
     let mut poly = Polyline::default();
     poly.flags = if p.closed { 1 } else { 0 };
-    poly.thickness = layer_thickness(layer_name);
+    poly.thickness = layer_thickness(layer_name, top_thickness);
     for pt in &p.points {
         let v = Vertex::new(DxfPoint::new(pt.x, pt.y, 0.0));
         poly.add_vertex(drawing, v);
@@ -97,7 +101,7 @@ fn add_polyline_entity(drawing: &mut Drawing, p: &GPolyline, layer_name: &str) {
     drawing.add_entity(entity);
 }
 
-pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing {
+pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>, top_thickness: f64) -> Drawing {
     let mut drawing = Drawing::new();
 
     for (layer_name, shapes) in shapes_by_layer.iter() {
@@ -112,7 +116,7 @@ pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing
                     let mut circle = Circle::default();
                     circle.center = DxfPoint::new(c.center.x, c.center.y, 0.0);
                     circle.radius = c.radius;
-                    circle.thickness = 13.0; // drill depth mm
+                    circle.thickness = top_thickness;
                     let mut entity = Entity::new(EntityType::Circle(circle));
                     entity.common.layer = layer_name.clone();
                     drawing.add_entity(entity);
@@ -123,13 +127,13 @@ pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>) -> Drawing
                     arc.radius = *radius;
                     arc.start_angle = *start_angle;
                     arc.end_angle   = *end_angle;
-                    arc.thickness   = layer_thickness(layer_name);
+                    arc.thickness   = layer_thickness(layer_name, top_thickness);
                     let mut entity = Entity::new(EntityType::Arc(arc));
                     entity.common.layer = layer_name.clone();
                     drawing.add_entity(entity);
                 }
-                Shape::Poly(p) => add_polyline_entity(&mut drawing, p, layer_name),
-                Shape::Rect(r) => add_polyline_entity(&mut drawing, &r.as_polyline(), layer_name),
+                Shape::Poly(p) => add_polyline_entity(&mut drawing, p, layer_name, top_thickness),
+                Shape::Rect(r) => add_polyline_entity(&mut drawing, &r.as_polyline(), layer_name, top_thickness),
             }
         }
     }

@@ -96,6 +96,31 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
     }
     for (l, v) in &by_layer { eprintln!("  layer {l}: {} shapes", v.len()); }
 
+    // If a HANDLE_CUT is present, verify all TOP shapes are inside it and promote TOP depth.
+    let top_thickness = if let Some(handles) = by_layer.get("HANDLE_CUT") {
+        let handle_bbox = handles.iter()
+            .filter_map(|s| s.bbox())
+            .reduce(|a, b| Rect::new(a.min.x.min(b.min.x), a.min.y.min(b.min.y),
+                                     a.max.x.max(b.max.x), a.max.y.max(b.max.y)))
+            .ok_or("HANDLE_CUT has no geometry")?;
+        let check_area = handle_bbox.expand(1.0); // 1 mm tolerance
+        if let Some(tops) = by_layer.get("TOP") {
+            for shape in tops {
+                if let Some(r) = shape.bbox() {
+                    if !check_area.contains(r) {
+                        return Err(format!(
+                            "TOP shape bbox ({:.1},{:.1})–({:.1},{:.1}) is not inside HANDLE_CUT",
+                            r.min.x, r.min.y, r.max.x, r.max.y
+                        ));
+                    }
+                }
+            }
+        }
+        18.0
+    } else {
+        13.0
+    };
+
     // Inner boundary (informational — raw panel outline before close strips).
     by_layer.entry("raw_panel".to_string()).or_default().push(
         Box::leak(Box::new(Shape::Rect(bb)))
@@ -105,7 +130,7 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
         Box::leak(Box::new(Shape::Rect(outer_bb)))
     );
 
-    let mut drawing = dxf::build_drawing(&by_layer);
+    let mut drawing = dxf::build_drawing(&by_layer, top_thickness);
     dxf::add_close_layers(&mut drawing, &closes, &outer_bb);
     drawing.save_file(output_path)
         .map_err(|e| format!("Cannot write {output_path}: {e}"))?;

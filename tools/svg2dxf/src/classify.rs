@@ -14,7 +14,7 @@ use crate::geom::{Rect, Shape};
 /// - Anything else → `unclassified`
 pub fn layer(shape: &Shape, panel: &Rect) -> String {
     match shape {
-        Shape::Circle(_) => "TOP".to_string(),
+        Shape::Circle(c) => if c.radius > 10.0 { "BACK".to_string() } else { "TOP".to_string() },
         Shape::Poly(p) => {
             if !p.closed {
                 return "unclassified".to_string();
@@ -25,6 +25,11 @@ pub fn layer(shape: &Shape, panel: &Rect) -> String {
                 let h = r.max.y - r.min.y;
                 let short = w.min(h);
                 let long  = w.max(h);
+
+                // Handle cut: ~138×33 mm recessed pocket.
+                if (short - 33.0).abs() < 5.0 && (long - 138.0).abs() < 5.0 {
+                    return "HANDLE_CUT".to_string();
+                }
 
                 // Edge slots (8 mm wide × 32 mm deep): assign to the matching side face layer.
                 if (short - 8.0).abs() < 0.5 && (long - 32.0).abs() < 1.0 {
