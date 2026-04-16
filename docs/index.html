@@ -199,6 +199,10 @@
     clearColor: new Color('#ffffff'),
     colorCorrection: true,
     retainParsedDxf: true,
+    sceneOptions: {
+      arcTessellationAngle: 2 / 180 * Math.PI,
+      minArcTessellationSubdivisions: 32,
+    },
   });
 
   // ── File list ────────────────────────────────────────────────────────────────
@@ -209,14 +213,19 @@
     const li = document.createElement('li');
     li.textContent = name.replace(/\.dxf$/, '');
     li.title = name;
-    li.addEventListener('click', () => loadFile(name, li));
+    li.addEventListener('click', () => loadFile(name));
     fileList.appendChild(li);
   });
 
+  const initialFile = new URLSearchParams(location.search).get('file');
+  if (initialFile) loadFile(initialFile);
+
   // ── Load DXF ─────────────────────────────────────────────────────────────────
-  async function loadFile(name, li) {
+  async function loadFile(name) {
+    history.pushState(null, '', '?file=' + encodeURIComponent(name));
+    const li = fileList.querySelector(`li[title="${CSS.escape(name)}"]`);
     fileList.querySelectorAll('li').forEach(el => el.classList.remove('active'));
-    li.classList.add('active');
+    li?.classList.add('active');
     currentFile.textContent = name;
 
     errorDiv.style.display = 'none';
