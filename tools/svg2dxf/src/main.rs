@@ -98,7 +98,9 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
     for (l, v) in &by_layer { eprintln!("  layer {l}: {} shapes", v.len()); }
 
     // If a HANDLE_CUT is present, verify all TOP shapes are inside it and promote TOP depth.
+    // FIXME: this is a hack
     let top_thickness = if let Some(handles) = by_layer.get("HANDLE_CUT") {
+        // FIXME: error if more than one handle
         let handle_bbox = handles.iter()
             .filter_map(|s| s.bbox())
             .reduce(|a, b| Rect::new(a.min.x.min(b.min.x), a.min.y.min(b.min.y),
@@ -107,6 +109,7 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
         let check_area = handle_bbox.expand(1.0); // 1 mm tolerance
         if let Some(tops) = by_layer.get("TOP") {
             for shape in tops {
+                // FIXME: bbox is a non-optional element for shapes!
                 if let Some(r) = shape.bbox() {
                     if !check_area.contains(r) {
                         return Err(format!(
@@ -119,7 +122,7 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
         }
         18.0
     } else {
-        13.0
+        14.5
     };
 
     // Inner boundary (informational — raw panel outline before close strips).
