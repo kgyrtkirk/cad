@@ -67,6 +67,10 @@ pub struct Circle {
 }
 
 impl Circle {
+    pub fn translate(&self, dx: f64, dy: f64) -> Self {
+        Circle { center: Point { x: self.center.x + dx, y: self.center.y + dy }, radius: self.radius }
+    }
+
     pub fn bbox(&self) -> Rect {
         Rect::new(
             self.center.x - self.radius,
@@ -108,6 +112,13 @@ impl Polyline {
         Rect::new(x0, y0, x1, y1)
     }
 
+    pub fn translate(&self, dx: f64, dy: f64) -> Self {
+        Polyline {
+            points: self.points.iter().map(|p| Point { x: p.x + dx, y: p.y + dy }).collect(),
+            closed: self.closed,
+        }
+    }
+
     pub fn aspect_ratio(&self) -> f64 {
         let r = self.bbox();
         let w = r.max.x - r.min.x;
@@ -126,6 +137,10 @@ pub struct Arc {
 }
 
 impl Arc {
+    pub fn translate(&self, dx: f64, dy: f64) -> Self {
+        Arc { center: Point { x: self.center.x + dx, y: self.center.y + dy }, ..*self }
+    }
+
     pub fn bbox(&self) -> Rect {
         // Conservative: full circle bounding box. Arc is always contained within it.
         Rect::new(
@@ -155,19 +170,10 @@ impl Shape {
 
     pub fn translate(&self, dx: f64, dy: f64) -> Shape {
         match self {
-            Shape::Circle(c) => Shape::Circle(Circle {
-                center: Point { x: c.center.x + dx, y: c.center.y + dy },
-                radius: c.radius,
-            }),
-            Shape::Arc(a) => Shape::Arc(Arc {
-                center: Point { x: a.center.x + dx, y: a.center.y + dy },
-                ..*a
-            }),
-            Shape::Poly(p) => Shape::Poly(Polyline {
-                points: p.points.iter().map(|pt| Point { x: pt.x + dx, y: pt.y + dy }).collect(),
-                closed: p.closed,
-            }),
-            Shape::Rect(r) => Shape::Rect(r.translate(dx, dy)),
+            Shape::Circle(c) => Shape::Circle(c.translate(dx, dy)),
+            Shape::Arc(a)    => Shape::Arc(a.translate(dx, dy)),
+            Shape::Poly(p)   => Shape::Poly(p.translate(dx, dy)),
+            Shape::Rect(r)   => Shape::Rect(r.translate(dx, dy)),
         }
     }
 }
