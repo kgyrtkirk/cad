@@ -21,7 +21,7 @@ use classify::layer;
 fn keep_one_tile(shapes: Vec<Shape>) -> Vec<Shape> {
     const TILE_MARGIN: f64 = 3.0;
 
-    let largest = match shapes.iter().filter_map(|s| s.bbox())
+    let largest = match shapes.iter().map(|s| s.bbox())
         .max_by(|a, b| a.area().partial_cmp(&b.area()).unwrap())
     {
         Some(r) => r,
@@ -32,7 +32,7 @@ fn keep_one_tile(shapes: Vec<Shape>) -> Vec<Shape> {
 
     let before = shapes.len();
     let result: Vec<Shape> = shapes.iter()
-        .filter(|s| s.bbox().map_or(false, |r| tile.contains(r)))
+        .filter(|s| tile.contains(s.bbox()))
         .cloned()
         .collect();
 
@@ -102,21 +102,18 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
     let top_thickness = if let Some(handles) = by_layer.get("HANDLE_CUT") {
         // FIXME: error if more than one handle
         let handle_bbox = handles.iter()
-            .filter_map(|s| s.bbox())
-            .reduce(|a, b| Rect::new(a.min.x.min(b.min.x), a.min.y.min(b.min.y),
-                                     a.max.x.max(b.max.x), a.max.y.max(b.max.y)))
+            .map(|s| s.bbox())
+            .reduce(|a, b| a.union(b))
             .ok_or("HANDLE_CUT has no geometry")?;
         let check_area = handle_bbox.expand(1.0); // 1 mm tolerance
         if let Some(tops) = by_layer.get("TOP") {
             for shape in tops {
-                // FIXME: bbox is a non-optional element for shapes!
-                if let Some(r) = shape.bbox() {
-                    if !check_area.contains(r) {
-                        return Err(format!(
-                            "TOP shape bbox ({:.1},{:.1})–({:.1},{:.1}) is not inside HANDLE_CUT",
-                            r.min.x, r.min.y, r.max.x, r.max.y
-                        ));
-                    }
+                let r = shape.bbox();
+                if !check_area.contains(r) {
+                    return Err(format!(
+                        "TOP shape bbox ({:.1},{:.1})–({:.1},{:.1}) is not inside HANDLE_CUT",
+                        r.min.x, r.min.y, r.max.x, r.max.y
+                    ));
                 }
             }
         }

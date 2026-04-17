@@ -24,7 +24,7 @@ pub struct EdgeClose {
 /// The thin dimension is identified first to avoid matching Front/Rear strips
 /// as Left/Right when their long edge coincides with the outer bounding box.
 fn as_edge_close(shape: &Shape, bb: &Rect) -> Option<EdgeClose> {
-    let r = shape.bbox()?;
+    let r = shape.bbox();
     let dx = r.max.x - r.min.x;
     let dy = r.max.y - r.min.y;
 

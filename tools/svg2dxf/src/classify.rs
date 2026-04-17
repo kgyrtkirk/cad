@@ -20,34 +20,33 @@ pub fn layer(shape: &Shape, panel: &Rect) -> String {
                 return "unclassified".to_string();
             }
             let ar = p.aspect_ratio();
-            if let Some(r) = p.bbox() {
-                let w = r.max.x - r.min.x;
-                let h = r.max.y - r.min.y;
-                let short = w.min(h);
-                let long  = w.max(h);
+            let r = p.bbox();
+            let w = r.max.x - r.min.x;
+            let h = r.max.y - r.min.y;
+            let short = w.min(h);
+            let long  = w.max(h);
 
-                // Handle cut: ~138×33 mm recessed pocket.
-                if (short - 33.0).abs() < 5.0 && (long - 138.0).abs() < 5.0 {
-                    return "HANDLE_CUT".to_string();
-                }
+            // Handle cut: ~138×33 mm recessed pocket.
+            if (short - 33.0).abs() < 5.0 && (long - 138.0).abs() < 5.0 {
+                return "HANDLE_CUT".to_string();
+            }
 
-                // Edge slots (8 mm wide × 32 mm deep): assign to the matching side face layer.
-                if (short - 8.0).abs() < 0.5 && (long - 32.0).abs() < 1.0 {
-                    return match panel.abutting_edge(r, 1.0) {
-                        Some(edge) => edge.label(),
-                        None       => "unclassified",
-                    }.to_string();
-                }
+            // Edge slots (8 mm wide × 32 mm deep): assign to the matching side face layer.
+            if (short - 8.0).abs() < 0.5 && (long - 32.0).abs() < 1.0 {
+                return match panel.abutting_edge(r, 1.0) {
+                    Some(edge) => edge.label(),
+                    None       => "unclassified",
+                }.to_string();
+            }
 
-                // Top-face slots (small oblong features drilled from above).
-                if 4.5 < short && short < 11.0 && long < 80.0 {
-                    return "TOP".to_string();
-                }
+            // Top-face slots (small oblong features drilled from above).
+            if 4.5 < short && short < 11.0 && long < 80.0 {
+                return "TOP".to_string();
+            }
 
-                // Narrow elongated closed shapes are grooves — SAW layer (depth set on entity).
-                if ar > 8.0 && short < 12.0 {
-                    return "SAW".to_string();
-                }
+            // Narrow elongated closed shapes are grooves — SAW layer (depth set on entity).
+            if ar > 8.0 && short < 12.0 {
+                return "SAW".to_string();
             }
             "unclassified".to_string()
         }

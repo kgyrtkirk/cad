@@ -40,6 +40,13 @@ impl Rect {
         }
     }
 
+    pub fn union(&self, other: Rect) -> Self {
+        Rect::new(
+            self.min.x.min(other.min.x), self.min.y.min(other.min.y),
+            self.max.x.max(other.max.x), self.max.y.max(other.max.y),
+        )
+    }
+
     pub fn as_polyline(&self) -> Polyline {
         Polyline {
             points: vec![
@@ -92,24 +99,21 @@ impl Polyline {
         (sum / 2.0).abs()
     }
 
-    pub fn bbox(&self) -> Option<Rect> {
-        if self.points.is_empty() { return None; }
+    pub fn bbox(&self) -> Rect {
+        assert!(!self.points.is_empty(), "Polyline::bbox called on empty polyline");
         let x0 = self.points.iter().map(|p| p.x).fold(f64::INFINITY,     f64::min);
         let x1 = self.points.iter().map(|p| p.x).fold(f64::NEG_INFINITY, f64::max);
         let y0 = self.points.iter().map(|p| p.y).fold(f64::INFINITY,     f64::min);
         let y1 = self.points.iter().map(|p| p.y).fold(f64::NEG_INFINITY, f64::max);
-        Some(Rect::new(x0, y0, x1, y1))
+        Rect::new(x0, y0, x1, y1)
     }
 
     pub fn aspect_ratio(&self) -> f64 {
-        if let Some(r) = self.bbox() {
-            let w = r.max.x - r.min.x;
-            let h = r.max.y - r.min.y;
-            if w.min(h) < 1e-6 { return f64::INFINITY; }
-            w.max(h) / w.min(h)
-        } else {
-            0.0
-        }
+        let r = self.bbox();
+        let w = r.max.x - r.min.x;
+        let h = r.max.y - r.min.y;
+        if w.min(h) < 1e-6 { return f64::INFINITY; }
+        w.max(h) / w.min(h)
     }
 }
 
@@ -140,12 +144,12 @@ pub enum Shape {
 }
 
 impl Shape {
-    pub fn bbox(&self) -> Option<Rect> {
+    pub fn bbox(&self) -> Rect {
         match self {
-            Shape::Circle(c) => Some(c.bbox()),
-            Shape::Arc(a)    => Some(a.bbox()),
+            Shape::Circle(c) => c.bbox(),
+            Shape::Arc(a)    => a.bbox(),
             Shape::Poly(p)   => p.bbox(),
-            Shape::Rect(r)   => Some(*r),
+            Shape::Rect(r)   => *r,
         }
     }
 
@@ -171,17 +175,7 @@ impl Shape {
 impl Rect {
     /// Compute the bounding box of a slice of shapes.
     pub fn from_shapes(shapes: &[Shape]) -> Option<Self> {
-        let mut x0 = f64::INFINITY;
-        let mut y0 = f64::INFINITY;
-        let mut x1 = f64::NEG_INFINITY;
-        let mut y1 = f64::NEG_INFINITY;
-        for s in shapes {
-            if let Some(r) = s.bbox() {
-                x0 = x0.min(r.min.x); y0 = y0.min(r.min.y);
-                x1 = x1.max(r.max.x); y1 = y1.max(r.max.y);
-            }
-        }
-        if x0.is_infinite() { None } else { Some(Rect::new(x0, y0, x1, y1)) }
+        shapes.iter().map(|s| s.bbox()).reduce(|a, b| a.union(b))
     }
 }
 
@@ -273,7 +267,7 @@ pub fn detect_slots(shapes: Vec<Shape>, panel_cx: f64, panel_cy: f64) -> Vec<Sha
 
 fn try_expand_slot(poly: &Polyline, pcx: f64, pcy: f64) -> Option<Polyline> {
     if !poly.closed { return None; }
-    let r = poly.bbox()?;
+    let r = poly.bbox();
     let w = r.max.x - r.min.x;
     let h = r.max.y - r.min.y;
     let is_8 = |v: f64| (v - 8.0).abs() < 0.5;
@@ -304,7 +298,7 @@ fn try_expand_slot(poly: &Polyline, pcx: f64, pcy: f64) -> Option<Polyline> {
 /// True if `poly` is a closed 4-point axis-aligned rectangle.
 fn is_axis_aligned_rect(poly: &Polyline) -> bool {
     if !poly.closed || poly.points.len() != 4 { return false; }
-    let r = match poly.bbox() { Some(r) => r, None => return false };
+    let r = poly.bbox();
     const TOL: f64 = 0.01;
     poly.points.iter().all(|p| {
         let on_x = (p.x - r.min.x).abs() < TOL || (p.x - r.max.x).abs() < TOL;
@@ -322,15 +316,14 @@ pub fn detect_saw_rects(shapes: Vec<Shape>) -> Vec<Shape> {
     shapes.into_iter().map(|shape| {
         if let Shape::Poly(ref poly) = shape {
             if is_axis_aligned_rect(poly) {
-                if let Some(r) = poly.bbox() {
-                    let w = r.max.x - r.min.x;
-                    let h = r.max.y - r.min.y;
-                    let short = w.min(h);
-                    let long  = w.max(h);
-                    let ar    = if short < 1e-6 { f64::INFINITY } else { long / short };
-                    if ar > 8.0 && short < 12.0 {
-                        return Shape::Rect(r);
-                    }
+                let r = poly.bbox();
+                let w = r.max.x - r.min.x;
+                let h = r.max.y - r.min.y;
+                let short = w.min(h);
+                let long  = w.max(h);
+                let ar    = if short < 1e-6 { f64::INFINITY } else { long / short };
+                if ar > 8.0 && short < 12.0 {
+                    return Shape::Rect(r);
                 }
             }
         }
