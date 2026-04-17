@@ -5,7 +5,7 @@
 // thin dimension abuts one of the four AABB edges.  We collect all such loops,
 // group them by edge, and report one EdgeClose per edge.
 
-use crate::geom::{Edge, Rect, Shape};
+use crate::geom::{Edge, Primitive, Rect, Shape};
 
 /// Rendering adds a 0.1 mm gap so all detected widths are 0.1 mm short.
 const CLOSE_GAP_CORRECTION: f64 = 0.1;

@@ -8,7 +8,7 @@ mod dxf;
 use std::collections::BTreeMap;
 use std::env;
 use std::fs;
-use geom::{Rect, Shape, detect_arcs, detect_circles, detect_saw_rects, detect_slots};
+use geom::{Primitive, Rect, Shape, detect_arcs, detect_circles, detect_saw_rects, detect_slots};
 use xor::feature_loops;
 use close::extract_closes;
 use classify::layer;

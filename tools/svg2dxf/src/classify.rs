@@ -1,6 +1,6 @@
 // Assign shapes to DXF layers based on geometry properties.
 
-use crate::geom::{Rect, Shape};
+use crate::geom::{Primitive, Rect, Shape};
 
 /// Layer name for a shape.
 ///

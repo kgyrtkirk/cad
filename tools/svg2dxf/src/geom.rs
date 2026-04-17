@@ -1,4 +1,11 @@
 // Geometric primitives and circle/slot detection from polygon approximations.
+use enum_dispatch::enum_dispatch;
+
+#[enum_dispatch]
+pub trait Primitive {
+    fn bbox(&self) -> Rect;
+    fn translate(&self, dx: f64, dy: f64) -> Self;
+}
 
 #[derive(Debug, Clone, Copy)]
 pub struct Point {
@@ -60,24 +67,26 @@ impl Rect {
     }
 }
 
+impl Primitive for Rect {
+    fn bbox(&self) -> Rect { *self }
+    fn translate(&self, dx: f64, dy: f64) -> Self { self.translate(dx, dy) }
+}
+
 #[derive(Debug, Clone)]
 pub struct Circle {
     pub center: Point,
     pub radius: f64,
 }
 
-impl Circle {
-    pub fn translate(&self, dx: f64, dy: f64) -> Self {
-        Circle { center: Point { x: self.center.x + dx, y: self.center.y + dy }, radius: self.radius }
-    }
-
-    pub fn bbox(&self) -> Rect {
+impl Primitive for Circle {
+    fn bbox(&self) -> Rect {
         Rect::new(
-            self.center.x - self.radius,
-            self.center.y - self.radius,
-            self.center.x + self.radius,
-            self.center.y + self.radius,
+            self.center.x - self.radius, self.center.y - self.radius,
+            self.center.x + self.radius, self.center.y + self.radius,
         )
+    }
+    fn translate(&self, dx: f64, dy: f64) -> Self {
+        Circle { center: Point { x: self.center.x + dx, y: self.center.y + dy }, radius: self.radius }
     }
 }
 
@@ -103,7 +112,17 @@ impl Polyline {
         (sum / 2.0).abs()
     }
 
-    pub fn bbox(&self) -> Rect {
+    pub fn aspect_ratio(&self) -> f64 {
+        let r = self.bbox();
+        let w = r.max.x - r.min.x;
+        let h = r.max.y - r.min.y;
+        if w.min(h) < 1e-6 { return f64::INFINITY; }
+        w.max(h) / w.min(h)
+    }
+}
+
+impl Primitive for Polyline {
+    fn bbox(&self) -> Rect {
         assert!(!self.points.is_empty(), "Polyline::bbox called on empty polyline");
         let x0 = self.points.iter().map(|p| p.x).fold(f64::INFINITY,     f64::min);
         let x1 = self.points.iter().map(|p| p.x).fold(f64::NEG_INFINITY, f64::max);
@@ -111,20 +130,11 @@ impl Polyline {
         let y1 = self.points.iter().map(|p| p.y).fold(f64::NEG_INFINITY, f64::max);
         Rect::new(x0, y0, x1, y1)
     }
-
-    pub fn translate(&self, dx: f64, dy: f64) -> Self {
+    fn translate(&self, dx: f64, dy: f64) -> Self {
         Polyline {
             points: self.points.iter().map(|p| Point { x: p.x + dx, y: p.y + dy }).collect(),
             closed: self.closed,
         }
-    }
-
-    pub fn aspect_ratio(&self) -> f64 {
-        let r = self.bbox();
-        let w = r.max.x - r.min.x;
-        let h = r.max.y - r.min.y;
-        if w.min(h) < 1e-6 { return f64::INFINITY; }
-        w.max(h) / w.min(h)
     }
 }
 
@@ -136,20 +146,20 @@ pub struct Arc {
     pub end_angle:   f64, // degrees, CCW from +X axis
 }
 
-impl Arc {
-    pub fn translate(&self, dx: f64, dy: f64) -> Self {
-        Arc { center: Point { x: self.center.x + dx, y: self.center.y + dy }, ..*self }
-    }
-
-    pub fn bbox(&self) -> Rect {
+impl Primitive for Arc {
+    fn bbox(&self) -> Rect {
         // Conservative: full circle bounding box. Arc is always contained within it.
         Rect::new(
             self.center.x - self.radius, self.center.y - self.radius,
             self.center.x + self.radius, self.center.y + self.radius,
         )
     }
+    fn translate(&self, dx: f64, dy: f64) -> Self {
+        Arc { center: Point { x: self.center.x + dx, y: self.center.y + dy }, ..*self }
+    }
 }
 
+#[enum_dispatch(Primitive)]
 #[derive(Debug, Clone)]
 pub enum Shape {
     Circle(Circle),
@@ -158,25 +168,6 @@ pub enum Shape {
     Rect(Rect),
 }
 
-impl Shape {
-    pub fn bbox(&self) -> Rect {
-        match self {
-            Shape::Circle(c) => c.bbox(),
-            Shape::Arc(a)    => a.bbox(),
-            Shape::Poly(p)   => p.bbox(),
-            Shape::Rect(r)   => *r,
-        }
-    }
-
-    pub fn translate(&self, dx: f64, dy: f64) -> Shape {
-        match self {
-            Shape::Circle(c) => Shape::Circle(c.translate(dx, dy)),
-            Shape::Arc(a)    => Shape::Arc(a.translate(dx, dy)),
-            Shape::Poly(p)   => Shape::Poly(p.translate(dx, dy)),
-            Shape::Rect(r)   => Shape::Rect(r.translate(dx, dy)),
-        }
-    }
-}
 
 impl Rect {
     /// Compute the bounding box of a slice of shapes.
