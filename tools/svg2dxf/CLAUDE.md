@@ -22,7 +22,7 @@ cargo test                           # run tests (none yet)
 2. **Tile dedup** – `keep_one_tile` detects repeated tile layouts by comparing bounding boxes; retains only shapes inside the largest bounding box (+ 3 mm margin).
 3. **Close extraction** – `close::extract_closes` pulls thin rectangles that abut the outer AABB edges; these are edge-banding (close) strips rendered by OpenSCAD. They get their own `close_{edge}_{width}` DXF layers.
 4. **Feature loop extraction** – `xor::feature_loops` strips segments that lie on the inner panel AABB, then splits each shape at those boundaries to recover individual feature loops (holes, grooves, slots).
-5. **Shape detection** – `geom::detect_circles` fits circles to polygon approximations; `geom::detect_slots` expands 8 mm-wide edge slots to 32 mm-depth rectangles anchored on the panel edge.
+5. **Shape detection** – `geom::detect_circles` fits circles; `geom::detect_slots` expands 8×8 stubs to 8×32 mm edge slots; `geom::detect_saw_rects` converts 4-pt axis-aligned narrow rectangles to `Shape::Rect` (SAW layer); `geom::detect_arcs` fits arcs to open boundary-touching polylines with > 4 points.
 6. **Origin translation** – shifts everything so the panel's bottom-left is at (0, 0).
 7. **Layer assignment** – `classify::layer` maps each shape to a DXF layer name based on geometry rules (see below).
 8. **DXF output** – `dxf::build_drawing` + `dxf::add_close_layers` write AC1009-compatible POLYLINE/CIRCLE/TEXT entities.
@@ -40,16 +40,31 @@ cargo test                           # run tests (none yet)
 
 ### Layer naming rules (`classify.rs`)
 
+See `DXF_FORMAT_SUMMARY.md` for the CNC machine's interpretation of layer names and entity thickness (depth).
+
 | Pattern | Layer name |
 |---|---|
-| Circle | `drill_d{diameter_mm_rounded}` |
-| Closed poly, 4.5 < short side < 11 mm, long side < 80 mm | `drill_slot_{short}x{long}` |
-| Closed poly, aspect ratio > 8, short side < 12 mm | `groove_{short_mm}` |
-| Expanded 8×32 mm drill slot | `drill_slot_8x32` |
-| Panel inner AABB | `panel` |
-| Outer AABB (includes close strips) | `extended_boundary` |
-| Edge-close strip | `close_{B\|L\|R\|T}_{width:.2}` |
+| Circle, radius > 10 mm | `BACK` |
+| Circle | `TOP` |
+| `Shape::Rect`, AR > 8, short < 12 mm | `SAW` |
+| Closed poly, ~138×33 mm | `HANDLE_CUT` |
+| Closed poly, 8×32 mm abutting edge | `LEFT` / `RIGHT` / `FRONT` / `REAR` |
+| Closed poly, 4.5 < short < 11 mm, long < 80 mm | `TOP` |
+| Closed poly, AR > 8, short < 12 mm | `SAW` |
+| Arc | `ARC_CUT` |
+| Inner panel AABB | `raw_panel` |
+| Outer AABB (includes close strips) | `PANEL` |
 | Anything else | `unclassified` |
+
+### Debugging
+
+`cargo run` writes a diagnostic summary to stderr: close strips found, feature-loop count, layer shape counts. Check these first when output looks wrong:
+
+```
+  close FRONT: 2.00mm      ← if a close is missing, as_edge_close thin-dimension logic may be failing
+  layer SAW: 1 shapes       ← if 0, grooves may have been eaten by detect_arcs
+  layer ARC_CUT: N shapes   ← should be 0 on groove-only panels; > 0 only when true arc cuts exist
+```
 
 ### Known FIXMEs in the code
 
