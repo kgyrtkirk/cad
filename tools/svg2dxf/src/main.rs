@@ -11,7 +11,7 @@ use std::fs;
 use geom::{Primitive, Rect, Shape, detect_arcs, detect_circles, detect_saw_rects, detect_slots};
 use xor::feature_loops;
 use close::extract_closes;
-use classify::layer;
+use classify::{classify, is_handle_cut, Classification};
 
 /// Keep only shapes belonging to one tile of a potentially repeated layout.
 ///
@@ -91,24 +91,21 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
     eprintln!("Translated by ({dx:.2}, {dy:.2}) — panel now at origin");
 
     // 7. Layer assignment.
-    let mut by_layer: BTreeMap<String, Vec<&Shape>> = BTreeMap::new();
-    for shape in &shapes {
-        by_layer.entry(layer(shape, &bb)).or_default().push(shape);
-    }
-    for (l, v) in &by_layer { eprintln!("  layer {l}: {} shapes", v.len()); }
+    let top_thickness = if shapes.iter().any(is_handle_cut) { 18.0 } else { 14.5 };
+    let classified: Vec<Classification> = shapes.iter().map(|s| classify(s, &bb, top_thickness)).collect();
 
-    // If a HANDLE_CUT is present, verify all TOP shapes are inside it and promote TOP depth.
-    // FIXME: this is a hack
-    let top_thickness = if let Some(handles) = by_layer.get("HANDLE_CUT") {
-        // FIXME: error if more than one handle
-        let handle_bbox = handles.iter()
-            .map(|s| s.bbox())
-            .reduce(|a, b| a.union(b))
-            .ok_or("HANDLE_CUT has no geometry")?;
-        let check_area = handle_bbox.expand(1.0); // 1 mm tolerance
-        if let Some(tops) = by_layer.get("TOP") {
-            for shape in tops {
-                let r = shape.bbox();
+    let handle_cuts: Vec<&Shape> = classified.iter()
+        .filter(|c| matches!(c, Classification::HandleCut(_)))
+        .map(|c| c.shape())
+        .collect();
+    if handle_cuts.len() > 1 {
+        return Err(format!("Found {} HANDLE_CUT shapes; expected at most 1", handle_cuts.len()));
+    }
+    if let Some(&handle) = handle_cuts.first() {
+        let check_area = handle.bbox().expand(1.0);
+        for c in &classified {
+            if let Classification::Top(_, s) = c {
+                let r = s.bbox();
                 if !check_area.contains(r) {
                     return Err(format!(
                         "TOP shape bbox ({:.1},{:.1})–({:.1},{:.1}) is not inside HANDLE_CUT",
@@ -117,10 +114,16 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
                 }
             }
         }
-        18.0
-    } else {
-        14.5
-    };
+    }
+
+    let mut by_layer: BTreeMap<String, Vec<&Shape>> = BTreeMap::new();
+    let mut layer_depths: BTreeMap<String, f64> = BTreeMap::new();
+    for c in &classified {
+        let name = c.layer_name().to_string();
+        layer_depths.entry(name.clone()).or_insert_with(|| c.depth());
+        by_layer.entry(name).or_default().push(c.shape());
+    }
+    for (l, v) in &by_layer { eprintln!("  layer {l}: {} shapes", v.len()); }
 
     // Inner boundary (informational — raw panel outline before close strips).
     by_layer.entry("raw_panel".to_string()).or_default().push(
@@ -130,8 +133,10 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
     by_layer.entry("PANEL".to_string()).or_default().push(
         Box::leak(Box::new(Shape::Rect(outer_bb)))
     );
+    layer_depths.insert("raw_panel".to_string(), 0.0);
+    layer_depths.insert("PANEL".to_string(), 18.0);
 
-    let mut drawing = dxf::build_drawing(&by_layer, top_thickness);
+    let mut drawing = dxf::build_drawing(&by_layer, &layer_depths);
     dxf::add_close_layers(&mut drawing, &closes, &outer_bb);
     drawing.save_file(output_path)
         .map_err(|e| format!("Cannot write {output_path}: {e}"))?;
