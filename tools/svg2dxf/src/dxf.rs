@@ -2,7 +2,7 @@
 
 use std::collections::BTreeMap;
 use dxf::Drawing;
-use dxf::entities::{Arc as DxfArc, Circle, Polyline, Vertex, Text, Entity, EntityType};
+use dxf::entities::{Arc as DxfArc, Circle, Line as DxfLine, Polyline, Vertex, Text, Entity, EntityType};
 use dxf::enums::{HorizontalTextJustification, VerticalTextJustification};
 use dxf::tables::Layer;
 use dxf::{Color, Point as DxfPoint};
@@ -127,6 +127,111 @@ pub fn build_drawing(shapes_by_layer: &BTreeMap<String, Vec<&Shape>>, layer_dept
     }
 
     drawing
+}
+
+fn add_line_entity(drawing: &mut Drawing, layer_name: &str, x0: f64, y0: f64, x1: f64, y1: f64) {
+    let mut ent = Entity::new(EntityType::Line(DxfLine::new(
+        DxfPoint::new(x0, y0, 0.0),
+        DxfPoint::new(x1, y1, 0.0),
+    )));
+    ent.common.layer = layer_name.to_string();
+    drawing.add_entity(ent);
+}
+
+fn add_text_entity(drawing: &mut Drawing, layer_name: &str,
+                   x: f64, y: f64, s: &str, height: f64) {
+    let mut text = Text::default();
+    text.value       = s.to_string();
+    text.location    = DxfPoint::new(x, y, 0.0);
+    text.text_height = height;
+    text.horizontal_text_justification = HorizontalTextJustification::Center;
+    text.vertical_text_justification   = VerticalTextJustification::Middle;
+    text.second_alignment_point        = DxfPoint::new(x, y, 0.0);
+    let mut ent = Entity::new(EntityType::Text(text));
+    ent.common.layer = layer_name.to_string();
+    drawing.add_entity(ent);
+}
+
+/// Add a `measure` layer with panel dimensions and radius annotations.
+///
+/// Draws:
+/// - Horizontal dimension line below `outer_bb` showing panel width
+/// - Vertical dimension line to the left of `outer_bb` showing panel height
+/// - "r=XX.X" text label next to every circle and arc centre
+pub fn add_measure_layer(
+    drawing: &mut Drawing,
+    shapes_by_layer: &BTreeMap<String, Vec<&Shape>>,
+    _bb: &Rect,
+    outer_bb: &Rect,
+) {
+    const LAYER: &str = "measure";
+    const DIM_OFF: f64 = 15.0;  // mm from panel edge to dimension line
+    const TICK:    f64 = 2.0;   // tick half-height
+    const TEXT_H:  f64 = 3.5;   // annotation text height mm
+
+    let mut layer = Layer::default();
+    layer.name  = LAYER.to_string();
+    layer.color = Color::from_index(3); // green
+    drawing.add_layer(layer);
+
+    // ── Width dimension ────────────────────────────────────────────────────
+    let y_dim  = outer_bb.min.y - DIM_OFF;
+    let x_left = outer_bb.min.x;
+    let x_right = outer_bb.max.x;
+
+    // Extension lines
+    add_line_entity(drawing, LAYER, x_left,  outer_bb.min.y, x_left,  y_dim - TICK);
+    add_line_entity(drawing, LAYER, x_right, outer_bb.min.y, x_right, y_dim - TICK);
+    // Dimension line + end ticks
+    add_line_entity(drawing, LAYER, x_left, y_dim, x_right, y_dim);
+    add_line_entity(drawing, LAYER, x_left,  y_dim - TICK, x_left,  y_dim + TICK);
+    add_line_entity(drawing, LAYER, x_right, y_dim - TICK, x_right, y_dim + TICK);
+    // Label
+    let w_label = format!("{:.1}", outer_bb.max.x - outer_bb.min.x);
+    add_text_entity(drawing, LAYER, (x_left + x_right) / 2.0, y_dim - TEXT_H * 1.8, &w_label, TEXT_H);
+
+    // ── Height dimension ───────────────────────────────────────────────────
+    let x_dim  = outer_bb.min.x - DIM_OFF;
+    let y_bot  = outer_bb.min.y;
+    let y_top  = outer_bb.max.y;
+
+    // Extension lines
+    add_line_entity(drawing, LAYER, outer_bb.min.x, y_bot, x_dim - TICK, y_bot);
+    add_line_entity(drawing, LAYER, outer_bb.min.x, y_top, x_dim - TICK, y_top);
+    // Dimension line + end ticks
+    add_line_entity(drawing, LAYER, x_dim, y_bot, x_dim, y_top);
+    add_line_entity(drawing, LAYER, x_dim - TICK, y_bot, x_dim + TICK, y_bot);
+    add_line_entity(drawing, LAYER, x_dim - TICK, y_top, x_dim + TICK, y_top);
+    // Label (horizontal, centred on span, offset further left)
+    let h_label = format!("{:.1}", outer_bb.max.y - outer_bb.min.y);
+    add_text_entity(drawing, LAYER, x_dim - TEXT_H * 1.8, (y_bot + y_top) / 2.0, &h_label, TEXT_H);
+
+    // ── Radius labels ──────────────────────────────────────────────────────
+    for shapes in shapes_by_layer.values() {
+        for shape in shapes {
+            match shape {
+                Shape::Circle(c) => {
+                    let label = format!("r={:.1}", c.radius);
+                    // Short radial indicator line from centre toward 45°
+                    let ex = c.center.x + c.radius * 0.707;
+                    let ey = c.center.y + c.radius * 0.707;
+                    add_line_entity(drawing, LAYER, c.center.x, c.center.y, ex, ey);
+                    add_text_entity(drawing, LAYER,
+                        ex + TEXT_H, ey + TEXT_H * 0.5, &label, TEXT_H);
+                }
+                Shape::Arc(a) => {
+                    let mut ea = a.end_angle;
+                    while ea <= a.start_angle { ea += 360.0; }
+                    let mid = ((a.start_angle + ea) / 2.0).to_radians();
+                    let lx = a.center.x + a.radius * 0.85 * mid.cos();
+                    let ly = a.center.y + a.radius * 0.85 * mid.sin();
+                    let label = format!("r={:.1}", a.radius);
+                    add_text_entity(drawing, LAYER, lx, ly, &label, TEXT_H);
+                }
+                _ => {}
+            }
+        }
+    }
 }
 
 /// Add all close strips into a single `close` layer: one rectangle + text annotation per edge.

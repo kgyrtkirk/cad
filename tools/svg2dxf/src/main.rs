@@ -4,7 +4,6 @@ mod xor;
 mod classify;
 mod close;
 mod dxf;
-mod pdf;
 
 use std::collections::BTreeMap;
 use std::env;
@@ -139,17 +138,10 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
 
     let mut drawing = dxf::build_drawing(&by_layer, &layer_depths);
     dxf::add_close_layers(&mut drawing, &closes, &outer_bb);
+    dxf::add_measure_layer(&mut drawing, &by_layer, &bb, &outer_bb);
     drawing.save_file(output_path)
         .map_err(|e| format!("Cannot write {output_path}: {e}"))?;
     eprintln!("Wrote {output_path}");
-
-    let pdf_path = std::path::Path::new(output_path)
-        .with_extension("pdf")
-        .to_string_lossy()
-        .into_owned();
-    pdf::write_pdf(&pdf_path, &by_layer, &closes, &bb, &outer_bb)?;
-    eprintln!("Wrote {pdf_path}");
-
     Ok(())
 }
 

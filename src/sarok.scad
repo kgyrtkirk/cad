@@ -240,6 +240,7 @@ mode="R-cAArYZ";
 //@OUTPUT:P-DF200XZ
 
 //@OUTPUT:P-x1L600XY
+//@OUTPUT:R-x1L600XY
 //@OUTPUT:P-xBXZ
 
     module mx(mirror) {
