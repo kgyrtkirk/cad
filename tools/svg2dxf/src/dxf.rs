@@ -139,11 +139,12 @@ fn add_line_entity(drawing: &mut Drawing, layer_name: &str, x0: f64, y0: f64, x1
 }
 
 fn add_text_entity(drawing: &mut Drawing, layer_name: &str,
-                   x: f64, y: f64, s: &str, height: f64) {
+                   x: f64, y: f64, s: &str, height: f64, rotation_deg: f64) {
     let mut text = Text::default();
     text.value       = s.to_string();
     text.location    = DxfPoint::new(x, y, 0.0);
     text.text_height = height;
+    text.rotation    = rotation_deg;
     text.horizontal_text_justification = HorizontalTextJustification::Center;
     text.vertical_text_justification   = VerticalTextJustification::Middle;
     text.second_alignment_point        = DxfPoint::new(x, y, 0.0);
@@ -155,19 +156,21 @@ fn add_text_entity(drawing: &mut Drawing, layer_name: &str,
 /// Add a `measure` layer with panel dimensions and radius annotations.
 ///
 /// Draws:
-/// - Horizontal dimension line below `outer_bb` showing panel width
-/// - Vertical dimension line to the left of `outer_bb` showing panel height
-/// - "r=XX.X" text label next to every circle and arc centre
+/// - Horizontal dimension line below `outer_bb` showing panel width; label centred on line
+/// - Vertical dimension line to the left of `outer_bb` showing panel height; label rotated 90°
+/// - For every circle: horizontal diameter line with "r=XX" centred on it
+/// - For every arc: radius line from centre to arc midpoint with "r=XX" centred on line
 pub fn add_measure_layer(
     drawing: &mut Drawing,
     shapes_by_layer: &BTreeMap<String, Vec<&Shape>>,
     _bb: &Rect,
     outer_bb: &Rect,
 ) {
-    const LAYER: &str = "measure";
-    const DIM_OFF: f64 = 15.0;  // mm from panel edge to dimension line
-    const TICK:    f64 = 2.0;   // tick half-height
-    const TEXT_H:  f64 = 3.5;   // annotation text height mm
+    const LAYER:   &str = "measure";
+    const DIM_OFF: f64  = 20.0; // mm from panel edge to dimension line
+    const TICK:    f64  = 2.5;  // tick half-length
+    const TEXT_H:  f64  = 5.0;  // dimension text height mm
+    const R_TEXT:  f64  = 4.5;  // radius label text height mm
 
     let mut layer = Layer::default();
     layer.name  = LAYER.to_string();
@@ -175,58 +178,71 @@ pub fn add_measure_layer(
     drawing.add_layer(layer);
 
     // ── Width dimension ────────────────────────────────────────────────────
-    let y_dim  = outer_bb.min.y - DIM_OFF;
-    let x_left = outer_bb.min.x;
+    let y_dim   = outer_bb.min.y - DIM_OFF;
+    let x_left  = outer_bb.min.x;
     let x_right = outer_bb.max.x;
 
     // Extension lines
     add_line_entity(drawing, LAYER, x_left,  outer_bb.min.y, x_left,  y_dim - TICK);
     add_line_entity(drawing, LAYER, x_right, outer_bb.min.y, x_right, y_dim - TICK);
-    // Dimension line + end ticks
+    // Dimension line
     add_line_entity(drawing, LAYER, x_left, y_dim, x_right, y_dim);
+    // End ticks
     add_line_entity(drawing, LAYER, x_left,  y_dim - TICK, x_left,  y_dim + TICK);
     add_line_entity(drawing, LAYER, x_right, y_dim - TICK, x_right, y_dim + TICK);
-    // Label
+    // Label centred ON the dimension line, rotation=0
     let w_label = format!("{:.1}", outer_bb.max.x - outer_bb.min.x);
-    add_text_entity(drawing, LAYER, (x_left + x_right) / 2.0, y_dim - TEXT_H * 1.8, &w_label, TEXT_H);
+    add_text_entity(drawing, LAYER,
+        (x_left + x_right) / 2.0, y_dim, &w_label, TEXT_H, 0.0);
 
     // ── Height dimension ───────────────────────────────────────────────────
-    let x_dim  = outer_bb.min.x - DIM_OFF;
-    let y_bot  = outer_bb.min.y;
-    let y_top  = outer_bb.max.y;
+    let x_dim = outer_bb.min.x - DIM_OFF;
+    let y_bot = outer_bb.min.y;
+    let y_top = outer_bb.max.y;
 
     // Extension lines
     add_line_entity(drawing, LAYER, outer_bb.min.x, y_bot, x_dim - TICK, y_bot);
     add_line_entity(drawing, LAYER, outer_bb.min.x, y_top, x_dim - TICK, y_top);
-    // Dimension line + end ticks
+    // Dimension line
     add_line_entity(drawing, LAYER, x_dim, y_bot, x_dim, y_top);
+    // End ticks
     add_line_entity(drawing, LAYER, x_dim - TICK, y_bot, x_dim + TICK, y_bot);
     add_line_entity(drawing, LAYER, x_dim - TICK, y_top, x_dim + TICK, y_top);
-    // Label (horizontal, centred on span, offset further left)
+    // Label centred ON the dimension line, rotated 90° (reads bottom-to-top)
     let h_label = format!("{:.1}", outer_bb.max.y - outer_bb.min.y);
-    add_text_entity(drawing, LAYER, x_dim - TEXT_H * 1.8, (y_bot + y_top) / 2.0, &h_label, TEXT_H);
+    add_text_entity(drawing, LAYER,
+        x_dim, (y_bot + y_top) / 2.0, &h_label, TEXT_H, 90.0);
 
     // ── Radius labels ──────────────────────────────────────────────────────
     for shapes in shapes_by_layer.values() {
         for shape in shapes {
             match shape {
                 Shape::Circle(c) => {
+                    // Horizontal diameter line; label centred on the half-radius section
+                    let x0 = c.center.x;
+                    let x1 = c.center.x + c.radius;
+                    add_line_entity(drawing, LAYER, x0, c.center.y, x1, c.center.y);
                     let label = format!("r={:.1}", c.radius);
-                    // Short radial indicator line from centre toward 45°
-                    let ex = c.center.x + c.radius * 0.707;
-                    let ey = c.center.y + c.radius * 0.707;
-                    add_line_entity(drawing, LAYER, c.center.x, c.center.y, ex, ey);
                     add_text_entity(drawing, LAYER,
-                        ex + TEXT_H, ey + TEXT_H * 0.5, &label, TEXT_H);
+                        (x0 + x1) / 2.0, c.center.y, &label, R_TEXT, 0.0);
                 }
                 Shape::Arc(a) => {
+                    // Radius line from centre to arc midpoint
                     let mut ea = a.end_angle;
                     while ea <= a.start_angle { ea += 360.0; }
-                    let mid = ((a.start_angle + ea) / 2.0).to_radians();
-                    let lx = a.center.x + a.radius * 0.85 * mid.cos();
-                    let ly = a.center.y + a.radius * 0.85 * mid.sin();
+                    let mid_deg = (a.start_angle + ea) / 2.0;
+                    let mid_rad = mid_deg.to_radians();
+                    let ex = a.center.x + a.radius * mid_rad.cos();
+                    let ey = a.center.y + a.radius * mid_rad.sin();
+                    add_line_entity(drawing, LAYER, a.center.x, a.center.y, ex, ey);
+                    // Text centred on the line, rotated to align with it
                     let label = format!("r={:.1}", a.radius);
-                    add_text_entity(drawing, LAYER, lx, ly, &label, TEXT_H);
+                    // Normalise angle so text reads left-to-right (never upside-down)
+                    let rot = if mid_deg > 90.0 && mid_deg <= 270.0 { mid_deg - 180.0 } else { mid_deg };
+                    add_text_entity(drawing, LAYER,
+                        (a.center.x + ex) / 2.0,
+                        (a.center.y + ey) / 2.0,
+                        &label, R_TEXT, rot);
                 }
                 _ => {}
             }
