@@ -1,3 +1,4 @@
+Saved design '/home/kirk/host/cad/src/sarok.scad'.
 Loaded design '/home/kirk/host/cad/src/sarok.scad'.
 Compiling design (CSG Tree generation)...
 ECHO: "PLANAR: BACK cAA-backXZ 1481*781 0;0;0;0"
@@ -221,12 +222,12 @@ ECHO: "PART:EXCENTER"
 ECHO: "PART:DUBEL"
 ECHO: "PART:DUBEL"
 Compiling design (CSG Products generation)...
-Geometries in cache: 106
-Geometry cache size in bytes: 171920
-CGAL Polyhedrons in cache: 4
-CGAL cache size in bytes: 466144
+Geometries in cache: 245
+Geometry cache size in bytes: 294480
+CGAL Polyhedrons in cache: 162
+CGAL cache size in bytes: 104656448
 Compiling design (CSG Products normalization)...
 Compiling background (105 CSG Trees)...
 Normalized tree has 1235 elements!
 Compile and preview finished.
-Total rendering time: 0:00:00.108
+Total rendering time: 0:00:00.112

@@ -111,7 +111,7 @@ module internalSeparator(ratio, height) {
 REAL_MAX_H=2620;
 FOOT=72;
 MAX_H=REAL_MAX_H-FOOT-40; // foot not included!
-DEPTH=600; // instead of 630
+DEPTH=630; // instead of 630
 module actor() {
     HEIGHT=1700;
     H_SIZE=200;
@@ -214,7 +214,7 @@ posNeg() {
 }
 
 mode="print";
-mode="R-cAArYZ";
+//mode="R-cAArYZ";
 //mode="P-cBOuterTopXY";
 
 //mode="P-DF100XZ";
@@ -239,8 +239,8 @@ mode="R-cAArYZ";
 //@OUTPUT:P-DF100XZ
 //@OUTPUT:P-DF200XZ
 
-//@OUTPUT:P-x1L600XY
-//@OUTPUT:R-x1L600XY
+//@OUTPUT:P-x1L630XY
+//@OUTPUT:R-x1L630XY
 //@OUTPUT:P-xBXZ
 
     module mx(mirror) {
