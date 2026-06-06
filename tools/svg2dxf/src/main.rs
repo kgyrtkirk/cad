@@ -148,7 +148,10 @@ fn run(input_path: &str, output_path: &str) -> Result<(), String> {
         .with_extension("pdf")
         .to_string_lossy()
         .into_owned();
-    pdf::write_pdf(&pdf_path, &by_layer, &closes, &outer_bb)?;
+    let part_name = std::path::Path::new(input_path)
+        .file_stem().unwrap_or_default()
+        .to_string_lossy();
+    pdf::write_pdf(&pdf_path, &by_layer, &closes, &outer_bb, &part_name)?;
     eprintln!("Wrote {pdf_path}");
 
     Ok(())

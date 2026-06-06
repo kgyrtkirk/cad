@@ -106,6 +106,7 @@ pub fn write_pdf(
     shapes_by_layer: &BTreeMap<String, Vec<&Shape>>,
     closes: &[EdgeClose],
     outer_bb: &Rect,
+    title: &str,
 ) -> Result<(), String> {
     let panel_w = outer_bb.max.x - outer_bb.min.x;
     let panel_h = outer_bb.max.y - outer_bb.min.y;
@@ -282,6 +283,12 @@ pub fn write_pdf(
             }
         }
     }
+
+    // ── Part title ────────────────────────────────────────────────────────────
+
+    txt(&layer, &font,
+        margin, 210.0 - margin - text_pt as f64 / 2.8346,
+        title, text_pt, rgb(0.0, 0.0, 0.0));
 
     // ── Save ─────────────────────────────────────────────────────────────────
 
