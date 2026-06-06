@@ -235,10 +235,7 @@ pub fn add_measure_layer(
             for shape in shapes {
                 match shape {
                     Shape::Circle(c) => {
-                        add_line_entity(drawing, L,
-                            c.center.x, c.center.y,
-                            c.center.x + c.radius, c.center.y);
-                        let label = format!("⌀{}", fmt_dim(c.radius * 2.0));
+                        let label = format!("d{}", fmt_dim(c.radius * 2.0));
                         add_text_entity(drawing, L,
                             c.center.x, c.center.y + c.radius + gap,
                             &label, text_h, 0.0);
@@ -247,9 +244,6 @@ pub fn add_measure_layer(
                         let mut ea = a.end_angle;
                         while ea <= a.start_angle { ea += 360.0; }
                         let mid_rad = ((a.start_angle + ea) / 2.0).to_radians();
-                        let ex = a.center.x + a.radius * mid_rad.cos();
-                        let ey = a.center.y + a.radius * mid_rad.sin();
-                        add_line_entity(drawing, L, a.center.x, a.center.y, ex, ey);
                         let label = format!("R{}", fmt_dim(a.radius));
                         add_text_entity(drawing, L,
                             a.center.x + (a.radius + gap) * mid_rad.cos(),

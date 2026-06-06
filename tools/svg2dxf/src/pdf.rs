@@ -274,7 +274,6 @@ pub fn write_pdf(
                 let cx = tx(a.center.x);
                 let cy = ty(a.center.y);
                 let r  = a.radius * scale;
-                seg(&layer, cx, cy, cx + r * mid.cos(), cy + r * mid.sin());
                 let label = format!("R{}", fmt_dim(a.radius));
                 txt(&layer, &font,
                     cx + (r + gap_p) * mid.cos(),
