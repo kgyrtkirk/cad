@@ -250,7 +250,7 @@ pub fn add_measure_layer(
                         let ex = a.center.x + a.radius * mid_rad.cos();
                         let ey = a.center.y + a.radius * mid_rad.sin();
                         add_line_entity(drawing, L, a.center.x, a.center.y, ex, ey);
-                        let label = format!("⌀{}", fmt_dim(a.radius * 2.0));
+                        let label = format!("R{}", fmt_dim(a.radius));
                         add_text_entity(drawing, L,
                             a.center.x + (a.radius + gap) * mid_rad.cos(),
                             a.center.y + (a.radius + gap) * mid_rad.sin(),

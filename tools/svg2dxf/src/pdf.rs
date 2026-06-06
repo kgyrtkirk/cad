@@ -50,9 +50,11 @@ fn cp(x: f64, y: f64) -> (Point, bool) {
 fn circle_pts(cx: f64, cy: f64, r: f64) -> Vec<(Point, bool)> {
     let k = BEZIER_K * r;
     vec![
-        lp(cx+r,cy),  cp(cx+r,cy+k), cp(cx+k,cy+r), lp(cx,  cy+r),
-        cp(cx-k,cy+r),cp(cx-r,cy+k), lp(cx-r,cy),   cp(cx-r,cy-k),
-        cp(cx-k,cy-r),lp(cx,  cy-r), cp(cx+k,cy-r), cp(cx+r,cy-k),
+        lp(cx+r, cy  ),
+        cp(cx+r, cy+k), cp(cx+k, cy+r), lp(cx,   cy+r),
+        cp(cx-k, cy+r), cp(cx-r, cy+k), lp(cx-r, cy  ),
+        cp(cx-r, cy-k), cp(cx-k, cy-r), lp(cx,   cy-r),
+        cp(cx+k, cy-r), cp(cx+r, cy-k), lp(cx+r, cy  ), // arc 4 endpoint closes the shape
     ]
 }
 
@@ -257,6 +259,29 @@ pub fn write_pdf(
         x_dim - gap_p,
         (y_bot + y_top) / 2.0,
         &fmt_dim(panel_h), text_pt, dim_col.clone());
+
+    // ── Arc cut annotations (radius line + label) ─────────────────────────────
+
+    let arc_col = rgb(1.0, 0.35, 0.0);
+    stroke(&layer, arc_col.clone(), 0.25);
+    for shapes in shapes_by_layer.values() {
+        for shape in shapes {
+            if let Shape::Arc(a) = shape {
+                let mut ea = a.end_angle;
+                while ea <= a.start_angle { ea += 360.0; }
+                let mid = ((a.start_angle + ea) / 2.0).to_radians();
+                let cx = tx(a.center.x);
+                let cy = ty(a.center.y);
+                let r  = a.radius * scale;
+                seg(&layer, cx, cy, cx + r * mid.cos(), cy + r * mid.sin());
+                let label = format!("R{}", fmt_dim(a.radius));
+                txt(&layer, &font,
+                    cx + (r + gap_p) * mid.cos(),
+                    cy + (r + gap_p) * mid.sin(),
+                    &label, text_pt, arc_col.clone());
+            }
+        }
+    }
 
     // ── Save ─────────────────────────────────────────────────────────────────
 
