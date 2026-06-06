@@ -1,9 +1,5 @@
-// PDF output: renders the same geometry as the DXF with measurement annotations.
-//
-// Coordinates stay in mm throughout.  The panel sits in the upper-right corner of the
-// page; DIM_SPACE mm are reserved below and to the left for dimension lines; MARGIN mm
-// of blank space surrounds everything.  The whole drawing is scaled to fit within an
-// A3 landscape page if the panel is larger than the usable working area.
+// PDF output: renders the panel geometry to a printable A4 landscape PDF.
+// Uses the same colour scheme and annotation logic as the DXF measure/holes layers.
 
 use std::collections::BTreeMap;
 use std::f64::consts::TAU;
@@ -13,9 +9,11 @@ use printpdf::path::{PaintMode, WindingOrder};
 use printpdf::*;
 
 use crate::close::EdgeClose;
+use crate::dxf::{a4_text_h, fmt_dim};
 use crate::geom::{Arc as GArc, Edge, Rect, Shape};
 
-const BEZIER_K: f64 = 0.5522847498; // cubic Bezier circle approximation constant
+const BEZIER_K: f64 = 0.5522847498;
+const DEJAVU: &str = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
 
 // ── Colour helpers ────────────────────────────────────────────────────────────
 
@@ -40,102 +38,63 @@ fn layer_color(name: &str) -> Color {
     }
 }
 
-// ── Point helpers ─────────────────────────────────────────────────────────────
+// ── Geometry helpers ──────────────────────────────────────────────────────────
 
 fn lp(x: f64, y: f64) -> (Point, bool) {
     (Point::new(Mm(x as f32), Mm(y as f32)), false)
 }
-
 fn cp(x: f64, y: f64) -> (Point, bool) {
-    (Point::new(Mm(x as f32), Mm(y as f32)), true) // Bezier control point
+    (Point::new(Mm(x as f32), Mm(y as f32)), true)
 }
-
-// ── Shape approximations ──────────────────────────────────────────────────────
 
 fn circle_pts(cx: f64, cy: f64, r: f64) -> Vec<(Point, bool)> {
     let k = BEZIER_K * r;
     vec![
-        lp(cx + r, cy),
-        cp(cx + r, cy + k), cp(cx + k, cy + r), lp(cx,     cy + r),
-        cp(cx - k, cy + r), cp(cx - r, cy + k), lp(cx - r, cy    ),
-        cp(cx - r, cy - k), cp(cx - k, cy - r), lp(cx,     cy - r),
-        cp(cx + k, cy - r), cp(cx + r, cy - k),
+        lp(cx+r,cy),  cp(cx+r,cy+k), cp(cx+k,cy+r), lp(cx,  cy+r),
+        cp(cx-k,cy+r),cp(cx-r,cy+k), lp(cx-r,cy),   cp(cx-r,cy-k),
+        cp(cx-k,cy-r),lp(cx,  cy-r), cp(cx+k,cy-r), cp(cx+r,cy-k),
     ]
 }
 
-fn arc_pts(cx: f64, cy: f64, r: f64, start_deg: f64, end_deg: f64) -> Vec<(Point, bool)> {
-    const STEPS: u32 = 48;
-    let sa = start_deg.to_radians();
-    let mut ea = end_deg.to_radians();
+fn arc_pts(cx: f64, cy: f64, r: f64, sa: f64, ea: f64) -> Vec<(Point, bool)> {
+    let sa = sa.to_radians();
+    let mut ea = ea.to_radians();
     while ea <= sa { ea += TAU; }
-    (0..=STEPS)
-        .map(|i| {
-            let a = sa + (ea - sa) * (i as f64 / STEPS as f64);
-            lp(cx + r * a.cos(), cy + r * a.sin())
-        })
-        .collect()
+    (0..=48).map(|i| {
+        let a = sa + (ea - sa) * (i as f64 / 48.0);
+        lp(cx + r * a.cos(), cy + r * a.sin())
+    }).collect()
 }
 
-// ── Layer drawing helpers ─────────────────────────────────────────────────────
-
-fn stroke(layer: &PdfLayerReference, col: Color, width: f32) {
+fn stroke(layer: &PdfLayerReference, col: Color, w: f32) {
     layer.set_outline_color(col);
-    layer.set_outline_thickness(width);
+    layer.set_outline_thickness(w);
 }
 
-fn line_seg(layer: &PdfLayerReference, x0: f64, y0: f64, x1: f64, y1: f64) {
-    layer.add_line(Line { points: vec![lp(x0, y0), lp(x1, y1)], is_closed: false });
+fn seg(layer: &PdfLayerReference, x0: f64, y0: f64, x1: f64, y1: f64) {
+    layer.add_line(Line { points: vec![lp(x0,y0), lp(x1,y1)], is_closed: false });
 }
 
-fn draw_text(layer: &PdfLayerReference, font: &IndirectFontRef,
-             x: f64, y: f64, text: &str, size: f32, col: Color) {
+fn txt(layer: &PdfLayerReference, font: &IndirectFontRef,
+       x: f64, y: f64, s: &str, pt: f32, col: Color) {
     layer.set_fill_color(col);
-    layer.use_text(text, size, Mm(x as f32), Mm(y as f32), font);
+    layer.use_text(s, pt, Mm(x as f32), Mm(y as f32), font);
 }
 
-fn poly_stroke(layer: &PdfLayerReference, pts: Vec<(Point, bool)>) {
-    layer.add_polygon(Polygon {
-        rings: vec![pts],
-        mode: PaintMode::Stroke,
-        winding_order: WindingOrder::NonZero,
-    });
-}
-
-fn open_stroke(layer: &PdfLayerReference, pts: Vec<(Point, bool)>) {
-    layer.add_line(Line { points: pts, is_closed: false });
-}
-
-// ── Dimension lines ───────────────────────────────────────────────────────────
-
-/// Horizontal dimension line at `dim_y`, with extension lines dropping from `panel_y`.
-fn dim_h(layer: &PdfLayerReference, font: &IndirectFontRef,
-         x0: f64, x1: f64, dim_y: f64, panel_y: f64, label: &str) {
-    let col = rgb(0.0, 0.0, 0.55);
-    stroke(layer, col.clone(), 0.3);
-    let t = 1.5;
-    line_seg(layer, x0, panel_y, x0, dim_y + t);
-    line_seg(layer, x1, panel_y, x1, dim_y + t);
-    line_seg(layer, x0, dim_y, x1, dim_y);
-    line_seg(layer, x0, dim_y - t, x0, dim_y + t);
-    line_seg(layer, x1, dim_y - t, x1, dim_y + t);
-    let lx = (x0 + x1) / 2.0 - label.len() as f64 * 0.95;
-    draw_text(layer, font, lx, dim_y - 5.5, label, 6.0, col);
-}
-
-/// Vertical dimension line at `dim_x`, with extension lines reaching left from `panel_x`.
-fn dim_v(layer: &PdfLayerReference, font: &IndirectFontRef,
-         y0: f64, y1: f64, dim_x: f64, panel_x: f64, label: &str) {
-    let col = rgb(0.0, 0.0, 0.55);
-    stroke(layer, col.clone(), 0.3);
-    let t = 1.5;
-    line_seg(layer, panel_x, y0, dim_x - t, y0);
-    line_seg(layer, panel_x, y1, dim_x - t, y1);
-    line_seg(layer, dim_x, y0, dim_x, y1);
-    line_seg(layer, dim_x - t, y0, dim_x + t, y0);
-    line_seg(layer, dim_x - t, y1, dim_x + t, y1);
-    let lx = dim_x - label.len() as f64 * 1.85 - 3.0;
-    let ly = (y0 + y1) / 2.0 - 2.0;
-    draw_text(layer, font, lx, ly, label, 6.0, col);
+/// Write text rotated 90° CCW (reads bottom-to-top), centred on (x, y).
+fn txt_rot90(layer: &PdfLayerReference, font: &IndirectFontRef,
+             x: f64, y: f64, s: &str, pt: f32, col: Color) {
+    const MM_PT: f64 = 72.0 / 25.4;
+    // Approximate half-width of the string in mm so we can centre it along Y.
+    let half_w = s.len() as f64 * pt as f64 / MM_PT * 0.28;
+    let x_pt = Pt(((x)         * MM_PT) as f32);
+    let y_pt = Pt(((y - half_w) * MM_PT) as f32);
+    layer.set_fill_color(col);
+    layer.begin_text_section();
+    layer.set_text_matrix(TextMatrix::TranslateRotate(x_pt, y_pt, 90.0));
+    layer.set_font(font, pt);
+    layer.write_text(s, font);
+    layer.end_text_section();
 }
 
 // ── Main writer ───────────────────────────────────────────────────────────────
@@ -144,78 +103,95 @@ pub fn write_pdf(
     path: &str,
     shapes_by_layer: &BTreeMap<String, Vec<&Shape>>,
     closes: &[EdgeClose],
-    bb: &Rect,
     outer_bb: &Rect,
 ) -> Result<(), String> {
-    const MARGIN: f64 = 12.0;
-    const DIM_SPACE: f64 = 32.0;
-
     let panel_w = outer_bb.max.x - outer_bb.min.x;
     let panel_h = outer_bb.max.y - outer_bb.min.y;
 
-    // Scale to fit A3 landscape working area (400 × 270 mm usable)
-    let total_w = DIM_SPACE + panel_w + MARGIN;
-    let total_h = DIM_SPACE + panel_h + MARGIN;
-    let scale = (400.0_f64 / total_w).min(270.0 / total_h).min(1.0);
+    // Model-space text height → PDF points at the print scale
+    let text_h_model = a4_text_h(panel_w, panel_h);
+    let dim_off      = text_h_model * 3.5;
+    let gap          = text_h_model * 0.9;
+    let tick_model   = text_h_model * 0.5;
+    let margin       = 8.0_f64; // mm on page
 
-    let page_w = total_w * scale + 2.0 * MARGIN;
-    let page_h = total_h * scale + 2.0 * MARGIN;
+    // Fit into A4 landscape (297×210 mm, leaving margins)
+    let available_w = 297.0 - 2.0 * margin;
+    let available_h = 210.0 - 2.0 * margin;
+    let total_w = (dim_off - outer_bb.min.x.min(0.0)) + panel_w + margin;
+    let total_h = (dim_off - outer_bb.min.y.min(0.0)) + panel_h + margin;
+    let scale = (available_w / total_w).min(available_h / total_h);
 
-    // Panel origin on the page (coordinates come from main.rs translate-to-origin step)
-    let ox = MARGIN + DIM_SPACE * scale;
-    let oy = MARGIN + DIM_SPACE * scale;
+    // Page-space origin of the panel coordinate system
+    let ox = margin + (dim_off - outer_bb.min.x.min(0.0)) * scale;
+    let oy = margin + (dim_off - outer_bb.min.y.min(0.0)) * scale;
 
     let tx = |x: f64| ox + x * scale;
     let ty = |y: f64| oy + y * scale;
 
-    let (doc, page1, layer1) = PdfDocument::new(
-        "Panel Drawing",
-        Mm(page_w as f32),
-        Mm(page_h as f32),
-        "Layer 1",
-    );
+    // All annotation sizes in page mm
+    let dim  = dim_off * scale;
+    let gap_p  = gap       * scale;
+    let tick_p = tick_model * scale;
+    let text_pt = (text_h_model * scale * 2.8346) as f32; // mm → pt
 
-    let font = doc.add_builtin_font(BuiltinFont::Helvetica)
-        .map_err(|e| format!("Font error: {e}"))?;
+    let (doc, page1, layer1) = PdfDocument::new(
+        "Panel Drawing", Mm(297.0), Mm(210.0), "Layer 1");
+
+    let font = {
+        if let Ok(mut f) = std::fs::File::open(DEJAVU) {
+            doc.add_external_font(&mut f)
+                .unwrap_or_else(|_| doc.add_builtin_font(BuiltinFont::Helvetica).unwrap())
+        } else {
+            doc.add_builtin_font(BuiltinFont::Helvetica)
+                .map_err(|e| format!("Font: {e}"))?
+        }
+    };
+
     let layer = doc.get_page(page1).get_layer(layer1);
 
-    // ── Shapes ────────────────────────────────────────────────────────────────
+    // ── Shapes ───────────────────────────────────────────────────────────────
 
     for (layer_name, shapes) in shapes_by_layer {
         let col = layer_color(layer_name);
-        let lw: f32 = if layer_name == "PANEL" { 0.8 } else { 0.5 };
-        stroke(&layer, col.clone(), lw);
+        let lw: f32 = if layer_name == "PANEL" { 0.5 } else { 0.3 };
+        stroke(&layer, col, lw);
 
         if layer_name == "raw_panel" {
             layer.set_line_dash_pattern(LineDashPattern {
-                offset: 0, dash_1: Some(3), gap_1: Some(3),
-                dash_2: None, gap_2: None, dash_3: None, gap_3: None,
+                offset: 0, dash_1: Some(3), gap_1: Some(3), ..Default::default()
             });
         }
 
         for shape in shapes {
             match shape {
                 Shape::Circle(c) => {
-                    poly_stroke(&layer,
-                        circle_pts(tx(c.center.x), ty(c.center.y), c.radius * scale));
+                    let pts = circle_pts(tx(c.center.x), ty(c.center.y), c.radius * scale);
+                    layer.add_polygon(Polygon { rings: vec![pts],
+                        mode: PaintMode::Stroke, winding_order: WindingOrder::NonZero });
                 }
                 Shape::Arc(GArc { center, radius, start_angle, end_angle }) => {
-                    open_stroke(&layer,
-                        arc_pts(tx(center.x), ty(center.y),
-                                *radius * scale, *start_angle, *end_angle));
+                    let pts = arc_pts(tx(center.x), ty(center.y),
+                                      *radius * scale, *start_angle, *end_angle);
+                    layer.add_line(Line { points: pts, is_closed: false });
                 }
                 Shape::Poly(p) => {
-                    let pts: Vec<(Point, bool)> = p.points.iter()
-                        .map(|q| lp(tx(q.x), ty(q.y)))
-                        .collect();
-                    if p.closed { poly_stroke(&layer, pts); }
-                    else        { open_stroke(&layer, pts); }
+                    let pts: Vec<(Point, bool)> =
+                        p.points.iter().map(|q| lp(tx(q.x), ty(q.y))).collect();
+                    if p.closed {
+                        layer.add_polygon(Polygon { rings: vec![pts],
+                            mode: PaintMode::Stroke, winding_order: WindingOrder::NonZero });
+                    } else {
+                        layer.add_line(Line { points: pts, is_closed: false });
+                    }
                 }
                 Shape::Rect(r) => {
-                    poly_stroke(&layer, vec![
+                    let pts = vec![
                         lp(tx(r.min.x), ty(r.min.y)), lp(tx(r.max.x), ty(r.min.y)),
                         lp(tx(r.max.x), ty(r.max.y)), lp(tx(r.min.x), ty(r.max.y)),
-                    ]);
+                    ];
+                    layer.add_polygon(Polygon { rings: vec![pts],
+                        mode: PaintMode::Stroke, winding_order: WindingOrder::NonZero });
                 }
             }
         }
@@ -225,8 +201,9 @@ pub fn write_pdf(
         }
     }
 
-    // ── Close strips ──────────────────────────────────────────────────────────
+    // ── Close strips ─────────────────────────────────────────────────────────
 
+    let close_col = rgb(0.55, 0.27, 0.07);
     for ec in closes {
         let (x0, y0, x1, y1): (f64, f64, f64, f64) = match ec.edge {
             Edge::Left  => (outer_bb.min.x, outer_bb.min.y, outer_bb.min.x + ec.width, outer_bb.max.y),
@@ -234,81 +211,56 @@ pub fn write_pdf(
             Edge::Front => (outer_bb.min.x, outer_bb.min.y, outer_bb.max.x, outer_bb.min.y + ec.width),
             Edge::Rear  => (outer_bb.min.x, outer_bb.max.y - ec.width, outer_bb.max.x, outer_bb.max.y),
         };
-        let col = rgb(0.55, 0.27, 0.07);
-        stroke(&layer, col.clone(), 0.4);
-        poly_stroke(&layer, vec![
-            lp(tx(x0), ty(y0)), lp(tx(x1), ty(y0)),
-            lp(tx(x1), ty(y1)), lp(tx(x0), ty(y1)),
-        ]);
-        let label = format!("{} {:.1}mm", ec.edge.label(), ec.width);
-        let lx = tx((x0 + x1) / 2.0) - label.len() as f64 * 0.9;
-        let ly = ty((y0 + y1) / 2.0) - 2.0;
-        draw_text(&layer, &font, lx, ly, &label, 4.5, col);
-    }
-
-    // ── Radius labels ─────────────────────────────────────────────────────────
-
-    for (layer_name, shapes) in shapes_by_layer {
-        let col = layer_color(layer_name);
-        for shape in shapes {
-            match shape {
-                Shape::Circle(c) => {
-                    let cx = tx(c.center.x);
-                    let cy = ty(c.center.y);
-                    let r  = c.radius * scale;
-                    stroke(&layer, col.clone(), 0.25);
-                    line_seg(&layer, cx, cy, cx + r * 0.707, cy + r * 0.707);
-                    let label = format!("r={:.1}", c.radius);
-                    draw_text(&layer, &font,
-                        cx + r * 0.707 + 1.0, cy + r * 0.707 - 2.0,
-                        &label, 5.0, col.clone());
-                }
-                Shape::Arc(a) => {
-                    let mut ea = a.end_angle;
-                    while ea <= a.start_angle { ea += 360.0; }
-                    let mid = ((a.start_angle + ea) / 2.0).to_radians();
-                    let r   = a.radius * scale;
-                    let lx  = tx(a.center.x) + r * 1.15 * mid.cos();
-                    let ly  = ty(a.center.y) + r * 1.15 * mid.sin() - 2.0;
-                    let label = format!("r={:.1}", a.radius);
-                    draw_text(&layer, &font, lx, ly, &label, 5.0, col.clone());
-                }
-                _ => {}
-            }
-        }
+        stroke(&layer, close_col.clone(), 0.25);
+        layer.add_polygon(Polygon {
+            rings: vec![vec![
+                lp(tx(x0), ty(y0)), lp(tx(x1), ty(y0)),
+                lp(tx(x1), ty(y1)), lp(tx(x0), ty(y1)),
+            ]],
+            mode: PaintMode::Stroke, winding_order: WindingOrder::NonZero,
+        });
+        let label = format!("{} {}mm", ec.edge.label(), fmt_dim(ec.width));
+        txt(&layer, &font,
+            tx((x0+x1)/2.0) - label.len() as f64 * text_pt as f64 * 0.15,
+            ty((y0+y1)/2.0) - text_pt as f64 * 0.18,
+            &label, text_pt * 0.65, close_col.clone());
     }
 
     // ── Dimension lines ───────────────────────────────────────────────────────
 
-    let outer_w = outer_bb.max.x - outer_bb.min.x;
-    let outer_h = outer_bb.max.y - outer_bb.min.y;
+    let dim_col = rgb(0.0, 0.0, 0.55);
+    stroke(&layer, dim_col.clone(), 0.25);
 
-    dim_h(&layer, &font,
-        tx(outer_bb.min.x), tx(outer_bb.max.x),
-        oy - 12.0, oy,
-        &format!("{:.1} mm", outer_w));
-    dim_v(&layer, &font,
-        ty(outer_bb.min.y), ty(outer_bb.max.y),
-        ox - 12.0, ox,
-        &format!("{:.1} mm", outer_h));
+    let y_dim   = ty(outer_bb.min.y) - dim;
+    let x_left  = tx(outer_bb.min.x);
+    let x_right = tx(outer_bb.max.x);
+    seg(&layer, x_left,  ty(outer_bb.min.y), x_left,  y_dim - tick_p);
+    seg(&layer, x_right, ty(outer_bb.min.y), x_right, y_dim - tick_p);
+    seg(&layer, x_left, y_dim, x_right, y_dim);
+    seg(&layer, x_left,  y_dim - tick_p, x_left,  y_dim + tick_p);
+    seg(&layer, x_right, y_dim - tick_p, x_right, y_dim + tick_p);
+    txt(&layer, &font,
+        (x_left + x_right) / 2.0 - fmt_dim(panel_w).len() as f64 * text_pt as f64 * 0.15,
+        y_dim - gap_p,
+        &fmt_dim(panel_w), text_pt, dim_col.clone());
 
-    // Inner panel dimensions when closes make them different from outer
-    let inner_w = bb.max.x - bb.min.x;
-    let inner_h = bb.max.y - bb.min.y;
-    if (inner_w - outer_w).abs() > 0.2 || (inner_h - outer_h).abs() > 0.2 {
-        dim_h(&layer, &font,
-            tx(bb.min.x), tx(bb.max.x),
-            oy - 22.0, oy,
-            &format!("{:.1} mm (panel)", inner_w));
-        dim_v(&layer, &font,
-            ty(bb.min.y), ty(bb.max.y),
-            ox - 22.0, ox,
-            &format!("{:.1} mm (panel)", inner_h));
-    }
+    let x_dim = tx(outer_bb.min.x) - dim;
+    let y_bot = ty(outer_bb.min.y);
+    let y_top = ty(outer_bb.max.y);
+    seg(&layer, tx(outer_bb.min.x), y_bot, x_dim - tick_p, y_bot);
+    seg(&layer, tx(outer_bb.min.x), y_top, x_dim - tick_p, y_top);
+    seg(&layer, x_dim, y_bot, x_dim, y_top);
+    seg(&layer, x_dim - tick_p, y_bot, x_dim + tick_p, y_bot);
+    seg(&layer, x_dim - tick_p, y_top, x_dim + tick_p, y_top);
+    // Height label: rotated 90° CCW so it reads bottom-to-top alongside the line
+    txt_rot90(&layer, &font,
+        x_dim - gap_p,
+        (y_bot + y_top) / 2.0,
+        &fmt_dim(panel_h), text_pt, dim_col.clone());
 
-    // ── Save ──────────────────────────────────────────────────────────────────
+    // ── Save ─────────────────────────────────────────────────────────────────
 
     let bytes = doc.save_to_bytes()
-        .map_err(|e| format!("PDF encode error: {e}"))?;
+        .map_err(|e| format!("PDF encode: {e}"))?;
     fs::write(path, bytes).map_err(|e| format!("Cannot write {path}: {e}"))
 }

@@ -9,6 +9,17 @@ use dxf::{Color, Point as DxfPoint};
 use crate::geom::{Arc as GArc, Edge, Polyline as GPolyline, Rect, Shape};
 use crate::close::EdgeClose;
 
+/// Format a mm value for human display: omit ".0" for whole numbers.
+pub fn fmt_dim(v: f64) -> String {
+    if v.fract() == 0.0 { format!("{:.0}", v) } else { format!("{:.1}", v) }
+}
+
+/// Compute model-space text height readable at ~4 mm on A4 landscape paper.
+pub fn a4_text_h(panel_w: f64, panel_h: f64) -> f64 {
+    let s = (267.0_f64 / panel_w).min(180.0 / panel_h);
+    (4.0 / s).clamp(4.0, 40.0)
+}
+
 /// Single source of truth for layer colours.
 ///
 /// Named layers get a fixed colour; everything else gets a deterministic colour
@@ -153,98 +164,100 @@ fn add_text_entity(drawing: &mut Drawing, layer_name: &str,
     drawing.add_entity(ent);
 }
 
-/// Add a `measure` layer with panel dimensions and radius annotations.
+/// Add a `measure` layer (panel dimensions) and a `holes` layer (hole diameters).
 ///
-/// Draws:
-/// - Horizontal dimension line below `outer_bb` showing panel width; label centred on line
-/// - Vertical dimension line to the left of `outer_bb` showing panel height; label rotated 90°
-/// - For every circle: horizontal diameter line with "r=XX" centred on it
-/// - For every arc: radius line from centre to arc midpoint with "r=XX" centred on line
+/// Text height is derived from panel size so annotations read ~4 mm on A4 landscape paper.
+///
+/// `measure`:
+/// - Horizontal dim line below `outer_bb`; label below the line
+/// - Vertical dim line left of `outer_bb`; label left of the line, rotated 90°
+///
+/// `holes`:
+/// - Circles: horizontal indicator line centre→rim; ⌀XX label above the circle
+/// - Arcs:    radius line centre→arc-midpoint;      ⌀XX label beyond the arc
 pub fn add_measure_layer(
     drawing: &mut Drawing,
     shapes_by_layer: &BTreeMap<String, Vec<&Shape>>,
     _bb: &Rect,
     outer_bb: &Rect,
 ) {
-    const LAYER:   &str = "measure";
-    const DIM_OFF: f64  = 20.0; // mm from panel edge to dimension line
-    const TICK:    f64  = 2.5;  // tick half-length
-    const TEXT_H:  f64  = 5.0;  // dimension text height mm
-    const R_TEXT:  f64  = 4.5;  // radius label text height mm
+    let panel_w = outer_bb.max.x - outer_bb.min.x;
+    let panel_h = outer_bb.max.y - outer_bb.min.y;
+    let text_h  = a4_text_h(panel_w, panel_h);
+    let dim_off = text_h * 3.5;
+    let tick    = text_h * 0.5;
+    let gap     = text_h * 0.9;
 
-    let mut layer = Layer::default();
-    layer.name  = LAYER.to_string();
-    layer.color = Color::from_index(3); // green
-    drawing.add_layer(layer);
+    // ── measure layer ─────────────────────────────────────────────────────
+    {
+        const L: &str = "measure";
+        let mut layer = Layer::default();
+        layer.name  = L.to_string();
+        layer.color = Color::from_index(3); // green
+        drawing.add_layer(layer);
 
-    // ── Width dimension ────────────────────────────────────────────────────
-    let y_dim   = outer_bb.min.y - DIM_OFF;
-    let x_left  = outer_bb.min.x;
-    let x_right = outer_bb.max.x;
+        // Width
+        let y_dim   = outer_bb.min.y - dim_off;
+        let x_left  = outer_bb.min.x;
+        let x_right = outer_bb.max.x;
+        add_line_entity(drawing, L, x_left,  outer_bb.min.y, x_left,  y_dim - tick);
+        add_line_entity(drawing, L, x_right, outer_bb.min.y, x_right, y_dim - tick);
+        add_line_entity(drawing, L, x_left, y_dim, x_right, y_dim);
+        add_line_entity(drawing, L, x_left,  y_dim - tick, x_left,  y_dim + tick);
+        add_line_entity(drawing, L, x_right, y_dim - tick, x_right, y_dim + tick);
+        add_text_entity(drawing, L,
+            (x_left + x_right) / 2.0, y_dim - gap,
+            &fmt_dim(panel_w), text_h, 0.0);
 
-    // Extension lines
-    add_line_entity(drawing, LAYER, x_left,  outer_bb.min.y, x_left,  y_dim - TICK);
-    add_line_entity(drawing, LAYER, x_right, outer_bb.min.y, x_right, y_dim - TICK);
-    // Dimension line
-    add_line_entity(drawing, LAYER, x_left, y_dim, x_right, y_dim);
-    // End ticks
-    add_line_entity(drawing, LAYER, x_left,  y_dim - TICK, x_left,  y_dim + TICK);
-    add_line_entity(drawing, LAYER, x_right, y_dim - TICK, x_right, y_dim + TICK);
-    // Label centred ON the dimension line, rotation=0
-    let w_label = format!("{:.1}", outer_bb.max.x - outer_bb.min.x);
-    add_text_entity(drawing, LAYER,
-        (x_left + x_right) / 2.0, y_dim, &w_label, TEXT_H, 0.0);
+        // Height
+        let x_dim = outer_bb.min.x - dim_off;
+        let y_bot = outer_bb.min.y;
+        let y_top = outer_bb.max.y;
+        add_line_entity(drawing, L, outer_bb.min.x, y_bot, x_dim - tick, y_bot);
+        add_line_entity(drawing, L, outer_bb.min.x, y_top, x_dim - tick, y_top);
+        add_line_entity(drawing, L, x_dim, y_bot, x_dim, y_top);
+        add_line_entity(drawing, L, x_dim - tick, y_bot, x_dim + tick, y_bot);
+        add_line_entity(drawing, L, x_dim - tick, y_top, x_dim + tick, y_top);
+        add_text_entity(drawing, L,
+            x_dim - gap, (y_bot + y_top) / 2.0,
+            &fmt_dim(panel_h), text_h, 90.0);
+    }
 
-    // ── Height dimension ───────────────────────────────────────────────────
-    let x_dim = outer_bb.min.x - DIM_OFF;
-    let y_bot = outer_bb.min.y;
-    let y_top = outer_bb.max.y;
+    // ── holes layer ───────────────────────────────────────────────────────
+    {
+        const L: &str = "holes";
+        let mut layer = Layer::default();
+        layer.name  = L.to_string();
+        layer.color = Color::from_index(4); // cyan
+        drawing.add_layer(layer);
 
-    // Extension lines
-    add_line_entity(drawing, LAYER, outer_bb.min.x, y_bot, x_dim - TICK, y_bot);
-    add_line_entity(drawing, LAYER, outer_bb.min.x, y_top, x_dim - TICK, y_top);
-    // Dimension line
-    add_line_entity(drawing, LAYER, x_dim, y_bot, x_dim, y_top);
-    // End ticks
-    add_line_entity(drawing, LAYER, x_dim - TICK, y_bot, x_dim + TICK, y_bot);
-    add_line_entity(drawing, LAYER, x_dim - TICK, y_top, x_dim + TICK, y_top);
-    // Label centred ON the dimension line, rotated 90° (reads bottom-to-top)
-    let h_label = format!("{:.1}", outer_bb.max.y - outer_bb.min.y);
-    add_text_entity(drawing, LAYER,
-        x_dim, (y_bot + y_top) / 2.0, &h_label, TEXT_H, 90.0);
-
-    // ── Radius labels ──────────────────────────────────────────────────────
-    for shapes in shapes_by_layer.values() {
-        for shape in shapes {
-            match shape {
-                Shape::Circle(c) => {
-                    // Horizontal diameter line; label centred on the half-radius section
-                    let x0 = c.center.x;
-                    let x1 = c.center.x + c.radius;
-                    add_line_entity(drawing, LAYER, x0, c.center.y, x1, c.center.y);
-                    let label = format!("r={:.1}", c.radius);
-                    add_text_entity(drawing, LAYER,
-                        (x0 + x1) / 2.0, c.center.y, &label, R_TEXT, 0.0);
+        for shapes in shapes_by_layer.values() {
+            for shape in shapes {
+                match shape {
+                    Shape::Circle(c) => {
+                        add_line_entity(drawing, L,
+                            c.center.x, c.center.y,
+                            c.center.x + c.radius, c.center.y);
+                        let label = format!("⌀{}", fmt_dim(c.radius * 2.0));
+                        add_text_entity(drawing, L,
+                            c.center.x, c.center.y + c.radius + gap,
+                            &label, text_h, 0.0);
+                    }
+                    Shape::Arc(a) => {
+                        let mut ea = a.end_angle;
+                        while ea <= a.start_angle { ea += 360.0; }
+                        let mid_rad = ((a.start_angle + ea) / 2.0).to_radians();
+                        let ex = a.center.x + a.radius * mid_rad.cos();
+                        let ey = a.center.y + a.radius * mid_rad.sin();
+                        add_line_entity(drawing, L, a.center.x, a.center.y, ex, ey);
+                        let label = format!("⌀{}", fmt_dim(a.radius * 2.0));
+                        add_text_entity(drawing, L,
+                            a.center.x + (a.radius + gap) * mid_rad.cos(),
+                            a.center.y + (a.radius + gap) * mid_rad.sin(),
+                            &label, text_h, 0.0);
+                    }
+                    _ => {}
                 }
-                Shape::Arc(a) => {
-                    // Radius line from centre to arc midpoint
-                    let mut ea = a.end_angle;
-                    while ea <= a.start_angle { ea += 360.0; }
-                    let mid_deg = (a.start_angle + ea) / 2.0;
-                    let mid_rad = mid_deg.to_radians();
-                    let ex = a.center.x + a.radius * mid_rad.cos();
-                    let ey = a.center.y + a.radius * mid_rad.sin();
-                    add_line_entity(drawing, LAYER, a.center.x, a.center.y, ex, ey);
-                    // Text centred on the line, rotated to align with it
-                    let label = format!("r={:.1}", a.radius);
-                    // Normalise angle so text reads left-to-right (never upside-down)
-                    let rot = if mid_deg > 90.0 && mid_deg <= 270.0 { mid_deg - 180.0 } else { mid_deg };
-                    add_text_entity(drawing, LAYER,
-                        (a.center.x + ex) / 2.0,
-                        (a.center.y + ey) / 2.0,
-                        &label, R_TEXT, rot);
-                }
-                _ => {}
             }
         }
     }
@@ -260,8 +273,8 @@ pub fn add_close_layers(drawing: &mut Drawing, closes: &[EdgeClose], bb: &Rect) 
     layer.color = Color::from_index(layer_color(layer_name));
     drawing.add_layer(layer);
 
-    let text_h = 5.0_f64;
-    let offset  = text_h * 1.5;
+    let text_h = a4_text_h(bb.max.x - bb.min.x, bb.max.y - bb.min.y);
+    let offset  = text_h * 2.0;
     let cx = (bb.min.x + bb.max.x) / 2.0;
     let cy = (bb.min.y + bb.max.y) / 2.0;
 
