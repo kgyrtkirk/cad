@@ -1551,7 +1551,7 @@ if(nBeams>0)
                             symX([$w/2-$W,0,0]) 
                             {
                                 translate([0,0,0]) 
-                                euroscrews(prefix(0,[37,64,96+64,64+64]),2);
+                                euroscrews(prefix(0,[37,64,96+64,64+64]),1);
                             }
 
                             translate([0,o_y,0])
@@ -1559,7 +1559,7 @@ if(nBeams>0)
                             symX([$w/2-$W-13,0,0]) 
                             {
                                 translate([0,0,0]) 
-                                euroscrews(prefix(0,[35,224,192]),2);
+                                euroscrews(prefix(0,[35,224,192]),1);
                             }
 
                         }
