@@ -3,6 +3,8 @@
 // a hátsó ívek hosszabbak; a kártyát az ív görbülete szorítja a résben.
 // Laposan nyomtatódik, támasz nélkül.
 
+//@OUTPUT:def
+
 szog    = 50;    // a körcikk nyílásszöge (fok)
 r_elso  = 140;   // az első ív sugara; a csúcs felőli rész kimarad
 sorok   = 6;
