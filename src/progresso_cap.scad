@@ -6,16 +6,23 @@ mode="75";
 //@OUTPUT:74
 //@OUTPUT:76
 
+module pCap() {
+
+
 DI=toInt(mode)/10;
-H=17;
+H=32;
+TWISTS=H/4;
 
 difference() 
 {
 
     minkowski()  {
-    linear_extrude(height = 17,center=true)
-    offset(r=2,$fn=64) 
-    circle(d=DI,$fn=3);
+        difference() {
+            linear_extrude(height = H,center=true)
+            offset(r=2,$fn=32) 
+            circle(d=DI,$fn=3);
+        }
+
         sphere(d=2,$fn=32);
     }
     cylinder(d=DI,h=200,center=true,$fn=64);
@@ -33,7 +40,7 @@ difference()
         }
     } else {
         K=H;
-        linear_extrude(center=true,height=2*H,twist=4*360,$fn=128)
+        linear_extrude(center=true,height=2*H,twist=TWISTS*360,$fn=64)
         translate([-K/2,0,0]){
             square([K,10]);
         }
@@ -43,5 +50,10 @@ difference()
 
     }
 }
+}
+
+pCap();
+rotate(180)
+pCap();
 
 //    offset(r = 10) { square(20, center = true); }
