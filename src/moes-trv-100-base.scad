@@ -4,6 +4,9 @@ use <syms.scad>
 mode="ai";
 
 //@OUTPUT:ai
+//@OUTPUT:anchors
+
+// printed in PETG for heat resistance
 
 HALF_DIST=20;
 K=6;
@@ -74,8 +77,9 @@ difference() {
     SD=4;
     H=4/2;
     
-    // optional flange holes (skipped):
-    //for (a = [0, 90, 180]) rotate([0, 0, a]) translate([18, 0, -1]) cylinder(d = 3.6, h = 5, $fn = 32);
+    // screw holes
+    // slot is a "door" shaped something which is 4x4.27 ; one side is a 4mm half circle other is similar to a half square
+    // screw is around 30mm long
     for (a = [0, 180]) rotate([0, 0, a]) translate([SA/2+SD/2, 0, 3-H+EPS]) {
         cylinder(d = 3, h = 15,center=true, $fn = 32);
         cylinder(d1 = 3, d2=3+2*H,h = H, $fn = 32);
@@ -87,4 +91,21 @@ difference() {
          cube([4,100,6],center=true);
 }
 
+}
+
+// plugs for the TRV's door-shaped screw slots; screw self-taps into the bore and spreads the slit
+if(mode=="anchors") {
+    AD=3.9;     // slot's round side is 4
+    AB=2.4;     // pilot for the 3mm screw
+    AL=15;      // must not exceed slot depth
+    CH=.5;
+    for (x = [-4, 4]) translate([x, 0, 0])
+        difference() {
+            union() {
+                cylinder(d1=AD-2*CH, d2=AD, h=CH, $fn=32);
+                translate([0, 0, CH]) cylinder(d=AD, h=AL-CH, $fn=32);
+            }
+            cylinder(d=AB, h=3*AL, center=true, $fn=32);
+            translate([-AD, -.4, -1]) cube([2*AD, .8, AL*.6+1]);
+        }
 }
